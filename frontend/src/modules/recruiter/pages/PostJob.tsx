@@ -6,7 +6,6 @@ import {
   Trash2,
   CheckCircle2,
   ArrowRight,
-  Briefcase,
   MapPin,
   DollarSign,
   Type
