@@ -1,7 +1,5 @@
 import {
-  User,
   Mail,
-  Phone,
   MapPin,
   Briefcase,
   GraduationCap,
@@ -10,7 +8,6 @@ import {
   Settings,
   LogOut,
   Camera,
-  ExternalLink,
   Github,
   Linkedin,
   Twitter,

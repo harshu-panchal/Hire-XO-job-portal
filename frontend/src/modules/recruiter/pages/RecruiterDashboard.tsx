@@ -1,15 +1,4 @@
-import { 
-  Users, 
-  Briefcase, 
-  TrendingUp, 
-  Plus, 
-  Search, 
-  MoreVertical,
-  ArrowUpRight,
-  Clock,
-  CheckCircle2,
-  XCircle
-} from "lucide-react";
+import { Users, Briefcase, TrendingUp, Clock, Plus, Search, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const RecruiterDashboard = () => {
@@ -33,7 +22,7 @@ const RecruiterDashboard = () => {
           <h1 className="text-3xl font-black tracking-tighter">Recruiter <br /><span className="text-primary">Dashboard</span></h1>
           <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">Manage your hiring pipeline</p>
         </div>
-        <Link 
+        <Link
           to="/recruiter/post-job"
           className="size-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-xl shadow-primary/20 active:scale-90 transition-all"
         >
@@ -46,8 +35,8 @@ const RecruiterDashboard = () => {
         {stats.map((stat, i) => (
           <div key={i} className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className={`size-14 rounded-2xl ${stat.bg} flex items-center justify-center`}>
-                <stat.icon className={`size-7 ${stat.color}`} />
+              <div className={`size - 14 rounded - 2xl ${stat.bg} flex items - center justify - center`}>
+                <stat.icon className={`size - 7 ${stat.color} `} />
               </div>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{stat.label}</p>
@@ -79,7 +68,7 @@ const RecruiterDashboard = () => {
           <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Recent Applications</h2>
           <button className="text-[10px] font-black text-primary uppercase tracking-widest">View All</button>
         </div>
-        
+
         <div className="grid gap-4">
           {recentApplications.map((app) => (
             <div key={app.id} className="bg-white dark:bg-slate-900/50 p-5 rounded-3xl border border-slate-200 dark:border-white/10 flex items-center gap-4 active:scale-[0.98] transition-all">
@@ -91,11 +80,10 @@ const RecruiterDashboard = () => {
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">{app.role}</p>
               </div>
               <div className="flex flex-col items-end gap-1.5">
-                <div className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
-                  app.status === "Pending" ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
-                  app.status === "Interviewed" ? "bg-green-500/10 text-green-600 border-green-500/20" :
-                  "bg-red-500/10 text-red-600 border-red-500/20"
-                }`}>
+                <div className={`px - 2.5 py - 1 rounded - lg text - [9px] font - black uppercase tracking - widest border ${app.status === "Pending" ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
+                    app.status === "Interviewed" ? "bg-green-500/10 text-green-600 border-green-500/20" :
+                      "bg-red-500/10 text-red-600 border-red-500/20"
+                  } `}>
                   {app.status}
                 </div>
                 <div className="flex items-center text-[9px] font-black text-slate-300 uppercase tracking-widest">

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  ChevronLeft, 
-  Plus, 
-  Trash2, 
-  CheckCircle2, 
+import {
+  ChevronLeft,
+  Plus,
+  Trash2,
+  CheckCircle2,
   ArrowRight,
   Briefcase,
   MapPin,
@@ -75,7 +75,7 @@ const PostJob = () => {
     <div className="pb-32 select-none">
       {/* Header */}
       <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 -mx-5 px-5">
-        <button 
+        <button
           onClick={() => step > 1 ? setStep(step - 1) : navigate(-1)}
           className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
         >
@@ -93,7 +93,7 @@ const PostJob = () => {
           <div className="space-y-6">
             <div className="space-y-4">
               <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Basic Information</label>
-              
+
               <div className="relative group">
                 <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
                   <Type className="size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
@@ -103,16 +103,16 @@ const PostJob = () => {
                   placeholder="Job Title (e.g. Senior React Dev)"
                   required
                   value={formData.title}
-                  onChange={e => setFormData({...formData, title: e.target.value})}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
                   className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="relative group">
-                  <select 
+                  <select
                     value={formData.category}
-                    onChange={e => setFormData({...formData, category: e.target.value})}
+                    onChange={e => setFormData({ ...formData, category: e.target.value })}
                     className="w-full h-16 px-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
                   >
                     <option>Development</option>
@@ -122,9 +122,9 @@ const PostJob = () => {
                   </select>
                 </div>
                 <div className="relative group">
-                  <select 
+                  <select
                     value={formData.type}
-                    onChange={e => setFormData({...formData, type: e.target.value})}
+                    onChange={e => setFormData({ ...formData, type: e.target.value })}
                     className="w-full h-16 px-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
                   >
                     <option>Full-time</option>
@@ -144,7 +144,7 @@ const PostJob = () => {
                   placeholder="Location (e.g. Remote, Bangalore)"
                   required
                   value={formData.location}
-                  onChange={e => setFormData({...formData, location: e.target.value})}
+                  onChange={e => setFormData({ ...formData, location: e.target.value })}
                   className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
@@ -158,7 +158,7 @@ const PostJob = () => {
                   placeholder="Salary Range (e.g. ₹15L - ₹25L)"
                   required
                   value={formData.salary}
-                  onChange={e => setFormData({...formData, salary: e.target.value})}
+                  onChange={e => setFormData({ ...formData, salary: e.target.value })}
                   className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
@@ -171,7 +171,7 @@ const PostJob = () => {
                 required
                 rows={5}
                 value={formData.description}
-                onChange={e => setFormData({...formData, description: e.target.value})}
+                onChange={e => setFormData({ ...formData, description: e.target.value })}
                 className="w-full p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black resize-none"
               />
             </div>
@@ -181,7 +181,7 @@ const PostJob = () => {
             <div className="space-y-6">
               <div className="flex items-center justify-between px-1">
                 <label className="text-xs font-black uppercase tracking-widest text-slate-400">Requirements</label>
-                <button 
+                <button
                   type="button"
                   onClick={() => handleAddField('requirements')}
                   className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center active:scale-90 transition-all"
@@ -194,14 +194,14 @@ const PostJob = () => {
                   <div key={i} className="flex gap-2">
                     <input
                       type="text"
-                      placeholder={`Requirement #${i+1}`}
+                      placeholder={`Requirement #${i + 1}`}
                       required
                       value={req}
                       onChange={e => handleInputChange('requirements', i, e.target.value)}
                       className="flex-1 h-14 px-5 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
                     />
                     {formData.requirements.length > 1 && (
-                      <button 
+                      <button
                         type="button"
                         onClick={() => handleRemoveField('requirements', i)}
                         className="size-14 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 active:scale-90 transition-all"
@@ -217,7 +217,7 @@ const PostJob = () => {
             <div className="space-y-6">
               <div className="flex items-center justify-between px-1">
                 <label className="text-xs font-black uppercase tracking-widest text-slate-400">Responsibilities</label>
-                <button 
+                <button
                   type="button"
                   onClick={() => handleAddField('responsibilities')}
                   className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center active:scale-90 transition-all"
@@ -230,14 +230,14 @@ const PostJob = () => {
                   <div key={i} className="flex gap-2">
                     <input
                       type="text"
-                      placeholder={`Responsibility #${i+1}`}
+                      placeholder={`Responsibility #${i + 1}`}
                       required
                       value={resp}
                       onChange={e => handleInputChange('responsibilities', i, e.target.value)}
                       className="flex-1 h-14 px-5 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
                     />
                     {formData.responsibilities.length > 1 && (
-                      <button 
+                      <button
                         type="button"
                         onClick={() => handleRemoveField('responsibilities', i)}
                         className="size-14 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 active:scale-90 transition-all"

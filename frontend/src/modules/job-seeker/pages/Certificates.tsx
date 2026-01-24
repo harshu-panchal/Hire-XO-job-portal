@@ -1,5 +1,5 @@
-import { Award, Calendar, CheckCircle2, Clock, Download, Plus, Trophy } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Award, Calendar, Clock, Download, Plus, Trophy } from "lucide-react";
+
 import { useJobSeekerStore } from "@/store/useJobSeekerStore";
 import { generateCertificate } from "@/lib/certificate-utils";
 
@@ -74,19 +74,17 @@ const Certificates = () => {
               return (
                 <div
                   key={cert.id}
-                  className={`relative overflow-hidden rounded-3xl p-6 border transition-all active:scale-[0.98] active:shadow-md ${
-                    expired
+                  className={`relative overflow-hidden rounded-3xl p-6 border transition-all active:scale-[0.98] active:shadow-md ${expired
                       ? "bg-slate-50 dark:bg-white/5 border-slate-100 dark:border-white/5 opacity-60"
                       : "bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 shadow-sm active:border-primary/20"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start gap-5">
                     <div
-                      className={`size-16 rounded-2xl shrink-0 flex items-center justify-center border transition-colors ${
-                        expired
+                      className={`size-16 rounded-2xl shrink-0 flex items-center justify-center border transition-colors ${expired
                           ? "bg-slate-200 dark:bg-white/10 border-transparent text-slate-400"
                           : "bg-primary/5 border-primary/10 text-primary"
-                      }`}
+                        }`}
                     >
                       <Award className="h-8 w-8" />
                     </div>
@@ -94,11 +92,10 @@ const Certificates = () => {
                       <div className="flex justify-between items-start mb-1">
                         <h3 className="font-black text-lg truncate tracking-tight">{cert.name}</h3>
                         <div
-                          className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border ${
-                            expired
+                          className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border ${expired
                               ? "border-slate-200 dark:border-white/10 text-slate-400"
                               : "border-primary/20 text-primary bg-primary/5"
-                          }`}
+                            }`}
                         >
                           {cert.status}
                         </div>

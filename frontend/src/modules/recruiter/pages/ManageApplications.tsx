@@ -1,13 +1,11 @@
 import { useState } from "react";
 import {
   Search,
-  Filter,
   MoreVertical,
+  Calendar,
   Mail,
-  Phone,
   Download,
-  CheckCircle2,
-  XCircle,
+  ChevronLeft,
   Clock,
   ChevronRight,
   Briefcase,
@@ -84,11 +82,10 @@ const ManageApplications = () => {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${
-              filter === f
+            className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${filter === f
                 ? "bg-primary text-white shadow-lg shadow-primary/20"
                 : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
-            }`}
+              }`}
           >
             {f}
           </button>

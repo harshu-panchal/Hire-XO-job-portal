@@ -1,6 +1,5 @@
 import {
   Search,
-  Filter,
   Users,
   CheckCircle2,
   TrendingUp,
