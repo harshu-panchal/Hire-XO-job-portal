@@ -27,7 +27,12 @@
    - In which directory is your code located? **.**
    - Want to override settings? **N**
 
-4. **Production Deployment**:
+4. **IMPORTANT: Project Settings**:
+   - Go to Vercel Dashboard -> Settings -> General
+   - **Root Directory**: Edit and select `frontend`
+   - Click "Save"
+
+5. **Production Deployment**:
    ```bash
    vercel --prod
    ```
@@ -36,28 +41,25 @@
 
 1. **Push to GitHub**:
    ```bash
-   git init
    git add .
-   git commit -m "Initial commit - Hire XO Job Portal"
-   git branch -M main
-   git remote add origin YOUR_GITHUB_REPO_URL
-   git push -u origin main
+   git commit -m "Fix deployment config"
+   git push
    ```
 
 2. **Import to Vercel**:
    - Go to [vercel.com](https://vercel.com)
    - Click "Add New Project"
    - Import your GitHub repository
-   - Vercel will auto-detect the configuration from `vercel.json`
+   - **IMPORTANT**: In "Framework Preset", verify it says "Vite"
+   - **IMPORTANT**: In "Root Directory", click Edit and select `frontend` folder
    - Click "Deploy"
 
-### Build Settings (Auto-configured via vercel.json)
+### Build Settings (Auto-configured)
 
-- **Framework Preset**: Vite
-- **Root Directory**: `./` (project root)
-- **Build Command**: `cd frontend && npm install && npm run build`
-- **Output Directory**: `frontend/dist`
-- **Install Command**: `cd frontend && npm install`
+- **Root Directory**: `frontend`
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Install Command**: `npm install`
 
 ### Environment Variables
 
