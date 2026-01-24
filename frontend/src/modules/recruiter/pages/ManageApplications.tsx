@@ -1,11 +1,10 @@
+```javascript
 import { useState } from "react";
 import {
   Search,
   MoreVertical,
-  Calendar,
   Mail,
   Download,
-  ChevronLeft,
   Clock,
   ChevronRight,
   Briefcase,
@@ -82,10 +81,11 @@ const ManageApplications = () => {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${filter === f
-                ? "bg-primary text-white shadow-lg shadow-primary/20"
-                : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
-              }`}
+            className={`whitespace - nowrap px - 6 py - 3 rounded - 2xl text - [10px] font - black uppercase tracking - [0.2em] transition - all active: scale - 90 ${
+  filter === f
+  ? "bg-primary text-white shadow-lg shadow-primary/20"
+  : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
+} `}
           >
             {f}
           </button>
@@ -144,7 +144,7 @@ const ManageApplications = () => {
 
                 <div className="flex items-center justify-between pt-2">
                   <div
-                    className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${statusColors[app.status as keyof typeof statusColors]}`}
+                    className={`px - 3 py - 1.5 rounded - xl text - [10px] font - black uppercase tracking - widest border ${ statusColors[app.status as keyof typeof statusColors] } `}
                   >
                     {app.status}
                   </div>
