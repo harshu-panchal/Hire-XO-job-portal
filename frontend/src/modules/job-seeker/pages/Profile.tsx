@@ -14,9 +14,11 @@ import {
   Bookmark,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { logout } = useAuthStore();
 
   const user = {
     name: "Alex Rivera",
@@ -176,7 +178,10 @@ const Profile = () => {
 
       {/* Logout */}
       <button
-        onClick={() => navigate("/")}
+        onClick={() => {
+          logout();
+          navigate("/");
+        }}
         className="w-full h-16 rounded-[2rem] bg-red-500/10 text-red-600 flex items-center justify-center gap-3 active:scale-95 transition-all border border-red-500/20"
       >
         <LogOut className="size-5" />

@@ -1,0 +1,106 @@
+import { Calendar, Clock, CheckCircle2 } from "lucide-react";
+
+const MyOrders = () => {
+    const orders = [
+        {
+            id: "ORD-MC421",
+            name: "Schwing Stetter CP30 Concrete Mixer",
+            seller: "Modern Infra Solutions",
+            status: "Processing",
+            date: "12 Oct 2024",
+            amount: "₹12,45,000",
+            image: "https://images.unsplash.com/photo-1579412691525-4c07da01ee7b?auto=format&fit=crop&q=80&w=400"
+        },
+        {
+            id: "ORD-MC398",
+            name: "Kirloskar 500kVA DG Set",
+            seller: "PowerGrid Generators",
+            status: "Delivered",
+            date: "02 Sep 2024",
+            amount: "₹8,00,000",
+            image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=400"
+        }
+    ];
+
+    const getStatusStyle = (status: string) => {
+        switch (status) {
+            case "Processing": return "text-amber-600 bg-amber-100 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50";
+            case "Delivered": return "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800";
+            case "Transit": return "text-blue-600 bg-blue-100 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800";
+            default: return "text-slate-500 bg-slate-100";
+        }
+    };
+
+    return (
+        <div className="py-6 space-y-8 select-none">
+            {/* Header */}
+            <div className="space-y-1">
+                <h1 className="text-2xl font-black tracking-tighter uppercase italic">Asset History</h1>
+                <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest leading-none">
+                    Track your machinery purchases and orders
+                </p>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2.5rem] p-6 shrink-0 w-48 shadow-xl">
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Portfolio Value</p>
+                    <p className="text-3xl font-black tracking-tighter italic mt-1">₹20.4L</p>
+                </div>
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shrink-0 w-48 shadow-sm">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Assets</p>
+                    <p className="text-3xl font-black tracking-tighter mt-1 italic">04</p>
+                </div>
+            </div>
+
+            {/* List */}
+            <div className="space-y-6 pb-20">
+                <h2 className="text-xs font-black uppercase tracking-widest text-amber-600 px-1 italic">Recent Purchases</h2>
+                {orders.map((order) => (
+                    <div
+                        key={order.id}
+                        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-sm relative group"
+                    >
+                        <div className="p-5 flex gap-5">
+                            <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
+                                <img src={order.image} alt={order.name} className="size-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                            </div>
+                            <div className="flex-1 space-y-1 py-1 min-w-0">
+                                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[8px] font-black uppercase tracking-widest ${getStatusStyle(order.status)}`}>
+                                    {order.status === "Processing" && <Clock className="size-2.5 animate-spin" />}
+                                    {order.status === "Delivered" && <CheckCircle2 className="size-2.5" />}
+                                    {order.status}
+                                </div>
+                                <h3 className="text-sm font-black tracking-tight leading-tight truncate uppercase italic">{order.name}</h3>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{order.seller}</p>
+                            </div>
+                        </div>
+
+                        <div className="px-5 pb-5 grid grid-cols-2 gap-4">
+                            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 space-y-0.5">
+                                <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Net Amount</p>
+                                <p className="text-[10px] font-black">{order.amount}</p>
+                            </div>
+                            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 space-y-0.5">
+                                <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Order Ref</p>
+                                <p className="text-[10px] font-black">{order.id}</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-950 text-white dark:bg-white dark:text-slate-950 py-4 px-6 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Calendar className="size-4 opacity-40" />
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-80">{order.date}</span>
+                            </div>
+                            <button className="text-[10px] font-black uppercase tracking-[0.2em] decoration-slate-500 underline underline-offset-4">
+                                Invoice
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+export default MyOrders;

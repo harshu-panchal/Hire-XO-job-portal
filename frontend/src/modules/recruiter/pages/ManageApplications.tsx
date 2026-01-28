@@ -9,8 +9,13 @@ import {
   Briefcase,
 } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/useAuthStore";
+
 const ManageApplications = () => {
   const [filter, setFilter] = useState("All");
+  const navigate = useNavigate();
+  const { checkSubscription } = useAuthStore();
 
   const applications = [
     {
@@ -62,6 +67,17 @@ const ManageApplications = () => {
     Rejected: "bg-red-500/10 text-red-600 border-red-500/20",
   };
 
+  const handleRestrictedAction = (action: string) => {
+    if (checkSubscription()) {
+      alert(`${action} successfully!`);
+      return;
+    }
+
+    if (confirm(`You need a PRO subscription to ${action.toLowerCase()}. Upgrade now?`)) {
+      navigate("/recruiter/subscription");
+    }
+  };
+
   return (
     <div className="py-6 space-y-8 select-none pb-24">
       <div className="space-y-1 px-1">
@@ -81,8 +97,8 @@ const ManageApplications = () => {
             key={f}
             onClick={() => setFilter(f)}
             className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${filter === f
-                ? "bg-primary text-white shadow-lg shadow-primary/20"
-                : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
+              ? "bg-primary text-white shadow-lg shadow-primary/20"
+              : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
               }`}
           >
             {f}
@@ -148,10 +164,16 @@ const ManageApplications = () => {
                     {app.status}
                   </div>
                   <div className="flex gap-2">
-                    <button className="size-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center active:scale-90 transition-all">
+                    <button
+                      onClick={() => handleRestrictedAction("Contact Candidate")}
+                      className="size-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center active:scale-90 transition-all"
+                    >
                       <Mail className="size-4 text-slate-500" />
                     </button>
-                    <button className="size-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center active:scale-90 transition-all">
+                    <button
+                      onClick={() => handleRestrictedAction("Download Resume")}
+                      className="size-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center active:scale-90 transition-all"
+                    >
                       <Download className="size-4 text-slate-500" />
                     </button>
                   </div>

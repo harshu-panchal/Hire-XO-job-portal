@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, PlusSquare, Users, Settings, Bell, UserCircle } from "lucide-react";
+import { LayoutDashboard, PlusSquare, Users, Settings, Bell } from "lucide-react";
 
 const RecruiterLayout = () => {
   const location = useLocation();
@@ -23,12 +23,6 @@ const RecruiterLayout = () => {
             </span>
           </Link>
           <div className="flex gap-2.5">
-            <Link
-              to="/jobs"
-              className="size-11 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center active:scale-90 transition-all shadow-lg"
-            >
-              <UserCircle className="size-5" />
-            </Link>
             <button className="relative size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all">
               <Bell className="size-5 text-slate-400" />
               <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-4 ring-slate-50 dark:ring-background"></span>
@@ -47,9 +41,8 @@ const RecruiterLayout = () => {
         <div className="flex items-center justify-between">
           <Link
             to="/recruiter"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/recruiter") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/recruiter") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/recruiter") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -67,9 +60,8 @@ const RecruiterLayout = () => {
 
           <Link
             to="/recruiter/post-job"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/recruiter/post-job") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/recruiter/post-job") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/recruiter/post-job") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -87,9 +79,8 @@ const RecruiterLayout = () => {
 
           <Link
             to="/recruiter/applications"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/recruiter/applications") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/recruiter/applications") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/recruiter/applications") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -107,9 +98,8 @@ const RecruiterLayout = () => {
 
           <Link
             to="/recruiter/settings"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/recruiter/settings") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/recruiter/settings") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/recruiter/settings") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/useAuthStore";
 import {
   ChevronLeft,
   Plus,
@@ -13,6 +14,7 @@ import {
 
 const PostJob = () => {
   const navigate = useNavigate();
+  const { user, updateUser } = useAuthStore();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     title: "",
@@ -47,6 +49,21 @@ const PostJob = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check for sufficient balance
+    if (!user?.profile.walletBalance || user.profile.walletBalance < 50) {
+      alert("Insufficient balance! You need ₹50 to post a job.");
+      return;
+    }
+
+    // Deduct amount
+    updateUser({
+      profile: {
+        ...user.profile,
+        walletBalance: user.profile.walletBalance - 50
+      }
+    });
+
     setStep(3); // Success step
   };
 
@@ -58,7 +75,8 @@ const PostJob = () => {
         </div>
         <h1 className="text-3xl font-black tracking-tight mb-3">Job Posted!</h1>
         <p className="text-slate-500 text-sm font-black leading-relaxed max-w-[280px] mx-auto mb-10">
-          Your job listing for <span className="text-primary">{formData.title}</span> is now live and visible to candidates.
+          Your job listing for <span className="text-primary">{formData.title}</span> is now live. <br />
+          <span className="text-xs text-red-500 mt-2 block">₹50 deducted from your wallet.</span>
         </p>
         <button
           onClick={() => navigate("/recruiter")}
@@ -252,12 +270,22 @@ const PostJob = () => {
         )}
 
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 z-40">
+          {step === 2 && (
+            <div className="flex justify-between items-center mb-2 px-2">
+              <span className="text-slate-400 text-xs font-black uppercase tracking-widest">
+                Job Posting Fee
+              </span>
+              <span className="text-primary font-black">
+                ₹50
+              </span>
+            </div>
+          )}
           <button
             type={step === 2 ? "submit" : "button"}
             onClick={() => step === 1 && setStep(2)}
             className="h-16 w-full rounded-3xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2"
           >
-            {step === 2 ? "Post Job Listing" : "Continue to Details"}
+            {step === 2 ? "Pay ₹50 & Post Job" : "Continue to Details"}
             <ArrowRight className="size-4" />
           </button>
         </div>

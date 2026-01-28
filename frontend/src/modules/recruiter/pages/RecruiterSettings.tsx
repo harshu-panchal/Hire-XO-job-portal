@@ -1,17 +1,20 @@
-import { 
-  User, 
-  Building2, 
-  Bell, 
-  ShieldCheck, 
-  LogOut, 
+import {
+  User,
+  Building2,
+  Bell,
+  ShieldCheck,
+  LogOut,
   ChevronRight,
   CreditCard,
-  Globe
+  Globe,
+  Wallet
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const RecruiterSettings = () => {
   const navigate = useNavigate();
+  const { logout, user } = useAuthStore();
 
   const sections = [
     {
@@ -19,6 +22,7 @@ const RecruiterSettings = () => {
       items: [
         { label: "Profile Information", icon: User, color: "text-blue-500", bg: "bg-blue-500/10" },
         { label: "Company Details", icon: Building2, color: "text-primary", bg: "bg-primary/10" },
+        { label: "Wallet Balance", icon: Wallet, color: "text-green-500", bg: "bg-green-500/10", value: `₹${user?.profile.walletBalance || 0}` },
         { label: "Subscription Plan", icon: CreditCard, color: "text-amber-500", bg: "bg-amber-500/10" },
       ]
     },
@@ -42,8 +46,8 @@ const RecruiterSettings = () => {
       {/* Profile Card */}
       <div className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 flex items-center gap-5">
         <div className="size-20 rounded-[2rem] bg-primary/10 flex items-center justify-center overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl">
-          <img 
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=Recruiter" 
+          <img
+            src="https://api.dicebear.com/7.x/avataaars/svg?seed=Recruiter"
             alt="Recruiter"
             className="w-full h-full object-cover"
           />
@@ -61,11 +65,23 @@ const RecruiterSettings = () => {
             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">{section.title}</h3>
             <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden">
               {section.items.map((item, i) => (
-                <button 
+                <button
                   key={i}
-                  className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${
-                    i !== section.items.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
-                  }`}
+                  onClick={() => {
+                    const routes: { [key: string]: string } = {
+                      "Profile Information": "/recruiter/profile",
+                      "Company Details": "/recruiter/company",
+                      "Wallet Balance": "/recruiter/wallet",
+                      "Subscription Plan": "/recruiter/subscription",
+                      "Notifications": "/recruiter/notifications",
+                      "Security & Privacy": "/recruiter/security",
+                    };
+                    if (routes[item.label]) {
+                      navigate(routes[item.label]);
+                    }
+                  }}
+                  className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${i !== section.items.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
+                    }`}
                 >
                   <div className="flex items-center gap-4">
                     <div className={`size-12 rounded-2xl ${item.bg} flex items-center justify-center`}>
@@ -87,12 +103,15 @@ const RecruiterSettings = () => {
       </div>
 
       {/* Logout */}
-      <button 
-        onClick={() => navigate("/")}
+      <button
+        onClick={() => {
+          logout();
+          navigate("/");
+        }}
         className="w-full h-16 rounded-[2rem] bg-red-500/10 text-red-600 flex items-center justify-center gap-3 active:scale-95 transition-all border border-red-500/20"
       >
         <LogOut className="size-5" />
-        <span className="text-[10px] font-black uppercase tracking-widest">Switch to Job Seeker</span>
+        <span className="text-[10px] font-black uppercase tracking-widest">Sign Out</span>
       </button>
 
       <p className="text-center text-[9px] font-black text-slate-300 uppercase tracking-[0.3em] pt-4">

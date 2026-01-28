@@ -1,4 +1,4 @@
-import { Bell, Building2 } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const JobSeekerNavbar = () => {
@@ -16,12 +16,6 @@ export const JobSeekerNavbar = () => {
         </span>
       </Link>
       <div className="flex gap-2.5">
-        <Link
-          to="/recruiter"
-          className="h-12 px-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center active:scale-90 transition-all shadow-lg"
-        >
-          <Building2 className="size-5" />
-        </Link>
         <button className="relative size-12 flex items-center justify-center rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 active:bg-slate-100 dark:active:bg-white/10 active:scale-90 transition-all duration-200">
           <Bell className="h-6 w-6" />
           <span className="absolute top-3.5 right-3.5 size-2.5 bg-primary rounded-full border-2 border-white dark:border-slate-900"></span>

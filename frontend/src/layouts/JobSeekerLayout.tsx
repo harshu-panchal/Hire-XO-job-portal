@@ -39,24 +39,6 @@ const JobSeekerLayout = () => {
             </span>
           </Link>
           <Link
-            to="/subscriptions"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/subscriptions") ? "text-primary" : "text-slate-400"
-              }`}
-          >
-            <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/subscriptions") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
-            >
-              <CreditCard
-                className={`h-6 w-6 ${isActive("/subscriptions") ? "fill-primary/20" : ""}`}
-              />
-            </div>
-            <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/subscriptions") ? "opacity-100" : "opacity-40"}`}
-            >
-              Plans
-            </span>
-          </Link>
-          <Link
             to="/resources"
             className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/resources") ? "text-primary" : "text-slate-400"
               }`}
@@ -86,6 +68,24 @@ const JobSeekerLayout = () => {
               className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/profile") ? "opacity-100" : "opacity-40"}`}
             >
               Me
+            </span>
+          </Link>
+          <Link
+            to="/subscriptions"
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/subscriptions") ? "text-primary" : "text-slate-400"
+              }`}
+          >
+            <div
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/subscriptions") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+            >
+              <CreditCard
+                className={`h-6 w-6 ${isActive("/subscriptions") ? "fill-primary/20" : ""}`}
+              />
+            </div>
+            <span
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/subscriptions") ? "opacity-100" : "opacity-40"}`}
+            >
+              Plans
             </span>
           </Link>
         </div>

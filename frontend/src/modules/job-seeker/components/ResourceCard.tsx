@@ -20,9 +20,11 @@ const ResourceCard = ({ resource }: ResourceCardProps) => {
 
     // Category-specific colors
     const categoryColors: Record<string, { bg: string; text: string; border: string }> = {
+        Investor: { bg: "bg-amber-500/10", text: "text-amber-600", border: "border-amber-500/10" },
         Tenders: { bg: "bg-purple-500/10", text: "text-purple-600", border: "border-purple-500/10" },
         Logistics: { bg: "bg-orange-500/10", text: "text-orange-600", border: "border-orange-500/10" },
         Equipments: { bg: "bg-emerald-500/10", text: "text-emerald-600", border: "border-emerald-500/10" },
+        Machinery: { bg: "bg-slate-500/10", text: "text-slate-600", border: "border-slate-500/10" },
         Vehicles: { bg: "bg-blue-500/10", text: "text-blue-600", border: "border-blue-500/10" },
         PMC: { bg: "bg-indigo-500/10", text: "text-indigo-600", border: "border-indigo-500/10" },
         CSM: { bg: "bg-rose-500/10", text: "text-rose-600", border: "border-rose-500/10" },
