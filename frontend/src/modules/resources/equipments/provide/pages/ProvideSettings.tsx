@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Bell, Shield, Palette, CreditCard, LifeBuoy, LogOut, ChevronRight, Key, Zap, History } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 interface SettingItemProps {
     icon: any;
@@ -24,6 +26,8 @@ const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProp
 );
 
 const ProvideSettings = () => {
+    const navigate = useNavigate();
+    const { logout } = useAuthStore();
     const [alerts, setAlerts] = useState(true);
     const [autoResponse, setAutoResponse] = useState(false);
 
@@ -92,7 +96,13 @@ const ProvideSettings = () => {
 
             {/* Sign Out */}
             <div className="pt-4 pb-8 text-center space-y-6">
-                <button className="w-full p-5 rounded-[2.5rem] bg-rose-50 dark:bg-rose-950/20 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 dark:border-rose-900/30 shadow-lg shadow-rose-500/5">
+                <button
+                    onClick={() => {
+                        logout();
+                        navigate("/");
+                    }}
+                    className="w-full p-5 rounded-[2.5rem] bg-rose-50 dark:bg-rose-950/20 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 dark:border-rose-900/30 shadow-lg shadow-rose-500/5"
+                >
                     <LogOut className="size-5" /> Sign Out Authority
                 </button>
                 <p className="text-[8px] font-black uppercase tracking-[0.5em] text-slate-300 dark:text-slate-700">Enterprise Edition v4.0.0</p>

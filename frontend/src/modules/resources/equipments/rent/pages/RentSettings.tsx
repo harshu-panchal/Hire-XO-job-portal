@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Bell, Shield, CreditCard, LifeBuoy, LogOut, ChevronRight, Moon, AlertTriangle } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 interface SettingItemProps {
     icon: any;
@@ -24,6 +26,8 @@ const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProp
 );
 
 const RentSettings = () => {
+    const navigate = useNavigate();
+    const { logout } = useAuthStore();
     const [notifications, setNotifications] = useState(true);
     const [darkMode, setDarkMode] = useState(false);
 
@@ -90,7 +94,13 @@ const RentSettings = () => {
 
             {/* Sign Out */}
             <div className="pt-4 pb-8">
-                <button className="w-full p-5 rounded-[2.5rem] bg-rose-50 dark:bg-rose-950/20 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 dark:border-rose-900/30 shadow-lg shadow-rose-500/5">
+                <button
+                    onClick={() => {
+                        logout();
+                        navigate("/");
+                    }}
+                    className="w-full p-5 rounded-[2.5rem] bg-rose-50 dark:bg-rose-950/20 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 dark:border-rose-900/30 shadow-lg shadow-rose-500/5"
+                >
                     <LogOut className="size-5" /> Deactivate Rental Mode
                 </button>
                 <div className="flex items-center justify-center gap-2 mt-6 opacity-30 cursor-default">

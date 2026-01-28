@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Bell, Shield, Eye, CreditCard, HelpCircle, LogOut, ChevronRight, Moon, Sun, Smartphone, Mail } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 interface SettingItemProps {
     icon: any;
@@ -24,6 +26,8 @@ const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProp
 );
 
 const ApplySettings = () => {
+    const navigate = useNavigate();
+    const { logout } = useAuthStore();
     const [darkMode, setDarkMode] = useState(false);
     const [tenderAlerts, setTenderAlerts] = useState(true);
 
@@ -99,7 +103,13 @@ const ApplySettings = () => {
 
             {/* Logout Footer */}
             <div className="pt-4 pb-8">
-                <button className="w-full p-5 rounded-[2rem] bg-rose-50 dark:bg-rose-950/20 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 dark:border-rose-900/30 shadow-lg shadow-rose-500/5">
+                <button
+                    onClick={() => {
+                        logout();
+                        navigate("/");
+                    }}
+                    className="w-full p-5 rounded-[2rem] bg-rose-50 dark:bg-rose-950/20 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 dark:border-rose-900/30 shadow-lg shadow-rose-500/5"
+                >
                     <LogOut className="size-5" /> Sign Out from Account
                 </button>
                 <p className="text-center mt-6 text-[8px] font-black uppercase tracking-widest text-slate-400">Version 2.4.0 (Stable Build)</p>

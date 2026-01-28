@@ -1,6 +1,10 @@
 import { Bell, Lock, Smartphone, Globe, Moon, HelpCircle, LogOut, ChevronRight } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const BrowseSettings = () => {
+    const navigate = useNavigate();
+    const { logout } = useAuthStore();
     return (
         <div className="py-6 space-y-10 select-none">
             {/* Header */}
@@ -108,7 +112,13 @@ const BrowseSettings = () => {
                 </div>
 
                 {/* Logout Button */}
-                <button className="w-full h-16 rounded-[2.5rem] bg-red-500/10 text-red-600 font-black text-[12px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-95 transition-transform border border-red-500/10 px-1 hover:bg-red-500 hover:text-white group">
+                <button
+                    onClick={() => {
+                        logout();
+                        navigate("/");
+                    }}
+                    className="w-full h-16 rounded-[2.5rem] bg-red-500/10 text-red-600 font-black text-[12px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-95 transition-transform border border-red-500/10 px-1 hover:bg-red-500 hover:text-white group"
+                >
                     <LogOut className="size-5 group-hover:-translate-x-1 transition-transform" />
                     Sign Out Account
                 </button>

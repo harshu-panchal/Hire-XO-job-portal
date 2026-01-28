@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, TrendingUp, FileText, Package, Cog, Truck, Car, HardHat, Building } from "lucide-react";
+import { ArrowLeft, TrendingUp, FileText, Package, Cog, Truck, Car, HardHat, Building, LogOut } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useAuthStore } from "@/store/useAuthStore";
 import type { ResourceCategory } from "@/types";
 
 const ResourceCategories = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, logout } = useAuthStore();
 
     const categories: Array<{
         id: ResourceCategory;
@@ -97,14 +99,30 @@ const ResourceCategories = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-background dark:via-slate-950 dark:to-background py-8 px-5">
             <div className="w-full max-w-[430px] mx-auto">
-                {/* Back Button */}
-                <button
-                    onClick={() => navigate("/")}
-                    className="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
-                >
-                    <ArrowLeft className="size-5" />
-                    <span className="font-semibold">Back</span>
-                </button>
+                <div className="flex items-center justify-between mb-6">
+                    {/* Back Button */}
+                    <button
+                        onClick={() => navigate("/")}
+                        className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                    >
+                        <ArrowLeft className="size-5" />
+                        <span className="font-semibold">Back to Roles</span>
+                    </button>
+
+                    {/* Logout Button */}
+                    {isAuthenticated && (
+                        <button
+                            onClick={() => {
+                                logout();
+                                navigate("/");
+                            }}
+                            className="flex items-center gap-2 text-red-500 hover:text-red-600 font-semibold transition-colors"
+                        >
+                            <LogOut className="size-4" />
+                            <span>Logout</span>
+                        </button>
+                    )}
+                </div>
 
                 {/* Header */}
                 <div className="text-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">

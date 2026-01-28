@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useAuthStore } from "./store/useAuthStore";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Layouts
@@ -192,27 +191,13 @@ import VehicleProvideProfile from "./modules/resources/vehicles/provide/pages/Pr
 import VehicleProvideSettings from "./modules/resources/vehicles/provide/pages/ProvideSettings";
 
 function App() {
-  const { isAuthenticated, user } = useAuthStore();
-
   return (
     <Router>
       <Routes>
         {/* Public Routes - Authentication */}
         <Route
           path="/"
-          element={
-            isAuthenticated && user ? (
-              user.role === "job-seeker" ? (
-                <Navigate to="/jobs" replace />
-              ) : user.role === "recruiter" ? (
-                <Navigate to="/recruiter" replace />
-              ) : (
-                <Navigate to="/resources/categories" replace />
-              )
-            ) : (
-              <RoleSelection />
-            )
-          }
+          element={<RoleSelection />}
         />
         <Route path="/login/:role" element={<Login />} />
         <Route path="/signup/job-seeker" element={<JobSeekerSignup />} />
@@ -271,7 +256,13 @@ function App() {
         </Route>
 
         {/* Protected Investor Browse Routes (Want to Invest) */}
-        <Route element={<BrowseLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <BrowseLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/investor/browse/dashboard" element={<BrowseDashboard />} />
           <Route path="/investor/browse/profile" element={<BrowseProfile />} />
           <Route path="/investor/browse/opportunities" element={<OpportunitiesList />} />
@@ -281,7 +272,13 @@ function App() {
         </Route>
 
         {/* Protected Investor Seek Routes (Want Investment) */}
-        <Route element={<SeekLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <SeekLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/investor/seek/dashboard" element={<SeekDashboard />} />
           <Route path="/investor/seek/post" element={<PostFundingNeed />} />
           <Route path="/investor/seek/my-requests" element={<MyFundingRequests />} />
@@ -290,7 +287,13 @@ function App() {
         </Route>
 
         {/* Protected Tender Apply Routes (Apply for Tenders) */}
-        <Route element={<ApplyLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <ApplyLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/tenders/apply/dashboard" element={<ApplyDashboard />} />
           <Route path="/tenders/apply/tenders" element={<TendersList />} />
           <Route path="/tenders/apply/tenders/:id" element={<TenderDetails />} />
@@ -300,7 +303,13 @@ function App() {
         </Route>
 
         {/* Protected Tender Provide Routes (Provide Tenders) */}
-        <Route element={<ProvideLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <ProvideLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/tenders/provide/dashboard" element={<ProvideDashboard />} />
           <Route path="/tenders/provide/post" element={<PostTender />} />
           <Route path="/tenders/provide/my-tenders" element={<MyTenders />} />
@@ -310,7 +319,13 @@ function App() {
         </Route>
 
         {/* Protected Equipment Rent Routes (Rent Gear) */}
-        <Route element={<RentLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <RentLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/equipments/rent/dashboard" element={<RentDashboard />} />
           <Route path="/equipments/rent/list" element={<EquipmentList />} />
           <Route path="/equipments/rent/equipment/:id" element={<EquipmentDetails />} />
@@ -320,7 +335,13 @@ function App() {
         </Route>
 
         {/* Protected Equipment Provide Routes (Lender Portal) */}
-        <Route element={<EquipmentProvideLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <EquipmentProvideLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/equipments/provide/dashboard" element={<EquipmentProvideDashboard />} />
           <Route path="/equipments/provide/post" element={<PostEquipment />} />
           <Route path="/equipments/provide/my-equipments" element={<MyEquipments />} />
@@ -330,7 +351,13 @@ function App() {
         </Route>
 
         {/* Protected Machinery Buy Routes (Marketplace) */}
-        <Route element={<BuyLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <BuyLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/machinery/buy/dashboard" element={<BuyDashboard />} />
           <Route path="/machinery/buy/list" element={<MachineryList />} />
           <Route path="/machinery/buy/item/:id" element={<MachineDetails />} />
@@ -340,7 +367,13 @@ function App() {
         </Route>
 
         {/* Protected Machinery Sell Routes (Seller Console) */}
-        <Route element={<SellLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <SellLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/machinery/sell/dashboard" element={<SellDashboard />} />
           <Route path="/machinery/sell/post" element={<PostMachine />} />
           <Route path="/machinery/sell/inventory" element={<MyMachinery />} />
@@ -350,7 +383,13 @@ function App() {
         </Route>
 
         {/* Protected PMC Browse Routes (Hire PMC) */}
-        <Route element={<PMCBrowseLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <PMCBrowseLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/pmc/browse/dashboard" element={<PMCBrowseDashboard />} />
           <Route path="/pmc/browse/consultants" element={<PMCConsultantList />} />
           <Route path="/pmc/browse/consultants/:id" element={<PMCConsultantDetails />} />
@@ -360,7 +399,13 @@ function App() {
         </Route>
 
         {/* Protected PMC Provide Routes (Offer PMC) */}
-        <Route element={<PMCProvideLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <PMCProvideLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/pmc/provide/dashboard" element={<PMCProvideDashboard />} />
           <Route path="/pmc/provide/post" element={<PMCPostService />} />
           <Route path="/pmc/provide/my-services" element={<PMCMyServices />} />
@@ -370,7 +415,13 @@ function App() {
         </Route>
 
         {/* Protected CSM Browse Routes (Hire CSM) */}
-        <Route element={<CSMBrowseLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <CSMBrowseLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/csm/browse/dashboard" element={<CSMBrowseDashboard />} />
           <Route path="/csm/browse/list" element={<CSMList />} />
           <Route path="/csm/browse/list/:id" element={<CSMDetails />} />
@@ -380,7 +431,13 @@ function App() {
         </Route>
 
         {/* Protected CSM Provide Routes (Offer CSM) */}
-        <Route element={<CSMProvideLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <CSMProvideLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/csm/provide/dashboard" element={<CSMProvideDashboard />} />
           <Route path="/csm/provide/post" element={<CSMPostService />} />
           <Route path="/csm/provide/my-services" element={<CSMMyServices />} />
@@ -390,7 +447,13 @@ function App() {
         </Route>
 
         {/* Protected Logistics Browse Routes (Hire Logistics) */}
-        <Route element={<LogisticsBrowseLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <LogisticsBrowseLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/logistics/browse/dashboard" element={<LogisticsBrowseDashboard />} />
           <Route path="/logistics/browse/list" element={<LogisticsList />} />
           <Route path="/logistics/browse/list/:id" element={<LogisticsDetails />} />
@@ -400,7 +463,13 @@ function App() {
         </Route>
 
         {/* Protected Logistics Provide Routes (Offer Logistics) */}
-        <Route element={<LogisticsProvideLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <LogisticsProvideLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/logistics/provide/dashboard" element={<LogisticsProvideDashboard />} />
           <Route path="/logistics/provide/post" element={<LogisticsPostService />} />
           <Route path="/logistics/provide/my-services" element={<LogisticsMyServices />} />
@@ -410,7 +479,13 @@ function App() {
         </Route>
 
         {/* Protected Vehicle Browse Routes (Hire Vehicle) */}
-        <Route element={<VehicleBrowseLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <VehicleBrowseLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/vehicles/browse/dashboard" element={<VehicleBrowseDashboard />} />
           <Route path="/vehicles/browse/list" element={<VehiclesList />} />
           <Route path="/vehicles/browse/list/:id" element={<VehicleDetails />} />
@@ -420,7 +495,13 @@ function App() {
         </Route>
 
         {/* Protected Vehicle Provide Routes (Offer Vehicle) */}
-        <Route element={<VehicleProvideLayout />}>
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]}>
+              <VehicleProvideLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/vehicles/provide/dashboard" element={<VehicleProvideDashboard />} />
           <Route path="/vehicles/provide/post" element={<VehiclePostService />} />
           <Route path="/vehicles/provide/my-vehicles" element={<MyVehicles />} />

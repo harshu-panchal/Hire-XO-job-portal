@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Bell, Shield, CreditCard, LifeBuoy, LogOut, ChevronRight, UserRoundPen, History, Zap } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 interface SettingItemProps {
     icon: any;
@@ -24,6 +26,8 @@ const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProp
 );
 
 const BuySettings = () => {
+    const navigate = useNavigate();
+    const { logout } = useAuthStore();
     const [alerts, setAlerts] = useState(true);
     const [highPriority, setHighPriority] = useState(false);
 
@@ -91,7 +95,13 @@ const BuySettings = () => {
 
             {/* Power Controls */}
             <div className="pt-4 pb-8 space-y-6">
-                <button className="w-full p-5 rounded-[2.5rem] bg-rose-50 dark:bg-rose-950/20 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 dark:border-rose-900/30 shadow-lg shadow-rose-500/5">
+                <button
+                    onClick={() => {
+                        logout();
+                        navigate("/");
+                    }}
+                    className="w-full p-5 rounded-[2.5rem] bg-rose-50 dark:bg-rose-950/20 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 dark:border-rose-900/30 shadow-lg shadow-rose-500/5"
+                >
                     <LogOut className="size-5" /> Deactivate Buyer Mode
                 </button>
                 <div className="text-center">

@@ -1,6 +1,10 @@
 import { Bell, Lock, Smartphone, Globe, LogOut, ChevronRight } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const ProvideSettings = () => {
+    const navigate = useNavigate();
+    const { logout } = useAuthStore();
     return (
         <div className="py-6 space-y-10 select-none">
             {/* Header */}
@@ -86,7 +90,13 @@ const ProvideSettings = () => {
 
                 {/* Danger Zone */}
                 <div className="pt-4">
-                    <button className="w-full h-20 rounded-[3rem] bg-rose-600/5 text-slate-400 font-black text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-[0.98] transition-all border border-slate-200 dark:border-white/10 hover:bg-red-500 hover:text-white hover:border-red-500 group">
+                    <button
+                        onClick={() => {
+                            logout();
+                            navigate("/");
+                        }}
+                        className="w-full h-20 rounded-[3rem] bg-rose-600/5 text-slate-400 font-black text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-[0.98] transition-all border border-slate-200 dark:border-white/10 hover:bg-red-500 hover:text-white hover:border-red-500 group"
+                    >
                         <LogOut className="size-5 group-hover:-translate-x-1 transition-transform" />
                         Exit Admin Console
                     </button>

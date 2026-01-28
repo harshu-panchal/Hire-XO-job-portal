@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Shield, CreditCard, LogOut, ChevronRight, UserRoundPen, History, Settings2, BarChart3, Globe } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 interface SettingItemProps {
     icon: any;
@@ -24,6 +26,8 @@ const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProp
 );
 
 const SellSettings = () => {
+    const navigate = useNavigate();
+    const { logout } = useAuthStore();
     const [presence, setPresence] = useState(true);
     const [analytics, setAnalytics] = useState(true);
 
@@ -91,7 +95,13 @@ const SellSettings = () => {
 
             {/* Power Controls */}
             <div className="pt-4 pb-8 space-y-6">
-                <button className="w-full p-5 rounded-[2rem] bg-rose-50 text-rose-600 font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 shadow-sm">
+                <button
+                    onClick={() => {
+                        logout();
+                        navigate("/");
+                    }}
+                    className="w-full p-5 rounded-[2rem] bg-rose-50 text-rose-600 font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 shadow-sm"
+                >
                     <LogOut className="size-5" /> Deactivate Seller ID
                 </button>
                 <div className="text-center">

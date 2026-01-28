@@ -6,19 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { UserRole } from "@/types";
+import { useEffect } from "react";
 
 const Login = () => {
     const navigate = useNavigate();
     const { role } = useParams<{ role: UserRole }>();
-    const { login, isLoading } = useAuthStore();
-
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-    });
-    const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState("");
-    const [focusedField, setFocusedField] = useState<string | null>(null);
+    const { login, isLoading, isAuthenticated, user } = useAuthStore();
 
     const roleConfig = {
         "job-seeker": {
@@ -49,6 +42,70 @@ const Login = () => {
 
     const config = roleConfig[role as UserRole] || roleConfig["job-seeker"];
 
+    const getResourceRedirectPath = (user: any) => {
+        if (user.role !== "resource") return config.redirectPath;
+
+        const profile = user.profile;
+        const category = profile.resourceCategory;
+
+        // Investor
+        if (category === "Investor") {
+            if (profile.investorType === "want-to-invest") return "/investor/browse/dashboard";
+            if (profile.investorType === "want-investment") return "/investor/seek/dashboard";
+        }
+        // Tenders
+        if (category === "Tenders") {
+            if (profile.tenderType === "provide-tenders") return "/tenders/provide/dashboard";
+            if (profile.tenderType === "apply-for-tenders") return "/tenders/apply/dashboard";
+        }
+        // Equipments
+        if (category === "Equipments") {
+            if (profile.equipmentType === "rent-out-equipment") return "/equipments/provide/dashboard";
+            if (profile.equipmentType === "rent-equipment") return "/equipments/rent/dashboard";
+        }
+        // Machinery
+        if (category === "Machinery") {
+            if (profile.machineryType === "provide-machinery") return "/machinery/sell/dashboard";
+            if (profile.machineryType === "need-machinery") return "/machinery/buy/dashboard";
+        }
+        // PMC
+        if (category === "PMC") {
+            if (profile.pmcType === "offer-pmc-services") return "/pmc/provide/dashboard";
+            if (profile.pmcType === "hire-pmc") return "/pmc/browse/dashboard";
+        }
+        // CSM
+        if (category === "CSM") {
+            if (profile.csmType === "offer-csm-services") return "/csm/provide/dashboard";
+            if (profile.csmType === "hire-csm") return "/csm/browse/dashboard";
+        }
+        // Logistics
+        if (category === "Logistics") {
+            if (profile.logisticsType === "provide-logistics") return "/logistics/provide/dashboard";
+            if (profile.logisticsType === "need-logistics") return "/logistics/browse/dashboard";
+        }
+        // Vehicles
+        if (category === "Vehicles") {
+            if (profile.vehicleType === "rent-out-vehicles") return "/vehicles/provide/dashboard";
+            if (profile.vehicleType === "rent-vehicles") return "/vehicles/browse/dashboard";
+        }
+
+        return "/resources/categories";
+    };
+
+    useEffect(() => {
+        if (isAuthenticated && user?.role === role) {
+            navigate(getResourceRedirectPath(user));
+        }
+    }, [isAuthenticated, user, role, navigate]);
+
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+    });
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
+    const [focusedField, setFocusedField] = useState<string | null>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
@@ -64,7 +121,13 @@ const Login = () => {
                 password: formData.password,
                 role: role as UserRole,
             });
-            navigate(config.redirectPath);
+
+            // Redirect based on user profile/role
+            if (role === "resource") {
+                navigate(getResourceRedirectPath(useAuthStore.getState().user));
+            } else {
+                navigate(config.redirectPath);
+            }
         } catch (err) {
             setError("Invalid email or password");
         }
