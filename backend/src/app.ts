@@ -1,5 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import path from 'path';
 import authRoutes from './routes/auth.routes';
 import jobRoutes from './routes/job.routes';
 import recruiterRoutes from './routes/recruiter.routes';
@@ -15,12 +18,29 @@ import uploadRoutes from './routes/upload.routes';
 import applicationRoutes from './routes/application.routes';
 import subscriptionRoutes from './routes/subscription.routes';
 import certificateRoutes from './routes/certificate.routes';
-import path from 'path';
+import userRoutes from './routes/user.routes';
+import resourceRoutes from './routes/resource.routes';
+import { errorHandler } from './middlewares/error.middleware';
+
+
 
 const app = express();
 
+// Security Middleware
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+// Rate Limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+    standardHeaders: 'draft-7', // set `RateLimit` and `RateLimit-Policy` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+    message: { message: 'Too many requests from this IP, please try again after 15 minutes' }
+});
+
+app.use('/api/', limiter);
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -38,12 +58,19 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/certificates', certificateRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/resources', resourceRoutes);
 
 // Serve static files from uploads directory
+
+
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.get('/', (req, res) => {
     res.send('Backend API is running');
 });
+
+// Global Error Handler (Must be last)
+app.use(errorHandler);
 
 export default app;

@@ -54,4 +54,12 @@ const ResourceProfileSchema: Schema = new Schema({
     tenderCategory: [{ type: String }],
 }, { timestamps: true });
 
+// Indexes for performance optimization
+ResourceProfileSchema.index({ category: 1 });
+ResourceProfileSchema.index({ organizationName: 1 });
+ResourceProfileSchema.index({ userId: 1 });
+ResourceProfileSchema.index({ location: 1 });
+
+
+
 export default mongoose.model<IResourceProfile>('ResourceProfile', ResourceProfileSchema);

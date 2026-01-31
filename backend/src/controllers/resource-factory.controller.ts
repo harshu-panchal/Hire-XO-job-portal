@@ -61,16 +61,18 @@ export class ResourceFactoryController<T extends Document> {
                 query.category = req.query.category;
             }
 
-            // Salary range filtering (for jobs)
+            // Salary range filtering (for jobs/resources)
             if (req.query.minSalary || req.query.maxSalary) {
-                // Note: This is a simple implementation. For production, you'd want to parse salary strings
-                if (req.query.minSalary) {
-                    query.salary = { $gte: req.query.minSalary };
-                }
-                if (req.query.maxSalary) {
-                    query.salary = { ...query.salary, $lte: req.query.maxSalary };
+                const min = req.query.minSalary ? Number(req.query.minSalary) : undefined;
+                const max = req.query.maxSalary ? Number(req.query.maxSalary) : undefined;
+
+                if ((min && !isNaN(min)) || (max && !isNaN(max))) {
+                    query.salary = {};
+                    if (min && !isNaN(min)) query.salary.$gte = min;
+                    if (max && !isNaN(max)) query.salary.$lte = max;
                 }
             }
+
 
             // Sorting
             let sortOption: any = { createdAt: -1 }; // Default: newest first

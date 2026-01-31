@@ -11,6 +11,7 @@ export interface IUser extends Document {
     walletBalance?: number;
     activeSubscriptionId?: string;
     subscriptionExpiry?: Date;
+    bookmarks: mongoose.Types.ObjectId[];
     createdAt: Date;
 }
 
@@ -25,6 +26,7 @@ const UserSchema: Schema = new Schema({
     walletBalance: { type: Number, default: 0 },
     activeSubscriptionId: { type: String },
     subscriptionExpiry: { type: Date },
+    bookmarks: [{ type: Schema.Types.ObjectId, default: [] }],
 }, { timestamps: true });
 
 export default mongoose.model<IUser>('User', UserSchema);

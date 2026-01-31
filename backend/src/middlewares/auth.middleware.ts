@@ -67,3 +67,32 @@ export const requireRole = (...allowedRoles: string[]) => {
         next();
     };
 };
+
+/**
+ * Subscription Enforcement Middleware (Soft Mode / Dry Run)
+ * Checks if subscription is active but does NOT block the request.
+ * Adds subscription status to the request object or logs it.
+ */
+export const checkSubscription = (req: AuthRequest, res: Response, next: NextFunction): void => {
+    if (!req.user) {
+        next();
+        return;
+    }
+
+    // This is where we would check the database for subscription status
+    // For now, we only proceed as this is 'dry-run' mode
+    // logic to check expiry would go here:
+    /*
+    const now = new Date();
+    if (!req.user.subscriptionExpiry || new Date(req.user.subscriptionExpiry) < now) {
+         console.warn(`[Soft Block] User ${req.user.id} has expired subscription.`);
+         // In strict mode: return res.status(403).json({ code: 'SUBSCRIPTION_EXPIRED', ... });
+    }
+    */
+
+    // In soft mode, we can attach status metadata for controllers if they want to use it
+    // (req as any).subscriptionStatus = 'expired'; // Example
+
+    next();
+};
+

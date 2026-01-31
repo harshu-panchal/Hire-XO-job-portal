@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { FileUploadUtil } from '../utils/file-upload';
+import { CloudinaryUtil } from '../utils/cloudinary';
 
 export class UploadController {
     public uploadProfilePhoto = async (req: Request, res: Response): Promise<void> => {
@@ -9,13 +9,19 @@ export class UploadController {
                 return;
             }
 
-            const fileUrl = FileUploadUtil.getFileUrl(req.file.filename, 'profile-photo');
+            // Upload to Cloudinary
+            const result = await CloudinaryUtil.uploadFile(req.file.path, 'profile-photos');
+
+            if (!result) {
+                res.status(500).json({ message: 'Cloudinary upload failed' });
+                return;
+            }
 
             res.status(200).json({
                 message: 'Profile photo uploaded successfully',
                 filename: req.file.filename,
-                url: fileUrl,
-                path: req.file.path
+                url: result.url,
+                public_id: result.public_id
             });
         } catch (error: any) {
             res.status(500).json({ message: 'Upload failed', error: error.message });
@@ -29,13 +35,19 @@ export class UploadController {
                 return;
             }
 
-            const fileUrl = FileUploadUtil.getFileUrl(req.file.filename, 'cv');
+            // Upload to Cloudinary
+            const result = await CloudinaryUtil.uploadFile(req.file.path, 'cvs');
+
+            if (!result) {
+                res.status(500).json({ message: 'Cloudinary upload failed' });
+                return;
+            }
 
             res.status(200).json({
                 message: 'CV uploaded successfully',
                 filename: req.file.filename,
-                url: fileUrl,
-                path: req.file.path
+                url: result.url,
+                public_id: result.public_id
             });
         } catch (error: any) {
             res.status(500).json({ message: 'Upload failed', error: error.message });
@@ -49,13 +61,19 @@ export class UploadController {
                 return;
             }
 
-            const fileUrl = FileUploadUtil.getFileUrl(req.file.filename, 'company-logo');
+            // Upload to Cloudinary
+            const result = await CloudinaryUtil.uploadFile(req.file.path, 'company-logos');
+
+            if (!result) {
+                res.status(500).json({ message: 'Cloudinary upload failed' });
+                return;
+            }
 
             res.status(200).json({
                 message: 'Company logo uploaded successfully',
                 filename: req.file.filename,
-                url: fileUrl,
-                path: req.file.path
+                url: result.url,
+                public_id: result.public_id
             });
         } catch (error: any) {
             res.status(500).json({ message: 'Upload failed', error: error.message });

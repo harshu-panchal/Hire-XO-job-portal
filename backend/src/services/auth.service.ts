@@ -79,16 +79,23 @@ export class AuthService {
             user: {
                 ...userResponse,
                 id: newUser._id,
+                // Flattened profile fields
+                ...(profile?.toObject() || {}),
+                // Helper fields from user model
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role,
+                // Preserved nested profile for backward compatibility
                 profile: {
                     ...profile?.toObject(),
                     id: profile?._id,
-                    // Merge common fields expected by frontend
                     name: newUser.name,
                     email: newUser.email,
                     role: newUser.role,
                 }
             }
         };
+
     }
 
     public async login(credentials: any) {
@@ -137,7 +144,16 @@ export class AuthService {
             }
         };
 
-        return { token, user: unifiedUser };
+        return {
+            token,
+            user: {
+                ...unifiedUser,
+                // Flattened profile fields
+                ...(profile?.toObject() || {}),
+                profile: unifiedUser.profile // Ensure nested profile is kept
+            }
+        };
+
     }
 
     public async getCurrentUser(userId: string) {
@@ -161,6 +177,8 @@ export class AuthService {
         return {
             ...userResponse,
             id: user._id,
+            // Flattened profile fields
+            ...(profile?.toObject() || {}),
             profile: {
                 ...profile?.toObject() || {},
                 id: profile?._id,
@@ -172,6 +190,7 @@ export class AuthService {
                 subscriptionExpiry: user.subscriptionExpiry,
             }
         };
+
     }
 
     public async updateProfile(userId: string, updateData: any) {

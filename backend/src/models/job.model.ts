@@ -31,4 +31,11 @@ const JobSchema: Schema = new Schema({
     category: { type: String, required: true },
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
+// Indexes for performance optimization
+JobSchema.index({ location: 1 });
+JobSchema.index({ type: 1 });
+JobSchema.index({ category: 1 });
+JobSchema.index({ userId: 1 });
+
+
 export default mongoose.model<IJob>('Job', JobSchema);

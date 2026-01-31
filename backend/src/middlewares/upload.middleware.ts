@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 // Create upload directories if they don't exist
-const uploadDirs = ['uploads/profile-photos', 'uploads/cvs', 'uploads/company-logos'];
+const uploadDirs = ['uploads/tmp'];
 uploadDirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
@@ -13,17 +13,7 @@ uploadDirs.forEach(dir => {
 // Storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        let uploadPath = 'uploads/';
-
-        if (file.fieldname === 'profilePhoto') {
-            uploadPath += 'profile-photos';
-        } else if (file.fieldname === 'cv') {
-            uploadPath += 'cvs';
-        } else if (file.fieldname === 'companyLogo') {
-            uploadPath += 'company-logos';
-        }
-
-        cb(null, uploadPath);
+        cb(null, 'uploads/tmp');
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
