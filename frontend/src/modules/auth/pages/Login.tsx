@@ -38,6 +38,14 @@ const Login = () => {
             accent: "from-emerald-500 to-teal-600",
             iconBg: "bg-emerald-500/10 text-emerald-600"
         },
+        admin: {
+            title: "Admin Panel",
+            subtitle: "Accessing high-level control systems.",
+            signupPath: "/signup/admin", // Usually admins don't signup here but for consistency
+            redirectPath: "/admin",
+            accent: "from-red-500 to-rose-700",
+            iconBg: "bg-red-500/10 text-red-600"
+        },
     };
 
     const config = roleConfig[role as UserRole] || roleConfig["job-seeker"];
