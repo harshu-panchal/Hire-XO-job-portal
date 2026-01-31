@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Layouts
 import JobSeekerLayout from "./layouts/JobSeekerLayout";
 import RecruiterLayout from "./layouts/RecruiterLayout";
+import AdminLayout from "./layouts/AdminLayout";
 
 // Auth Pages
 import RoleSelection from "./modules/auth/pages/RoleSelection";
@@ -47,6 +48,24 @@ import RecruiterSecurity from "./modules/recruiter/pages/RecruiterSecurity";
 
 // Other Pages
 import StyleGuide from "./modules/resources/pages/StyleGuide";
+
+// Admin Pages
+import AdminDashboard from "./modules/admin/pages/Dashboard";
+import Recruiters from "./modules/admin/pages/Recruiters";
+import JobSeekerPlans from "./modules/admin/pages/JobSeekerPlans";
+import RecruiterPlans from "./modules/admin/pages/RecruiterPlans";
+import Payments from "./modules/admin/pages/Payments";
+import AdminCertificates from "./modules/admin/pages/Certificates";
+import AdminReports from "./modules/admin/pages/Reports";
+import AdminSettings from "./modules/admin/pages/Settings";
+import AdminInvestors from "./modules/admin/pages/resources/Investors";
+import AdminTenders from "./modules/admin/pages/resources/Tenders";
+import AdminPMC from "./modules/admin/pages/resources/PMC";
+import AdminMachinery from "./modules/admin/pages/resources/Machinery";
+import AdminCSM from "./modules/admin/pages/resources/CSM";
+import AdminLogistics from "./modules/admin/pages/resources/Logistics";
+import AdminVehicles from "./modules/admin/pages/resources/Vehicles";
+import AdminEquipments from "./modules/admin/pages/resources/Equipments";
 
 // Investor Browse App (Want to Invest)
 import BrowseLayout from "./modules/resources/investor/browse/layouts/BrowseLayout";
@@ -508,6 +527,32 @@ function App() {
           <Route path="/vehicles/provide/inquiries" element={<VehicleInquiries />} />
           <Route path="/vehicles/provide/profile" element={<VehicleProvideProfile />} />
           <Route path="/vehicles/provide/settings" element={<VehicleProvideSettings />} />
+        </Route>
+
+        {/* Protected Admin Routes */}
+        <Route
+          element={
+            <AdminLayout />
+          }
+        >
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/recruiters" element={<Recruiters />} />
+          <Route path="/admin/job-seeker-plans" element={<JobSeekerPlans />} />
+          <Route path="/admin/recruiter-plans" element={<RecruiterPlans />} />
+          <Route path="/admin/payments" element={<Payments />} />
+          <Route path="/admin/certificates" element={<AdminCertificates />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+
+          {/* Resource Management Routes */}
+          <Route path="/admin/resources/investors" element={<AdminInvestors />} />
+          <Route path="/admin/resources/tenders" element={<AdminTenders />} />
+          <Route path="/admin/resources/pmc" element={<AdminPMC />} />
+          <Route path="/admin/resources/machinery" element={<AdminMachinery />} />
+          <Route path="/admin/resources/csm" element={<AdminCSM />} />
+          <Route path="/admin/resources/logistics" element={<AdminLogistics />} />
+          <Route path="/admin/resources/vehicles" element={<AdminVehicles />} />
+          <Route path="/admin/resources/equipments" element={<AdminEquipments />} />
         </Route>
 
         {/* Fallback */}

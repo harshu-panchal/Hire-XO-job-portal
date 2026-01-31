@@ -38,7 +38,7 @@ export interface UserProfile {
   id: string;
   name: string;
   email: string;
-  role: "job-seeker" | "recruiter" | "resource";
+  role: "job-seeker" | "recruiter" | "resource" | "admin";
   interviewSuccessRate: number;
   activeSubscriptionId?: string;
   walletBalance?: number;
@@ -116,7 +116,7 @@ export interface ResourceApplication {
 }
 
 // Authentication Types
-export type UserRole = "job-seeker" | "recruiter" | "resource";
+export type UserRole = "job-seeker" | "recruiter" | "resource" | "admin";
 
 export interface LoginCredentials {
   email: string;

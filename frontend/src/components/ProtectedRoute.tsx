@@ -23,6 +23,8 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
             return <Navigate to="/recruiter" replace />;
         } else if (user.role === "resource") {
             return <Navigate to="/resources/categories" replace />;
+        } else if (user.role === "admin") {
+            return <Navigate to="/admin" replace />;
         }
     }
 
