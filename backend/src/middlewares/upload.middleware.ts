@@ -23,14 +23,14 @@ const storage = multer.diskStorage({
 
 // File filter for validation
 const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    const allowedImageTypes = /jpeg|jpg|png|gif/;
+    const allowedImageTypes = /jpeg|jpg|png|gif|webp/;
     const allowedDocTypes = /pdf|doc|docx/;
 
     const extname = path.extname(file.originalname).toLowerCase();
     const mimetype = file.mimetype;
 
-    if (file.fieldname === 'cv') {
-        // CV: Accept PDFs and Word docs
+    if (file.fieldname === 'cv' || file.fieldname === 'certificate') {
+        // CV and Certificates: Accept PDFs and Word docs
         if (allowedDocTypes.test(extname) && (
             mimetype === 'application/pdf' ||
             mimetype === 'application/msword' ||
@@ -38,14 +38,14 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
         )) {
             cb(null, true);
         } else {
-            cb(new Error('Only PDF and Word documents are allowed for CV'));
+            cb(new Error('Only PDF and Word documents are allowed for documents'));
         }
     } else {
         // Profile photo and company logo: Accept images only
         if (allowedImageTypes.test(extname) && mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
-            cb(new Error('Only image files are allowed'));
+            cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed'));
         }
     }
 };
@@ -55,7 +55,7 @@ export const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit
+        fileSize: 10 * 1024 * 1024 // 10MB limit (increased for documents)
     }
 });
 
@@ -63,8 +63,10 @@ export const upload = multer({
 export const uploadProfilePhoto = upload.single('profilePhoto');
 export const uploadCV = upload.single('cv');
 export const uploadCompanyLogo = upload.single('companyLogo');
+export const uploadCertificate = upload.single('certificate');
 export const uploadMultiple = upload.fields([
     { name: 'profilePhoto', maxCount: 1 },
     { name: 'cv', maxCount: 1 },
-    { name: 'companyLogo', maxCount: 1 }
+    { name: 'companyLogo', maxCount: 1 },
+    { name: 'certificate', maxCount: 1 }
 ]);

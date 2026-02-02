@@ -123,4 +123,110 @@ export class CertificateController {
             res.status(404).json({ message: error.message || 'Failed to delete certificate' });
         }
     };
+
+    // ========== ADMIN ONLY METHODS ==========
+
+    /**
+     * Get all certificates with optional status filter (Admin only)
+     * GET /api/admin/certificates?status=pending
+     */
+    public getAllCertificates = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const { status, page = '1', limit = '20' } = req.query;
+
+            const query: any = {};
+            if (status && ['pending', 'approved', 'rejected'].includes(status as string)) {
+                query.verificationStatus = status;
+            }
+
+            const pageNum = parseInt(page as string);
+            const limitNum = parseInt(limit as string);
+            const skip = (pageNum - 1) * limitNum;
+
+            const certificates = await this.certificateService.getAllCertificates(query, skip, limitNum);
+            const total = await this.certificateService.countCertificates(query);
+
+            res.status(200).json({
+                success: true,
+                data: certificates,
+                pagination: {
+                    page: pageNum,
+                    limit: limitNum,
+                    total,
+                    pages: Math.ceil(total / limitNum)
+                }
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: error.message || 'Failed to fetch certificates'
+            });
+        }
+    };
+
+    /**
+     * Approve a certificate (Admin only)
+     * PATCH /api/admin/certificates/:id/approve
+     */
+    public approveCertificate = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const adminId = req.user?.id;
+            if (!adminId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const { id } = req.params;
+            const certificate = await this.certificateService.approveCertificate(id, adminId);
+
+            res.status(200).json({
+                success: true,
+                message: 'Certificate approved successfully',
+                data: certificate
+            });
+        } catch (error: any) {
+            res.status(400).json({
+                success: false,
+                message: error.message || 'Failed to approve certificate'
+            });
+        }
+    };
+
+    /**
+     * Reject a certificate (Admin only)
+     * PATCH /api/admin/certificates/:id/reject
+     */
+    public rejectCertificate = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const adminId = req.user?.id;
+            if (!adminId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const { id } = req.params;
+            const { reason } = req.body;
+
+            if (!reason) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Rejection reason is required'
+                });
+                return;
+            }
+
+            const certificate = await this.certificateService.rejectCertificate(id, adminId, reason);
+
+            res.status(200).json({
+                success: true,
+                message: 'Certificate rejected',
+                data: certificate
+            });
+        } catch (error: any) {
+            res.status(400).json({
+                success: false,
+                message: error.message || 'Failed to reject certificate'
+            });
+        }
+    };
 }

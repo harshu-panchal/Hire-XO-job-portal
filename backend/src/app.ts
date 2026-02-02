@@ -20,6 +20,7 @@ import subscriptionRoutes from './routes/subscription.routes';
 import certificateRoutes from './routes/certificate.routes';
 import userRoutes from './routes/user.routes';
 import resourceRoutes from './routes/resource.routes';
+import adminRoutes from './routes/admin.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 
@@ -60,6 +61,7 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resources', resourceRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Serve static files from uploads directory
 

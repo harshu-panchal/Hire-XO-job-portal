@@ -89,4 +89,89 @@ export class SubscriptionController {
             res.status(404).json({ message: error.message || 'Failed to check status' });
         }
     };
+
+    // ========== ADMIN ONLY METHODS ==========
+
+    /**
+     * Create a new subscription plan (Admin only)
+     * POST /api/admin/plans
+     */
+    public createPlan = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const { name, price, durationDays, description, features } = req.body;
+
+            if (!name || !price || !durationDays || !description) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Name, price, durationDays, and description are required'
+                });
+                return;
+            }
+
+            const plan = await this.subscriptionService.createPlan({
+                name,
+                price,
+                durationDays,
+                description,
+                features: features || []
+            });
+
+            res.status(201).json({
+                success: true,
+                message: 'Subscription plan created successfully',
+                data: plan
+            });
+        } catch (error: any) {
+            res.status(400).json({
+                success: false,
+                message: error.message || 'Failed to create plan'
+            });
+        }
+    };
+
+    /**
+     * Update a subscription plan (Admin only)
+     * PUT /api/admin/plans/:id
+     */
+    public updatePlan = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const { id } = req.params;
+            const updateData = req.body;
+
+            const plan = await this.subscriptionService.updatePlan(id, updateData);
+
+            res.status(200).json({
+                success: true,
+                message: 'Subscription plan updated successfully',
+                data: plan
+            });
+        } catch (error: any) {
+            res.status(400).json({
+                success: false,
+                message: error.message || 'Failed to update plan'
+            });
+        }
+    };
+
+    /**
+     * Delete a subscription plan (Admin only - soft delete)
+     * DELETE /api/admin/plans/:id
+     */
+    public deletePlan = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const { id } = req.params;
+
+            await this.subscriptionService.deletePlan(id);
+
+            res.status(200).json({
+                success: true,
+                message: 'Subscription plan deleted successfully'
+            });
+        } catch (error: any) {
+            res.status(400).json({
+                success: false,
+                message: error.message || 'Failed to delete plan'
+            });
+        }
+    };
 }

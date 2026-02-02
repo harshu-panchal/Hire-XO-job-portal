@@ -116,4 +116,45 @@ export class SubscriptionService {
             message: isActive ? 'Subscription is active' : 'Subscription has expired'
         };
     }
+
+    // ========== ADMIN ONLY METHODS ==========
+
+    // Create new subscription plan
+    public async createPlan(planData: any) {
+        const existingPlan = await SubscriptionPlan.findOne({ name: planData.name });
+        if (existingPlan) {
+            throw new Error('A plan with this name already exists');
+        }
+
+        const plan = await SubscriptionPlan.create(planData);
+        return plan;
+    }
+
+    // Update subscription plan
+    public async updatePlan(planId: string, updateData: any) {
+        const plan = await SubscriptionPlan.findById(planId);
+        if (!plan) {
+            throw new Error('Subscription plan not found');
+        }
+
+        const updatedPlan = await SubscriptionPlan.findByIdAndUpdate(
+            planId,
+            updateData,
+            { new: true, runValidators: true }
+        );
+
+        return updatedPlan;
+    }
+
+    // Delete subscription plan (soft delete)
+    public async deletePlan(planId: string) {
+        const plan = await SubscriptionPlan.findById(planId);
+        if (!plan) {
+            throw new Error('Subscription plan not found');
+        }
+
+        // Soft delete by setting isActive to false
+        await SubscriptionPlan.findByIdAndUpdate(planId, { isActive: false });
+        return { message: 'Plan deleted successfully' };
+    }
 }

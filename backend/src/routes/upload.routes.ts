@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { UploadController } from '../controllers/upload.controller';
-import { uploadProfilePhoto, uploadCV, uploadCompanyLogo } from '../middlewares/upload.middleware';
+import { uploadProfilePhoto, uploadCV, uploadCompanyLogo, uploadCertificate } from '../middlewares/upload.middleware';
 import { authenticateToken } from '../middlewares/auth.middleware';
 
 const router = Router();
@@ -10,5 +10,6 @@ const uploadController = new UploadController();
 router.post('/profile-photo', authenticateToken, uploadProfilePhoto, uploadController.uploadProfilePhoto);
 router.post('/cv', authenticateToken, uploadCV, uploadController.uploadCV);
 router.post('/company-logo', authenticateToken, uploadCompanyLogo, uploadController.uploadCompanyLogo);
+router.post('/certificate', authenticateToken, uploadCertificate, uploadController.uploadCertificate);
 
 export default router;

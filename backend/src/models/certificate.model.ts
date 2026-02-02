@@ -7,6 +7,11 @@ export interface ICertificate extends Document {
     expiryDate: Date;
     successRate: number;
     status: 'Active' | 'Expired';
+    verificationStatus: 'pending' | 'approved' | 'rejected';
+    rejectionReason?: string;
+    verifiedBy?: mongoose.Types.ObjectId;
+    verifiedAt?: Date;
+    documentUrl?: string;
 }
 
 const CertificateSchema: Schema = new Schema({
@@ -19,7 +24,16 @@ const CertificateSchema: Schema = new Schema({
         type: String,
         enum: ['Active', 'Expired'],
         default: 'Active'
-    }
+    },
+    verificationStatus: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
+    },
+    rejectionReason: { type: String },
+    verifiedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    verifiedAt: { type: Date },
+    documentUrl: { type: String }
 }, { timestamps: true });
 
 // Index for efficient queries

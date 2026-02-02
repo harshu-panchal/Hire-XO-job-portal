@@ -118,4 +118,58 @@ export class CertificateService {
 
         return { message: 'Certificate deleted successfully' };
     }
+
+    // ========== ADMIN ONLY METHODS ==========
+
+    // Get all certificates (admin)
+    public async getAllCertificates(query: any, skip: number, limit: number) {
+        const certificates = await Certificate.find(query)
+            .populate('userId', 'name email')
+            .populate('verifiedBy', 'name')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+        return certificates;
+    }
+
+    // Count certificates (admin)
+    public async countCertificates(query: any) {
+        return await Certificate.countDocuments(query);
+    }
+
+    // Approve certificate (admin)
+    public async approveCertificate(certificateId: string, adminId: string) {
+        const certificate = await Certificate.findById(certificateId);
+        if (!certificate) {
+            throw new Error('Certificate not found');
+        }
+
+        if (certificate.verificationStatus === 'approved') {
+            throw new Error('Certificate is already approved');
+        }
+
+        certificate.verificationStatus = 'approved';
+        certificate.verifiedBy = adminId as any;
+        certificate.verifiedAt = new Date();
+        certificate.rejectionReason = undefined;
+
+        await certificate.save();
+        return certificate;
+    }
+
+    // Reject certificate (admin)
+    public async rejectCertificate(certificateId: string, adminId: string, reason: string) {
+        const certificate = await Certificate.findById(certificateId);
+        if (!certificate) {
+            throw new Error('Certificate not found');
+        }
+
+        certificate.verificationStatus = 'rejected';
+        certificate.verifiedBy = adminId as any;
+        certificate.verifiedAt = new Date();
+        certificate.rejectionReason = reason;
+
+        await certificate.save();
+        return certificate;
+    }
 }
