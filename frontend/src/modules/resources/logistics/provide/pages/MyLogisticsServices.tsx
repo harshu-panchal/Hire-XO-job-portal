@@ -1,7 +1,11 @@
-import { Eye, MessageSquare, MoreVertical, Edit3, Trash2, Truck } from "lucide-react";
+import { Eye, MessageSquare, MoreVertical, Edit3, Trash2, Truck, Plus } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const MyLogisticsServices = () => {
-    const services = [
+    const navigate = useNavigate();
+    const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+    const [services, setServices] = useState([
         {
             id: 1,
             title: "Pan-India Express Heavy Haulage",
@@ -20,7 +24,28 @@ const MyLogisticsServices = () => {
             status: "Active",
             postedDate: "Jan 20, 2026",
         },
-    ];
+    ]);
+
+    const handleEdit = (serviceId: number) => {
+        alert(`Edit functionality for service #${serviceId} coming soon! You'll be able to update pricing, availability, and service details.`);
+        setOpenMenuId(null);
+    };
+
+    const handleDelete = (serviceId: number) => {
+        if (confirm("Are you sure you want to delete this service listing? This action cannot be undone.")) {
+            setServices(services.filter(s => s.id !== serviceId));
+            alert("Service listing deleted successfully!");
+        }
+        setOpenMenuId(null);
+    };
+
+    const handlePostNew = () => {
+        navigate("/logistics/provide/post-service");
+    };
+
+    const toggleMenu = (serviceId: number) => {
+        setOpenMenuId(openMenuId === serviceId ? null : serviceId);
+    };
 
     return (
         <div className="py-6 space-y-8 select-none">
@@ -51,9 +76,38 @@ const MyLogisticsServices = () => {
                                     {service.status}
                                 </div>
                             </div>
-                            <button className="size-10 rounded-full hover:bg-slate-50 dark:hover:bg-white/5 flex items-center justify-center text-slate-400 transition-colors">
-                                <MoreVertical className="size-5" />
-                            </button>
+                            <div className="relative">
+                                <button
+                                    onClick={() => toggleMenu(service.id)}
+                                    className="size-10 rounded-full hover:bg-slate-50 dark:hover:bg-white/5 flex items-center justify-center text-slate-400 transition-colors active:scale-90"
+                                >
+                                    <MoreVertical className="size-5" />
+                                </button>
+                                {openMenuId === service.id && (
+                                    <>
+                                        <div
+                                            className="fixed inset-0 z-10"
+                                            onClick={() => setOpenMenuId(null)}
+                                        />
+                                        <div className="absolute right-0 top-12 z-20 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-white/10 overflow-hidden">
+                                            <button
+                                                onClick={() => handleEdit(service.id)}
+                                                className="w-full px-4 py-3 text-left text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
+                                            >
+                                                <Edit3 className="size-4" />
+                                                Edit Service
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(service.id)}
+                                                className="w-full px-4 py-3 text-left text-sm font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors flex items-center gap-2"
+                                            >
+                                                <Trash2 className="size-4" />
+                                                Delete Service
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </div>
 
                         <h3 className="font-black text-lg tracking-tight mb-2 leading-tight">
@@ -88,11 +142,17 @@ const MyLogisticsServices = () => {
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
-                            <button className="h-12 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                            <button
+                                onClick={() => handleEdit(service.id)}
+                                className="h-12 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                            >
                                 <Edit3 className="size-3.5" />
                                 Edit Listing
                             </button>
-                            <button className="h-12 rounded-2xl bg-red-500/10 text-red-600 border border-red-500/10 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                            <button
+                                onClick={() => handleDelete(service.id)}
+                                className="h-12 rounded-2xl bg-red-500/10 text-red-600 border border-red-500/10 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                            >
                                 <Trash2 className="size-3.5" />
                                 Delete
                             </button>
@@ -102,8 +162,10 @@ const MyLogisticsServices = () => {
             </div>
 
             <button
+                onClick={handlePostNew}
                 className="w-full h-16 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/10 flex items-center justify-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-orange-600 hover:text-orange-600 transition-all active:scale-[0.98]"
             >
+                <Plus className="size-5" />
                 Post New Fleet Offering
             </button>
         </div>

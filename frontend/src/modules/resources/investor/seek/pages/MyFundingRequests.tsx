@@ -1,7 +1,17 @@
-import { Eye, Edit2, Trash2, MoreVertical, TrendingUp, MessageSquare, Calendar } from "lucide-react";
+import { useState } from "react";
+import { Eye, Edit2, Trash2, MoreVertical, TrendingUp, MessageSquare, Calendar, X, Search, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const MyFundingRequests = () => {
-    const requests = [
+    const navigate = useNavigate();
+    const [activeFilter, setActiveFilter] = useState("All");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedRequest, setSelectedRequest] = useState<any>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [requestToDelete, setRequestToDelete] = useState<any>(null);
+    const [showViewModal, setShowViewModal] = useState(false);
+
+    const [allRequests, setAllRequests] = useState([
         {
             id: 1,
             title: "AI-Powered SaaS Platform Expansion",
@@ -16,6 +26,7 @@ const MyFundingRequests = () => {
             views: 245,
             inquiries: 8,
             description: "Looking for strategic investment to scale our AI-driven customer analytics platform...",
+            fullDescription: "We are seeking strategic investment to scale our AI-driven customer analytics platform. Our platform uses advanced machine learning algorithms to provide real-time insights into customer behavior, helping businesses optimize their marketing strategies and improve customer retention. We have already secured partnerships with 50+ enterprise clients and are looking to expand our operations across Asia-Pacific markets.",
         },
         {
             id: 2,
@@ -31,6 +42,7 @@ const MyFundingRequests = () => {
             views: 189,
             inquiries: 12,
             description: "Establishing state-of-the-art solar panel manufacturing facility...",
+            fullDescription: "We are establishing a state-of-the-art solar panel manufacturing facility with cutting-edge technology. The facility will have a production capacity of 500MW annually and will focus on high-efficiency monocrystalline panels. We have secured land and preliminary approvals, and are now seeking investment to complete the setup and begin operations.",
         },
         {
             id: 3,
@@ -46,6 +58,7 @@ const MyFundingRequests = () => {
             views: 312,
             inquiries: 15,
             description: "Building comprehensive telemedicine platform connecting patients with specialists...",
+            fullDescription: "Building a comprehensive telemedicine platform that connects patients with medical specialists across India. The platform will feature AI-powered symptom analysis, instant doctor consultations, prescription management, and integration with diagnostic labs. We have already onboarded 200+ doctors and are ready to launch in 15 cities.",
         },
         {
             id: 4,
@@ -61,14 +74,46 @@ const MyFundingRequests = () => {
             views: 156,
             inquiries: 6,
             description: "Expanding our e-commerce platform to tier-2 and tier-3 cities...",
+            fullDescription: "Expanding our successful e-commerce platform to tier-2 and tier-3 cities across India. We have achieved profitability in metro cities and now want to tap into the growing market in smaller cities. The funding will be used for logistics infrastructure, local partnerships, and marketing campaigns.",
         },
-    ];
+    ]);
+
+    // Filter requests based on active filter and search query
+    const filteredRequests = allRequests.filter((request) => {
+        const matchesFilter = activeFilter === "All" || request.status === activeFilter;
+        const matchesSearch = request.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            request.sector.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesFilter && matchesSearch;
+    });
 
     const stats = {
-        total: requests.length,
-        active: requests.filter((r) => r.status === "Active").length,
-        totalViews: requests.reduce((sum, r) => sum + r.views, 0),
-        totalInquiries: requests.reduce((sum, r) => sum + r.inquiries, 0),
+        total: allRequests.length,
+        active: allRequests.filter((r) => r.status === "Active").length,
+        totalViews: allRequests.reduce((sum, r) => sum + r.views, 0),
+        totalInquiries: allRequests.reduce((sum, r) => sum + r.inquiries, 0),
+    };
+
+    const handleEdit = (request: any) => {
+        // Navigate to edit page or open edit modal
+        navigate("/investor/seek/post", { state: { editRequest: request } });
+    };
+
+    const handleDelete = (request: any) => {
+        setRequestToDelete(request);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = () => {
+        if (requestToDelete) {
+            setAllRequests(allRequests.filter((r) => r.id !== requestToDelete.id));
+            setShowDeleteModal(false);
+            setRequestToDelete(null);
+        }
+    };
+
+    const handleView = (request: any) => {
+        setSelectedRequest(request);
+        setShowViewModal(true);
     };
 
     return (
@@ -116,14 +161,35 @@ const MyFundingRequests = () => {
                 </div>
             </div>
 
+            {/* Search Bar */}
+            <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
+                <input
+                    type="text"
+                    placeholder="Search by title or sector..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                />
+                {searchQuery && (
+                    <button
+                        onClick={() => setSearchQuery("")}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 size-6 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                    >
+                        <X className="size-4 text-slate-600 dark:text-slate-400" />
+                    </button>
+                )}
+            </div>
+
             {/* Filter Tabs */}
             <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                 {["All", "Active", "Under Review", "Closed"].map((filter) => (
                     <button
                         key={filter}
-                        className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${filter === "All"
-                                ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+                        onClick={() => setActiveFilter(filter)}
+                        className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${filter === activeFilter
+                            ? "bg-primary text-white shadow-lg shadow-primary/20"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                             }`}
                     >
                         {filter}
@@ -133,7 +199,7 @@ const MyFundingRequests = () => {
 
             {/* Requests List */}
             <div className="space-y-4">
-                {requests.map((request) => (
+                {filteredRequests.map((request) => (
                     <div
                         key={request.id}
                         className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10"
@@ -160,8 +226,11 @@ const MyFundingRequests = () => {
                                 <h3 className="font-black text-lg tracking-tight mb-1">{request.title}</h3>
                                 <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">{request.description}</p>
                             </div>
-                            <button className="size-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all shrink-0 ml-3">
-                                <MoreVertical className="size-5 text-slate-400" />
+                            <button
+                                onClick={() => handleView(request)}
+                                className="size-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all shrink-0 ml-3 hover:bg-slate-100 dark:hover:bg-slate-700"
+                            >
+                                <Eye className="size-5 text-slate-600 dark:text-slate-400" />
                             </button>
                         </div>
 
@@ -200,10 +269,16 @@ const MyFundingRequests = () => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <button className="size-9 rounded-xl bg-blue-50 dark:bg-blue-950/20 flex items-center justify-center active:scale-90 transition-all">
+                                <button
+                                    onClick={() => handleEdit(request)}
+                                    className="size-9 rounded-xl bg-blue-50 dark:bg-blue-950/20 flex items-center justify-center active:scale-90 transition-all hover:bg-blue-100 dark:hover:bg-blue-950/30"
+                                >
                                     <Edit2 className="size-4 text-blue-600" />
                                 </button>
-                                <button className="size-9 rounded-xl bg-red-50 dark:bg-red-950/20 flex items-center justify-center active:scale-90 transition-all">
+                                <button
+                                    onClick={() => handleDelete(request)}
+                                    className="size-9 rounded-xl bg-red-50 dark:bg-red-950/20 flex items-center justify-center active:scale-90 transition-all hover:bg-red-100 dark:hover:bg-red-950/30"
+                                >
                                     <Trash2 className="size-4 text-red-600" />
                                 </button>
                             </div>
@@ -225,6 +300,153 @@ const MyFundingRequests = () => {
         </button>
       </div>
       */}
+
+            {/* Empty State for filtered results */}
+            {filteredRequests.length === 0 && (
+                <div className="text-center py-12">
+                    <div className="size-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                        <FileText className="size-8 text-slate-400" />
+                    </div>
+                    <p className="text-lg font-black text-slate-400">No requests found</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                        {searchQuery ? "Try adjusting your search" : "No requests match the selected filter"}
+                    </p>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl">
+                        <div className="size-14 rounded-2xl bg-red-50 dark:bg-red-950/20 flex items-center justify-center mx-auto mb-4">
+                            <Trash2 className="size-7 text-red-600" />
+                        </div>
+                        <h3 className="text-xl font-black text-center mb-2">Delete Request?</h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 text-center mb-6">
+                            Are you sure you want to delete "{requestToDelete?.title}"? This action cannot be undone.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowDeleteModal(false)}
+                                className="flex-1 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="flex-1 px-4 py-3 rounded-xl bg-red-600 text-white font-black text-sm uppercase tracking-widest hover:bg-red-700 active:scale-95 transition-all shadow-lg shadow-red-600/20"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* View Details Modal */}
+            {showViewModal && selectedRequest && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-2xl w-full border border-slate-200 dark:border-white/10 shadow-2xl my-8">
+                        {/* Modal Header */}
+                        <div className="flex items-start justify-between mb-6">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className={`px-3 py-1 rounded-lg bg-${selectedRequest.sectorColor}-500/10 border border-${selectedRequest.sectorColor}-500/20`}>
+                                        <span className={`text-xs font-black uppercase tracking-widest text-${selectedRequest.sectorColor}-600`}>
+                                            {selectedRequest.sector}
+                                        </span>
+                                    </div>
+                                    <div className={`px-3 py-1 rounded-full bg-${selectedRequest.statusColor}-500/10 border border-${selectedRequest.statusColor}-500/20`}>
+                                        <span className={`text-xs font-black uppercase tracking-widest text-${selectedRequest.statusColor}-600`}>
+                                            {selectedRequest.status}
+                                        </span>
+                                    </div>
+                                </div>
+                                <h2 className="text-2xl font-black tracking-tight">{selectedRequest.title}</h2>
+                            </div>
+                            <button
+                                onClick={() => setShowViewModal(false)}
+                                className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-90 transition-all shrink-0 ml-4"
+                            >
+                                <X className="size-5 text-slate-600 dark:text-slate-400" />
+                            </button>
+                        </div>
+
+                        {/* Funding Details */}
+                        <div className="grid grid-cols-3 gap-4 mb-6">
+                            <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl p-4 border border-emerald-200 dark:border-emerald-900">
+                                <p className="text-xs font-black uppercase tracking-widest text-emerald-600 mb-1">Seeking</p>
+                                <p className="text-2xl font-black text-emerald-700 dark:text-emerald-500">{selectedRequest.amount}</p>
+                            </div>
+                            <div className="bg-blue-50 dark:bg-blue-950/20 rounded-2xl p-4 border border-blue-200 dark:border-blue-900">
+                                <p className="text-xs font-black uppercase tracking-widest text-blue-600 mb-1">Equity</p>
+                                <p className="text-2xl font-black text-blue-700 dark:text-blue-500">{selectedRequest.equity}</p>
+                            </div>
+                            <div className="bg-purple-50 dark:bg-purple-950/20 rounded-2xl p-4 border border-purple-200 dark:border-purple-900">
+                                <p className="text-xs font-black uppercase tracking-widest text-purple-600 mb-1">Duration</p>
+                                <p className="text-lg font-black text-purple-700 dark:text-purple-500">{selectedRequest.duration}</p>
+                            </div>
+                        </div>
+
+                        {/* Description */}
+                        <div className="mb-6">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-3">Full Description</h3>
+                            <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                                {selectedRequest.fullDescription}
+                            </p>
+                        </div>
+
+                        {/* Stats */}
+                        <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
+                            <div className="text-center">
+                                <div className="flex items-center justify-center gap-1 mb-1">
+                                    <Calendar className="size-4 text-slate-400" />
+                                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">Posted</p>
+                                </div>
+                                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{selectedRequest.postedDate}</p>
+                            </div>
+                            <div className="text-center">
+                                <div className="flex items-center justify-center gap-1 mb-1">
+                                    <Eye className="size-4 text-slate-400" />
+                                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">Views</p>
+                                </div>
+                                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{selectedRequest.views}</p>
+                            </div>
+                            <div className="text-center">
+                                <div className="flex items-center justify-center gap-1 mb-1">
+                                    <MessageSquare className="size-4 text-slate-400" />
+                                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">Inquiries</p>
+                                </div>
+                                <p className="text-sm font-bold text-emerald-600">{selectedRequest.inquiries}</p>
+                            </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowViewModal(false);
+                                    handleEdit(selectedRequest);
+                                }}
+                                className="flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white font-black text-sm uppercase tracking-widest hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"
+                            >
+                                <Edit2 className="size-4" />
+                                Edit Request
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowViewModal(false);
+                                    handleDelete(selectedRequest);
+                                }}
+                                className="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/20 text-red-600 font-black text-sm uppercase tracking-widest hover:bg-red-100 dark:hover:bg-red-950/30 active:scale-95 transition-all flex items-center justify-center gap-2"
+                            >
+                                <Trash2 className="size-4" />
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

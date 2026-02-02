@@ -69,7 +69,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
 
     const handleLogout = () => {
         logout();
-        navigate("/login");
+        navigate("/login/admin");
     };
 
     return (

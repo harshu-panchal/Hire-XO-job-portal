@@ -15,7 +15,7 @@ const OpportunitiesList = () => {
         { id: "real-estate", label: "Real Estate", color: "cyan" },
     ];
 
-    const opportunities = [
+    const [opportunities, setOpportunities] = useState([
         {
             id: 1,
             company: "TechVenture Solutions",
@@ -118,7 +118,60 @@ const OpportunitiesList = () => {
             roi: "24-28%",
             bookmarked: false,
         },
-    ];
+    ]);
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleToggleBookmark = (id: number) => {
+        setOpportunities(prev => prev.map(opp =>
+            opp.id === id ? { ...opp, bookmarked: !opp.bookmarked } : opp
+        ));
+    };
+
+    const handleLoadMore = () => {
+        setIsLoading(true);
+        setTimeout(() => {
+            const nextId = opportunities.length + 1;
+            const moreOpps = [
+                {
+                    id: nextId,
+                    company: "DeepSea Robotics",
+                    logo: "D",
+                    logoGradient: "from-blue-600 to-indigo-700",
+                    sector: "Technology",
+                    sectorColor: "blue",
+                    title: "Underwater Surveillance Drones",
+                    description: "Scaling production of autonomous underwater vehicles for oceanographic research and infrastructure inspection.",
+                    amount: "₹4.5Cr",
+                    equity: "10%",
+                    duration: "18 months",
+                    views: 112,
+                    location: "Goa, India",
+                    roi: "22-26%",
+                    bookmarked: false,
+                },
+                {
+                    id: nextId + 1,
+                    company: "BioMed Ventures",
+                    logo: "B",
+                    logoGradient: "from-rose-500 to-pink-600",
+                    sector: "Healthcare",
+                    sectorColor: "purple",
+                    title: "Next-Gen Cancer Diagnostics",
+                    description: "FDA-approved early-stage diagnostic kits for multiple cancer types. Looking for bridge funding for commercial launch.",
+                    amount: "₹9Cr",
+                    equity: "12%",
+                    duration: "36 months",
+                    views: 430,
+                    location: "Delhi, India",
+                    roi: "35-40%",
+                    bookmarked: false,
+                }
+            ];
+            setOpportunities([...opportunities, ...moreOpps]);
+            setIsLoading(false);
+        }, 1500);
+    };
 
     const filteredOpportunities = opportunities.filter((opp) => {
         const matchesSearch =
@@ -188,7 +241,10 @@ const OpportunitiesList = () => {
                             className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10 relative"
                         >
                             {/* Bookmark Button */}
-                            <button className="absolute top-5 right-5 size-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all">
+                            <button
+                                onClick={() => handleToggleBookmark(opp.id)}
+                                className="absolute top-5 right-5 size-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all z-10"
+                            >
                                 <Bookmark
                                     className={`size-5 ${opp.bookmarked ? "fill-primary text-primary" : "text-slate-400"}`}
                                 />
@@ -261,8 +317,19 @@ const OpportunitiesList = () => {
 
             {/* Load More */}
             {filteredOpportunities.length > 0 && (
-                <button className="w-full py-4 rounded-[1.5rem] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm uppercase tracking-widest active:scale-95 transition-all">
-                    Load More Opportunities
+                <button
+                    onClick={handleLoadMore}
+                    disabled={isLoading}
+                    className="w-full py-4 rounded-[1.5rem] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                >
+                    {isLoading ? (
+                        <>
+                            <div className="size-4 border-2 border-slate-300 border-t-primary rounded-full animate-spin" />
+                            <span>Loading More...</span>
+                        </>
+                    ) : (
+                        "Load More Opportunities"
+                    )}
                 </button>
             )}
         </div>

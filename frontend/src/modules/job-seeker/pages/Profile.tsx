@@ -14,35 +14,48 @@ import {
   Bookmark,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useJobSeekerStore } from "@/store/useJobSeekerStore";
 import { useAuthStore } from "@/store/useAuthStore";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { userProfile, appliedJobIds, savedJobIds, certificates } = useJobSeekerStore();
   const { logout } = useAuthStore();
 
-  const user = {
-    name: "Alex Rivera",
-    role: "Senior React Developer",
-    location: "Bangalore, India",
-    email: "alex.rivera@example.com",
-    phone: "+91 98765 43210",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuB52noQXoXSZycc1KYch8EW4T9oo08uRX0jjaTWO-ZXI9KH7kXiFp4C4EIVcj7XRZQHfQxQRXN3JXPFfWFxIY_KWVxuw01aSLxW4yQGuQfCxOuK4enRMwXeN3bLH8YYD4yENN8V4V6fLbEskfALN7RDpj9jPejjrnJZr14jNii9GzuFR-A-QqVsM66zFIdR06lslE0evUGvO5VmUZuUTf1XarrZhHh9g0sz-3JpEzYztx0mei_n26BzLtKcxjPhJ9qlEHJyiujQYuzP",
-    skills: ["React", "TypeScript", "Tailwind CSS", "Node.js", "Figma"],
-    experience: [
-      { company: "TechFlow", role: "Senior Developer", period: "2021 - Present" },
-      { company: "DesignHub", role: "Frontend Engineer", period: "2019 - 2021" },
-    ],
-    education: [
-      { school: "University of Technology", degree: "B.Tech in CS", period: "2015 - 2019" },
-    ],
-  };
+  if (!userProfile) return null;
 
   const menuItems = [
-    { label: "Certificates", icon: GraduationCap, color: "text-green-500", bg: "bg-green-500/10", path: "/certificates" },
-    { label: "My Applications", icon: FileText, color: "text-blue-500", bg: "bg-blue-500/10", path: "/my-applications" },
-    { label: "Saved Jobs", icon: Bookmark, color: "text-amber-500", bg: "bg-amber-500/10", path: "/saved-jobs" },
-    { label: "Account Settings", icon: Settings, color: "text-slate-500", bg: "bg-slate-500/10", path: "/settings" },
+    {
+      label: "Certificates",
+      icon: GraduationCap,
+      color: "text-green-500",
+      bg: "bg-green-500/10",
+      path: "/certificates",
+      count: certificates.length
+    },
+    {
+      label: "My Applications",
+      icon: FileText,
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
+      path: "/my-applications",
+      count: appliedJobIds.length
+    },
+    {
+      label: "Saved Jobs",
+      icon: Bookmark,
+      color: "text-amber-500",
+      bg: "bg-amber-500/10",
+      path: "/saved-jobs",
+      count: savedJobIds.length
+    },
+    {
+      label: "Account Settings",
+      icon: Settings,
+      color: "text-slate-500",
+      bg: "bg-slate-500/10",
+      path: "/settings"
+    },
   ];
 
   return (
@@ -55,28 +68,46 @@ const Profile = () => {
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="relative group">
             <div className="size-32 rounded-[3rem] border-4 border-white dark:border-slate-800 shadow-2xl overflow-hidden ring-4 ring-primary/20">
-              <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+              <img src={userProfile.profilePhoto} alt={userProfile.name} className="w-full h-full object-cover" />
             </div>
-            <button className="absolute bottom-0 right-0 size-10 bg-primary text-white rounded-2xl flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-lg active:scale-90 transition-all">
+            <button
+              onClick={() => navigate("/settings")}
+              className="absolute bottom-0 right-0 size-10 bg-primary text-white rounded-2xl flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-lg active:scale-90 transition-all"
+            >
               <Camera className="size-5" />
             </button>
           </div>
 
           <div className="space-y-1">
-            <h1 className="text-3xl font-black tracking-tight leading-tight">{user.name}</h1>
-            <p className="text-primary font-black uppercase tracking-widest text-xs">{user.role}</p>
+            <h1 className="text-3xl font-black tracking-tight leading-tight">{userProfile.name}</h1>
+            <p className="text-primary font-black uppercase tracking-widest text-xs">{userProfile.role}</p>
           </div>
 
           <div className="flex items-center gap-4 pt-2">
-            <button className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all">
-              <Github className="size-5 text-slate-400" />
-            </button>
-            <button className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all">
-              <Linkedin className="size-5 text-slate-400" />
-            </button>
-            <button className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all">
-              <Twitter className="size-5 text-slate-400" />
-            </button>
+            {userProfile.githubUrl && (
+              <button
+                onClick={() => window.open(userProfile.githubUrl, "_blank")}
+                className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all"
+              >
+                <Github className="size-5 text-slate-400" />
+              </button>
+            )}
+            {userProfile.linkedinUrl && (
+              <button
+                onClick={() => window.open(userProfile.linkedinUrl, "_blank")}
+                className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all"
+              >
+                <Linkedin className="size-5 text-slate-400" />
+              </button>
+            )}
+            {userProfile.twitterUrl && (
+              <button
+                onClick={() => window.open(userProfile.twitterUrl, "_blank")}
+                className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all"
+              >
+                <Twitter className="size-5 text-slate-400" />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -92,7 +123,7 @@ const Profile = () => {
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Email Address
               </p>
-              <p className="text-sm font-black truncate">{user.email}</p>
+              <p className="text-sm font-black truncate">{userProfile.email}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -103,57 +134,64 @@ const Profile = () => {
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Location
               </p>
-              <p className="text-sm font-black truncate">{user.location}</p>
+              <p className="text-sm font-black truncate">{"Bangalore, India"}</p>
             </div>
           </div>
         </div>
 
         {/* Skills */}
-        <div className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-4">
-          <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
-            Skills & Expertise
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {user.skills.map((skill) => (
-              <span
-                key={skill}
-                className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/10"
-              >
-                {skill}
-              </span>
-            ))}
+        {userProfile.skills && userProfile.skills.length > 0 && (
+          <div className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-4">
+            <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
+              Skills & Expertise
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {userProfile.skills.map((skill) => (
+                <span
+                  key={skill}
+                  className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/10"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Experience */}
-        <div className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
-              Experience
-            </h3>
-            <button className="text-[10px] font-black text-primary uppercase tracking-widest">
-              Edit
-            </button>
-          </div>
-          <div className="space-y-6">
-            {user.experience.map((exp, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="size-12 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
-                  <Briefcase className="size-6 text-slate-400" />
+        {userProfile.experience && userProfile.experience.length > 0 && (
+          <div className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
+                Experience
+              </h3>
+              <button
+                onClick={() => navigate("/settings")}
+                className="text-[10px] font-black text-primary uppercase tracking-widest"
+              >
+                Edit
+              </button>
+            </div>
+            <div className="space-y-6">
+              {userProfile.experience.map((exp, i) => (
+                <div key={i} className="flex gap-4">
+                  <div className="size-12 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
+                    <Briefcase className="size-6 text-slate-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-black text-sm tracking-tight">{exp.role}</h4>
+                    <p className="text-primary font-black text-[10px] uppercase tracking-widest">
+                      {exp.company}
+                    </p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                      {exp.period}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-black text-sm tracking-tight">{exp.role}</h4>
-                  <p className="text-primary font-black text-[10px] uppercase tracking-widest">
-                    {exp.company}
-                  </p>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                    {exp.period}
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Menu Items */}
         <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden">
@@ -170,7 +208,14 @@ const Profile = () => {
                 </div>
                 <span className="text-sm font-black tracking-tight">{item.label}</span>
               </div>
-              <ChevronRight className="size-4 text-slate-300" />
+              <div className="flex items-center gap-2">
+                {item.count !== undefined && (
+                  <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-white/10 text-[10px] font-black text-slate-400">
+                    {item.count}
+                  </span>
+                )}
+                <ChevronRight className="size-4 text-slate-300" />
+              </div>
             </button>
           ))}
         </div>

@@ -1,60 +1,33 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Building2, Calendar, MapPin, Search } from "lucide-react";
+import { useJobSeekerStore } from "@/store/useJobSeekerStore";
+import { useResourceStore } from "@/store/useResourceStore";
+import { useState, useEffect } from "react";
 
 const MyApplications = () => {
   const navigate = useNavigate();
+  const { jobs, appliedJobIds, fetchJobs } = useJobSeekerStore();
+  const { resources, applications: resourceAppIds, fetchResources } = useResourceStore();
+  const [search, setSearch] = useState("");
 
-  // Mock data for applications
-  const applications = [
-    {
-      id: "1",
-      jobTitle: "Senior Product Designer",
-      company: "Spotify",
-      companyLogo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/2048px-Spotify_logo_without_text.svg.png",
-      location: "Stockholm, Sweden",
-      appliedDate: "Jan 12, 2024",
-      status: "In Review",
-      statusColor: "text-amber-500",
-      statusBg: "bg-amber-500/10",
-      salary: "$120k - $160k",
-    },
-    {
-      id: "2",
-      jobTitle: "Frontend Developer",
-      company: "Airbnb",
-      companyLogo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Airbnb_Logo_B%C3%A9lo.svg/2560px-Airbnb_Logo_B%C3%A9lo.svg.png",
-      location: "San Francisco, CA",
-      appliedDate: "Jan 08, 2024",
-      status: "Interview",
-      statusColor: "text-primary",
-      statusBg: "bg-primary/10",
-      salary: "$140k - $180k",
-    },
-    {
-      id: "3",
-      jobTitle: "UX Researcher",
-      company: "Netflix",
-      companyLogo: "https://assets.nflxext.com/us/ffe/siteui/common/icons/nficon2016.png",
-      location: "Los Gatos, CA",
-      appliedDate: "Dec 15, 2023",
-      status: "Rejected",
-      statusColor: "text-red-500",
-      statusBg: "bg-red-500/10",
-      salary: "$130k - $150k",
-    },
-    {
-      id: "4",
-      jobTitle: "Product Manager",
-      company: "Linear",
-      companyLogo: "",
-      location: "Remote",
-      appliedDate: "Jan 18, 2024",
-      status: "Applied",
-      statusColor: "text-blue-500",
-      statusBg: "bg-blue-500/10",
-      salary: "$160k - $200k",
-    },
-  ];
+  useEffect(() => {
+    if (jobs.length === 0) fetchJobs();
+    if (resources.length === 0) fetchResources();
+  }, [jobs.length, fetchJobs, resources.length, fetchResources]);
+
+  const appliedJobs = jobs
+    .filter(job => appliedJobIds.includes(job.id))
+    .map(job => ({ ...job, appType: "Job" }));
+
+  const appliedResources = resources
+    .filter(res => resourceAppIds.includes(res.id))
+    .map(res => ({ ...res, appType: "Resource" }));
+
+  const allApplications = [...appliedJobs, ...appliedResources]
+    .filter(app =>
+      app.title.toLowerCase().includes(search.toLowerCase()) ||
+      app.company.toLowerCase().includes(search.toLowerCase())
+    );
 
   return (
     <div className="pb-32 min-h-screen">
@@ -70,7 +43,7 @@ const MyApplications = () => {
           <div>
             <h1 className="text-xl font-black tracking-tight">My Applications</h1>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              {applications.length} Active
+              {allApplications.length} Active
             </p>
           </div>
         </div>
@@ -86,15 +59,17 @@ const MyApplications = () => {
           <input
             type="text"
             placeholder="Search applications..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full h-14 pl-12 pr-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-400"
           />
         </div>
 
         {/* Applications List */}
         <div className="space-y-4">
-          {applications.map((app) => (
+          {allApplications.map((app) => (
             <div
-              key={app.id}
+              key={`${app.appType}-${app.id}`}
               className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-5 shadow-sm active:scale-[0.98] transition-all duration-200"
             >
               <div className="flex items-start justify-between mb-4">
@@ -112,17 +87,23 @@ const MyApplications = () => {
                   </div>
                   <div>
                     <h3 className="font-black text-base tracking-tight leading-tight mb-1">
-                      {app.jobTitle}
+                      {app.title}
                     </h3>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                      {app.company}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                        {app.company}
+                      </p>
+                      <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${app.appType === "Job" ? "bg-blue-500/10 text-blue-500" : "bg-purple-500/10 text-purple-500"
+                        }`}>
+                        {app.appType}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div
-                  className={`px-3 py-1.5 rounded-xl ${app.statusBg} ${app.statusColor} text-[10px] font-black uppercase tracking-widest border border-current/10`}
+                  className={`px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-current/10`}
                 >
-                  {app.status}
+                  Applied
                 </div>
               </div>
 
@@ -133,11 +114,23 @@ const MyApplications = () => {
                 </div>
                 <div className="flex items-center gap-2 text-slate-400 justify-end">
                   <Calendar className="size-4" />
-                  <span className="text-xs font-bold">{app.appliedDate}</span>
+                  <span className="text-xs font-bold">{app.postedAt}</span>
                 </div>
               </div>
             </div>
           ))}
+
+          {allApplications.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+              <div className="size-20 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+                <Building2 className="size-10 text-slate-300" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">No Applications</h3>
+                <p className="text-slate-500 text-sm font-medium mt-1">Start applying for jobs or resources to see them here.</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

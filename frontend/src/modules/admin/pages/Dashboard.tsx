@@ -1,4 +1,6 @@
 import { motion, type Variants } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../../store/useAuthStore";
 import {
     LineChart,
     Line,
@@ -55,6 +57,9 @@ const recentActivity = [
 ];
 
 export default function Dashboard() {
+    const { user } = useAuthStore();
+    const navigate = useNavigate();
+
     return (
         <motion.div
             variants={containerVariants}
@@ -65,7 +70,7 @@ export default function Dashboard() {
             {/* Welcome Section */}
             <motion.div variants={itemVariants}>
                 <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
-                    Welcome back, Admin
+                    Welcome back, {user?.name?.split(' ')[0] || "Admin"}
                 </h1>
                 <p className="text-slate-500 dark:text-white/60 mt-1">
                     Here's what's happening with your platform today.
@@ -176,10 +181,10 @@ export default function Dashboard() {
             <motion.div variants={itemVariants} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-6">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Quick Actions</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <QuickAction label="Add Recruiter" icon={Users} />
-                    <QuickAction label="Create Plan" icon={CreditCard} />
-                    <QuickAction label="View Reports" icon={TrendingUp} />
-                    <QuickAction label="Manage Jobs" icon={Briefcase} />
+                    <QuickAction label="Manage Users" icon={Users} onClick={() => navigate("/admin/users")} />
+                    <QuickAction label="Account Settings" icon={CreditCard} onClick={() => navigate("/admin/settings")} />
+                    <QuickAction label="View Reports" icon={TrendingUp} onClick={() => navigate("/admin/reports")} />
+                    <QuickAction label="Manage Jobs" icon={Briefcase} onClick={() => navigate("/admin/jobs")} />
                 </div>
             </motion.div>
         </motion.div>
@@ -213,9 +218,12 @@ function StatCard({ title, value, change, icon: Icon, iconBg, iconColor }: {
     );
 }
 
-function QuickAction({ label, icon: Icon }: { label: string; icon: any }) {
+function QuickAction({ label, icon: Icon, onClick }: { label: string; icon: any; onClick?: () => void }) {
     return (
-        <button className="flex flex-col items-center gap-3 p-4 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+        <button
+            onClick={onClick}
+            className="flex flex-col items-center gap-3 p-4 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+        >
             <div className="p-3 rounded-lg bg-slate-100 dark:bg-white/5 group-hover:bg-primary group-hover:text-white transition-colors">
                 <Icon className="w-5 h-5 text-slate-600 dark:text-white/60 group-hover:text-white" />
             </div>

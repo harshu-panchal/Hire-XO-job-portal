@@ -1,7 +1,9 @@
-import { Camera, Edit2, MapPin, Briefcase, DollarSign, Target, Mail, Phone, Building2 } from "lucide-react";
+import { Camera, Edit2, MapPin, Briefcase, DollarSign, Target, Mail, Phone, Building2, Save, X } from "lucide-react";
+import { useState } from "react";
 
 const BrowseProfile = () => {
-    const profile = {
+    const [isEditing, setIsEditing] = useState(false);
+    const [profile, setProfile] = useState({
         name: "Rajesh Kumar",
         email: "rajesh.investor@gmail.com",
         phone: "+91 98765 43210",
@@ -15,6 +17,11 @@ const BrowseProfile = () => {
         investmentRange: "₹50 Lakhs - ₹5 Cr",
         preferredEquity: "10-25%",
         bio: "Seasoned investor with focus on early-stage technology and healthcare startups. Looking for innovative businesses with strong growth potential and experienced founding teams.",
+    });
+
+    const handleSave = () => {
+        setIsEditing(false);
+        alert("Profile updated successfully!");
     };
 
     return (
@@ -42,13 +49,36 @@ const BrowseProfile = () => {
                     </div>
                     <div className="flex-1">
                         <div className="flex items-start justify-between mb-1">
-                            <div>
-                                <h2 className="text-2xl font-black tracking-tight">{profile.name}</h2>
-                                <p className="text-sm font-bold text-slate-600 dark:text-slate-400">{profile.designation}</p>
+                            <div className="flex-1">
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={profile.name}
+                                        onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                                        className="w-full bg-white/50 dark:bg-slate-900/50 rounded-lg px-2 py-1 text-2xl font-black tracking-tight focus:outline-none focus:ring-2 focus:ring-primary/20 mb-1"
+                                    />
+                                ) : (
+                                    <h2 className="text-2xl font-black tracking-tight">{profile.name}</h2>
+                                )}
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={profile.designation}
+                                        onChange={(e) => setProfile({ ...profile, designation: e.target.value })}
+                                        className="w-full bg-white/50 dark:bg-slate-900/50 rounded-lg px-2 py-1 text-sm font-bold text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    />
+                                ) : (
+                                    <p className="text-sm font-bold text-slate-600 dark:text-slate-400">{profile.designation}</p>
+                                )}
                             </div>
-                            <button className="size-10 rounded-xl bg-white/50 dark:bg-slate-900/50 flex items-center justify-center active:scale-90 transition-all">
-                                <Edit2 className="size-5 text-primary" />
-                            </button>
+                            {!isEditing && (
+                                <button
+                                    onClick={() => setIsEditing(true)}
+                                    className="size-10 rounded-xl bg-white/50 dark:bg-slate-900/50 flex items-center justify-center active:scale-90 transition-all ml-2"
+                                >
+                                    <Edit2 className="size-5 text-primary" />
+                                </button>
+                            )}
                         </div>
                         <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mt-2">
                             <span className="text-[8px] font-black uppercase tracking-widest text-primary">Verified Investor</span>
@@ -77,9 +107,14 @@ const BrowseProfile = () => {
             <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-black tracking-tight">Contact Information</h2>
-                    <button className="text-xs font-black text-primary uppercase tracking-widest active:scale-95 transition-transform">
-                        Edit
-                    </button>
+                    {!isEditing && (
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="text-xs font-black text-primary uppercase tracking-widest active:scale-95 transition-transform"
+                        >
+                            Edit
+                        </button>
+                    )}
                 </div>
                 <div className="space-y-3">
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
@@ -88,7 +123,16 @@ const BrowseProfile = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Email</p>
-                            <p className="text-sm font-bold truncate">{profile.email}</p>
+                            {isEditing ? (
+                                <input
+                                    type="email"
+                                    value={profile.email}
+                                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                                    className="w-full bg-transparent text-sm font-bold focus:outline-none"
+                                />
+                            ) : (
+                                <p className="text-sm font-bold truncate">{profile.email}</p>
+                            )}
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
@@ -97,7 +141,16 @@ const BrowseProfile = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Phone</p>
-                            <p className="text-sm font-bold">{profile.phone}</p>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    value={profile.phone}
+                                    onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                    className="w-full bg-transparent text-sm font-bold focus:outline-none"
+                                />
+                            ) : (
+                                <p className="text-sm font-bold">{profile.phone}</p>
+                            )}
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
@@ -106,7 +159,16 @@ const BrowseProfile = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Location</p>
-                            <p className="text-sm font-bold">{profile.location}</p>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    value={profile.location}
+                                    onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+                                    className="w-full bg-transparent text-sm font-bold focus:outline-none"
+                                />
+                            ) : (
+                                <p className="text-sm font-bold">{profile.location}</p>
+                            )}
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
@@ -115,7 +177,16 @@ const BrowseProfile = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Organization</p>
-                            <p className="text-sm font-bold">{profile.organization}</p>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    value={profile.organization}
+                                    onChange={(e) => setProfile({ ...profile, organization: e.target.value })}
+                                    className="w-full bg-transparent text-sm font-bold focus:outline-none"
+                                />
+                            ) : (
+                                <p className="text-sm font-bold">{profile.organization}</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -125,9 +196,14 @@ const BrowseProfile = () => {
             <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-black tracking-tight">Investment Preferences</h2>
-                    <button className="text-xs font-black text-primary uppercase tracking-widest active:scale-95 transition-transform">
-                        Edit
-                    </button>
+                    {!isEditing && (
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="text-xs font-black text-primary uppercase tracking-widest active:scale-95 transition-transform"
+                        >
+                            Edit
+                        </button>
+                    )}
                 </div>
                 <div className="space-y-4">
                     <div>
@@ -135,14 +211,32 @@ const BrowseProfile = () => {
                             <DollarSign className="size-5 text-emerald-600" />
                             <p className="text-sm font-black">Investment Range</p>
                         </div>
-                        <p className="text-lg font-black text-emerald-600 ml-7">{profile.investmentRange}</p>
+                        {isEditing ? (
+                            <input
+                                type="text"
+                                value={profile.investmentRange}
+                                onChange={(e) => setProfile({ ...profile, investmentRange: e.target.value })}
+                                className="w-full bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-2 text-lg font-black text-emerald-600 focus:outline-none ml-7"
+                            />
+                        ) : (
+                            <p className="text-lg font-black text-emerald-600 ml-7">{profile.investmentRange}</p>
+                        )}
                     </div>
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Target className="size-5 text-blue-600" />
                             <p className="text-sm font-black">Preferred Equity</p>
                         </div>
-                        <p className="text-lg font-black text-blue-600 ml-7">{profile.preferredEquity}</p>
+                        {isEditing ? (
+                            <input
+                                type="text"
+                                value={profile.preferredEquity}
+                                onChange={(e) => setProfile({ ...profile, preferredEquity: e.target.value })}
+                                className="w-full bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-2 text-lg font-black text-blue-600 focus:outline-none ml-7"
+                            />
+                        ) : (
+                            <p className="text-lg font-black text-blue-600 ml-7">{profile.preferredEquity}</p>
+                        )}
                     </div>
                     <div>
                         <div className="flex items-center gap-2 mb-2">
@@ -167,21 +261,58 @@ const BrowseProfile = () => {
             <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-black tracking-tight">About Me</h2>
-                    <button className="text-xs font-black text-primary uppercase tracking-widest active:scale-95 transition-transform">
-                        Edit
-                    </button>
+                    {!isEditing && (
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="text-xs font-black text-primary uppercase tracking-widest active:scale-95 transition-transform"
+                        >
+                            Edit
+                        </button>
+                    )}
                 </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{profile.bio}</p>
+                {isEditing ? (
+                    <textarea
+                        value={profile.bio}
+                        onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                        className="w-full h-32 bg-slate-50 dark:bg-slate-800 rounded-xl p-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed focus:outline-none"
+                    />
+                ) : (
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{profile.bio}</p>
+                )}
             </div>
 
             {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-4">
-                <button className="py-4 rounded-[1.5rem] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm uppercase tracking-widest active:scale-95 transition-all">
-                    View Public Profile
-                </button>
-                <button className="py-4 rounded-[1.5rem] bg-gradient-to-r from-primary to-primary/80 text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all">
-                    Edit Profile
-                </button>
+                {isEditing ? (
+                    <>
+                        <button
+                            onClick={() => setIsEditing(false)}
+                            className="py-4 rounded-[1.5rem] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2"
+                        >
+                            <X className="size-4" />
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleSave}
+                            className="py-4 rounded-[1.5rem] bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-emerald-900/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                        >
+                            <Save className="size-4" />
+                            Save
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <button className="py-4 rounded-[1.5rem] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm uppercase tracking-widest active:scale-95 transition-all">
+                            View Public Profile
+                        </button>
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="py-4 rounded-[1.5rem] bg-gradient-to-r from-primary to-primary/80 text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all"
+                        >
+                            Edit Profile
+                        </button>
+                    </>
+                )}
             </div>
         </div>
     );

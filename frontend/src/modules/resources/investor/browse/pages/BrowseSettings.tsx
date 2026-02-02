@@ -1,10 +1,26 @@
 import { Bell, Lock, Moon, Globe, HelpCircle, LogOut, ChevronRight, Shield, CreditCard } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const BrowseSettings = () => {
     const navigate = useNavigate();
     const { logout } = useAuthStore();
+    const [language, setLanguage] = useState("English (India)");
+
+    const languages = [
+        "English (India)",
+        "Hindi (India)",
+        "Marathi (India)",
+        "English (US)",
+        "English (UK)"
+    ];
+
+    const cycleLanguage = () => {
+        const currentIndex = languages.indexOf(language);
+        const nextIndex = (currentIndex + 1) % languages.length;
+        setLanguage(languages[nextIndex]);
+    };
     return (
         <div className="py-6 space-y-6 select-none">
             {/* Header */}
@@ -132,14 +148,17 @@ const BrowseSettings = () => {
             {/* Preferences */}
             <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
                 <h2 className="text-xl font-black tracking-tight mb-4">Preferences</h2>
-                <button className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 active:scale-95 transition-all">
+                <button
+                    onClick={cycleLanguage}
+                    className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 active:scale-95 transition-all"
+                >
                     <div className="flex items-center gap-3">
                         <div className="size-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
                             <Globe className="size-5 text-amber-600" />
                         </div>
                         <div className="text-left">
                             <p className="text-sm font-black">Language & Region</p>
-                            <p className="text-xs text-slate-500">English (India)</p>
+                            <p className="text-xs text-slate-500">{language}</p>
                         </div>
                     </div>
                     <ChevronRight className="size-5 text-slate-400" />
@@ -149,7 +168,10 @@ const BrowseSettings = () => {
             {/* Support */}
             <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
                 <h2 className="text-xl font-black tracking-tight mb-4">Support</h2>
-                <button className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 active:scale-95 transition-all">
+                <button
+                    onClick={() => alert("Support ticket system coming soon! For urgent queries, contact support@hirexo.com")}
+                    className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 active:scale-95 transition-all"
+                >
                     <div className="flex items-center gap-3">
                         <div className="size-10 rounded-lg bg-cyan-500/10 flex items-center justify-center">
                             <HelpCircle className="size-5 text-cyan-600" />

@@ -39,17 +39,58 @@ const itemVariants: Variants = {
 export default function Recruiters() {
     const [recruiters, setRecruiters] = useState(recruitersData);
     const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
+    const [editingRecruiter, setEditingRecruiter] = useState<Recruiter | null>(null);
+    const [formData, setFormData] = useState<Partial<Recruiter>>({});
+    const [isSaving, setIsSaving] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
-    const filteredRecruiters = recruiters.filter(r =>
-        r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.company.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredRecruiters = recruiters.filter(r => {
+        const matchesSearch = r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            r.company.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter === "" || r.status.toLowerCase() === statusFilter.toLowerCase();
+        return matchesSearch && matchesStatus;
+    });
 
     const handleDelete = (id: string) => {
         if (window.confirm("Are you sure you want to delete this recruiter?")) {
             setRecruiters(recruiters.filter(r => r.id !== id));
         }
+    };
+
+    const handleOpenModal = (recruiter?: Recruiter) => {
+        if (recruiter) {
+            setEditingRecruiter(recruiter);
+            setFormData(recruiter);
+        } else {
+            setEditingRecruiter(null);
+            setFormData({ status: "Active" });
+        }
+        setShowModal(true);
+    };
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSaving(true);
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        if (editingRecruiter) {
+            setRecruiters(recruiters.map(r => r.id === editingRecruiter.id ? { ...r, ...formData } as Recruiter : r));
+        } else {
+            const newRecruiter: Recruiter = {
+                id: `R${String(recruiters.length + 1).padStart(3, '0')}`,
+                name: formData.name || "",
+                company: formData.company || "",
+                email: formData.email || "",
+                status: (formData.status as "Active" | "Inactive") || "Active",
+                joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                jobsPosted: 0
+            };
+            setRecruiters([newRecruiter, ...recruiters]);
+        }
+
+        setIsSaving(false);
+        setShowModal(false);
     };
 
     return (
@@ -61,7 +102,7 @@ export default function Recruiters() {
                     <p className="text-slate-500 dark:text-white/60 mt-1">Manage all registered recruiters</p>
                 </div>
                 <button
-                    onClick={() => setShowModal(true)}
+                    onClick={() => handleOpenModal()}
                     className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors"
                 >
                     <Plus className="w-4 h-4" />
@@ -81,10 +122,14 @@ export default function Recruiters() {
                         className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                 </div>
-                <select className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50">
+                <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                >
                     <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
                 </select>
             </div>
 
@@ -147,8 +192,8 @@ export default function Recruiters() {
                                         <td className="px-6 py-4 text-sm text-slate-600 dark:text-white/70">{recruiter.company}</td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${recruiter.status === 'Active'
-                                                    ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
-                                                    : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/50'
+                                                ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
+                                                : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/50'
                                                 }`}>
                                                 {recruiter.status}
                                             </span>
@@ -157,7 +202,10 @@ export default function Recruiters() {
                                         <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">{recruiter.jobsPosted}</td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <button className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors">
+                                                <button
+                                                    onClick={() => handleOpenModal(recruiter)}
+                                                    className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+                                                >
                                                     <Edit2 className="w-4 h-4 text-slate-500 dark:text-white/50" />
                                                 </button>
                                                 <button
@@ -201,33 +249,69 @@ export default function Recruiters() {
                             className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 shadow-xl z-50 p-6"
                         >
                             <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Add New Recruiter</h3>
+                                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                                    {editingRecruiter ? "Edit Recruiter" : "Add New Recruiter"}
+                                </h3>
                                 <button onClick={() => setShowModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg">
                                     <X className="w-5 h-5 text-slate-500" />
                                 </button>
                             </div>
-                            <div className="space-y-4">
+                            <form onSubmit={handleSave} className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">Full Name</label>
-                                    <input type="text" className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.name || ""}
+                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">Company</label>
-                                    <input type="text" className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.company || ""}
+                                        onChange={e => setFormData({ ...formData, company: e.target.value })}
+                                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">Email</label>
-                                    <input type="email" className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                                    <input
+                                        type="email"
+                                        required
+                                        value={formData.email || ""}
+                                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    />
                                 </div>
-                            </div>
-                            <div className="flex gap-3 mt-6">
-                                <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                                    Cancel
-                                </button>
-                                <button className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
-                                    Add Recruiter
-                                </button>
-                            </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">Status</label>
+                                    <select
+                                        value={formData.status}
+                                        onChange={e => setFormData({ ...formData, status: e.target.value as "Active" | "Inactive" })}
+                                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    >
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                                </div>
+                                <div className="flex gap-3 mt-6">
+                                    <button type="button" onClick={() => setShowModal(false)} className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSaving}
+                                        className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {isSaving && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                                        {editingRecruiter ? "Save Changes" : "Add Recruiter"}
+                                    </button>
+                                </div>
+                            </form>
                         </motion.div>
                     </>
                 )}

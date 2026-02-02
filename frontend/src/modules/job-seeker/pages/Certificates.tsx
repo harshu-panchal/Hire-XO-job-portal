@@ -1,9 +1,10 @@
-import { Award, Calendar, Clock, Download, Plus, Trophy } from "lucide-react";
-
+import { Award, Calendar, Clock, Download, Plus, Trophy, ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useJobSeekerStore } from "@/store/useJobSeekerStore";
 import { generateCertificate } from "@/lib/certificate-utils";
 
 const Certificates = () => {
+  const navigate = useNavigate();
   const { userProfile, certificates, addCertificate } = useJobSeekerStore();
   const userSuccessRate = userProfile?.interviewSuccessRate || 0;
 
@@ -11,16 +12,27 @@ const Certificates = () => {
     if (userSuccessRate >= 50) {
       const newCert = generateCertificate("Frontend Mastery Certificate", userSuccessRate);
       addCertificate(newCert);
+      alert("Top quality certificate earned and added to your collection!");
+    } else {
+      alert(`Success rate too low (${userSuccessRate}%). You need at least 50% to claim a new certificate.`);
     }
   };
 
   return (
     <div className="py-8 space-y-10 select-none">
-      <div className="space-y-3 px-1">
-        <h1 className="text-4xl font-black tracking-tight leading-tight">Certifications</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-sm uppercase tracking-widest">
-          Verified achievements
-        </p>
+      <div className="flex items-center gap-4 px-1">
+        <button
+          onClick={() => navigate(-1)}
+          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all shadow-sm"
+        >
+          <ChevronLeft className="size-6" />
+        </button>
+        <div className="space-y-1">
+          <h1 className="text-2xl font-black tracking-tight leading-tight">Certifications</h1>
+          <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+            Verified achievements
+          </p>
+        </div>
       </div>
 
       {/* Performance Card */}
@@ -62,7 +74,10 @@ const Certificates = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xl font-black tracking-tight">My Collection</h2>
-          <button className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400 active:scale-90 active:bg-slate-50 dark:active:bg-white/5 transition-all">
+          <button
+            onClick={handleClaimCertificate}
+            className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400 active:scale-90 active:bg-slate-50 dark:active:bg-white/5 transition-all shadow-sm"
+          >
             <Plus className="size-5" />
           </button>
         </div>
@@ -75,15 +90,15 @@ const Certificates = () => {
                 <div
                   key={cert.id}
                   className={`relative overflow-hidden rounded-3xl p-6 border transition-all active:scale-[0.98] active:shadow-md ${expired
-                      ? "bg-slate-50 dark:bg-white/5 border-slate-100 dark:border-white/5 opacity-60"
-                      : "bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 shadow-sm active:border-primary/20"
+                    ? "bg-slate-50 dark:bg-white/5 border-slate-100 dark:border-white/5 opacity-60"
+                    : "bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 shadow-sm active:border-primary/20"
                     }`}
                 >
                   <div className="flex items-start gap-5">
                     <div
                       className={`size-16 rounded-2xl shrink-0 flex items-center justify-center border transition-colors ${expired
-                          ? "bg-slate-200 dark:bg-white/10 border-transparent text-slate-400"
-                          : "bg-primary/5 border-primary/10 text-primary"
+                        ? "bg-slate-200 dark:bg-white/10 border-transparent text-slate-400"
+                        : "bg-primary/5 border-primary/10 text-primary"
                         }`}
                     >
                       <Award className="h-8 w-8" />
@@ -93,8 +108,8 @@ const Certificates = () => {
                         <h3 className="font-black text-lg truncate tracking-tight">{cert.name}</h3>
                         <div
                           className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border ${expired
-                              ? "border-slate-200 dark:border-white/10 text-slate-400"
-                              : "border-primary/20 text-primary bg-primary/5"
+                            ? "border-slate-200 dark:border-white/10 text-slate-400"
+                            : "border-primary/20 text-primary bg-primary/5"
                             }`}
                         >
                           {cert.status}
@@ -127,7 +142,10 @@ const Certificates = () => {
                     </div>
                   </div>
                   {!expired && (
-                    <button className="absolute bottom-6 right-6 size-11 flex items-center justify-center rounded-xl bg-primary/5 text-primary active:scale-90 transition-all">
+                    <button
+                      onClick={() => alert("Downloading certificate...")}
+                      className="absolute bottom-6 right-6 size-11 flex items-center justify-center rounded-xl bg-primary/5 text-primary active:scale-90 transition-all"
+                    >
                       <Download className="h-5 w-5" />
                     </button>
                   )}

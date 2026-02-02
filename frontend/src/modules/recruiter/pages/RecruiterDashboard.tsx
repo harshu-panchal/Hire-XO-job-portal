@@ -66,7 +66,12 @@ const RecruiterDashboard = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Recent Applications</h2>
-          <button className="text-[10px] font-black text-primary uppercase tracking-widest">View All</button>
+          <Link
+            to="/recruiter/applications"
+            className="text-[10px] font-black text-primary uppercase tracking-widest active:scale-95 transition-transform"
+          >
+            View All
+          </Link>
         </div>
 
         <div className="grid gap-4">
@@ -81,8 +86,8 @@ const RecruiterDashboard = () => {
               </div>
               <div className="flex flex-col items-end gap-1.5">
                 <div className={`px - 2.5 py - 1 rounded - lg text - [9px] font - black uppercase tracking - widest border ${app.status === "Pending" ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
-                    app.status === "Interviewed" ? "bg-green-500/10 text-green-600 border-green-500/20" :
-                      "bg-red-500/10 text-red-600 border-red-500/20"
+                  app.status === "Interviewed" ? "bg-green-500/10 text-green-600 border-green-500/20" :
+                    "bg-red-500/10 text-red-600 border-red-500/20"
                   } `}>
                   {app.status}
                 </div>

@@ -6,7 +6,7 @@ import JobCard from "@/modules/job-seeker/components/JobCard";
 
 const SavedJobs = () => {
     const navigate = useNavigate();
-    const { jobs, fetchJobs } = useJobSeekerStore();
+    const { jobs, fetchJobs, savedJobIds, toggleSaveJob } = useJobSeekerStore();
 
     useEffect(() => {
         if (jobs.length === 0) {
@@ -14,9 +14,7 @@ const SavedJobs = () => {
         }
     }, [jobs.length, fetchJobs]);
 
-    // Simulate saved jobs by taking a few from the store or filtering (mock logic)
-    // In a real app, this would be a separate API call or a filtered list
-    const savedJobs = jobs.slice(0, 3);
+    const savedJobs = jobs.filter(job => savedJobIds.includes(job.id));
 
     return (
         <div className="pb-32 min-h-screen">
@@ -66,7 +64,8 @@ const SavedJobs = () => {
                                 className="absolute top-4 right-4 size-10 rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-slate-200 dark:border-white/10 flex items-center justify-center text-red-500 active:scale-90 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    // Handle remove
+                                    e.stopPropagation();
+                                    toggleSaveJob(job.id);
                                 }}
                             >
                                 <Trash2 className="size-5" />

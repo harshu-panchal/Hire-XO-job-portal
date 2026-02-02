@@ -20,8 +20,8 @@ interface ResourceState {
 
 export const useResourceStore = create<ResourceState>((set) => ({
     resources: [],
-    bookmarkedResources: [],
-    applications: [],
+    bookmarkedResources: JSON.parse(localStorage.getItem('bookmarkedResources') || '[]'),
+    applications: JSON.parse(localStorage.getItem('resourceApplications') || '[]'),
     filters: {
         search: "",
         category: "all",
@@ -30,17 +30,20 @@ export const useResourceStore = create<ResourceState>((set) => ({
     setSearch: (search) => set((state) => ({ filters: { ...state.filters, search } })),
     setCategory: (category) => set((state) => ({ filters: { ...state.filters, category } })),
 
-    applyToResource: (resourceId) => set((state) => ({
-        applications: state.applications.includes(resourceId)
-            ? state.applications
-            : [...state.applications, resourceId]
-    })),
+    applyToResource: (resourceId) => set((state) => {
+        if (state.applications.includes(resourceId)) return state;
+        const newApps = [...state.applications, resourceId];
+        localStorage.setItem('resourceApplications', JSON.stringify(newApps));
+        return { applications: newApps };
+    }),
 
-    toggleBookmark: (resourceId) => set((state) => ({
-        bookmarkedResources: state.bookmarkedResources.includes(resourceId)
+    toggleBookmark: (resourceId) => set((state) => {
+        const newBookmarks = state.bookmarkedResources.includes(resourceId)
             ? state.bookmarkedResources.filter(id => id !== resourceId)
-            : [...state.bookmarkedResources, resourceId]
-    })),
+            : [...state.bookmarkedResources, resourceId];
+        localStorage.setItem('bookmarkedResources', JSON.stringify(newBookmarks));
+        return { bookmarkedResources: newBookmarks };
+    }),
 
     fetchResources: () => {
         // Comprehensive mock data for all 8 categories

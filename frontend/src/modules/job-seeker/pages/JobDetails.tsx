@@ -18,10 +18,11 @@ import type { Job } from "@/types";
 const JobDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { jobs, fetchJobs } = useJobSeekerStore();
+  const { jobs, fetchJobs, appliedJobIds, savedJobIds, toggleSaveJob, applyJob } = useJobSeekerStore();
   const [job, setJob] = useState<Job | null>(null);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isApplied, setIsApplied] = useState(false);
+
+  const isApplied = appliedJobIds.includes(id || "");
+  const isBookmarked = savedJobIds.includes(id || "");
 
   useEffect(() => {
     if (jobs.length === 0) {
@@ -48,8 +49,16 @@ const JobDetails = () => {
   }
 
   const handleApply = () => {
-    setIsApplied(true);
-    // Add logic for application success (e.g., toast)
+    if (id) {
+      applyJob(id);
+    }
+  };
+
+  const handleShare = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      alert("Link copied to clipboard!");
+    });
   };
 
   if (isApplied) {
@@ -81,7 +90,7 @@ const JobDetails = () => {
             <ArrowRight className="size-4" />
           </button>
           <button
-            onClick={() => navigate("/jobs")}
+            onClick={() => navigate("/my-applications")}
             className="h-16 w-full rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400 font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
           >
             View Applications
@@ -102,12 +111,15 @@ const JobDetails = () => {
           <ChevronLeft className="size-6" />
         </button>
         <div className="flex gap-3">
-          <button className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all">
+          <button
+            onClick={handleShare}
+            className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+          >
             <Share2 className="size-5 text-slate-400" />
           </button>
           <button
-            onClick={() => setIsBookmarked(!isBookmarked)}
-            className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+            onClick={() => id && toggleSaveJob(id)}
+            className={`size-11 flex items-center justify-center rounded-2xl border transition-all active:scale-90 ${isBookmarked ? "bg-primary/10 border-primary" : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10"}`}
           >
             <Bookmark
               className={`size-5 ${isBookmarked ? "fill-primary text-primary" : "text-slate-400"}`}
@@ -254,11 +266,10 @@ const JobDetails = () => {
           <button
             onClick={handleApply}
             disabled={isApplied}
-            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${
-              isApplied
+            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${isApplied
                 ? "bg-green-500 text-white shadow-green-500/20"
                 : "bg-primary text-white shadow-xl shadow-primary/20"
-            }`}
+              }`}
           >
             {isApplied ? (
               <>

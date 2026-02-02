@@ -18,6 +18,7 @@ const JobSeekerSignup = () => {
 
     const [formData, setFormData] = useState<Partial<JobSeekerSignupData> & { confirmPassword: string }>({
         name: "",
+        username: "",
         phoneNumber: "",
         email: "",
         education: "",
@@ -39,7 +40,7 @@ const JobSeekerSignup = () => {
 
         // Validation for each step
         if (currentStep === 1) {
-            if (!formData.name || !formData.phoneNumber || !formData.email) {
+            if (!formData.name || !formData.username || !formData.phoneNumber || !formData.email) {
                 setError("Please fill in all required fields");
                 return;
             }
@@ -100,6 +101,7 @@ const JobSeekerSignup = () => {
         try {
             const signupData: JobSeekerSignupData = {
                 name: formData.name!,
+                username: formData.username!,
                 phoneNumber: formData.phoneNumber!,
                 email: formData.email!,
                 education: formData.education!,
@@ -177,6 +179,21 @@ const JobSeekerSignup = () => {
                                             placeholder="John Doe"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Username</label>
+                                    <div className="relative group">
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                                        <Input
+                                            type="text"
+                                            placeholder="johndoe"
+                                            value={formData.username}
+                                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                             className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                                             required
                                         />

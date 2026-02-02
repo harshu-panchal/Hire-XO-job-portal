@@ -1,7 +1,13 @@
 import { TrendingUp, Eye, FileText, Star, PlusSquare } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCSMStore } from "@/store/useCSMStore";
 
 const ProvideDashboard = () => {
+    const { myServices, myInquiries, stats } = useCSMStore();
+
+    // Derived stats
+    const activeListingsCount = myServices.filter(s => s.status === "Active").length;
+    const recentInquiries = myInquiries.slice(0, 2);
     return (
         <div className="py-6 space-y-8 select-none">
             {/* Header */}
@@ -27,11 +33,11 @@ const ProvideDashboard = () => {
                                 <p className="text-[10px] font-black uppercase tracking-widest text-rose-600/60 mb-0.5">
                                     Active Listings
                                 </p>
-                                <p className="text-2xl font-black tracking-tight">3</p>
+                                <p className="text-2xl font-black tracking-tight">{activeListingsCount}</p>
                             </div>
                         </div>
                         <div className="text-[10px] font-black bg-rose-600/10 text-rose-600 px-3 py-1 rounded-full uppercase tracking-widest">
-                            Live Status
+                            {myServices.length} Total
                         </div>
                     </div>
 
@@ -43,7 +49,7 @@ const ProvideDashboard = () => {
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
                                 Profile Views
                             </p>
-                            <p className="text-xl font-black tracking-tight">1.8k+</p>
+                            <p className="text-xl font-black tracking-tight">{stats.profileViews}</p>
                             <p className="text-[8px] font-black uppercase tracking-widest text-blue-500/60 mt-2">
                                 Last 30 Days
                             </p>
@@ -56,9 +62,9 @@ const ProvideDashboard = () => {
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
                                 Avg. Rating
                             </p>
-                            <p className="text-xl font-black tracking-tight">5.0</p>
+                            <p className="text-xl font-black tracking-tight">{stats.avgRating}</p>
                             <p className="text-[8px] font-black uppercase tracking-widest text-amber-500/60 mt-2">
-                                12 Total Reviews
+                                {stats.totalReviews} Total Reviews
                             </p>
                         </div>
                     </div>
@@ -78,63 +84,42 @@ const ProvideDashboard = () => {
                 </div>
 
                 <div className="space-y-3">
-                    {/* Inquiry 1 */}
-                    <Link
-                        to="/csm/provide/inquiries"
-                        className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
-                    >
-                        <div className="flex items-start gap-3">
-                            <div className="size-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-white font-black text-sm shrink-0">
-                                RM
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-2 mb-1">
-                                    <p className="font-black text-sm">Rahul Mehta</p>
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 shrink-0">2h ago</span>
+                    {recentInquiries.map((inquiry) => (
+                        <Link
+                            key={inquiry.id}
+                            to="/csm/provide/inquiries"
+                            className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
+                        >
+                            <div className="flex items-start gap-3">
+                                <div className={`size-10 rounded-xl bg-gradient-to-br ${inquiry.color} flex items-center justify-center text-white font-black text-sm shrink-0`}>
+                                    {inquiry.initial}
                                 </div>
-                                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
-                                    Need safety supervision and quality audit for a commercial mall project in Pune.
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-rose-600 bg-rose-600/10 px-2 py-1 rounded-md">
-                                        Commercial
-                                    </span>
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">
-                                        Verified Lead
-                                    </span>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-start justify-between gap-2 mb-1">
+                                        <p className="font-black text-sm">{inquiry.name}</p>
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 shrink-0">{inquiry.time}</span>
+                                    </div>
+                                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2 line-clamp-2">
+                                        {inquiry.message}
+                                    </p>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[8px] font-black uppercase tracking-widest text-rose-600 bg-rose-600/10 px-2 py-1 rounded-md">
+                                            {inquiry.type}
+                                        </span>
+                                        <span className={`text-[8px] font-black uppercase tracking-widest ${inquiry.status === "New" ? "text-emerald-600" : "text-slate-400"}`}>
+                                            {inquiry.status === "New" ? "Verified Lead" : inquiry.status}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </Link>
+                        </Link>
+                    ))}
 
-                    {/* Inquiry 2 */}
-                    <Link
-                        to="/csm/provide/inquiries"
-                        className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
-                    >
-                        <div className="flex items-start gap-3">
-                            <div className="size-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-black text-sm shrink-0">
-                                AK
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-2 mb-1">
-                                    <p className="font-black text-sm">Amit Khanna</p>
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 shrink-0">5h ago</span>
-                                </div>
-                                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
-                                    Requesting structural audit for a bridge construction project on NH-8.
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-rose-600 bg-rose-600/10 px-2 py-1 rounded-md">
-                                        Infrastructure
-                                    </span>
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-amber-600">
-                                        New Request
-                                    </span>
-                                </div>
-                            </div>
+                    {recentInquiries.length === 0 && (
+                        <div className="text-center py-10 bg-slate-50 dark:bg-white/5 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/10">
+                            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No recent inquiries</p>
                         </div>
-                    </Link>
+                    )}
                 </div>
             </div>
 

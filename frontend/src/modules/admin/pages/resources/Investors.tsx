@@ -60,6 +60,7 @@ export default function Investors() {
     const [seekers, setSeekers] = useState(needInvestmentData);
     const [searchTerm, setSearchTerm] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [editingItem, setEditingItem] = useState<InvestorItem | SeekerItem | null>(null);
 
     // Form States
     const [investForm, setInvestForm] = useState<Partial<InvestorItem>>({});
@@ -82,38 +83,75 @@ export default function Investors() {
 
     const totalCount = activeTab === "invest" ? investors.length : seekers.length;
 
+    const handleOpenModal = (item?: InvestorItem | SeekerItem) => {
+        if (item) {
+            setEditingItem(item);
+            if (activeTab === "invest") {
+                setInvestForm(item as InvestorItem);
+            } else {
+                setSeekForm(item as SeekerItem);
+            }
+        } else {
+            setEditingItem(null);
+            setInvestForm({ status: "Active" });
+            setSeekForm({ status: "Pending" });
+        }
+        setShowModal(true);
+    };
+
+    const handleDelete = (id: string) => {
+        if (window.confirm("Are you sure you want to delete this entry?")) {
+            if (activeTab === "invest") {
+                setInvestors(investors.filter(i => i.id !== id));
+            } else {
+                setSeekers(seekers.filter(s => s.id !== id));
+            }
+        }
+    };
+
     const handleSave = () => {
         if (activeTab === "invest") {
             if (!investForm.name || !investForm.budget) return alert("Name and Budget are required");
-            const newItem: InvestorItem = {
-                id: Date.now().toString(),
-                name: investForm.name,
-                description: investForm.description || "",
-                location: investForm.location || "",
-                contact: investForm.contact || "",
-                email: investForm.email || "",
-                budget: investForm.budget,
-                status: "Active"
-            };
-            setInvestors([...investors, newItem]);
+
+            if (editingItem) {
+                setInvestors(investors.map(i => i.id === editingItem.id ? { ...i, ...investForm } as InvestorItem : i));
+            } else {
+                const newItem: InvestorItem = {
+                    id: Date.now().toString(),
+                    name: investForm.name!,
+                    description: investForm.description || "",
+                    location: investForm.location || "",
+                    contact: investForm.contact || "",
+                    email: investForm.email || "",
+                    budget: investForm.budget!,
+                    status: (investForm.status as "Active" | "Inactive") || "Active"
+                };
+                setInvestors([...investors, newItem]);
+            }
         } else {
             if (!seekForm.name || !seekForm.title || !seekForm.amountNeeded) return alert("Startup Name, Title and Amount are required");
-            const newItem: SeekerItem = {
-                id: Date.now().toString(),
-                name: seekForm.name,
-                title: seekForm.title,
-                description: seekForm.description || "",
-                location: seekForm.location || "",
-                contact: seekForm.contact || "",
-                email: seekForm.email || "",
-                amountNeeded: seekForm.amountNeeded,
-                status: "Pending" // Default status for new requests
-            };
-            setSeekers([...seekers, newItem]);
+
+            if (editingItem) {
+                setSeekers(seekers.map(s => s.id === editingItem.id ? { ...s, ...seekForm } as SeekerItem : s));
+            } else {
+                const newItem: SeekerItem = {
+                    id: Date.now().toString(),
+                    name: seekForm.name!,
+                    title: seekForm.title!,
+                    description: seekForm.description || "",
+                    location: seekForm.location || "",
+                    contact: seekForm.contact || "",
+                    email: seekForm.email || "",
+                    amountNeeded: seekForm.amountNeeded!,
+                    status: (seekForm.status as "Active" | "Funded" | "Pending") || "Pending"
+                };
+                setSeekers([...seekers, newItem]);
+            }
         }
         setShowModal(false);
         setInvestForm({});
         setSeekForm({});
+        setEditingItem(null);
     };
 
     return (
@@ -131,7 +169,10 @@ export default function Investors() {
                 </div>
                 <div className="flex bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-white/10">
                     <button
-                        onClick={() => setActiveTab("invest")}
+                        onClick={() => {
+                            setActiveTab("invest");
+                            setSearchTerm("");
+                        }}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === "invest"
                             ? "bg-primary text-white shadow-sm"
                             : "text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5"
@@ -140,7 +181,10 @@ export default function Investors() {
                         Ready to Invest
                     </button>
                     <button
-                        onClick={() => setActiveTab("seek")}
+                        onClick={() => {
+                            setActiveTab("seek");
+                            setSearchTerm("");
+                        }}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === "seek"
                             ? "bg-primary text-white shadow-sm"
                             : "text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5"
@@ -164,11 +208,7 @@ export default function Investors() {
                     />
                 </div>
                 <button
-                    onClick={() => {
-                        setInvestForm({});
-                        setSeekForm({});
-                        setShowModal(true);
-                    }}
+                    onClick={() => handleOpenModal()}
                     className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors"
                 >
                     <Plus className="w-4 h-4" />
@@ -200,7 +240,7 @@ export default function Investors() {
             {/* Content Grid */}
             <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {(activeTab === "invest" ? filteredInvestors : filteredSeekers).map((item: any) => (
-                    <div key={item.id} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-6">
+                    <div key={item.id} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-6 flex flex-col h-full">
                         <div className="flex items-start justify-between mb-4">
                             <div className="p-3 rounded-lg bg-primary/10">
                                 <DollarSign className="w-6 h-6 text-primary" />
@@ -221,7 +261,7 @@ export default function Investors() {
                         )}
                         <p className="text-sm text-slate-500 dark:text-white/50 mb-4 line-clamp-2">{item.description}</p>
 
-                        <div className="space-y-2 text-sm mb-4">
+                        <div className="space-y-2 text-sm mb-4 flex-grow">
                             <div className="flex items-center gap-2 text-slate-600 dark:text-white/60">
                                 <DollarSign className="w-4 h-4 text-slate-400" />
                                 <span className="font-semibold">{activeTab === "invest" ? item.budget : item.amountNeeded}</span>
@@ -236,12 +276,18 @@ export default function Investors() {
                             </div>
                         </div>
 
-                        <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-white/5">
-                            <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                        <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-white/5 mt-auto">
+                            <button
+                                onClick={() => handleOpenModal(item)}
+                                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                            >
                                 <Edit2 className="w-4 h-4" />
                                 Edit
                             </button>
-                            <button className="px-3 py-2 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                            <button
+                                onClick={() => handleDelete(item.id)}
+                                className="px-3 py-2 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                            >
                                 <Trash2 className="w-4 h-4" />
                             </button>
                         </div>
@@ -276,7 +322,10 @@ export default function Investors() {
                         >
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                                    {activeTab === "invest" ? "Add New Investment" : "Post Funding Request"}
+                                    {editingItem
+                                        ? (activeTab === "invest" ? "Edit Investment" : "Edit Funding Request")
+                                        : (activeTab === "invest" ? "Add New Investment" : "Post Funding Request")
+                                    }
                                 </h3>
                                 <button onClick={() => setShowModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg">
                                     <X className="w-5 h-5 text-slate-500" />
@@ -347,6 +396,17 @@ export default function Investors() {
                                             placeholder="Describe investment focus..."
                                         />
                                     </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">Status</label>
+                                        <select
+                                            value={investForm.status || "Active"}
+                                            onChange={e => setInvestForm({ ...investForm, status: e.target.value as "Active" | "Inactive" })}
+                                            className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                        >
+                                            <option value="Active">Active</option>
+                                            <option value="Inactive">Inactive</option>
+                                        </select>
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="space-y-4">
@@ -411,6 +471,18 @@ export default function Investors() {
                                             placeholder="Detail your funding requirements..."
                                         />
                                     </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">Status</label>
+                                        <select
+                                            value={seekForm.status || "Pending"}
+                                            onChange={e => setSeekForm({ ...seekForm, status: e.target.value as any })}
+                                            className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                        >
+                                            <option value="Pending">Pending</option>
+                                            <option value="Active">Active</option>
+                                            <option value="Funded">Funded</option>
+                                        </select>
+                                    </div>
                                 </div>
                             )}
 
@@ -422,7 +494,7 @@ export default function Investors() {
                                     onClick={handleSave}
                                     className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
                                 >
-                                    Save
+                                    {editingItem ? "Save Changes" : "Save Entry"}
                                 </button>
                             </div>
                         </motion.div>

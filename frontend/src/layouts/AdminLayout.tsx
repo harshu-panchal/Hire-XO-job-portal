@@ -4,8 +4,10 @@ import { AdminSidebar } from "../modules/admin/components/AdminSidebar";
 import { AdminHeader } from "../modules/admin/components/AdminHeader";
 import { Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "../context/ThemeContext";
 
 export default function AdminLayout() {
+    const { effectiveTheme } = useTheme();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const location = useLocation();
 
@@ -30,7 +32,7 @@ export default function AdminLayout() {
     };
 
     return (
-        <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors duration-300 font-sans">
+        <div className={`flex h-screen overflow-hidden transition-colors duration-300 font-sans ${effectiveTheme} ${effectiveTheme === 'dark' ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
             {/* Desktop Sidebar (Persistent) */}
             <aside className="hidden lg:flex w-[280px] flex-shrink-0">
                 <AdminSidebar />

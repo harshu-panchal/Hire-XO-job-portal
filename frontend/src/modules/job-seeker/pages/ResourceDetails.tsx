@@ -51,12 +51,22 @@ const ResourceDetails = () => {
     }
 
     const handleApply = () => {
-        applyToResource(resource.id);
-        setShowSuccess(true);
+        if (resource) {
+            applyToResource(resource.id);
+            setShowSuccess(true);
+        }
+    };
+
+    const handleShare = () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            alert("Resource link copied to clipboard!");
+        });
     };
 
     // Category-specific colors
     const categoryColors: Record<string, { bg: string; text: string }> = {
+        Investor: { bg: "bg-amber-500/10", text: "text-amber-600" },
         Tenders: { bg: "bg-purple-500/10", text: "text-purple-600" },
         Logistics: { bg: "bg-orange-500/10", text: "text-orange-600" },
         Equipments: { bg: "bg-emerald-500/10", text: "text-emerald-600" },
@@ -117,12 +127,15 @@ const ResourceDetails = () => {
                     <ChevronLeft className="size-6" />
                 </button>
                 <div className="flex gap-3">
-                    <button className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all">
+                    <button
+                        onClick={handleShare}
+                        className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+                    >
                         <Share2 className="size-5 text-slate-400" />
                     </button>
                     <button
                         onClick={() => toggleBookmark(resource.id)}
-                        className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+                        className={`size-11 flex items-center justify-center rounded-2xl border transition-all active:scale-90 ${isBookmarked ? "bg-primary/10 border-primary" : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10"}`}
                     >
                         <Bookmark
                             className={`size-5 ${isBookmarked ? "fill-primary text-primary" : "text-slate-400"}`}
@@ -300,8 +313,8 @@ const ResourceDetails = () => {
                         onClick={handleApply}
                         disabled={isApplied}
                         className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${isApplied
-                                ? "bg-green-500 text-white shadow-green-500/20 cursor-not-allowed"
-                                : "bg-primary text-white shadow-xl shadow-primary/20"
+                            ? "bg-green-500 text-white shadow-green-500/20 cursor-not-allowed"
+                            : "bg-primary text-white shadow-xl shadow-primary/20"
                             }`}
                     >
                         {isApplied ? (

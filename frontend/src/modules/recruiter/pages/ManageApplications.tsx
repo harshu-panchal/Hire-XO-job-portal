@@ -140,7 +140,10 @@ const ManageApplications = () => {
                       </p>
                     </div>
                   </div>
-                  <button className="size-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400">
+                  <button
+                    onClick={() => alert("Candidate options coming soon!")}
+                    className="size-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 active:scale-90 transition-all"
+                  >
                     <MoreVertical className="size-5" />
                   </button>
                 </div>
@@ -180,7 +183,10 @@ const ManageApplications = () => {
                 </div>
               </div>
 
-              <button className="w-full h-12 bg-slate-50 dark:bg-white/5 flex items-center justify-center gap-2 border-t border-slate-100 dark:border-white/5 active:bg-slate-100 transition-all">
+              <button
+                onClick={() => handleRestrictedAction("View Candidate Profile")}
+                className="w-full h-12 bg-slate-50 dark:bg-white/5 flex items-center justify-center gap-2 border-t border-slate-100 dark:border-white/5 active:bg-slate-100 transition-all"
+              >
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
                   View Full Profile
                 </span>

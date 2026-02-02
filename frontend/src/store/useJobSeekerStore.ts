@@ -3,6 +3,8 @@ import type { Job, Certificate, UserProfile } from "../types";
 
 interface JobSeekerState {
   jobs: Job[];
+  appliedJobIds: string[];
+  savedJobIds: string[];
   certificates: Certificate[];
   userProfile: UserProfile | null;
   filters: {
@@ -13,13 +15,17 @@ interface JobSeekerState {
   setType: (type: string) => void;
   addCertificate: (cert: Certificate) => void;
   setUserProfile: (profile: UserProfile) => void;
+  updateProfile: (profile: Partial<UserProfile>) => void;
   purchaseSubscription: (planId: string) => void;
   fetchJobs: () => void;
+  toggleSaveJob: (jobId: string) => void;
+  applyJob: (jobId: string) => void;
 }
 
 export const useJobSeekerStore = create<JobSeekerState>((set) => ({
-  // ... existing state
   jobs: [],
+  appliedJobIds: JSON.parse(localStorage.getItem('appliedJobIds') || '[]'),
+  savedJobIds: JSON.parse(localStorage.getItem('savedJobIds') || '[]'),
   certificates: [
     {
       id: "CERT-12345",
@@ -32,9 +38,23 @@ export const useJobSeekerStore = create<JobSeekerState>((set) => ({
   ],
   userProfile: {
     id: "1",
-    name: "John Doe",
-    email: "john@example.com",
+    name: "Alex Rivera",
+    email: "alex.rivera@example.com",
     role: "job-seeker",
+    phoneNumber: "+91 98765 43210",
+    profilePhoto: "https://lh3.googleusercontent.com/aida-public/AB6AXuB52noQXoXSZycc1KYch8EW4T9oo08uRX0jjaTWO-ZXI9KH7kXiFp4C4EIVcj7XRZQHfQxQRXN3JXPFfWFxIY_KWVxuw01aSLxW4yQGuQfCxOuK4enRMwXeN3bLH8YYD4yENN8V4V6fLbEskfALN7RDpj9jPejjrnJZr14jNii9GzuFR-A-QqVsM66zFIdR06lslE0evUGvO5VmUZuUTf1XarrZhHh9g0sz-3JpEzYztx0mei_n26BzLtKcxjPhJ9qlEHJyiujQYuzP",
+    bio: "Senior React Developer with a passion for building high-performance web applications and mentored 20+ junior developers.",
+    skills: ["React", "TypeScript", "Tailwind CSS", "Node.js", "Figma"],
+    experience: [
+      { company: "TechFlow", role: "Senior Developer", period: "2021 - Present" },
+      { company: "DesignHub", role: "Frontend Engineer", period: "2019 - 2021" },
+    ],
+    education: [
+      { school: "University of Technology", degree: "B.Tech in CS", period: "2015 - 2019" },
+    ],
+    githubUrl: "https://github.com/alexrivera",
+    linkedinUrl: "https://linkedin.com/in/alexrivera",
+    twitterUrl: "https://twitter.com/alexrivera",
     interviewSuccessRate: 65,
   },
   filters: {
@@ -45,12 +65,30 @@ export const useJobSeekerStore = create<JobSeekerState>((set) => ({
   setType: (type) => set((state) => ({ filters: { ...state.filters, type } })),
   addCertificate: (cert) => set((state) => ({ certificates: [...state.certificates, cert] })),
   setUserProfile: (profile) => set({ userProfile: profile }),
+  updateProfile: (updatedFields) => set((state) => ({
+    userProfile: state.userProfile ? { ...state.userProfile, ...updatedFields } : null
+  })),
   purchaseSubscription: (planId) =>
     set((state) => ({
       userProfile: state.userProfile
         ? { ...state.userProfile, activeSubscriptionId: planId }
         : null,
     })),
+  toggleSaveJob: (jobId) =>
+    set((state) => {
+      const newSaved = state.savedJobIds.includes(jobId)
+        ? state.savedJobIds.filter((id) => id !== jobId)
+        : [...state.savedJobIds, jobId];
+      localStorage.setItem('savedJobIds', JSON.stringify(newSaved));
+      return { savedJobIds: newSaved };
+    }),
+  applyJob: (jobId) =>
+    set((state) => {
+      if (state.appliedJobIds.includes(jobId)) return state;
+      const newApplied = [...state.appliedJobIds, jobId];
+      localStorage.setItem('appliedJobIds', JSON.stringify(newApplied));
+      return { appliedJobIds: newApplied };
+    }),
   fetchJobs: () => {
     // Mocking API call with enhanced job details
     const mockJobs: Job[] = [

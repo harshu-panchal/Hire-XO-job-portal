@@ -1,8 +1,52 @@
+import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, PlusSquare, Users, Settings, Bell } from "lucide-react";
+import { LayoutDashboard, PlusSquare, Users, Settings, Bell, CheckCircle, Clock, Star, Info } from "lucide-react";
+import { NotificationDropdown, type Notification } from "../components/NotificationDropdown";
+
+const notifications: Notification[] = [
+  {
+    id: 1,
+    title: "New Application",
+    description: "A new candidate applied for the Senior Front-end Developer position.",
+    time: "10m ago",
+    type: "success",
+    icon: CheckCircle,
+    unread: true,
+  },
+  {
+    id: 2,
+    title: "Subscription Renewal",
+    description: "Your Business Plan will expire in 3 days. Renew now to avoid interruption.",
+    time: "2h ago",
+    type: "warning",
+    icon: Info,
+    unread: true,
+  },
+  {
+    id: 3,
+    title: "Profile Viewed",
+    description: "50 job seekers viewed your company profile today.",
+    time: "5h ago",
+    type: "info",
+    icon: Star,
+    unread: false,
+  }
+];
 
 const RecruiterLayout = () => {
   const location = useLocation();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifs, setNotifs] = useState(notifications);
+
+  const unreadCount = notifs.filter(n => n.unread).length;
+
+  const handleMarkAllRead = () => {
+    setNotifs(prev => prev.map(n => ({ ...n, unread: false })));
+  };
+
+  const handleMarkRead = (id: number) => {
+    setNotifs(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
+  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -22,11 +66,28 @@ const RecruiterLayout = () => {
               Hire <span className="text-primary">XO</span>
             </span>
           </Link>
-          <div className="flex gap-2.5">
-            <button className="relative size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all">
-              <Bell className="size-5 text-slate-400" />
-              <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-4 ring-slate-50 dark:ring-background"></span>
+          <div className="flex gap-2.5 relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${showNotifications
+                ? "bg-primary/10 border-primary text-primary"
+                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400"
+                }`}
+            >
+              <Bell className="size-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-4 ring-slate-50 dark:ring-background animate-pulse"></span>
+              )}
             </button>
+
+            <NotificationDropdown
+              isOpen={showNotifications}
+              onClose={() => setShowNotifications(false)}
+              notifications={notifs}
+              onMarkAllRead={handleMarkAllRead}
+              onNotificationClick={handleMarkRead}
+              viewAllPath="/recruiter/notifications"
+            />
           </div>
         </div>
       </header>

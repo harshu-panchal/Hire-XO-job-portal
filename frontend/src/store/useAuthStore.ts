@@ -49,10 +49,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "investor-1",
                             email: credentials.email,
                             name: "Premium Investor",
+                            username: "premium_investor",
                             role: "resource",
                             profile: {
                                 id: "prof-investor-1",
                                 name: "Premium Investor",
+                                username: "premium_investor",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 95,
@@ -66,10 +68,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "investor-2",
                             email: credentials.email,
                             name: "Startup Founder",
+                            username: "startup_founder",
                             role: "resource",
                             profile: {
                                 id: "prof-investor-2",
                                 name: "Startup Founder",
+                                username: "startup_founder",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 85,
@@ -83,10 +87,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "tender-1",
                             email: credentials.email,
                             name: "Tender Applicant",
+                            username: "tender_applicant",
                             role: "resource",
                             profile: {
                                 id: "prof-tender-1",
                                 name: "Tender Applicant",
+                                username: "tender_applicant",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 88,
@@ -100,10 +106,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "tender-2",
                             email: credentials.email,
                             name: "Tender Provider",
+                            username: "tender_provider",
                             role: "resource",
                             profile: {
                                 id: "prof-tender-2",
                                 name: "Tender Provider",
+                                username: "tender_provider",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 92,
@@ -117,10 +125,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "equipment-1",
                             email: credentials.email,
                             name: "Equipment Renter",
+                            username: "equip_renter",
                             role: "resource",
                             profile: {
                                 id: "prof-equipment-1",
                                 name: "Equipment Renter",
+                                username: "equip_renter",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 85,
@@ -134,10 +144,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "equipment-2",
                             email: credentials.email,
                             name: "Equipment Provider",
+                            username: "equip_provider",
                             role: "resource",
                             profile: {
                                 id: "prof-equipment-2",
                                 name: "Equipment Provider",
+                                username: "equip_provider",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 90,
@@ -151,10 +163,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "machinery-1",
                             email: credentials.email,
                             name: "Machinery Buyer",
+                            username: "machine_buyer",
                             role: "resource",
                             profile: {
                                 id: "prof-machinery-1",
                                 name: "Machinery Buyer",
+                                username: "machine_buyer",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 87,
@@ -168,10 +182,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "machinery-2",
                             email: credentials.email,
                             name: "Machinery Seller",
+                            username: "machine_seller",
                             role: "resource",
                             profile: {
                                 id: "prof-machinery-2",
                                 name: "Machinery Seller",
+                                username: "machine_seller",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 93,
@@ -185,10 +201,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "pmc-1",
                             email: credentials.email,
                             name: "PMC Hirer",
+                            username: "pmc_hirer",
                             role: "resource",
                             profile: {
                                 id: "prof-pmc-1",
                                 name: "PMC Hirer",
+                                username: "pmc_hirer",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 89,
@@ -202,10 +220,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "pmc-2",
                             email: credentials.email,
                             name: "PMC Provider",
+                            username: "pmc_provider",
                             role: "resource",
                             profile: {
                                 id: "prof-pmc-2",
                                 name: "PMC Provider",
+                                username: "pmc_provider",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 94,
@@ -219,10 +239,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "csm-1",
                             email: credentials.email,
                             name: "CSM Hirer",
+                            username: "csm_hirer",
                             role: "resource",
                             profile: {
                                 id: "prof-csm-1",
                                 name: "CSM Hirer",
+                                username: "csm_hirer",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 86,
@@ -236,10 +258,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "csm-2",
                             email: credentials.email,
                             name: "CSM Provider",
+                            username: "csm_provider",
                             role: "resource",
                             profile: {
                                 id: "prof-csm-2",
                                 name: "CSM Provider",
+                                username: "csm_provider",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 91,
@@ -253,10 +277,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "logistics-1",
                             email: credentials.email,
                             name: "Logistics Seeker",
+                            username: "logistics_seeker",
                             role: "resource",
                             profile: {
                                 id: "prof-logistics-1",
                                 name: "Logistics Seeker",
+                                username: "logistics_seeker",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 84,
@@ -270,10 +296,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "logistics-2",
                             email: credentials.email,
                             name: "Logistics Provider",
+                            username: "logistics_provider",
                             role: "resource",
                             profile: {
                                 id: "prof-logistics-2",
                                 name: "Logistics Provider",
+                                username: "logistics_provider",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 95,
@@ -287,10 +315,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "vehicle-1",
                             email: credentials.email,
                             name: "Vehicle Renter",
+                            username: "vehicle_renter",
                             role: "resource",
                             profile: {
                                 id: "prof-vehicle-1",
                                 name: "Vehicle Renter",
+                                username: "vehicle_renter",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 83,
@@ -304,10 +334,12 @@ export const useAuthStore = create<AuthState>()(
                             id: "vehicle-2",
                             email: credentials.email,
                             name: "Vehicle Provider",
+                            username: "vehicle_provider",
                             role: "resource",
                             profile: {
                                 id: "prof-vehicle-2",
                                 name: "Vehicle Provider",
+                                username: "vehicle_provider",
                                 email: credentials.email,
                                 role: "resource",
                                 interviewSuccessRate: 96,
@@ -321,10 +353,12 @@ export const useAuthStore = create<AuthState>()(
                             id: Math.random().toString(36).substr(2, 9),
                             email: credentials.email,
                             name: "User Name",
+                            username: "user_" + Math.random().toString(36).substr(2, 5),
                             role: credentials.role,
                             profile: {
                                 id: Math.random().toString(36).substr(2, 9),
                                 name: "User Name",
+                                username: "user_" + Math.random().toString(36).substr(2, 5),
                                 email: credentials.email,
                                 role: credentials.role,
                                 interviewSuccessRate: 0,
@@ -351,29 +385,35 @@ export const useAuthStore = create<AuthState>()(
                     // Create user based on role
                     let userName = "";
                     let userEmail = "";
+                    let username = "";
 
                     if (role === "job-seeker") {
                         const jobSeekerData = data as JobSeekerSignupData;
                         userName = jobSeekerData.name;
                         userEmail = jobSeekerData.email;
+                        username = jobSeekerData.username;
                     } else if (role === "recruiter") {
                         const recruiterData = data as RecruiterSignupData;
                         userName = recruiterData.name;
                         userEmail = recruiterData.email;
+                        username = recruiterData.username;
                     } else if (role === "resource") {
                         const resourceData = data as ResourceSignupData;
                         userName = resourceData.name;
                         userEmail = resourceData.email;
+                        username = resourceData.username;
                     }
 
                     const newUser: User = {
                         id: Math.random().toString(36).substr(2, 9),
                         email: userEmail,
                         name: userName,
+                        username: username,
                         role: role,
                         profile: {
                             id: Math.random().toString(36).substr(2, 9),
                             name: userName,
+                            username: username,
                             email: userEmail,
                             role: role,
                             interviewSuccessRate: 0,

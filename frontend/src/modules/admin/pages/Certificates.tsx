@@ -41,6 +41,14 @@ export default function Certificates() {
     const [searchTerm, setSearchTerm] = useState("");
     const [showModal, setShowModal] = useState(false);
 
+    // Form State
+    const [formData, setFormData] = useState({
+        type: "Verified Recruiter",
+        issuedTo: "",
+        issueDate: "",
+        expiryDate: ""
+    });
+
     const filteredCertificates = certificates.filter(c =>
         c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.issuedTo.toLowerCase().includes(searchTerm.toLowerCase())
@@ -50,6 +58,27 @@ export default function Certificates() {
         if (window.confirm("Are you sure you want to delete this certificate?")) {
             setCertificates(certificates.filter(c => c.id !== id));
         }
+    };
+
+    const handleIssue = () => {
+        if (!formData.issuedTo || !formData.issueDate || !formData.expiryDate) {
+            alert("Please fill all fields");
+            return;
+        }
+
+        const newCertificate: Certificate = {
+            id: `CERT${String(certificates.length + 1).padStart(3, '0')}`,
+            name: formData.type,
+            issuer: "Hire-XO",
+            issuedTo: formData.issuedTo,
+            issueDate: new Date(formData.issueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            expiryDate: new Date(formData.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            status: "Active"
+        };
+
+        setCertificates([...certificates, newCertificate]);
+        setShowModal(false);
+        setFormData({ type: "Verified Recruiter", issuedTo: "", issueDate: "", expiryDate: "" });
     };
 
     const activeCount = certificates.filter(c => c.status === "Active").length;
@@ -138,10 +167,10 @@ export default function Certificates() {
                                 <Shield className="w-6 h-6 text-primary" />
                             </div>
                             <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${cert.status === 'Active'
-                                    ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
-                                    : cert.status === 'Expired'
-                                        ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400'
-                                        : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
+                                ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
+                                : cert.status === 'Expired'
+                                    ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400'
+                                    : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
                                 }`}>
                                 {cert.status}
                             </span>
@@ -218,7 +247,11 @@ export default function Certificates() {
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">Certificate Type</label>
-                                    <select className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <select
+                                        value={formData.type}
+                                        onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    >
                                         <option>Verified Recruiter</option>
                                         <option>Premium Partner</option>
                                         <option>Trusted Employer</option>
@@ -228,6 +261,8 @@ export default function Certificates() {
                                     <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">Issue To (Company)</label>
                                     <input
                                         type="text"
+                                        value={formData.issuedTo}
+                                        onChange={(e) => setFormData({ ...formData, issuedTo: e.target.value })}
                                         className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                                     />
                                 </div>
@@ -236,6 +271,8 @@ export default function Certificates() {
                                         <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">Issue Date</label>
                                         <input
                                             type="date"
+                                            value={formData.issueDate}
+                                            onChange={(e) => setFormData({ ...formData, issueDate: e.target.value })}
                                             className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                                         />
                                     </div>
@@ -243,6 +280,8 @@ export default function Certificates() {
                                         <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">Expiry Date</label>
                                         <input
                                             type="date"
+                                            value={formData.expiryDate}
+                                            onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
                                             className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                                         />
                                     </div>
@@ -252,7 +291,10 @@ export default function Certificates() {
                                 <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                                     Cancel
                                 </button>
-                                <button className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+                                <button
+                                    onClick={handleIssue}
+                                    className="flex-1 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                                >
                                     Issue Certificate
                                 </button>
                             </div>

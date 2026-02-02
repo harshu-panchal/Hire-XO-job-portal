@@ -17,6 +17,7 @@ const RecruiterSignup = () => {
 
     const [formData, setFormData] = useState({
         name: "",
+        username: "",
         company: "",
         phoneNumber: "",
         email: "",
@@ -32,7 +33,7 @@ const RecruiterSignup = () => {
         setError("");
 
         // Validation
-        if (!formData.name || !formData.company || !formData.phoneNumber || !formData.email) {
+        if (!formData.name || !formData.username || !formData.company || !formData.phoneNumber || !formData.email) {
             setError("Please fill in all required fields");
             return;
         }
@@ -60,6 +61,7 @@ const RecruiterSignup = () => {
         try {
             const signupData: RecruiterSignupData = {
                 name: formData.name,
+                username: formData.username,
                 company: formData.company,
                 phoneNumber: formData.phoneNumber,
                 email: formData.email,
@@ -119,6 +121,22 @@ const RecruiterSignup = () => {
                                     placeholder="John Doe"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Username */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Username</label>
+                            <div className="relative group">
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                                <Input
+                                    type="text"
+                                    placeholder="johndoe_recruiter"
+                                    value={formData.username}
+                                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                     className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                                     required
                                 />

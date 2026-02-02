@@ -1,5 +1,5 @@
-import { Check, Zap, Sparkles, Rocket } from "lucide-react";
-
+import { Check, Zap, Sparkles, Rocket, ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useJobSeekerStore } from "@/store/useJobSeekerStore";
 
 const PLANS = [
@@ -34,18 +34,27 @@ const PLANS = [
 ];
 
 const Subscriptions = () => {
+  const navigate = useNavigate();
   const { userProfile, purchaseSubscription } = useJobSeekerStore();
   const activePlanId = userProfile?.activeSubscriptionId;
 
   return (
     <div className="py-8 space-y-10 select-none">
-      <div className="text-center space-y-3 px-4">
-        <h1 className="text-4xl font-black tracking-tight leading-tight">
-          Choose Your <span className="text-primary">Growth</span>
-        </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-sm uppercase tracking-widest">
-          Premium features to accelerate your career
-        </p>
+      <div className="flex items-center gap-4 px-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all shadow-sm"
+        >
+          <ChevronLeft className="size-6" />
+        </button>
+        <div className="space-y-1">
+          <h1 className="text-2xl font-black tracking-tight leading-tight">
+            Choose Your <span className="text-primary">Growth</span>
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+            Premium features to accelerate your career
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-8 pb-10">
@@ -53,8 +62,8 @@ const Subscriptions = () => {
           <div
             key={plan.id}
             className={`relative rounded-[3rem] p-8 border-2 transition-all duration-300 active:scale-[0.98] ${plan.popular
-                ? "bg-slate-900 border-primary shadow-2xl shadow-primary/20 text-white"
-                : "bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white"
+              ? "bg-slate-900 border-primary shadow-2xl shadow-primary/20 text-white"
+              : "bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white"
               }`}
           >
             {plan.popular && (
@@ -98,12 +107,15 @@ const Subscriptions = () => {
             </div>
 
             <button
-              onClick={() => purchaseSubscription(plan.id)}
+              onClick={() => {
+                purchaseSubscription(plan.id);
+                alert(`Successfully upgraded to ${plan.name} plan!`);
+              }}
               className={`w-full py-5 rounded-[2rem] text-sm font-black uppercase tracking-[0.2em] transition-all active:scale-90 shadow-xl ${activePlanId === plan.id
-                  ? "bg-green-500 text-white shadow-green-500/20"
-                  : plan.popular
-                    ? "bg-white text-slate-900 shadow-white/10"
-                    : "bg-primary text-white shadow-primary/20"
+                ? "bg-green-500 text-white shadow-green-500/20"
+                : plan.popular
+                  ? "bg-white text-slate-900 shadow-white/10"
+                  : "bg-primary text-white shadow-primary/20"
                 }`}
             >
               {activePlanId === plan.id ? "Current Plan" : "Upgrade Now"}

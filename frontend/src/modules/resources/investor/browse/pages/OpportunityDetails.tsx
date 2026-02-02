@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
     ArrowLeft,
@@ -13,7 +14,19 @@ import {
 } from "lucide-react";
 
 const OpportunityDetails = () => {
-    useParams();
+    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [isExpressing, setIsExpressing] = useState(false);
+    const [hasExpressed, setHasExpressed] = useState(false);
+
+    const handleExpressInterest = () => {
+        setIsExpressing(true);
+        // Simulate API call
+        setTimeout(() => {
+            setIsExpressing(false);
+            setHasExpressed(true);
+            alert("Your interest has been shared with the company! They will review your profile and get in touch.");
+        }, 1200);
+    };
 
     // Mock data - in real app, fetch based on id
     const opportunity = {
@@ -33,7 +46,7 @@ const OpportunityDetails = () => {
         founded: "2019",
         employees: "45-50",
         revenue: "₹12 Cr (FY 2023-24)",
-        bookmarked: false,
+        bookmarked: isBookmarked,
         details: {
             useOfFunds: [
                 { item: "Product Development & R&D", percentage: 40, amount: "₹2 Cr" },
@@ -102,10 +115,27 @@ const OpportunityDetails = () => {
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <button className="size-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all">
-                            <Bookmark className="size-5 text-slate-400" />
+                        <button
+                            onClick={() => setIsBookmarked(!isBookmarked)}
+                            className="size-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all"
+                        >
+                            <Bookmark className={`size-5 ${isBookmarked ? "fill-primary text-primary" : "text-slate-400"}`} />
                         </button>
-                        <button className="size-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all">
+                        <button
+                            onClick={() => {
+                                if (navigator.share) {
+                                    navigator.share({
+                                        title: opportunity.title,
+                                        text: `Check out this investment opportunity from ${opportunity.company}: ${opportunity.title}`,
+                                        url: window.location.href,
+                                    }).catch(console.error);
+                                } else {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    alert("Link copied to clipboard!");
+                                }
+                            }}
+                            className="size-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all"
+                        >
                             <Share2 className="size-5 text-slate-400" />
                         </button>
                     </div>
@@ -283,8 +313,27 @@ const OpportunityDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full py-5 rounded-[1.5rem] bg-gradient-to-r from-primary to-primary/80 text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all">
-                Express Interest
+            <button
+                onClick={handleExpressInterest}
+                disabled={isExpressing || hasExpressed}
+                className={`w-full py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-70 disabled:scale-100 ${hasExpressed
+                        ? "bg-emerald-600 text-white shadow-emerald-600/20"
+                        : "bg-gradient-to-r from-primary to-primary/80 text-white shadow-primary/20"
+                    }`}
+            >
+                {isExpressing ? (
+                    <span className="flex items-center justify-center gap-2">
+                        <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Processing...
+                    </span>
+                ) : hasExpressed ? (
+                    <span className="flex items-center justify-center gap-2">
+                        <CheckCircle2 className="size-5" />
+                        Interest Expressed
+                    </span>
+                ) : (
+                    "Express Interest"
+                )}
             </button>
         </div>
     );

@@ -35,7 +35,10 @@ const ResourcesList = () => {
 
                 {/* Stats Section */}
                 <div className="grid gap-4 py-2">
-                    <div className="bg-primary/5 border border-primary/10 rounded-[2.5rem] p-6 flex items-center justify-between active:scale-95 transition-transform duration-200">
+                    <button
+                        onClick={() => setCategory("Tenders")}
+                        className="w-full bg-primary/5 border border-primary/10 rounded-[2.5rem] p-6 flex items-center justify-between active:scale-95 transition-transform duration-200 text-left"
+                    >
                         <div className="flex items-center gap-4">
                             <div className="size-14 rounded-2xl bg-primary/10 flex items-center justify-center">
                                 <CheckCircle2 className="size-7 text-primary" />
@@ -50,10 +53,13 @@ const ResourcesList = () => {
                         <div className="text-[10px] font-black bg-primary/10 text-primary px-3 py-1 rounded-full uppercase tracking-widest">
                             Open to All
                         </div>
-                    </div>
+                    </button>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
+                        <button
+                            onClick={() => setCategory("all")}
+                            className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
+                        >
                             <div className="size-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4">
                                 <Package className="size-6 text-purple-500" />
                             </div>
@@ -64,9 +70,12 @@ const ResourcesList = () => {
                             <p className="text-[8px] font-black uppercase tracking-widest text-purple-500/60 mt-2">
                                 All Available
                             </p>
-                        </div>
+                        </button>
 
-                        <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
+                        <button
+                            onClick={() => setSearch("Tech")}
+                            className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
+                        >
                             <div className="size-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4">
                                 <TrendingUp className="size-6 text-emerald-500" />
                             </div>
@@ -77,7 +86,7 @@ const ResourcesList = () => {
                             <p className="text-[8px] font-black uppercase tracking-widest text-emerald-500/60 mt-2">
                                 New Listings
                             </p>
-                        </div>
+                        </button>
                     </div>
                 </div>
 

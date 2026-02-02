@@ -1,40 +1,40 @@
-import { Eye, MessageSquare, MoreVertical, Edit3, Trash2, ShieldCheck } from "lucide-react";
+import { Eye, MessageSquare, MoreVertical, Edit3, Trash2, ShieldCheck, ArrowLeft, Plus } from "lucide-react";
+import { useCSMStore } from "@/store/useCSMStore";
+import { useNavigate } from "react-router-dom";
 
 const MyServices = () => {
-    const services = [
-        {
-            id: 1,
-            title: "Expert Structural Site Supervision",
-            category: "Residential",
-            views: 320,
-            inquiries: 8,
-            status: "Active",
-            postedDate: "Jan 12, 2026",
-        },
-        {
-            id: 2,
-            title: "Total Quality Management (TQM) Audit",
-            category: "Commercial",
-            views: 150,
-            inquiries: 4,
-            status: "Under Review",
-            postedDate: "Jan 25, 2026",
-        },
-    ];
+    const { myServices, deleteService } = useCSMStore();
+    const navigate = useNavigate();
+
+    const handleDelete = (id: string) => {
+        if (confirm("Are you sure you want to delete this listing?")) {
+            deleteService(id);
+        }
+    };
 
     return (
         <div className="py-6 space-y-8 select-none">
             {/* Header */}
-            <div className="space-y-1 px-1">
-                <h1 className="text-3xl font-black tracking-tighter">My Listings</h1>
-                <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
-                    Manage your active CSM offerings
-                </p>
+            <div className="space-y-4 px-1">
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => navigate("/csm/provide/dashboard")}
+                        className="size-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-slate-400 active:scale-95 transition-all"
+                    >
+                        <ArrowLeft className="size-5" />
+                    </button>
+                    <div>
+                        <h1 className="text-3xl font-black tracking-tighter">My Listings</h1>
+                        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
+                            Manage your active CSM offerings
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {/* List */}
             <div className="space-y-4">
-                {services.map((service) => (
+                {myServices.map((service) => (
                     <div
                         key={service.id}
                         className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-6 border border-slate-200 dark:border-white/10 shadow-sm"
@@ -71,23 +71,19 @@ const MyServices = () => {
                                 <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
                                     <Eye className="size-4 text-slate-400" />
                                 </div>
-                                {service.views > 0 && (
-                                    <div>
-                                        <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Views</p>
-                                        <p className="text-xs font-black italic">{service.views}</p>
-                                    </div>
-                                )}
+                                <div>
+                                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Views</p>
+                                    <p className="text-xs font-black italic">{service.views}</p>
+                                </div>
                             </div>
                             <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl flex items-center gap-3">
                                 <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
                                     <MessageSquare className="size-4 text-slate-400" />
                                 </div>
-                                {service.inquiries > 0 && (
-                                    <div>
-                                        <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Leads</p>
-                                        <p className="text-xs font-black italic">{service.inquiries}</p>
-                                    </div>
-                                )}
+                                <div>
+                                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Leads</p>
+                                    <p className="text-xs font-black italic">{service.inquiries}</p>
+                                </div>
                             </div>
                         </div>
 
@@ -96,19 +92,32 @@ const MyServices = () => {
                                 <Edit3 className="size-3.5" />
                                 Edit Listing
                             </button>
-                            <button className="h-12 rounded-2xl bg-red-500/10 text-red-600 border border-red-500/10 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                            <button
+                                onClick={() => handleDelete(service.id)}
+                                className="h-12 rounded-2xl bg-red-500/10 text-red-600 border border-red-500/10 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                            >
                                 <Trash2 className="size-3.5" />
                                 Delete
                             </button>
                         </div>
                     </div>
                 ))}
+
+                {myServices.length === 0 && (
+                    <div className="text-center py-20 bg-slate-50 dark:bg-white/5 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/10">
+                        <div className="size-16 bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+                            <ShieldCheck className="size-7 text-slate-300" />
+                        </div>
+                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No active services</p>
+                    </div>
+                )}
             </div>
 
             <button
-                onClick={() => { }}
+                onClick={() => navigate("/csm/provide/post")}
                 className="w-full h-16 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/10 flex items-center justify-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-rose-600 hover:text-rose-600 transition-all active:scale-[0.98]"
             >
+                <Plus className="size-4" />
                 Post New CSM Offering
             </button>
         </div>

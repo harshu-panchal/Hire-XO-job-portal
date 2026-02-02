@@ -37,6 +37,7 @@ export interface Certificate {
 export interface UserProfile {
   id: string;
   name: string;
+  username?: string;
   email: string;
   role: "job-seeker" | "recruiter" | "resource" | "admin";
   interviewSuccessRate: number;
@@ -48,6 +49,13 @@ export interface UserProfile {
   company?: string;
   companyLogo?: string;
   profilePhoto?: string;
+  bio?: string;
+  skills?: string[];
+  experience?: Array<{ company: string; role: string; period: string }>;
+  education?: Array<{ school: string; degree: string; period: string }>;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  twitterUrl?: string;
   resourceCategory?: ResourceCategory;
   investorType?: InvestorType;
   tenderType?: TenderType;
@@ -126,6 +134,7 @@ export interface LoginCredentials {
 
 export interface JobSeekerSignupData {
   name: string;
+  username: string;
   phoneNumber: string;
   email: string;
   education: string;
@@ -139,6 +148,7 @@ export interface JobSeekerSignupData {
 
 export interface RecruiterSignupData {
   name: string;
+  username: string;
   company: string;
   phoneNumber: string;
   email: string;
@@ -149,6 +159,7 @@ export interface RecruiterSignupData {
 
 export interface ResourceSignupData {
   name: string;
+  username: string;
   organizationName: string;
   phoneNumber: string;
   email: string;
@@ -182,6 +193,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  username: string;
   role: UserRole;
   profile: UserProfile;
   createdAt: string;

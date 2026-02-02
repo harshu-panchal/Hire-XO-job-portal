@@ -42,6 +42,28 @@ export default function Payments() {
     const [payments] = useState(paymentsData);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
+    const [isExporting, setIsExporting] = useState(false);
+
+    const handleExport = async () => {
+        setIsExporting(true);
+        await new Promise(resolve => setTimeout(resolve, 1200));
+
+        const headers = ["Transaction ID", "User", "Email", "Plan", "Amount", "Status", "Date", "Method"];
+        const rows = payments.map(p => [p.id, p.user, p.email, p.plan, p.amount, p.status, p.date, p.method]);
+        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `hire-xo-payments-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setIsExporting(false);
+    };
 
     const filteredPayments = payments.filter(p => {
         const matchesSearch = p.user.toLowerCase().includes(searchTerm.toLowerCase()) || p.id.toLowerCase().includes(searchTerm.toLowerCase());
@@ -66,9 +88,13 @@ export default function Payments() {
                     <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Payments</h1>
                     <p className="text-slate-500 dark:text-white/60 mt-1">Track and manage all transactions</p>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors">
-                    <Download className="w-4 h-4" />
-                    Export
+                <button
+                    onClick={handleExport}
+                    disabled={isExporting}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
+                    {isExporting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Download className="w-4 h-4" />}
+                    {isExporting ? "Exporting..." : "Export"}
                 </button>
             </motion.div>
 
@@ -171,10 +197,10 @@ export default function Payments() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${payment.status === 'Completed'
-                                                ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
-                                                : payment.status === 'Pending'
-                                                    ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400'
-                                                    : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
+                                            ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
+                                            : payment.status === 'Pending'
+                                                ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400'
+                                                : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
                                             }`}>
                                             {payment.status === 'Completed' && <CheckCircle className="w-3 h-3" />}
                                             {payment.status === 'Pending' && <Clock className="w-3 h-3" />}

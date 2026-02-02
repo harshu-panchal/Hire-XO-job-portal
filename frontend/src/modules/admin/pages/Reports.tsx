@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion, type Variants } from "framer-motion";
 import {
     LineChart,
@@ -48,8 +49,32 @@ const itemVariants: Variants = {
         transition: { type: "spring", stiffness: 300, damping: 25 }
     }
 } as const;
-
 export default function Reports() {
+    const [isExporting, setIsExporting] = useState(false);
+
+    const handleExport = async () => {
+        setIsExporting(true);
+        // Simulate preparation
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Simple CSV generation
+        const headers = ["Month", "Users", "Revenue", "Jobs"];
+        const rows = monthlyData.map(d => [d.name, d.users, d.revenue, d.jobs]);
+        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `hire-xo-report-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setIsExporting(false);
+    };
+
     return (
         <motion.div
             variants={containerVariants}
@@ -69,9 +94,17 @@ export default function Reports() {
                         <option>Last 90 days</option>
                         <option>This Year</option>
                     </select>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors">
-                        <Download className="w-4 h-4" />
-                        Export
+                    <button
+                        onClick={handleExport}
+                        disabled={isExporting}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
+                    >
+                        {isExporting ? (
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                            <Download className="w-4 h-4" />
+                        )}
+                        {isExporting ? "Exporting..." : "Export"}
                     </button>
                 </div>
             </motion.div>
