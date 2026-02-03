@@ -1,1028 +1,230 @@
 import { create } from "zustand";
-import type { Resource, ResourceCategory } from "../types";
+import { resourceService, type ResourceType } from "../services/resourceService";
+import { applicationService } from "../services/applicationService";
+import { userService } from "../services/userService";
+import type { Resource } from "../types";
 
 interface ResourceState {
     resources: Resource[];
+    myResources: Resource[];
+    applications: any[];
+    bookmarkedResources: string[];
+    isLoading: boolean;
+    error: string | null;
     filters: {
         search: string;
-        category: ResourceCategory | "all";
+        type: string;
     };
-    bookmarkedResources: string[];
-    applications: string[];
 
-    // Actions
+    // Resource Actions
+    fetchResources: (resourceType: ResourceType, filters?: any) => Promise<void>;
+    getResourceById: (resourceType: ResourceType, id: string) => Promise<Resource | undefined>;
+    createResource: (resourceType: ResourceType, resourceData: Partial<Resource>) => Promise<void>;
+    updateResource: (resourceType: ResourceType, id: string, resourceData: Partial<Resource>) => Promise<void>;
+    deleteResource: (resourceType: ResourceType, id: string) => Promise<void>;
+    fetchMyResources: (resourceType: ResourceType) => Promise<void>;
+
+    // Application Actions
+    applyToResource: (resourceType: string, resourceId: string, applicationData: any) => Promise<void>;
+    fetchResourceApplications: (resourceType: string, resourceId: string) => Promise<void>;
+
+    // Filter Actions
     setSearch: (search: string) => void;
-    setCategory: (category: ResourceCategory | "all") => void;
-    fetchResources: () => void;
-    applyToResource: (resourceId: string) => void;
-    toggleBookmark: (resourceId: string) => void;
+    setType: (type: string) => void;
+
+    // Bookmark Actions
+    saveResource: (id: string) => Promise<void>;
+    unsaveResource: (id: string) => Promise<void>;
+    toggleBookmark: (id: string) => Promise<void>;
+
+    // Utility
+    clearError: () => void;
 }
 
-export const useResourceStore = create<ResourceState>((set) => ({
+export const useResourceStore = create<ResourceState>((set, get) => ({
     resources: [],
-    bookmarkedResources: JSON.parse(localStorage.getItem('bookmarkedResources') || '[]'),
-    applications: JSON.parse(localStorage.getItem('resourceApplications') || '[]'),
+    myResources: [],
+    applications: [],
+    bookmarkedResources: [],
+    isLoading: false,
+    error: null,
     filters: {
-        search: "",
-        category: "all",
+        search: '',
+        type: 'all',
     },
 
-    setSearch: (search) => set((state) => ({ filters: { ...state.filters, search } })),
-    setCategory: (category) => set((state) => ({ filters: { ...state.filters, category } })),
+    setSearch: (search: string) => {
+        set((state) => ({
+            filters: { ...state.filters, search }
+        }));
+    },
 
-    applyToResource: (resourceId) => set((state) => {
-        if (state.applications.includes(resourceId)) return state;
-        const newApps = [...state.applications, resourceId];
-        localStorage.setItem('resourceApplications', JSON.stringify(newApps));
-        return { applications: newApps };
-    }),
+    setType: (type: string) => {
+        set((state) => ({
+            filters: { ...state.filters, type }
+        }));
+    },
 
-    toggleBookmark: (resourceId) => set((state) => {
-        const newBookmarks = state.bookmarkedResources.includes(resourceId)
-            ? state.bookmarkedResources.filter(id => id !== resourceId)
-            : [...state.bookmarkedResources, resourceId];
-        localStorage.setItem('bookmarkedResources', JSON.stringify(newBookmarks));
-        return { bookmarkedResources: newBookmarks };
-    }),
+    fetchResources: async (resourceType: ResourceType, filters?: any) => {
+        set({ isLoading: true, error: null });
+        try {
+            const resources = await resourceService.getAll(resourceType, filters);
+            set({ resources, isLoading: false });
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to fetch resources',
+                isLoading: false
+            });
+        }
+    },
 
-    fetchResources: () => {
-        // Comprehensive mock data for all 8 categories
-        const mockResources: Resource[] = [
-            // INVESTOR (4 resources)
-            {
-                id: "I1",
-                title: "Seed Funding for Tech Startup",
-                company: "InnovateTech Solutions",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=IT&backgroundColor=f59e0b&fontFamily=Arial&fontWeight=700",
-                location: "Bangalore, Karnataka",
-                compensation: "₹50L - ₹2Cr",
-                type: "Project-based",
-                postedAt: "2 days ago",
-                category: "Investor",
-                description: "Seeking seed funding for our AI-powered SaaS platform. We have a working MVP with 500+ beta users and are looking for strategic investors to scale operations.",
-                requirements: [
-                    "Investment range: ₹50L - ₹2Cr",
-                    "Technology sector experience preferred",
-                    "Willing to provide mentorship and network access",
-                    "Long-term investment horizon (3-5 years)",
-                ],
-                responsibilities: [
-                    "Provide capital as per agreed terms",
-                    "Offer strategic guidance and mentorship",
-                    "Facilitate introductions to potential clients/partners",
-                    "Participate in quarterly board meetings",
-                ],
-                benefits: [
-                    "Equity stake in high-growth startup",
-                    "Potential 10x returns in 5 years",
-                    "Tax benefits under Startup India scheme",
-                    "Portfolio diversification opportunity",
-                ],
-                duration: "5 years",
-                urgency: "Within Week",
-            },
-            {
-                id: "I2",
-                title: "Real Estate Development Investment",
-                company: "UrbanSpaces Developers",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=UD&backgroundColor=f59e0b&fontFamily=Arial&fontWeight=700",
-                location: "Gurgaon, Haryana",
-                compensation: "₹5Cr - ₹20Cr",
-                type: "Project-based",
-                postedAt: "1 week ago",
-                category: "Investor",
-                description: "Premium residential project investment opportunity. 5-acre land parcel with all approvals in place. Looking for co-investors for development of 200 luxury apartments.",
-                requirements: [
-                    "Investment: ₹5Cr minimum",
-                    "Real estate sector experience",
-                    "Understanding of RERA regulations",
-                    "3-year investment commitment",
-                ],
-                responsibilities: [
-                    "Provide funding as per project milestones",
-                    "Review project progress reports",
-                    "Approve major project decisions",
-                    "Support in marketing and sales if needed",
-                ],
-                benefits: [
-                    "Expected 25-30% ROI in 3 years",
-                    "Secured by land and construction assets",
-                    "Exit options at multiple stages",
-                    "Professional project management team",
-                ],
-                duration: "36 months",
-                urgency: "Immediate",
-            },
-            {
-                id: "I3",
-                title: "Manufacturing Unit Expansion Funding",
-                company: "PrecisionParts Manufacturing",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=PM&backgroundColor=f59e0b&fontFamily=Arial&fontWeight=700",
-                location: "Pune, Maharashtra",
-                compensation: "₹3Cr - ₹10Cr",
-                type: "Contract",
-                postedAt: "4 days ago",
-                category: "Investor",
-                description: "Established auto-parts manufacturer seeking growth capital to expand production capacity and add new product lines. Current annual revenue: ₹50Cr with 15% profit margins.",
-                requirements: [
-                    "Investment: ₹3Cr - ₹10Cr",
-                    "Manufacturing/Industrial sector knowledge",
-                    "Comfortable with debt + equity structure",
-                    "5-year investment horizon",
-                ],
-                responsibilities: [
-                    "Provide capital for expansion",
-                    "Quarterly performance reviews",
-                    "Strategic guidance on operations",
-                    "Support in vendor/client relationships",
-                ],
-                benefits: [
-                    "Established business with proven track record",
-                    "Guaranteed 12% annual returns + profit sharing",
-                    "Asset-backed security",
-                    "Buyback option after 5 years",
-                ],
-                duration: "60 months",
-                urgency: "Flexible",
-            },
-            {
-                id: "I4",
-                title: "Green Energy Project Investment",
-                company: "SolarWave Energy",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=SE&backgroundColor=f59e0b&fontFamily=Arial&fontWeight=700",
-                location: "Rajasthan",
-                compensation: "₹10Cr - ₹50Cr",
-                type: "Project-based",
-                postedAt: "3 days ago",
-                category: "Investor",
-                description: "100 MW solar power plant project with 25-year PPA from state electricity board. Seeking investors for project financing with government-backed revenue guarantee.",
-                requirements: [
-                    "Investment: ₹10Cr minimum",
-                    "Interest in renewable energy sector",
-                    "Long-term investment appetite (10+ years)",
-                    "Understanding of power sector dynamics",
-                ],
-                responsibilities: [
-                    "Provide project financing",
-                    "Review technical and financial reports",
-                    "Participate in lender meetings",
-                    "Support in regulatory approvals",
-                ],
-                benefits: [
-                    "Government-backed PPA for 25 years",
-                    "Stable 14-16% annual returns",
-                    "Tax benefits and depreciation advantages",
-                    "Contribution to clean energy transition",
-                ],
-                duration: "10 years",
-                urgency: "Within Week",
-            },
+    getResourceById: async (resourceType: ResourceType, id: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const resource = await resourceService.getById(resourceType, id);
+            set({ isLoading: false });
+            return resource;
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to fetch resource',
+                isLoading: false
+            });
+            return undefined;
+        }
+    },
 
-            // MACHINERY (4 resources)
-            {
-                id: "M1",
-                title: "CNC Machining Center - High Precision",
-                company: "TechMach Industries",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=TM&backgroundColor=64748b&fontFamily=Arial&fontWeight=700",
-                location: "Coimbatore, Tamil Nadu",
-                compensation: "₹12,000 - ₹18,000 per day",
-                type: "Rental",
-                postedAt: "1 day ago",
-                category: "Machinery",
-                description: "5-axis CNC machining center available for rental. Ideal for aerospace, automotive, and precision engineering applications. Includes trained operator.",
-                requirements: [
-                    "5-axis CNC machine in excellent condition",
-                    "Certified operator with 5+ years experience",
-                    "Precision tolerance capability (±0.005mm)",
-                    "Regular maintenance records",
-                ],
-                responsibilities: [
-                    "Operate CNC machine as per job requirements",
-                    "Perform quality checks and measurements",
-                    "Maintain machine and perform daily checks",
-                    "Coordinate with production team",
-                ],
-                benefits: [
-                    "Premium rental rates for precision work",
-                    "Long-term contracts available",
-                    "Maintenance support provided",
-                    "Opportunity for multiple projects",
-                ],
-                duration: "6 months",
-                urgency: "Immediate",
-            },
-            {
-                id: "M2",
-                title: "Industrial Lathe Machine Operator",
-                company: "MetalWorks Manufacturing",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=MW&backgroundColor=64748b&fontFamily=Arial&fontWeight=700",
-                location: "Faridabad, Haryana",
-                compensation: "₹35,000 - ₹50,000 per month",
-                type: "Contract",
-                postedAt: "3 days ago",
-                category: "Machinery",
-                description: "Need experienced lathe machine operator for metal fabrication unit. Must be skilled in operating conventional and CNC lathes for various metal components.",
-                requirements: [
-                    "ITI/Diploma in Mechanical Engineering",
-                    "5+ years lathe operation experience",
-                    "Ability to read technical drawings",
-                    "Knowledge of different metals and cutting tools",
-                ],
-                responsibilities: [
-                    "Operate lathe machines for production",
-                    "Set up jobs and select appropriate tools",
-                    "Inspect finished products for quality",
-                    "Maintain machine and workspace cleanliness",
-                ],
-                benefits: [
-                    "Competitive monthly salary",
-                    "Overtime opportunities",
-                    "Skill development programs",
-                    "Performance bonuses",
-                ],
-                duration: "12 months",
-                urgency: "Within Week",
-            },
-            {
-                id: "M3",
-                title: "Hydraulic Press Machine - 200 Ton",
-                company: "AutoParts Manufacturers",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=AM&backgroundColor=64748b&fontFamily=Arial&fontWeight=700",
-                location: "Chennai, Tamil Nadu",
-                compensation: "₹8,000 - ₹12,000 per day",
-                type: "Rental",
-                postedAt: "5 hours ago",
-                category: "Machinery",
-                description: "200-ton hydraulic press machine needed for automotive component manufacturing. Must be capable of stamping, forming, and deep drawing operations.",
-                requirements: [
-                    "200-ton capacity hydraulic press",
-                    "Programmable controls and safety features",
-                    "Experienced operator included",
-                    "Good working condition with service history",
-                ],
-                responsibilities: [
-                    "Operate press for stamping/forming operations",
-                    "Set up dies and tooling",
-                    "Monitor pressure and quality parameters",
-                    "Perform preventive maintenance",
-                ],
-                benefits: [
-                    "Guaranteed daily rental for 4 months",
-                    "Advance payment for first month",
-                    "Extension based on performance",
-                    "Technical support from client team",
-                ],
-                duration: "4 months",
-                urgency: "Immediate",
-            },
-            {
-                id: "M4",
-                title: "Injection Molding Machine - Plastic Parts",
-                company: "PlastiPro Industries",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=PI&backgroundColor=64748b&fontFamily=Arial&fontWeight=700",
-                location: "Ahmedabad, Gujarat",
-                compensation: "₹10,000 - ₹15,000 per day",
-                type: "Rental",
-                postedAt: "2 days ago",
-                category: "Machinery",
-                description: "High-capacity injection molding machine for plastic component production. Need machine with 250-ton clamping force for automotive and consumer goods parts.",
-                requirements: [
-                    "250-ton injection molding machine",
-                    "Servo motor drive for energy efficiency",
-                    "Automated material handling system",
-                    "Skilled technician for operation",
-                ],
-                responsibilities: [
-                    "Set up molds and production parameters",
-                    "Monitor production quality and cycle time",
-                    "Perform color changes and material switches",
-                    "Maintain machine and troubleshoot issues",
-                ],
-                benefits: [
-                    "High-volume production contract",
-                    "Material cost reimbursement",
-                    "Performance incentives",
-                    "Long-term partnership opportunity",
-                ],
-                duration: "8 months",
-                urgency: "Within Week",
-            },
+    createResource: async (resourceType: ResourceType, resourceData: Partial<Resource>) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await resourceService.create(resourceType, resourceData);
+            set((state) => ({
+                myResources: [...state.myResources, response.resource],
+                isLoading: false
+            }));
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to create resource',
+                isLoading: false
+            });
+            throw error;
+        }
+    },
 
-            // TENDERS (4 resources)
-            {
-                id: "T1",
-                title: "Construction Material Supply Tender",
-                company: "BuildPro Infrastructure",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=BP&backgroundColor=7c3aed&fontFamily=Arial&fontWeight=700",
-                location: "Mumbai, Maharashtra",
-                compensation: "₹25L - ₹50L",
-                type: "Contract",
-                postedAt: "1 day ago",
-                category: "Tenders",
-                description: "We are inviting tenders for the supply of high-quality construction materials for our upcoming residential project in Mumbai. The selected vendor will be responsible for timely delivery and quality assurance.",
-                requirements: [
-                    "Valid GST registration and trade license",
-                    "Minimum 3 years experience in construction material supply",
-                    "Ability to supply materials worth ₹25L+ per month",
-                    "Quality certifications (ISO 9001 preferred)",
-                ],
-                responsibilities: [
-                    "Supply construction materials as per project specifications",
-                    "Ensure timely delivery to project site",
-                    "Maintain quality standards throughout the contract period",
-                    "Provide necessary documentation and certifications",
-                ],
-                benefits: [
-                    "Long-term contract opportunity",
-                    "Timely payment within 30 days",
-                    "Potential for future projects",
-                    "Direct engagement with project management",
-                ],
-                duration: "12 months",
-                urgency: "Within Week",
-            },
-            {
-                id: "T2",
-                title: "Road Development Project Tender",
-                company: "State Highway Authority",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=SHA&backgroundColor=7c3aed&fontFamily=Arial&fontWeight=700",
-                location: "Pune, Maharashtra",
-                compensation: "₹1Cr - ₹5Cr",
-                type: "Project-based",
-                postedAt: "3 days ago",
-                category: "Tenders",
-                description: "Tender for road development and maintenance project covering 25km stretch of state highway. Includes road widening, resurfacing, and drainage system installation.",
-                requirements: [
-                    "Class A contractor license",
-                    "Previous experience in highway projects (minimum 5 years)",
-                    "Equipment and machinery for road construction",
-                    "Financial capability to handle ₹1Cr+ projects",
-                ],
-                responsibilities: [
-                    "Complete road development as per technical specifications",
-                    "Manage project timeline and milestones",
-                    "Ensure quality control and safety standards",
-                    "Submit progress reports and documentation",
-                ],
-                benefits: [
-                    "Government project with assured payment",
-                    "Performance-based incentives",
-                    "Opportunity for future highway projects",
-                    "Technical support from department",
-                ],
-                duration: "18 months",
-                urgency: "Immediate",
-            },
-            {
-                id: "T3",
-                title: "IT Infrastructure Setup Tender",
-                company: "TechCorp Solutions",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=TC&backgroundColor=7c3aed&fontFamily=Arial&fontWeight=700",
-                location: "Bangalore, Karnataka",
-                compensation: "₹15L - ₹30L",
-                type: "Contract",
-                postedAt: "5 hours ago",
-                category: "Tenders",
-                description: "Tender for complete IT infrastructure setup including networking, servers, workstations, and security systems for our new office campus.",
-                requirements: [
-                    "Authorized dealer/partner of major IT brands",
-                    "Minimum 2 years experience in enterprise IT setup",
-                    "Technical team for installation and configuration",
-                    "Post-installation support capability",
-                ],
-                responsibilities: [
-                    "Procure and install IT equipment as per specifications",
-                    "Configure network infrastructure and security systems",
-                    "Provide training to IT staff",
-                    "Offer 1-year warranty and support",
-                ],
-                benefits: [
-                    "Single-window contract for entire setup",
-                    "Milestone-based payments",
-                    "AMC opportunity post-installation",
-                    "Reference for future projects",
-                ],
-                duration: "6 months",
-                urgency: "Within Week",
-            },
-            {
-                id: "T4",
-                title: "Catering Services Tender - Industrial Complex",
-                company: "Mega Manufacturing Ltd",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=MM&backgroundColor=7c3aed&fontFamily=Arial&fontWeight=700",
-                location: "Ahmedabad, Gujarat",
-                compensation: "₹8L - ₹12L per annum",
-                type: "Contract",
-                postedAt: "2 days ago",
-                category: "Tenders",
-                description: "Seeking catering service providers for our industrial complex serving 500+ employees daily. Must provide hygienic, nutritious meals for breakfast, lunch, and evening snacks.",
-                requirements: [
-                    "FSSAI license and health certifications",
-                    "Experience in industrial/corporate catering (minimum 2 years)",
-                    "Capacity to serve 500+ meals daily",
-                    "Own kitchen setup and delivery vehicles",
-                ],
-                responsibilities: [
-                    "Prepare and serve meals as per approved menu",
-                    "Maintain hygiene and food safety standards",
-                    "Manage kitchen staff and operations",
-                    "Handle feedback and quality improvements",
-                ],
-                benefits: [
-                    "Stable monthly revenue",
-                    "Long-term contract with renewal option",
-                    "Dedicated kitchen space provided",
-                    "Timely payment guaranteed",
-                ],
-                duration: "24 months",
-                urgency: "Flexible",
-            },
+    updateResource: async (resourceType: ResourceType, id: string, resourceData: Partial<Resource>) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await resourceService.update(resourceType, id, resourceData);
+            set((state) => ({
+                myResources: state.myResources.map(r =>
+                    r.id === id ? response.resource : r
+                ),
+                isLoading: false
+            }));
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to update resource',
+                isLoading: false
+            });
+            throw error;
+        }
+    },
 
-            // LOGISTICS (4 resources)
-            {
-                id: "L1",
-                title: "Interstate Freight Transportation",
-                company: "LogiMove Express",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=LM&backgroundColor=f97316&fontFamily=Arial&fontWeight=700",
-                location: "Delhi NCR",
-                compensation: "₹2,000 - ₹3,500 per trip",
-                type: "Contract",
-                postedAt: "6 hours ago",
-                category: "Logistics",
-                description: "Looking for reliable truck operators for interstate freight transportation. Regular routes between Delhi-Mumbai-Bangalore. Immediate joining for qualified drivers with own vehicles.",
-                requirements: [
-                    "Valid commercial driving license",
-                    "Own truck (10-ton capacity minimum)",
-                    "Minimum 3 years interstate driving experience",
-                    "Clean driving record and insurance",
-                ],
-                responsibilities: [
-                    "Transport goods safely between designated locations",
-                    "Maintain delivery schedules and timelines",
-                    "Handle loading and unloading supervision",
-                    "Submit trip reports and documentation",
-                ],
-                benefits: [
-                    "Guaranteed minimum trips per month",
-                    "Fuel advance provided",
-                    "Insurance coverage during transit",
-                    "Performance bonuses",
-                ],
-                duration: "12 months",
-                urgency: "Immediate",
-            },
-            {
-                id: "L2",
-                title: "Last-Mile Delivery Partners",
-                company: "QuickShip Logistics",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=QS&backgroundColor=f97316&fontFamily=Arial&fontWeight=700",
-                location: "Bangalore, Karnataka",
-                compensation: "₹25 - ₹40 per delivery",
-                type: "Temporary",
-                postedAt: "1 day ago",
-                category: "Logistics",
-                description: "Hiring delivery partners for last-mile e-commerce deliveries in Bangalore. Flexible hours, own two-wheeler required. Earn based on number of deliveries completed.",
-                requirements: [
-                    "Own two-wheeler with valid documents",
-                    "Smartphone with GPS capability",
-                    "Basic knowledge of Bangalore routes",
-                    "Ability to handle 30-50 deliveries per day",
-                ],
-                responsibilities: [
-                    "Pick up packages from warehouse/hub",
-                    "Deliver to customers within assigned area",
-                    "Collect payment for COD orders",
-                    "Maintain delivery app and update status",
-                ],
-                benefits: [
-                    "Flexible working hours",
-                    "Weekly payouts",
-                    "Fuel reimbursement",
-                    "Incentives for high performance",
-                ],
-                urgency: "Within Week",
-            },
-            {
-                id: "L3",
-                title: "Warehouse Operations Manager",
-                company: "StoreSafe Warehousing",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=SS&backgroundColor=f97316&fontFamily=Arial&fontWeight=700",
-                location: "Pune, Maharashtra",
-                compensation: "₹40,000 - ₹60,000 per month",
-                type: "Contract",
-                postedAt: "4 days ago",
-                category: "Logistics",
-                description: "Seeking experienced warehouse operations manager to oversee inventory management, staff coordination, and logistics operations for our 50,000 sq ft facility.",
-                requirements: [
-                    "5+ years warehouse management experience",
-                    "Knowledge of inventory management systems",
-                    "Team handling experience (20+ staff)",
-                    "Understanding of safety and compliance regulations",
-                ],
-                responsibilities: [
-                    "Manage daily warehouse operations and staff",
-                    "Oversee inventory accuracy and stock management",
-                    "Coordinate with logistics and procurement teams",
-                    "Ensure safety compliance and quality standards",
-                ],
-                benefits: [
-                    "Competitive salary package",
-                    "Performance-based bonuses",
-                    "Health insurance coverage",
-                    "Career growth opportunities",
-                ],
-                duration: "18 months",
-                urgency: "Flexible",
-            },
-            {
-                id: "L4",
-                title: "Cold Chain Transportation Service",
-                company: "FreshMove Logistics",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=FM&backgroundColor=f97316&fontFamily=Arial&fontWeight=700",
-                location: "Hyderabad, Telangana",
-                compensation: "₹3,500 - ₹5,000 per trip",
-                type: "Contract",
-                postedAt: "12 hours ago",
-                category: "Logistics",
-                description: "Specialized cold chain transportation for perishable goods. Need refrigerated truck operators for pharmaceutical and food product delivery across South India.",
-                requirements: [
-                    "Refrigerated truck (reefer) with temperature control",
-                    "Experience in cold chain logistics (minimum 2 years)",
-                    "Understanding of temperature-sensitive cargo handling",
-                    "Valid permits and certifications for food/pharma transport",
-                ],
-                responsibilities: [
-                    "Maintain temperature-controlled environment during transit",
-                    "Ensure timely delivery of perishable goods",
-                    "Monitor and log temperature readings",
-                    "Handle documentation and compliance requirements",
-                ],
-                benefits: [
-                    "Premium rates for specialized service",
-                    "Regular routes with guaranteed loads",
-                    "Maintenance support for refrigeration units",
-                    "Long-term partnership opportunity",
-                ],
-                duration: "24 months",
-                urgency: "Immediate",
-            },
+    deleteResource: async (resourceType: ResourceType, id: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            await resourceService.delete(resourceType, id);
+            set((state) => ({
+                myResources: state.myResources.filter(r => r.id !== id),
+                isLoading: false
+            }));
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to delete resource',
+                isLoading: false
+            });
+            throw error;
+        }
+    },
 
-            // EQUIPMENTS (4 resources)
-            {
-                id: "E1",
-                title: "Excavator Rental - Construction Site",
-                company: "BuildTech Developers",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=BT&backgroundColor=10b981&fontFamily=Arial&fontWeight=700",
-                location: "Noida, Uttar Pradesh",
-                compensation: "₹8,000 - ₹12,000 per day",
-                type: "Rental",
-                postedAt: "2 days ago",
-                category: "Equipments",
-                description: "Need excavator with operator for foundation work at construction site. 3-month rental required for residential project. Must have experience in urban construction.",
-                requirements: [
-                    "20-ton excavator in good working condition",
-                    "Experienced operator with valid license",
-                    "Minimum 2 years construction site experience",
-                    "Own maintenance and fuel arrangements",
-                ],
-                responsibilities: [
-                    "Excavation work as per site requirements",
-                    "Operate equipment safely following site protocols",
-                    "Perform daily equipment checks and maintenance",
-                    "Coordinate with site engineer for work planning",
-                ],
-                benefits: [
-                    "Guaranteed daily rental for 3 months",
-                    "Advance payment for first month",
-                    "Accommodation for operator if needed",
-                    "Extension possibility based on performance",
-                ],
-                duration: "3 months",
-                urgency: "Within Week",
-            },
-            {
-                id: "E2",
-                title: "Tower Crane Operator Needed",
-                company: "SkyHigh Constructions",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=SH&backgroundColor=10b981&fontFamily=Arial&fontWeight=700",
-                location: "Gurgaon, Haryana",
-                compensation: "₹50,000 - ₹70,000 per month",
-                type: "Contract",
-                postedAt: "1 day ago",
-                category: "Equipments",
-                description: "Hiring certified tower crane operator for high-rise construction project. Must have experience operating tower cranes for buildings above 20 floors.",
-                requirements: [
-                    "Valid tower crane operator certification",
-                    "Minimum 5 years high-rise construction experience",
-                    "Knowledge of safety protocols and regulations",
-                    "Ability to work at heights and in varying weather",
-                ],
-                responsibilities: [
-                    "Operate tower crane for material lifting and placement",
-                    "Coordinate with ground crew via radio communication",
-                    "Conduct pre-operation safety checks",
-                    "Maintain operation logs and reports",
-                ],
-                benefits: [
-                    "Competitive monthly salary",
-                    "Accommodation and food provided",
-                    "Insurance coverage",
-                    "Overtime pay for extra hours",
-                ],
-                duration: "18 months",
-                urgency: "Immediate",
-            },
-            {
-                id: "E3",
-                title: "Concrete Mixer & Pump Equipment",
-                company: "MixPro Equipment Rentals",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=MP&backgroundColor=10b981&fontFamily=Arial&fontWeight=700",
-                location: "Chennai, Tamil Nadu",
-                compensation: "₹15,000 - ₹20,000 per day",
-                type: "Rental",
-                postedAt: "5 hours ago",
-                category: "Equipments",
-                description: "Looking for concrete mixer truck and pump equipment for commercial building project. Need equipment with experienced operators for continuous operation.",
-                requirements: [
-                    "Transit mixer (6-8 cubic meter capacity)",
-                    "Concrete pump with 30m+ reach",
-                    "Certified operators for both equipment",
-                    "Equipment in excellent working condition",
-                ],
-                responsibilities: [
-                    "Supply ready-mix concrete as per specifications",
-                    "Pump concrete to designated locations",
-                    "Maintain equipment and ensure zero downtime",
-                    "Follow site safety and quality standards",
-                ],
-                benefits: [
-                    "High daily rental rates",
-                    "Guaranteed work for 6 months",
-                    "Fuel cost reimbursement",
-                    "Bonus for timely completion",
-                ],
-                duration: "6 months",
-                urgency: "Immediate",
-            },
-            {
-                id: "E4",
-                title: "Generator Set Rental - Event Management",
-                company: "PowerUp Events",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=PU&backgroundColor=10b981&fontFamily=Arial&fontWeight=700",
-                location: "Jaipur, Rajasthan",
-                compensation: "₹5,000 - ₹8,000 per day",
-                type: "Rental",
-                postedAt: "3 days ago",
-                category: "Equipments",
-                description: "Need 100-150 KVA silent diesel generator sets for outdoor events and weddings. Multiple units required for peak season (October-March).",
-                requirements: [
-                    "Silent DG sets (100-150 KVA capacity)",
-                    "Well-maintained with recent service records",
-                    "Technician available for on-site support",
-                    "Transportation arrangement for equipment",
-                ],
-                responsibilities: [
-                    "Deliver and install generator at event venue",
-                    "Ensure continuous power supply during event",
-                    "Provide fuel and technical support",
-                    "Dismantle and remove equipment post-event",
-                ],
-                benefits: [
-                    "Multiple bookings during season",
-                    "Advance booking calendar",
-                    "Premium rates for peak dates",
-                    "Long-term partnership for recurring events",
-                ],
-                urgency: "Flexible",
-            },
+    fetchMyResources: async (resourceType: ResourceType) => {
+        set({ isLoading: true, error: null });
+        try {
+            const myResources = await resourceService.getMyListings(resourceType);
+            set({ myResources, isLoading: false });
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to fetch my resources',
+                isLoading: false
+            });
+        }
+    },
 
-            // VEHICLES (4 resources)
-            {
-                id: "V1",
-                title: "Luxury Car Rental for Corporate",
-                company: "EliteDrive Rentals",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=ED&backgroundColor=3b82f6&fontFamily=Arial&fontWeight=700",
-                location: "Mumbai, Maharashtra",
-                compensation: "₹3,500 - ₹5,000 per day",
-                type: "Rental",
-                postedAt: "1 day ago",
-                category: "Vehicles",
-                description: "Looking for luxury sedan owners to partner for corporate car rental service. Vehicles will be used for airport transfers and business meetings. Professional chauffeur service preferred.",
-                requirements: [
-                    "Luxury sedan (BMW, Mercedes, Audi) 2020 or newer",
-                    "Excellent vehicle condition with full service history",
-                    "Professional chauffeur with clean driving record",
-                    "Commercial vehicle permit and insurance",
-                ],
-                responsibilities: [
-                    "Provide well-maintained luxury vehicle with driver",
-                    "Ensure punctuality for corporate bookings",
-                    "Maintain vehicle cleanliness and presentation",
-                    "Follow professional service standards",
-                ],
-                benefits: [
-                    "Guaranteed minimum bookings per month",
-                    "Premium rental rates",
-                    "Fuel and maintenance reimbursement",
-                    "Long-term contract with corporate clients",
-                ],
-                duration: "12 months",
-                urgency: "Within Week",
-            },
-            {
-                id: "V2",
-                title: "School Bus Driver - Morning & Evening Shifts",
-                company: "Bright Future Academy",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=BF&backgroundColor=3b82f6&fontFamily=Arial&fontWeight=700",
-                location: "Bangalore, Karnataka",
-                compensation: "₹25,000 - ₹35,000 per month",
-                type: "Contract",
-                postedAt: "4 days ago",
-                category: "Vehicles",
-                description: "Hiring experienced school bus drivers for student transportation. Must have clean driving record and experience with children. Two shifts: morning (6 AM - 9 AM) and evening (2 PM - 5 PM).",
-                requirements: [
-                    "Valid commercial driving license for heavy vehicles",
-                    "Minimum 3 years bus driving experience",
-                    "Police verification clearance",
-                    "Patient and responsible attitude with children",
-                ],
-                responsibilities: [
-                    "Pick up and drop students on designated routes",
-                    "Ensure student safety during transit",
-                    "Maintain bus cleanliness and basic maintenance",
-                    "Follow traffic rules and school protocols",
-                ],
-                benefits: [
-                    "Fixed monthly salary",
-                    "Fuel and maintenance covered by school",
-                    "Sundays and holidays off",
-                    "Annual bonus and increment",
-                ],
-                duration: "12 months",
-                urgency: "Immediate",
-            },
-            {
-                id: "V3",
-                title: "Tempo Traveller for Tourism",
-                company: "WanderWheels Tours",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=WW&backgroundColor=3b82f6&fontFamily=Arial&fontWeight=700",
-                location: "Goa",
-                compensation: "₹4,000 - ₹6,000 per day",
-                type: "Rental",
-                postedAt: "2 days ago",
-                category: "Vehicles",
-                description: "Need 12-17 seater tempo travellers for tourism packages. Peak season approaching, looking for well-maintained vehicles with experienced drivers for Goa sightseeing tours.",
-                requirements: [
-                    "Tempo Traveller (12-17 seater) in excellent condition",
-                    "AC working, comfortable seating, music system",
-                    "Driver with knowledge of Goa tourist spots",
-                    "Valid tourist permit and insurance",
-                ],
-                responsibilities: [
-                    "Provide vehicle for full-day/multi-day tours",
-                    "Drive tourists to various destinations safely",
-                    "Assist with luggage and basic tour guidance",
-                    "Maintain vehicle cleanliness and comfort",
-                ],
-                benefits: [
-                    "High season guaranteed bookings",
-                    "Attractive daily rates",
-                    "Fuel included in package",
-                    "Tips and gratuities from tourists",
-                ],
-                duration: "6 months",
-                urgency: "Within Week",
-            },
-            {
-                id: "V4",
-                title: "Ambulance Service Partnership",
-                company: "LifeCare Medical Services",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=LC&backgroundColor=3b82f6&fontFamily=Arial&fontWeight=700",
-                location: "Delhi NCR",
-                compensation: "₹2,000 - ₹3,500 per trip",
-                type: "Contract",
-                postedAt: "6 hours ago",
-                category: "Vehicles",
-                description: "Partnering with ambulance owners for emergency medical transportation. Must have basic life support equipment and trained paramedic. 24/7 availability required.",
-                requirements: [
-                    "Ambulance with BLS equipment (oxygen, stretcher, etc.)",
-                    "Trained paramedic/EMT on board",
-                    "Valid ambulance permit and medical equipment certification",
-                    "24/7 availability for emergency calls",
-                ],
-                responsibilities: [
-                    "Respond to emergency calls promptly",
-                    "Provide basic life support during transit",
-                    "Transport patients safely to hospitals",
-                    "Maintain ambulance and medical equipment",
-                ],
-                benefits: [
-                    "Per-trip payment plus monthly retainer",
-                    "Tie-up with hospitals and insurance companies",
-                    "Equipment maintenance support",
-                    "Priority call allocation",
-                ],
-                duration: "24 months",
-                urgency: "Immediate",
-            },
+    applyToResource: async (resourceType: string, resourceId: string, applicationData: any) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await applicationService.applyToResource(resourceType, resourceId, applicationData);
+            set((state) => ({
+                applications: [...state.applications, response.application],
+                isLoading: false
+            }));
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to apply to resource',
+                isLoading: false
+            });
+            throw error;
+        }
+    },
 
-            // PMC - Project Management Consultancy (3 resources)
-            {
-                id: "P1",
-                title: "Infrastructure Project Manager",
-                company: "MetroBuild Consultants",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=MB&backgroundColor=6366f1&fontFamily=Arial&fontWeight=700",
-                location: "Hyderabad, Telangana",
-                compensation: "₹1.2L - ₹2L per month",
-                type: "Contract",
-                postedAt: "3 days ago",
-                category: "PMC",
-                description: "Seeking experienced project manager for metro rail infrastructure project. Will oversee civil works, contractor coordination, and timeline management for 15km elevated corridor construction.",
-                requirements: [
-                    "PMP or equivalent certification preferred",
-                    "10+ years infrastructure project management experience",
-                    "Knowledge of metro/railway construction standards",
-                    "Strong stakeholder management skills",
-                ],
-                responsibilities: [
-                    "Manage overall project execution and timelines",
-                    "Coordinate with contractors, consultants, and authorities",
-                    "Monitor quality, safety, and compliance",
-                    "Prepare progress reports and presentations",
-                ],
-                benefits: [
-                    "Prestigious metro rail project",
-                    "Competitive compensation package",
-                    "Performance-based incentives",
-                    "Career advancement in infrastructure sector",
-                ],
-                duration: "36 months",
-                urgency: "Within Week",
-            },
-            {
-                id: "P2",
-                title: "IT Project Consultant - Digital Transformation",
-                company: "TechVision Consulting",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=TV&backgroundColor=6366f1&fontFamily=Arial&fontWeight=700",
-                location: "Pune, Maharashtra",
-                compensation: "₹80,000 - ₹1.5L per month",
-                type: "Contract",
-                postedAt: "1 day ago",
-                category: "PMC",
-                description: "Looking for IT project consultant to lead digital transformation initiative for manufacturing client. Will manage ERP implementation, process automation, and change management.",
-                requirements: [
-                    "MBA or engineering degree with IT specialization",
-                    "5+ years IT project consulting experience",
-                    "Experience with ERP implementations (SAP/Oracle preferred)",
-                    "Strong analytical and communication skills",
-                ],
-                responsibilities: [
-                    "Lead digital transformation roadmap and execution",
-                    "Manage ERP implementation and integration",
-                    "Conduct process analysis and optimization",
-                    "Train client teams and manage change",
-                ],
-                benefits: [
-                    "Work with leading manufacturing company",
-                    "Exposure to latest technologies",
-                    "Flexible work arrangements",
-                    "Opportunity for permanent role",
-                ],
-                duration: "18 months",
-                urgency: "Immediate",
-            },
-            {
-                id: "P3",
-                title: "Real Estate Development PMC",
-                company: "UrbanScape Developers",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=US&backgroundColor=6366f1&fontFamily=Arial&fontWeight=700",
-                location: "Gurgaon, Haryana",
-                compensation: "₹1.5L - ₹2.5L per month",
-                type: "Project-based",
-                postedAt: "5 days ago",
-                category: "PMC",
-                description: "Project Management Consultancy required for mixed-use development project (residential + commercial). Will oversee design, approvals, construction, and delivery of 5-acre township.",
-                requirements: [
-                    "15+ years real estate project management experience",
-                    "Knowledge of RERA, building codes, and approvals",
-                    "Experience managing projects worth ₹500Cr+",
-                    "Strong vendor and contractor network",
-                ],
-                responsibilities: [
-                    "Manage end-to-end project lifecycle",
-                    "Coordinate design, approvals, and construction",
-                    "Control budget, timeline, and quality",
-                    "Liaise with authorities and stakeholders",
-                ],
-                benefits: [
-                    "Premium compensation package",
-                    "Success-based performance bonus",
-                    "Opportunity to shape landmark project",
-                    "Equity participation option",
-                ],
-                duration: "48 months",
-                urgency: "Flexible",
-            },
+    fetchResourceApplications: async (resourceType: string, resourceId: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const applications = await applicationService.getResourceApplications(resourceType, resourceId);
+            set({ applications, isLoading: false });
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to fetch applications',
+                isLoading: false
+            });
+        }
+    },
 
-            // CSM - Construction Supervision Management (3 resources)
-            {
-                id: "C1",
-                title: "Site Supervisor - Residential Complex",
-                company: "HomeBuild Constructions",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=HB&backgroundColor=f43f5e&fontFamily=Arial&fontWeight=700",
-                location: "Noida, Uttar Pradesh",
-                compensation: "₹40,000 - ₹60,000 per month",
-                type: "Contract",
-                postedAt: "2 days ago",
-                category: "CSM",
-                description: "Need experienced site supervisor for 200-unit residential complex construction. Will supervise daily construction activities, labor management, and quality control.",
-                requirements: [
-                    "Diploma in Civil Engineering or equivalent",
-                    "5+ years site supervision experience",
-                    "Knowledge of construction methods and materials",
-                    "Ability to read technical drawings and specifications",
-                ],
-                responsibilities: [
-                    "Supervise daily construction activities and workers",
-                    "Ensure work quality and adherence to drawings",
-                    "Maintain site safety and housekeeping",
-                    "Coordinate with contractors and material suppliers",
-                ],
-                benefits: [
-                    "Competitive monthly salary",
-                    "Accommodation near site",
-                    "Performance incentives",
-                    "Career growth in reputed company",
-                ],
-                duration: "24 months",
-                urgency: "Immediate",
-            },
-            {
-                id: "C2",
-                title: "Quality Control Engineer - Bridge Construction",
-                company: "BridgeTech Infrastructure",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=BI&backgroundColor=f43f5e&fontFamily=Arial&fontWeight=700",
-                location: "Kolkata, West Bengal",
-                compensation: "₹60,000 - ₹90,000 per month",
-                type: "Contract",
-                postedAt: "4 days ago",
-                category: "CSM",
-                description: "Hiring quality control engineer for river bridge construction project. Will be responsible for testing, inspection, and quality assurance of all construction activities.",
-                requirements: [
-                    "B.Tech in Civil Engineering",
-                    "3+ years QC experience in bridge/infrastructure projects",
-                    "Knowledge of IS codes and quality testing procedures",
-                    "Experience with concrete and steel testing",
-                ],
-                responsibilities: [
-                    "Conduct quality tests and inspections",
-                    "Review contractor work and approve quality",
-                    "Maintain quality documentation and reports",
-                    "Coordinate with third-party testing agencies",
-                ],
-                benefits: [
-                    "Work on prestigious bridge project",
-                    "Attractive compensation package",
-                    "Exposure to advanced construction techniques",
-                    "Certification and training opportunities",
-                ],
-                duration: "30 months",
-                urgency: "Within Week",
-            },
-            {
-                id: "C3",
-                title: "Safety Officer - High-Rise Construction",
-                company: "TowerPro Builders",
-                companyLogo: "https://api.dicebear.com/7.x/initials/svg?seed=TP&backgroundColor=f43f5e&fontFamily=Arial&fontWeight=700",
-                location: "Mumbai, Maharashtra",
-                compensation: "₹50,000 - ₹75,000 per month",
-                type: "Contract",
-                postedAt: "1 day ago",
-                category: "CSM",
-                description: "Safety officer required for 40-floor high-rise construction. Will implement safety protocols, conduct training, and ensure compliance with safety regulations.",
-                requirements: [
-                    "NEBOSH/IOSH certification or equivalent",
-                    "4+ years safety management in high-rise construction",
-                    "Knowledge of safety laws and regulations",
-                    "First aid and emergency response training",
-                ],
-                responsibilities: [
-                    "Implement and monitor safety protocols",
-                    "Conduct safety training and toolbox talks",
-                    "Investigate incidents and prepare reports",
-                    "Ensure PPE compliance and safety equipment availability",
-                ],
-                benefits: [
-                    "Important role in worker safety",
-                    "Competitive salary package",
-                    "Insurance coverage",
-                    "Professional development opportunities",
-                ],
-                duration: "36 months",
-                urgency: "Immediate",
-            },
-        ];
+    saveResource: async (id: string) => {
+        set({ error: null });
+        try {
+            await userService.addBookmark(id);
+            set((state) => ({
+                bookmarkedResources: [...state.bookmarkedResources, id]
+            }));
+        } catch (error: any) {
+            set({ error: error.message || 'Failed to save resource' });
+            throw error;
+        }
+    },
 
-        set({ resources: mockResources });
+    unsaveResource: async (id: string) => {
+        set({ error: null });
+        try {
+            await userService.removeBookmark(id);
+            set((state) => ({
+                bookmarkedResources: state.bookmarkedResources.filter(rid => rid !== id)
+            }));
+        } catch (error: any) {
+            set({ error: error.message || 'Failed to unsave resource' });
+            throw error;
+        }
+    },
+
+    toggleBookmark: async (id: string) => {
+        const { bookmarkedResources, saveResource, unsaveResource } = get();
+        if (bookmarkedResources.includes(id)) {
+            await unsaveResource(id);
+        } else {
+            await saveResource(id);
+        }
+    },
+
+    clearError: () => {
+        set({ error: null });
     },
 }));

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { uploadMultiple } from '../middlewares/upload.middleware';
 import { AuthController } from '../controllers/auth.controller';
 import { authenticateToken } from '../middlewares/auth.middleware';
 
@@ -7,7 +8,7 @@ const authController = new AuthController();
 
 // Public routes
 router.post('/login', authController.login);
-router.post('/signup', authController.signup);
+router.post('/signup', uploadMultiple, authController.signup);
 
 // Protected routes
 router.get('/me', authenticateToken, authController.getCurrentUser);

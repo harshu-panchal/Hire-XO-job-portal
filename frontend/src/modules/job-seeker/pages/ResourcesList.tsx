@@ -1,23 +1,39 @@
 import { Search, Package, TrendingUp, CheckCircle2 } from "lucide-react";
 import { useResourceStore } from "@/store/useResourceStore";
+import type { ResourceType } from "@/services/resourceService";
 import { useEffect } from "react";
 import ResourceCard from "@/modules/job-seeker/components/ResourceCard";
 import ResourceCategoryFilter from "@/modules/job-seeker/components/ResourceCategoryFilter";
 
 const ResourcesList = () => {
-    const { resources, filters, setSearch, setCategory, fetchResources } = useResourceStore();
+    const { resources, filters, setSearch, setType, fetchResources } = useResourceStore();
+
+    const categoryToType = (category: string): ResourceType => {
+        const mapping: Record<string, ResourceType> = {
+            "Investor": "investors",
+            "Tenders": "tenders",
+            "Equipments": "equipments",
+            "Machinery": "machinery",
+            "PMC": "pmc",
+            "CSM": "csm",
+            "Logistics": "logistics",
+            "Vehicles": "vehicles"
+        };
+        return mapping[category] || "tenders";
+    };
 
     useEffect(() => {
-        fetchResources();
-    }, [fetchResources]);
+        const type = filters.type === "all" ? "tenders" : categoryToType(filters.type);
+        fetchResources(type);
+    }, [fetchResources, filters.type]);
 
-    const filteredResources = resources.filter((resource) => {
+    const filteredResources = Array.isArray(resources) ? resources.filter((resource) => {
         const matchesSearch =
             resource.title.toLowerCase().includes(filters.search.toLowerCase()) ||
             resource.company.toLowerCase().includes(filters.search.toLowerCase());
-        const matchesCategory = filters.category === "all" || resource.category === filters.category;
+        const matchesCategory = filters.type === "all" || resource.category === filters.type;
         return matchesSearch && matchesCategory;
-    });
+    }) : [];
 
     return (
         <div className="py-6 space-y-8 select-none">
@@ -36,7 +52,7 @@ const ResourcesList = () => {
                 {/* Stats Section */}
                 <div className="grid gap-4 py-2">
                     <button
-                        onClick={() => setCategory("Tenders")}
+                        onClick={() => setType("Tenders")}
                         className="w-full bg-primary/5 border border-primary/10 rounded-[2.5rem] p-6 flex items-center justify-between active:scale-95 transition-transform duration-200 text-left"
                     >
                         <div className="flex items-center gap-4">
@@ -57,7 +73,7 @@ const ResourcesList = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                         <button
-                            onClick={() => setCategory("all")}
+                            onClick={() => setType("all")}
                             className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
                         >
                             <div className="size-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4">
@@ -106,8 +122,8 @@ const ResourcesList = () => {
 
                 {/* Category Filter */}
                 <ResourceCategoryFilter
-                    activeCategory={filters.category}
-                    onCategoryChange={setCategory}
+                    activeCategory={filters.type as any}
+                    onCategoryChange={setType}
                 />
             </div>
 

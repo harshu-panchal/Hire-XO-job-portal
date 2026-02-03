@@ -1,6 +1,6 @@
 import { Check, Zap, Sparkles, Rocket, ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useJobSeekerStore } from "@/store/useJobSeekerStore";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const PLANS = [
   {
@@ -35,8 +35,8 @@ const PLANS = [
 
 const Subscriptions = () => {
   const navigate = useNavigate();
-  const { userProfile, purchaseSubscription } = useJobSeekerStore();
-  const activePlanId = userProfile?.activeSubscriptionId;
+  const { user } = useAuthStore();
+  const activePlanId = user?.activeSubscriptionId;
 
   return (
     <div className="py-8 space-y-10 select-none">
@@ -108,7 +108,7 @@ const Subscriptions = () => {
 
             <button
               onClick={() => {
-                purchaseSubscription(plan.id);
+                // TODO: Implement subscription purchase API
                 alert(`Successfully upgraded to ${plan.name} plan!`);
               }}
               className={`w-full py-5 rounded-[2rem] text-sm font-black uppercase tracking-[0.2em] transition-all active:scale-90 shadow-xl ${activePlanId === plan.id

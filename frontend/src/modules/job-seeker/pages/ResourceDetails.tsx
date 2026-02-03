@@ -24,11 +24,25 @@ const ResourceDetails = () => {
     const [showSuccess, setShowSuccess] = useState(false);
 
     const isBookmarked = resource ? bookmarkedResources.includes(resource.id) : false;
-    const isApplied = resource ? applications.includes(resource.id) : false;
+    const categoryToType = (category: string): string => {
+        const mapping: Record<string, string> = {
+            "Investor": "investors",
+            "Tenders": "tenders",
+            "Equipments": "equipments",
+            "Machinery": "machinery",
+            "PMC": "pmc",
+            "CSM": "csm",
+            "Logistics": "logistics",
+            "Vehicles": "vehicles"
+        };
+        return mapping[category] || "tenders";
+    };
+
+    const isApplied = resource ? applications.some((app: any) => app.resourceId === resource.id) : false;
 
     useEffect(() => {
         if (resources.length === 0) {
-            fetchResources();
+            fetchResources("tenders"); // Default to fetch some
         }
     }, [resources.length, fetchResources]);
 
@@ -50,10 +64,15 @@ const ResourceDetails = () => {
         );
     }
 
-    const handleApply = () => {
+    const handleApply = async () => {
         if (resource) {
-            applyToResource(resource.id);
-            setShowSuccess(true);
+            try {
+                const type = categoryToType(resource.category);
+                await applyToResource(type, resource.id, {}); // Empty for now
+                setShowSuccess(true);
+            } catch (error: any) {
+                alert(error.message || "Failed to submit application");
+            }
         }
     };
 

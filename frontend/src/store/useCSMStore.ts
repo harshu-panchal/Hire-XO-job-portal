@@ -1,125 +1,169 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-
-export interface CSMInquiry {
-    id: string;
-    name: string;
-    role: string;
-    message: string;
-    time: string;
-    status: "New" | "Replied" | "Archived";
-    initial: string;
-    color: string;
-    type: "Commercial" | "Residential" | "Infrastructure" | "Industrial";
-}
-
-export interface CSMService {
-    id: string;
-    title: string;
-    category: string;
-    views: number;
-    inquiries: number;
-    status: "Active" | "Under Review" | "Paused";
-    postedDate: string;
-}
+import { resourceService } from "../services/resourceService";
+import { applicationService } from "../services/applicationService";
+import type { Resource } from "../types";
 
 interface CSMState {
-    myServices: CSMService[];
-    myInquiries: CSMInquiry[];
-    stats: {
-        profileViews: string;
-        avgRating: string;
-        totalReviews: number;
+    services: any[];
+    myServices: Resource[];
+    inquiries: any[];
+    isLoading: boolean;
+    filters: {
+        search: string;
+        type: string;
     };
+    error: string | null;
 
-    // Actions
-    addService: (service: Omit<CSMService, "id" | "views" | "inquiries" | "status" | "postedDate">) => void;
-    deleteService: (id: string) => void;
-    updateServiceStatus: (id: string, status: CSMService["status"]) => void;
-    updateInquiryStatus: (id: string, status: CSMInquiry["status"]) => void;
+    // CSM Actions
+    fetchCSMServices: (filters?: any) => Promise<void>;
+    getCSMById: (id: string) => Promise<Resource | undefined>;
+    createCSMService: (serviceData: Partial<Resource>) => Promise<void>;
+    updateCSMService: (id: string, serviceData: Partial<Resource>) => Promise<void>;
+    deleteCSMService: (id: string) => Promise<void>;
+    fetchMyServices: () => Promise<void>;
+
+    // Inquiry Actions
+    fetchInquiries: (serviceId: string) => Promise<void>;
+
+    // Filter Actions
+    setSearch: (search: string) => void;
+    setType: (type: string) => void;
+
+    // Utility
+    clearError: () => void;
 }
 
-export const useCSMStore = create<CSMState>()(
-    persist(
-        (set) => ({
-            myServices: [
-                {
-                    id: "csm-1",
-                    title: "Expert Structural Site Supervision",
-                    category: "Residential",
-                    views: 320,
-                    inquiries: 8,
-                    status: "Active",
-                    postedDate: "Jan 12, 2026",
-                },
-                {
-                    id: "csm-2",
-                    title: "Total Quality Management (TQM) Audit",
-                    category: "Commercial",
-                    views: 150,
-                    inquiries: 4,
-                    status: "Under Review",
-                    postedDate: "Jan 25, 2026",
-                },
-            ],
-            myInquiries: [
-                {
-                    id: "inq-1",
-                    name: "Rahul Mehta",
-                    role: "Property Developer",
-                    message: "Need a qualified structural supervisor for our new residential project in Pune. Immediate start.",
-                    time: "2h ago",
-                    status: "New",
-                    initial: "RM",
-                    color: "from-rose-500 to-pink-600",
-                    type: "Commercial"
-                },
-                {
-                    id: "inq-2",
-                    name: "Amit Khanna",
-                    role: "Infrastructure Lead",
-                    message: "Requesting a detailed quote for safety auditing on a bridge construction site (NH-8).",
-                    time: "5h ago",
-                    status: "Replied",
-                    initial: "AK",
-                    color: "from-pink-500 to-fuchsia-600",
-                    type: "Infrastructure"
-                }
-            ],
-            stats: {
-                profileViews: "1.8k+",
-                avgRating: "5.0",
-                totalReviews: 12
-            },
+export const useCSMStore = create<CSMState>((set, get) => ({
+    services: [],
+    myServices: [],
+    inquiries: [],
+    isLoading: false,
+    filters: {
+        search: '',
+        type: 'all',
+    },
 
-            addService: (service) => set((state) => ({
-                myServices: [
-                    {
-                        ...service,
-                        id: `csm-${Date.now()}`,
-                        views: 0,
-                        inquiries: 0,
-                        status: "Under Review",
-                        postedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    },
-                    ...state.myServices
-                ]
-            })),
+    setSearch: (search: string) => {
+        set((state) => ({
+            filters: { ...state.filters, search }
+        }));
+    },
 
-            deleteService: (id) => set((state) => ({
-                myServices: state.myServices.filter(s => s.id !== id)
-            })),
+    setType: (type: string) => {
+        set((state) => ({
+            filters: { ...state.filters, type }
+        }));
+    },
+    error: null,
 
-            updateServiceStatus: (id, status) => set((state) => ({
-                myServices: state.myServices.map(s => s.id === id ? { ...s, status } : s)
-            })),
-
-            updateInquiryStatus: (id, status) => set((state) => ({
-                myInquiries: state.myInquiries.map(i => i.id === id ? { ...i, status } : i)
-            }))
-        }),
-        {
-            name: "csm-storage",
+    fetchCSMServices: async (filters?: any) => {
+        set({ isLoading: true, error: null });
+        try {
+            const services = await resourceService.getAll('csm', filters);
+            set({ services, isLoading: false });
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to fetch CSM services',
+                isLoading: false
+            });
         }
-    )
-);
+    },
+
+    getCSMById: async (id: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const service = await resourceService.getById('csm', id);
+            set({ isLoading: false });
+            return service;
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to fetch CSM service',
+                isLoading: false
+            });
+            return undefined;
+        }
+    },
+
+    createCSMService: async (serviceData: Partial<Resource>) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await resourceService.create('csm', serviceData);
+            set((state) => ({
+                myServices: [...state.myServices, response.resource],
+                isLoading: false
+            }));
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to create CSM service',
+                isLoading: false
+            });
+            throw error;
+        }
+    },
+
+    updateCSMService: async (id: string, serviceData: Partial<Resource>) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await resourceService.update('csm', id, serviceData);
+            set((state) => ({
+                myServices: state.myServices.map(s =>
+                    s.id === id ? response.resource : s
+                ),
+                isLoading: false
+            }));
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to update CSM service',
+                isLoading: false
+            });
+            throw error;
+        }
+    },
+
+    deleteCSMService: async (id: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            await resourceService.delete('csm', id);
+            set((state) => ({
+                myServices: state.myServices.filter(s => s.id !== id),
+                isLoading: false
+            }));
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to delete CSM service',
+                isLoading: false
+            });
+            throw error;
+        }
+    },
+
+    fetchMyServices: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const myServices = await resourceService.getMyListings('csm');
+            set({ myServices, isLoading: false });
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to fetch my services',
+                isLoading: false
+            });
+        }
+    },
+
+    fetchInquiries: async (serviceId: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const inquiries = await applicationService.getResourceApplications('csm', serviceId);
+            set({ inquiries, isLoading: false });
+        } catch (error: any) {
+            set({
+                error: error.message || 'Failed to fetch inquiries',
+                isLoading: false
+            });
+        }
+    },
+
+    clearError: () => {
+        set({ error: null });
+    },
+}));

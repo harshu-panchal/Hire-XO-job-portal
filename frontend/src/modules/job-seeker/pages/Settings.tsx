@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Camera, User, Mail, Link as LinkIcon, Bell, Shield, HelpCircle, Plus, Trash2, Moon, Sun, Monitor } from "lucide-react";
-import { useJobSeekerStore } from "@/store/useJobSeekerStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useState, useEffect } from "react";
 
 const Settings = () => {
     const navigate = useNavigate();
-    const { userProfile, updateProfile } = useJobSeekerStore();
+    const { user: userProfile, updateProfile } = useAuthStore();
     const [isSaving, setIsSaving] = useState(false);
     const [pushEnabled, setPushEnabled] = useState(true);
     const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
@@ -13,10 +13,10 @@ const Settings = () => {
     const [form, setForm] = useState({
         name: userProfile?.name || "",
         email: userProfile?.email || "",
-        linkedinUrl: userProfile?.linkedinUrl || "",
-        bio: userProfile?.bio || "",
-        skills: userProfile?.skills?.join(", ") || "",
-        experience: userProfile?.experience || [],
+        linkedinUrl: userProfile?.profile?.linkedinUrl || "",
+        bio: userProfile?.profile?.bio || "",
+        skills: userProfile?.profile?.skills?.join(", ") || "",
+        experience: userProfile?.profile?.experience || [],
     });
 
     useEffect(() => {
@@ -31,18 +31,26 @@ const Settings = () => {
         }
     }, [theme]);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setIsSaving(true);
-        // Simulate API delay
-        setTimeout(() => {
+        try {
             const updatedProfile = {
-                ...form,
-                skills: form.skills.split(",").map(s => s.trim()).filter(s => s !== "")
+                name: form.name,
+                email: form.email,
+                profile: {
+                    bio: form.bio,
+                    linkedinUrl: form.linkedinUrl,
+                    skills: form.skills.split(",").map(s => s.trim()).filter(s => s !== ""),
+                    experience: form.experience
+                }
             };
-            updateProfile(updatedProfile);
-            setIsSaving(false);
+            await updateProfile(updatedProfile);
             alert("Settings saved successfully!");
-        }, 800);
+        } catch (error: any) {
+            alert(error.message || "Failed to save settings");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (

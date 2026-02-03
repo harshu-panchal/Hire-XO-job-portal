@@ -1,9 +1,65 @@
 import { useNavigate } from "react-router-dom";
-import { Briefcase, Building2, Package, ArrowRight } from "lucide-react";
+import { Briefcase, Building2, Package, ArrowRight, User, LogOut } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useEffect } from "react";
 
 const RoleSelection = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, user, logout } = useAuthStore();
+
+    const getResourceRedirectPath = (user: any) => {
+        const profile = user.profile;
+        const category = (profile?.category || profile?.resourceCategory)?.toLowerCase();
+
+        if (!category) return "/resources/categories";
+
+        // Map resource types to their browse/provide paths
+        const resourcePaths: Record<string, string> = {
+            investor: profile?.investorType === "want-to-invest"
+                ? "/investor/browse/dashboard"
+                : "/investor/seek/dashboard",
+            tenders: profile?.tenderType === "apply-for-tenders"
+                ? "/tenders/apply/dashboard"
+                : "/tenders/provide/dashboard",
+            equipments: profile?.equipmentType === "rent-equipment"
+                ? "/equipments/rent/dashboard"
+                : "/equipments/provide/dashboard",
+            machinery: profile?.machineryType === "need-machinery"
+                ? "/machinery/buy/dashboard"
+                : "/machinery/sell/dashboard",
+            pmc: profile?.pmcType === "hire-pmc"
+                ? "/pmc/browse/dashboard"
+                : "/pmc/provide/dashboard",
+            csm: profile?.csmType === "hire-csm"
+                ? "/csm/browse/dashboard"
+                : "/csm/provide/dashboard",
+            logistics: profile?.logisticsType === "need-logistics"
+                ? "/logistics/browse/dashboard"
+                : "/logistics/provide/dashboard",
+            vehicles: profile?.vehicleType === "rent-vehicles"
+                ? "/vehicles/browse/dashboard"
+                : "/vehicles/provide/dashboard",
+        };
+
+        return resourcePaths[category] || "/resources/categories";
+    };
+
+    // We removed the auto-redirect useEffect to allow users to switch roles or logout from this page.
+
+    const handleRoleClick = (roleId: string, rolePath: string) => {
+        if (isAuthenticated && user?.role === roleId) {
+            const redirectPaths: Record<string, string> = {
+                "job-seeker": "/jobs",
+                "recruiter": "/recruiter",
+                "admin": "/admin",
+                "resource": getResourceRedirectPath(user)
+            };
+            navigate(redirectPaths[roleId] || rolePath);
+        } else {
+            navigate(rolePath);
+        }
+    };
 
     const roles = [
         {
@@ -29,7 +85,7 @@ const RoleSelection = () => {
             delay: "100ms"
         },
         {
-            id: "resources",
+            id: "resource",
             title: "Resources",
             description: "Business partnerships",
             icon: Package,
@@ -66,6 +122,28 @@ const RoleSelection = () => {
                     </div>
                 </div>
 
+                {/* Status indicator / Logout if logged in */}
+                {isAuthenticated && user && (
+                    <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-4 rounded-3xl border border-slate-200 dark:border-white/5 flex items-center justify-between animate-in fade-in zoom-in-95 duration-500">
+                        <div className="flex items-center gap-3">
+                            <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <User className="size-5 text-primary" />
+                            </div>
+                            <div>
+                                <p className="text-xs font-black uppercase tracking-widest text-primary">Logged in as</p>
+                                <p className="text-sm font-bold text-slate-700 dark:text-slate-300 capitalize">{user.role.replace('-', ' ')}</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => logout()}
+                            className="flex items-center gap-2 p-2 hover:bg-red-500/10 rounded-xl text-red-500 transition-colors active:scale-95"
+                        >
+                            <LogOut className="size-5" />
+                            <span className="text-xs font-bold uppercase tracking-widest">Logout</span>
+                        </button>
+                    </div>
+                )}
+
                 {/* Cards */}
                 <div className="space-y-4">
                     {roles.map((role) => {
@@ -73,7 +151,7 @@ const RoleSelection = () => {
                         return (
                             <button
                                 key={role.id}
-                                onClick={() => navigate(role.path)}
+                                onClick={() => handleRoleClick(role.id, role.path)}
                                 className="w-full group relative animate-in fade-in slide-in-from-bottom-4 fill-mode-backwards"
                                 style={{ animationDelay: role.delay }}
                             >

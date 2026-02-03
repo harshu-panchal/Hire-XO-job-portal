@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, TrendingUp, FileText, Package, Cog, Truck, Car, HardHat, Building, LogOut } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -7,6 +8,15 @@ import type { ResourceCategory } from "@/types";
 const ResourceCategories = () => {
     const navigate = useNavigate();
     const { isAuthenticated, logout } = useAuthStore();
+
+    // FORCE LOGOUT: This page is the entry point for NEW Resource Signups.
+    // We must clear any existing session (Job Seeker, Recruiter, or existing Resource)
+    // to prevent confusion and ensure a fresh account creation process.
+    useEffect(() => {
+        if (isAuthenticated) {
+            logout();
+        }
+    }, [isAuthenticated, logout]);
 
     const categories: Array<{
         id: ResourceCategory;
@@ -126,12 +136,17 @@ const ResourceCategories = () => {
 
                 {/* Header */}
                 <div className="text-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="inline-flex items-center justify-center size-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl shadow-emerald-500/20 mb-4">
-                        <Package className="size-8 text-white" />
+                    <span className="inline-block py-1 px-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-bold tracking-wider mb-4 border border-blue-200 dark:border-blue-800">
+                        STEP 1 of 3: CATEGORY SELECTION
+                    </span>
+                    <div className="flex justify-center mb-4">
+                        <div className="inline-flex items-center justify-center size-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl shadow-emerald-500/20">
+                            <Package className="size-8 text-white" />
+                        </div>
                     </div>
                     <h1 className="text-3xl font-black tracking-tighter mb-2">Resource Categories</h1>
                     <p className="text-slate-600 dark:text-slate-400">
-                        Select your business category
+                        Select your business category to create your account
                     </p>
                 </div>
 

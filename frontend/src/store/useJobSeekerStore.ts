@@ -1,354 +1,199 @@
 import { create } from "zustand";
-import type { Job, Certificate, UserProfile } from "../types";
+import { jobService } from "../services/jobService";
+import { applicationService } from "../services/applicationService";
+import { userService } from "../services/userService";
+import { certificateService } from "../services/certificateService";
+import type { Job, Certificate } from "../types";
 
 interface JobSeekerState {
   jobs: Job[];
-  appliedJobIds: string[];
-  savedJobIds: string[];
+  savedJobs: string[];
+  applications: any[];
   certificates: Certificate[];
-  userProfile: UserProfile | null;
+  isLoading: boolean;
+  error: string | null;
   filters: {
     search: string;
     type: string;
   };
+
+  // Job Actions
+  fetchJobs: (filters?: any) => Promise<void>;
+  getJobById: (id: string) => Promise<Job | undefined>;
+  saveJob: (jobId: string) => Promise<void>;
+  unsaveJob: (jobId: string) => Promise<void>;
   setSearch: (search: string) => void;
   setType: (type: string) => void;
-  addCertificate: (cert: Certificate) => void;
-  setUserProfile: (profile: UserProfile) => void;
-  updateProfile: (profile: Partial<UserProfile>) => void;
-  purchaseSubscription: (planId: string) => void;
-  fetchJobs: () => void;
-  toggleSaveJob: (jobId: string) => void;
-  applyJob: (jobId: string) => void;
+
+  // Application Actions
+  applyToJob: (jobId: string, applicationData: any) => Promise<void>;
+  fetchMyApplications: () => Promise<void>;
+
+  // Certificate Actions
+  uploadCertificate: (certificateData: FormData) => Promise<void>;
+  fetchCertificates: () => Promise<void>;
+  deleteCertificate: (id: string) => Promise<void>;
+
+  // Utility
+  clearError: () => void;
 }
 
-export const useJobSeekerStore = create<JobSeekerState>((set) => ({
+export const useJobSeekerStore = create<JobSeekerState>((set, get) => ({
   jobs: [],
-  appliedJobIds: JSON.parse(localStorage.getItem('appliedJobIds') || '[]'),
-  savedJobIds: JSON.parse(localStorage.getItem('savedJobIds') || '[]'),
-  certificates: [
-    {
-      id: "CERT-12345",
-      name: "Certified Frontend Developer",
-      issueDate: "2025-10-15",
-      expiryDate: "2026-04-15",
-      successRate: 75,
-      status: "Active",
-    },
-  ],
-  userProfile: {
-    id: "1",
-    name: "Alex Rivera",
-    email: "alex.rivera@example.com",
-    role: "job-seeker",
-    phoneNumber: "+91 98765 43210",
-    profilePhoto: "https://lh3.googleusercontent.com/aida-public/AB6AXuB52noQXoXSZycc1KYch8EW4T9oo08uRX0jjaTWO-ZXI9KH7kXiFp4C4EIVcj7XRZQHfQxQRXN3JXPFfWFxIY_KWVxuw01aSLxW4yQGuQfCxOuK4enRMwXeN3bLH8YYD4yENN8V4V6fLbEskfALN7RDpj9jPejjrnJZr14jNii9GzuFR-A-QqVsM66zFIdR06lslE0evUGvO5VmUZuUTf1XarrZhHh9g0sz-3JpEzYztx0mei_n26BzLtKcxjPhJ9qlEHJyiujQYuzP",
-    bio: "Senior React Developer with a passion for building high-performance web applications and mentored 20+ junior developers.",
-    skills: ["React", "TypeScript", "Tailwind CSS", "Node.js", "Figma"],
-    experience: [
-      { company: "TechFlow", role: "Senior Developer", period: "2021 - Present" },
-      { company: "DesignHub", role: "Frontend Engineer", period: "2019 - 2021" },
-    ],
-    education: [
-      { school: "University of Technology", degree: "B.Tech in CS", period: "2015 - 2019" },
-    ],
-    githubUrl: "https://github.com/alexrivera",
-    linkedinUrl: "https://linkedin.com/in/alexrivera",
-    twitterUrl: "https://twitter.com/alexrivera",
-    interviewSuccessRate: 65,
-  },
+  savedJobs: [],
+  applications: [],
+  certificates: [],
+  isLoading: false,
+  error: null,
   filters: {
-    search: "",
-    type: "all",
+    search: '',
+    type: 'all',
   },
-  setSearch: (search) => set((state) => ({ filters: { ...state.filters, search } })),
-  setType: (type) => set((state) => ({ filters: { ...state.filters, type } })),
-  addCertificate: (cert) => set((state) => ({ certificates: [...state.certificates, cert] })),
-  setUserProfile: (profile) => set({ userProfile: profile }),
-  updateProfile: (updatedFields) => set((state) => ({
-    userProfile: state.userProfile ? { ...state.userProfile, ...updatedFields } : null
-  })),
-  purchaseSubscription: (planId) =>
+
+  setSearch: (search: string) => {
     set((state) => ({
-      userProfile: state.userProfile
-        ? { ...state.userProfile, activeSubscriptionId: planId }
-        : null,
-    })),
-  toggleSaveJob: (jobId) =>
-    set((state) => {
-      const newSaved = state.savedJobIds.includes(jobId)
-        ? state.savedJobIds.filter((id) => id !== jobId)
-        : [...state.savedJobIds, jobId];
-      localStorage.setItem('savedJobIds', JSON.stringify(newSaved));
-      return { savedJobIds: newSaved };
-    }),
-  applyJob: (jobId) =>
-    set((state) => {
-      if (state.appliedJobIds.includes(jobId)) return state;
-      const newApplied = [...state.appliedJobIds, jobId];
-      localStorage.setItem('appliedJobIds', JSON.stringify(newApplied));
-      return { appliedJobIds: newApplied };
-    }),
-  fetchJobs: () => {
-    // Mocking API call with enhanced job details
-    const mockJobs: Job[] = [
-      {
-        id: "1",
-        title: "Senior React Developer",
-        company: "Tech Solutions Inc.",
-        companyLogo:
-          "https://api.dicebear.com/7.x/initials/svg?seed=TS&backgroundColor=7c3aed&fontFamily=Arial&fontWeight=700",
-        location: "Remote",
-        salary: "₹15L - ₹25L",
-        type: "Full-time",
-        postedAt: "2 days ago",
-        category: "Development",
-        description:
-          "We are seeking a Senior React Developer to lead our frontend team in building next-generation web applications.",
-        requirements: [
-          "5+ years of experience with React and TypeScript",
-          "Strong understanding of State Management (Zustand, Redux)",
-          "Experience with Tailwind CSS and modern UI libraries",
-          "Knowledge of Next.js and Server-side Rendering",
-        ],
-        responsibilities: [
-          "Architect and implement scalable frontend solutions",
-          "Mentor junior developers and conduct code reviews",
-          "Collaborate with UX/UI designers to ensure design fidelity",
-          "Optimize applications for maximum speed and scalability",
-        ],
-        benefits: [
-          "Competitive salary and performance bonuses",
-          "Flexible working hours and remote options",
-          "Health insurance and wellness programs",
-          "Annual learning budget and certifications",
-        ],
-      },
-      {
-        id: "2",
-        title: "Frontend Engineer",
-        company: "Zeto Apps",
-        companyLogo:
-          "https://api.dicebear.com/7.x/initials/svg?seed=ZA&backgroundColor=0ea5e9&fontFamily=Arial&fontWeight=700",
-        location: "Bangalore",
-        salary: "₹12L - ₹20L",
-        type: "Full-time",
-        postedAt: "1 day ago",
-        category: "Development",
-        description:
-          "Join our growing team as a Frontend Engineer and help us build beautiful, high-performance mobile-first web apps.",
-        requirements: [
-          "3+ years of experience in Frontend Development",
-          "Proficiency in React and modern JavaScript (ES6+)",
-          "Experience with responsive design and Tailwind CSS",
-          "Familiarity with Git and Agile methodologies",
-        ],
-        responsibilities: [
-          "Develop new user-facing features using React.js",
-          "Build reusable components and front-end libraries",
-          "Translate designs and wireframes into high-quality code",
-          "Ensure the technical feasibility of UI/UX designs",
-        ],
-        benefits: [
-          "Modern office space in the heart of Bangalore",
-          "Daily catered lunches and snacks",
-          "Comprehensive health and life insurance",
-          "Quarterly team outings and workshops",
-        ],
-      },
-      {
-        id: "3",
-        title: "UI/UX Designer",
-        company: "Creative Studio",
-        companyLogo:
-          "https://api.dicebear.com/7.x/initials/svg?seed=CS&backgroundColor=f43f5e&fontFamily=Arial&fontWeight=700",
-        location: "Mumbai",
-        salary: "₹8L - ₹15L",
-        type: "Contract",
-        postedAt: "5 hours ago",
-        category: "Design",
-        description:
-          "We're looking for a creative UI/UX Designer to craft engaging experiences for our diverse client base.",
-        requirements: [
-          "Proven work experience as a UI/UX Designer or similar role",
-          "Portfolio of design projects for web and mobile",
-          "Knowledge of wireframe tools (e.g. Figma, Adobe XD)",
-          "Team spirit and strong communication skills",
-        ],
-        responsibilities: [
-          "Gather and evaluate user requirements in collaboration with product managers and engineers",
-          "Illustrate design ideas using storyboards, process flows and sitemaps",
-          "Design graphic user interface elements, like menus, tabs and widgets",
-          "Build page navigation buttons and search fields",
-        ],
-        benefits: [
-          "Project-based bonuses",
-          "Creative freedom and ownership",
-          "Networking opportunities with top industry leaders",
-          "Access to premium design tools and resources",
-        ],
-      },
-      {
-        id: "4",
-        title: "Backend Developer (Node.js)",
-        company: "Cloud Systems",
-        companyLogo:
-          "https://api.dicebear.com/7.x/initials/svg?seed=CL&backgroundColor=10b981&fontFamily=Arial&fontWeight=700",
-        location: "Remote",
-        salary: "₹18L - ₹30L",
-        type: "Full-time",
-        postedAt: "3 days ago",
-        category: "Development",
-        description:
-          "Join our core platform team to build scalable microservices and high-performance APIs.",
-        requirements: [
-          "4+ years of experience with Node.js and Express",
-          "Strong knowledge of PostgreSQL and Redis",
-          "Experience with AWS or GCP services",
-          "Understanding of microservices architecture",
-        ],
-        responsibilities: [
-          "Design and implement robust server-side logic",
-          "Integrate user-facing elements developed by front-end developers",
-          "Build reusable code and libraries for future use",
-          "Optimize applications for maximum speed and scalability",
-        ],
-        benefits: [
-          "High-end equipment allowance",
-          "Stock options (ESOPs)",
-          "Unlimited PTO policy",
-          "Global team retreats",
-        ],
-      },
-      {
-        id: "5",
-        title: "Product Manager",
-        company: "Growth Labs",
-        companyLogo:
-          "https://api.dicebear.com/7.x/initials/svg?seed=GL&backgroundColor=f59e0b&fontFamily=Arial&fontWeight=700",
-        location: "Delhi",
-        salary: "₹20L - ₹35L",
-        type: "Full-time",
-        postedAt: "1 week ago",
-        category: "Management",
-        description:
-          "We're looking for a data-driven Product Manager to lead our growth initiatives and user retention strategies.",
-        requirements: [
-          "3+ years of experience in Product Management",
-          "Strong analytical skills and experience with SQL",
-          "Experience with A/B testing and growth frameworks",
-          "Excellent communication and stakeholder management",
-        ],
-        responsibilities: [
-          "Define product vision and roadmap",
-          "Conduct market research and user interviews",
-          "Write detailed PRDs and user stories",
-          "Work closely with engineering and design teams",
-        ],
-        benefits: [
-          "Performance-linked bonuses",
-          "Comprehensive health insurance",
-          "Relocation assistance",
-          "Monthly wellness stipend",
-        ],
-      },
-      {
-        id: "6",
-        title: "Mobile App Developer",
-        company: "Appify Tech",
-        companyLogo:
-          "https://api.dicebear.com/7.x/initials/svg?seed=AT&backgroundColor=6366f1&fontFamily=Arial&fontWeight=700",
-        location: "Hyderabad",
-        salary: "₹14L - ₹22L",
-        type: "Full-time",
-        postedAt: "12 hours ago",
-        category: "Development",
-        description:
-          "Build high-quality cross-platform mobile applications using React Native for our global users.",
-        requirements: [
-          "3+ years of experience in React Native",
-          "Strong understanding of iOS and Android platforms",
-          "Experience with Redux or MobX for state management",
-          "Knowledge of native modules and bridging",
-        ],
-        responsibilities: [
-          "Develop and maintain mobile applications",
-          "Implement pixel-perfect UIs that match designs",
-          "Optimize app performance for low-end devices",
-          "Publish apps to App Store and Google Play",
-        ],
-        benefits: [
-          "Flexible work from home options",
-          "Annual bonus scheme",
-          "Latest MacBook Pro",
-          "Skill development budget",
-        ],
-      },
-      {
-        id: "7",
-        title: "Marketing Specialist",
-        company: "Digital Pulse",
-        companyLogo:
-          "https://api.dicebear.com/7.x/initials/svg?seed=DP&backgroundColor=ec4899&fontFamily=Arial&fontWeight=700",
-        location: "Remote",
-        salary: "₹6L - ₹12L",
-        type: "Freelance",
-        postedAt: "4 days ago",
-        category: "Marketing",
-        description:
-          "Help us grow our digital presence and manage social media campaigns for leading brands.",
-        requirements: [
-          "2+ years of experience in Digital Marketing",
-          "Experience with Meta Ads and Google Ads",
-          "Strong copywriting and content creation skills",
-          "Knowledge of SEO and content strategy",
-        ],
-        responsibilities: [
-          "Manage social media accounts and engagement",
-          "Create and optimize ad campaigns",
-          "Analyze campaign performance and ROI",
-          "Collaborate with design team for creative assets",
-        ],
-        benefits: [
-          "Flexible working hours",
-          "Performance incentives",
-          "Remote-first culture",
-          "Opportunity to work with top brands",
-        ],
-      },
-      {
-        id: "8",
-        title: "QA Automation Engineer",
-        company: "Secure Fintech",
-        companyLogo:
-          "https://api.dicebear.com/7.x/initials/svg?seed=SF&backgroundColor=0ea5e9&fontFamily=Arial&fontWeight=700",
-        location: "Bangalore",
-        salary: "₹10L - ₹18L",
-        type: "Full-time",
-        postedAt: "2 days ago",
-        category: "Testing",
-        description:
-          "Ensure the reliability and security of our fintech platform through automated testing.",
-        requirements: [
-          "3+ years of experience in Automation Testing",
-          "Proficiency in Selenium, Cypress or Playwright",
-          "Strong understanding of CI/CD pipelines",
-          "Experience with API testing tools like Postman",
-        ],
-        responsibilities: [
-          "Develop and maintain automated test suites",
-          "Perform manual testing when necessary",
-          "Identify, document, and track bugs",
-          "Collaborate with developers to resolve issues",
-        ],
-        benefits: [
-          "Fintech domain training",
-          "Health and life insurance",
-          "Subsidized gym membership",
-          "Free lunch at the office",
-        ],
-      },
-    ];
-    set({ jobs: mockJobs });
+      filters: { ...state.filters, search }
+    }));
+  },
+
+  setType: (type: string) => {
+    set((state) => ({
+      filters: { ...state.filters, type }
+    }));
+  },
+
+  fetchJobs: async (filters?: any) => {
+    set({ isLoading: true, error: null });
+    try {
+      const jobs = await jobService.getAllJobs(filters);
+      set({ jobs, isLoading: false });
+    } catch (error: any) {
+      set({
+        error: error.message || 'Failed to fetch jobs',
+        isLoading: false
+      });
+    }
+  },
+
+  getJobById: async (id: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const job = await jobService.getJobById(id);
+      set({ isLoading: false });
+      return job;
+    } catch (error: any) {
+      set({
+        error: error.message || 'Failed to fetch job',
+        isLoading: false
+      });
+      return undefined;
+    }
+  },
+
+  saveJob: async (jobId: string) => {
+    set({ error: null });
+    try {
+      await userService.addBookmark(jobId);
+      set((state) => ({
+        savedJobs: [...state.savedJobs, jobId]
+      }));
+    } catch (error: any) {
+      set({ error: error.message || 'Failed to save job' });
+      throw error;
+    }
+  },
+
+  unsaveJob: async (jobId: string) => {
+    set({ error: null });
+    try {
+      await userService.removeBookmark(jobId);
+      set((state) => ({
+        savedJobs: state.savedJobs.filter(id => id !== jobId)
+      }));
+    } catch (error: any) {
+      set({ error: error.message || 'Failed to unsave job' });
+      throw error;
+    }
+  },
+
+  applyToJob: async (jobId: string, applicationData: any) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await applicationService.applyToJob(jobId, applicationData);
+      set((state) => ({
+        applications: [...state.applications, response.application],
+        isLoading: false
+      }));
+    } catch (error: any) {
+      set({
+        error: error.message || 'Failed to apply to job',
+        isLoading: false
+      });
+      throw error;
+    }
+  },
+
+  fetchMyApplications: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const applications = await applicationService.getMyApplications();
+      set({ applications, isLoading: false });
+    } catch (error: any) {
+      set({
+        error: error.message || 'Failed to fetch applications',
+        isLoading: false
+      });
+    }
+  },
+
+  uploadCertificate: async (certificateData: FormData) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await certificateService.uploadCertificate(certificateData);
+      set((state) => ({
+        certificates: [...state.certificates, response.certificate],
+        isLoading: false
+      }));
+    } catch (error: any) {
+      set({
+        error: error.message || 'Failed to upload certificate',
+        isLoading: false
+      });
+      throw error;
+    }
+  },
+
+  fetchCertificates: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const certificates = await certificateService.getMyCertificates();
+      set({ certificates, isLoading: false });
+    } catch (error: any) {
+      set({
+        error: error.message || 'Failed to fetch certificates',
+        isLoading: false
+      });
+    }
+  },
+
+  deleteCertificate: async (id: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      await certificateService.deleteCertificate(id);
+      set((state) => ({
+        certificates: state.certificates.filter(cert => cert.id !== id),
+        isLoading: false
+      }));
+    } catch (error: any) {
+      set({
+        error: error.message || 'Failed to delete certificate',
+        isLoading: false
+      });
+      throw error;
+    }
+  },
+
+  clearError: () => {
+    set({ error: null });
   },
 }));

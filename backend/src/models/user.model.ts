@@ -12,6 +12,28 @@ export interface IUser extends Document {
     activeSubscriptionId?: string;
     subscriptionExpiry?: Date;
     bookmarks: mongoose.Types.ObjectId[];
+    profile: {
+        bio?: string;
+        skills?: string[];
+        experience?: Array<{ company: string; role: string; period: string }>;
+        education?: Array<{ school: string; degree: string; period: string }>;
+        linkedinUrl?: string;
+        githubUrl?: string;
+        twitterUrl?: string;
+        company?: string;
+        username?: string;
+        age?: number;
+        organizationName?: string;
+        category?: string;
+        investorType?: string;
+        tenderType?: string;
+        equipmentType?: string;
+        machineryType?: string;
+        pmcType?: string;
+        csmType?: string;
+        logisticsType?: string;
+        vehicleType?: string;
+    };
     status?: 'active' | 'suspended' | 'banned' | 'deleted';
     statusReason?: string;
     statusUpdatedAt?: Date;
@@ -31,6 +53,38 @@ const UserSchema: Schema = new Schema({
     activeSubscriptionId: { type: String },
     subscriptionExpiry: { type: Date },
     bookmarks: [{ type: Schema.Types.ObjectId, default: [] }],
+    // Extended profile fields
+    profile: {
+        bio: { type: String },
+        skills: [{ type: String }],
+        experience: [{
+            company: String,
+            role: String,
+            period: String
+        }],
+        education: [{
+            school: String,
+            degree: String,
+            period: String
+        }],
+        linkedinUrl: { type: String },
+        githubUrl: { type: String },
+        twitterUrl: { type: String },
+        // Role specific fields
+        company: { type: String },
+        username: { type: String },
+        age: { type: Number },
+        organizationName: { type: String },
+        category: { type: String },
+        investorType: { type: String },
+        tenderType: { type: String },
+        equipmentType: { type: String },
+        machineryType: { type: String },
+        pmcType: { type: String },
+        csmType: { type: String },
+        logisticsType: { type: String },
+        vehicleType: { type: String }
+    },
     status: { type: String, enum: ['active', 'suspended', 'banned', 'deleted'], default: 'active' },
     statusReason: { type: String },
     statusUpdatedAt: { type: Date },

@@ -6,15 +6,18 @@ import JobCard from "@/modules/job-seeker/components/JobCard";
 
 const SavedJobs = () => {
     const navigate = useNavigate();
-    const { jobs, fetchJobs, savedJobIds, toggleSaveJob } = useJobSeekerStore();
+    const { jobs, savedJobs, fetchJobs, unsaveJob } = useJobSeekerStore();
 
     useEffect(() => {
-        if (jobs.length === 0) {
+        if (!Array.isArray(jobs) || jobs.length === 0) {
             fetchJobs();
         }
-    }, [jobs.length, fetchJobs]);
+    }, [jobs, fetchJobs]);
 
-    const savedJobs = jobs.filter(job => savedJobIds.includes(job.id));
+    // Filter jobs array by savedJobs IDs (savedJobs is string[])
+    const displayJobs = Array.isArray(jobs) && Array.isArray(savedJobs)
+        ? jobs.filter(job => savedJobs.includes(job.id))
+        : [];
 
     return (
         <div className="pb-32 min-h-screen">
@@ -30,7 +33,7 @@ const SavedJobs = () => {
                     <div>
                         <h1 className="text-xl font-black tracking-tight">Saved Jobs</h1>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            {savedJobs.length} Saved
+                            {displayJobs.length} Saved
                         </p>
                     </div>
                 </div>
@@ -57,7 +60,7 @@ const SavedJobs = () => {
 
                 {/* Jobs List */}
                 <div className="space-y-4">
-                    {savedJobs.map((job) => (
+                    {displayJobs.map((job) => (
                         <div key={job.id} className="relative group">
                             <JobCard job={job} />
                             <button
@@ -65,7 +68,7 @@ const SavedJobs = () => {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    toggleSaveJob(job.id);
+                                    unsaveJob(job.id);
                                 }}
                             >
                                 <Trash2 className="size-5" />
@@ -73,7 +76,7 @@ const SavedJobs = () => {
                         </div>
                     ))}
 
-                    {savedJobs.length === 0 && (
+                    {displayJobs.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
                             <div className="size-20 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
                                 <Trash2 className="size-10 text-slate-300" />

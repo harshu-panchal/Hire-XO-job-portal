@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { CloudinaryUtil } from '../utils/cloudinary';
 import { AuthService } from '../services/auth.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
 
@@ -20,7 +21,30 @@ export class AuthController {
 
     public signup = async (req: Request, res: Response): Promise<void> => {
         try {
-            const result = await this.authService.signup(req.body);
+            const userData = { ...req.body };
+            const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+            if (files) {
+                // Handle Company Logo
+                if (files.companyLogo?.[0]) {
+                    const result = await CloudinaryUtil.uploadFile(files.companyLogo[0].path, 'company-logos');
+                    if (result) userData.companyLogo = result.url;
+                }
+
+                // Handle Profile Photo
+                if (files.profilePhoto?.[0]) {
+                    const result = await CloudinaryUtil.uploadFile(files.profilePhoto[0].path, 'profile-photos');
+                    if (result) userData.profilePhoto = result.url;
+                }
+
+                // Handle CV
+                if (files.cv?.[0]) {
+                    const result = await CloudinaryUtil.uploadFile(files.cv[0].path, 'cvs');
+                    if (result) userData.cv = result.url;
+                }
+            }
+
+            const result = await this.authService.signup(userData);
             res.status(201).json({ message: 'User registered successfully', ...result });
         } catch (error: any) {
             res.status(400).json({ message: error.message || 'Signup failed' });
@@ -36,7 +60,7 @@ export class AuthController {
             }
 
             const user = await this.authService.getCurrentUser(userId);
-            res.status(200).json(user);
+            res.status(200).json({ user });
         } catch (error: any) {
             res.status(404).json({ message: error.message || 'User not found' });
         }

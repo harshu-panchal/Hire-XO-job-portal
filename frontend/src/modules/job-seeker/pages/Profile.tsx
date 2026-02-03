@@ -19,10 +19,10 @@ import { useAuthStore } from "@/store/useAuthStore";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { userProfile, appliedJobIds, savedJobIds, certificates } = useJobSeekerStore();
-  const { logout } = useAuthStore();
+  const { savedJobs, applications, certificates } = useJobSeekerStore();
+  const { user, logout } = useAuthStore();
 
-  if (!userProfile) return null;
+  if (!user) return null;
 
   const menuItems = [
     {
@@ -31,7 +31,7 @@ const Profile = () => {
       color: "text-green-500",
       bg: "bg-green-500/10",
       path: "/certificates",
-      count: certificates.length
+      count: Array.isArray(certificates) ? certificates.length : 0
     },
     {
       label: "My Applications",
@@ -39,7 +39,7 @@ const Profile = () => {
       color: "text-blue-500",
       bg: "bg-blue-500/10",
       path: "/my-applications",
-      count: appliedJobIds.length
+      count: Array.isArray(applications) ? applications.length : 0
     },
     {
       label: "Saved Jobs",
@@ -47,7 +47,7 @@ const Profile = () => {
       color: "text-amber-500",
       bg: "bg-amber-500/10",
       path: "/saved-jobs",
-      count: savedJobIds.length
+      count: Array.isArray(savedJobs) ? savedJobs.length : 0
     },
     {
       label: "Account Settings",
@@ -68,7 +68,7 @@ const Profile = () => {
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="relative group">
             <div className="size-32 rounded-[3rem] border-4 border-white dark:border-slate-800 shadow-2xl overflow-hidden ring-4 ring-primary/20">
-              <img src={userProfile.profilePhoto} alt={userProfile.name} className="w-full h-full object-cover" />
+              <img src={user.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} alt={user.name} className="w-full h-full object-cover" />
             </div>
             <button
               onClick={() => navigate("/settings")}
@@ -79,30 +79,30 @@ const Profile = () => {
           </div>
 
           <div className="space-y-1">
-            <h1 className="text-3xl font-black tracking-tight leading-tight">{userProfile.name}</h1>
-            <p className="text-primary font-black uppercase tracking-widest text-xs">{userProfile.role}</p>
+            <h1 className="text-3xl font-black tracking-tight leading-tight">{user.name}</h1>
+            <p className="text-primary font-black uppercase tracking-widest text-xs">{user.role}</p>
           </div>
 
           <div className="flex items-center gap-4 pt-2">
-            {userProfile.githubUrl && (
+            {user.profile?.githubUrl && (
               <button
-                onClick={() => window.open(userProfile.githubUrl, "_blank")}
+                onClick={() => window.open(user.profile.githubUrl, "_blank")}
                 className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all"
               >
                 <Github className="size-5 text-slate-400" />
               </button>
             )}
-            {userProfile.linkedinUrl && (
+            {user.profile?.linkedinUrl && (
               <button
-                onClick={() => window.open(userProfile.linkedinUrl, "_blank")}
+                onClick={() => window.open(user.profile.linkedinUrl, "_blank")}
                 className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all"
               >
                 <Linkedin className="size-5 text-slate-400" />
               </button>
             )}
-            {userProfile.twitterUrl && (
+            {user.profile?.twitterUrl && (
               <button
-                onClick={() => window.open(userProfile.twitterUrl, "_blank")}
+                onClick={() => window.open(user.profile.twitterUrl, "_blank")}
                 className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all"
               >
                 <Twitter className="size-5 text-slate-400" />
@@ -123,7 +123,7 @@ const Profile = () => {
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Email Address
               </p>
-              <p className="text-sm font-black truncate">{userProfile.email}</p>
+              <p className="text-sm font-black truncate">{user.email}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -134,19 +134,19 @@ const Profile = () => {
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Location
               </p>
-              <p className="text-sm font-black truncate">{"Bangalore, India"}</p>
+              <p className="text-sm font-black truncate">{user.profile?.location || "India"}</p>
             </div>
           </div>
         </div>
 
         {/* Skills */}
-        {userProfile.skills && userProfile.skills.length > 0 && (
+        {user.profile?.skills && user.profile.skills.length > 0 && (
           <div className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-4">
             <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
               Skills & Expertise
             </h3>
             <div className="flex flex-wrap gap-2">
-              {userProfile.skills.map((skill) => (
+              {user.profile.skills.map((skill) => (
                 <span
                   key={skill}
                   className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/10"
@@ -159,7 +159,7 @@ const Profile = () => {
         )}
 
         {/* Experience */}
-        {userProfile.experience && userProfile.experience.length > 0 && (
+        {user.profile?.experience && user.profile.experience.length > 0 && (
           <div className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
@@ -173,7 +173,7 @@ const Profile = () => {
               </button>
             </div>
             <div className="space-y-6">
-              {userProfile.experience.map((exp, i) => (
+              {user.profile.experience.map((exp, i) => (
                 <div key={i} className="flex gap-4">
                   <div className="size-12 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
                     <Briefcase className="size-6 text-slate-400" />

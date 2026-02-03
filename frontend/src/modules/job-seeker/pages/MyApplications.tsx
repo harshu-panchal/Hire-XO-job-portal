@@ -6,22 +6,26 @@ import { useState, useEffect } from "react";
 
 const MyApplications = () => {
   const navigate = useNavigate();
-  const { jobs, appliedJobIds, fetchJobs } = useJobSeekerStore();
-  const { resources, applications: resourceAppIds, fetchResources } = useResourceStore();
+  const { jobs, applications: jobApps, fetchJobs } = useJobSeekerStore();
+  const { resources, applications: resApps, fetchResources } = useResourceStore();
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    if (jobs.length === 0) fetchJobs();
-    if (resources.length === 0) fetchResources();
-  }, [jobs.length, fetchJobs, resources.length, fetchResources]);
+    if (!Array.isArray(jobs) || jobs.length === 0) fetchJobs();
+    if (!Array.isArray(resources) || resources.length === 0) fetchResources("tenders");
+  }, [jobs, fetchJobs, resources, fetchResources]);
 
-  const appliedJobs = jobs
-    .filter(job => appliedJobIds.includes(job.id))
-    .map(job => ({ ...job, appType: "Job" }));
+  const appliedJobs = Array.isArray(jobs) && Array.isArray(jobApps)
+    ? jobs
+      .filter(job => jobApps.some((app: any) => app.jobId === job.id))
+      .map(job => ({ ...job, appType: "Job" }))
+    : [];
 
-  const appliedResources = resources
-    .filter(res => resourceAppIds.includes(res.id))
-    .map(res => ({ ...res, appType: "Resource" }));
+  const appliedResources = Array.isArray(resources) && Array.isArray(resApps)
+    ? resources
+      .filter(res => resApps.some((app: any) => app.resourceId === res.id))
+      .map(res => ({ ...res, appType: "Resource" }))
+    : [];
 
   const allApplications = [...appliedJobs, ...appliedResources]
     .filter(app =>

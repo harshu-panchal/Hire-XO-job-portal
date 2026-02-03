@@ -85,6 +85,46 @@ export class UserController {
     };
 
     /**
+     * Update user profile information
+     * PATCH /api/users/profile
+     */
+    public updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            const { name, email, profile } = req.body;
+
+            // Only update fields that are provided
+            const updateData: any = {};
+            if (name) updateData.name = name;
+            if (email) updateData.email = email;
+            if (profile) {
+                // Merge profile data
+                const user = await User.findById(userId);
+                updateData.profile = { ...(user?.profile || {}), ...profile };
+            }
+
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                { $set: updateData },
+                { new: true }
+            );
+
+            res.status(200).json({
+                success: true,
+                message: 'Profile updated successfully',
+                user: updatedUser
+            });
+        } catch (error: any) {
+            res.status(500).json({ success: false, message: error.message || 'Profile update failed' });
+        }
+    };
+
+    /**
      * Add a resource to user bookmarks
      * POST /api/resources/:id/bookmark
      */

@@ -21,11 +21,12 @@ interface JobCardProps {
 }
 
 const JobCard = ({ job }: JobCardProps) => {
-    const { savedJobIds, toggleSaveJob } = useJobSeekerStore();
-    const isSaved = savedJobIds.includes(job.id);
+    const { savedJobs, saveJob, unsaveJob, applyToJob } = useJobSeekerStore();
+    const isSaved = Array.isArray(savedJobs) && savedJobs.includes(job.id);
 
     const [showApplicationModal, setShowApplicationModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
@@ -49,7 +50,20 @@ const JobCard = ({ job }: JobCardProps) => {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const toggleSave = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        try {
+            if (isSaved) {
+                await unsaveJob(job.id);
+            } else {
+                await saveJob(job.id);
+            }
+        } catch (error: any) {
+            alert(error.message || "Failed to update bookmark");
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Basic validation
@@ -58,18 +72,36 @@ const JobCard = ({ job }: JobCardProps) => {
             return;
         }
 
-        // Close application modal and show success modal
-        setShowApplicationModal(false);
-        setShowSuccessModal(true);
+        setIsSubmitting(true);
+        try {
+            const applicationData = new FormData();
+            applicationData.append("fullName", formData.fullName);
+            applicationData.append("email", formData.email);
+            applicationData.append("phone", formData.phone);
+            applicationData.append("coverLetter", formData.coverLetter);
+            if (formData.resume) {
+                applicationData.append("resume", formData.resume);
+            }
 
-        // Reset form
-        setFormData({
-            fullName: "",
-            email: "",
-            phone: "",
-            resume: null,
-            coverLetter: ""
-        });
+            await applyToJob(job.id, applicationData);
+
+            // Close application modal and show success modal
+            setShowApplicationModal(false);
+            setShowSuccessModal(true);
+
+            // Reset form
+            setFormData({
+                fullName: "",
+                email: "",
+                phone: "",
+                resume: null,
+                coverLetter: ""
+            });
+        } catch (error: any) {
+            alert(error.message || "Failed to submit application");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -86,6 +118,9 @@ const JobCard = ({ job }: JobCardProps) => {
                                 <img
                                     src={job.companyLogo}
                                     alt={job.company}
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(job.company)}&background=random`;
+                                    }}
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
@@ -102,10 +137,7 @@ const JobCard = ({ job }: JobCardProps) => {
                         </div>
                     </div>
                     <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            toggleSaveJob(job.id);
-                        }}
+                        onClick={toggleSave}
                         className={`size-9 rounded-xl flex items-center justify-center active:scale-90 transition-transform border border-slate-100 dark:border-white/10 ${isSaved ? "bg-primary/10 border-primary" : "bg-slate-50 dark:bg-white/5"}`}
                     >
                         <Bookmark className={`size-4 ${isSaved ? "fill-primary text-primary" : "text-slate-300"}`} />
@@ -293,9 +325,10 @@ const JobCard = ({ job }: JobCardProps) => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-6 py-4 rounded-xl bg-primary text-white font-black text-sm uppercase tracking-widest hover:bg-primary/90 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                                    disabled={isSubmitting}
+                                    className="flex-1 px-6 py-4 rounded-xl bg-primary text-white font-black text-sm uppercase tracking-widest hover:bg-primary/90 active:scale-95 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
                                 >
-                                    Submit Application
+                                    {isSubmitting ? "Submitting..." : "Submit Application"}
                                 </button>
                             </div>
                         </form>

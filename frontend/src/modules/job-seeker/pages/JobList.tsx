@@ -24,13 +24,13 @@ const JobList = () => {
     { id: "Testing", label: "Testing" },
   ];
 
-  const filteredJobs = jobs.filter((job) => {
+  const filteredJobs = Array.isArray(jobs) ? jobs.filter((job) => {
     const matchesSearch =
       job.title.toLowerCase().includes(filters.search.toLowerCase()) ||
       job.company.toLowerCase().includes(filters.search.toLowerCase());
     const matchesType = filters.type === "all" || job.category === filters.type;
     return matchesSearch && matchesType;
-  });
+  }) : [];
 
   return (
     <div className="py-6 space-y-8 select-none">

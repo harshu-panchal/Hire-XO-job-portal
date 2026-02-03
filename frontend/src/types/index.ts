@@ -57,6 +57,7 @@ export interface UserProfile {
   linkedinUrl?: string;
   twitterUrl?: string;
   resourceCategory?: ResourceCategory;
+  category?: ResourceCategory;
   investorType?: InvestorType;
   tenderType?: TenderType;
   equipmentType?: EquipmentType;

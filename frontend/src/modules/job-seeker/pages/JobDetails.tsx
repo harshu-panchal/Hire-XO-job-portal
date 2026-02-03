@@ -18,11 +18,11 @@ import type { Job } from "@/types";
 const JobDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { jobs, fetchJobs, appliedJobIds, savedJobIds, toggleSaveJob, applyJob } = useJobSeekerStore();
+  const { jobs, fetchJobs, applications, savedJobs, saveJob, unsaveJob, applyToJob } = useJobSeekerStore();
   const [job, setJob] = useState<Job | null>(null);
 
-  const isApplied = appliedJobIds.includes(id || "");
-  const isBookmarked = savedJobIds.includes(id || "");
+  const isApplied = Array.isArray(applications) && applications.some((app: any) => app.jobId === id);
+  const isBookmarked = Array.isArray(savedJobs) && savedJobs.includes(id || "");
 
   useEffect(() => {
     if (jobs.length === 0) {
@@ -48,9 +48,26 @@ const JobDetails = () => {
     );
   }
 
-  const handleApply = () => {
+  const toggleSave = async () => {
+    if (!id) return;
+    try {
+      if (isBookmarked) {
+        await unsaveJob(id);
+      } else {
+        await saveJob(id);
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to update bookmark");
+    }
+  };
+
+  const handleApply = async () => {
     if (id) {
-      applyJob(id);
+      try {
+        await applyToJob(id, {}); // Pass empty object if no form is used
+      } catch (error: any) {
+        alert(error.message || "Failed to submit application");
+      }
     }
   };
 
@@ -118,7 +135,7 @@ const JobDetails = () => {
             <Share2 className="size-5 text-slate-400" />
           </button>
           <button
-            onClick={() => id && toggleSaveJob(id)}
+            onClick={toggleSave}
             className={`size-11 flex items-center justify-center rounded-2xl border transition-all active:scale-90 ${isBookmarked ? "bg-primary/10 border-primary" : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10"}`}
           >
             <Bookmark
@@ -133,7 +150,14 @@ const JobDetails = () => {
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="size-24 rounded-[2rem] bg-white dark:bg-slate-900 shadow-xl border border-slate-100 dark:border-white/5 flex items-center justify-center overflow-hidden">
             {job.companyLogo ? (
-              <img src={job.companyLogo} alt={job.company} className="w-full h-full object-cover" />
+              <img
+                src={job.companyLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(job.company)}&background=random`}
+                alt={job.company}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(job.company)}&background=random`;
+                }}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <Building2 className="size-10 text-primary" />
             )}
@@ -267,8 +291,8 @@ const JobDetails = () => {
             onClick={handleApply}
             disabled={isApplied}
             className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${isApplied
-                ? "bg-green-500 text-white shadow-green-500/20"
-                : "bg-primary text-white shadow-xl shadow-primary/20"
+              ? "bg-green-500 text-white shadow-green-500/20"
+              : "bg-primary text-white shadow-xl shadow-primary/20"
               }`}
           >
             {isApplied ? (

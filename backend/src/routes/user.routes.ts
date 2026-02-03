@@ -10,6 +10,7 @@ const userController = new UserController();
 // All user routes are protected
 router.get('/stats', authenticateToken, userController.getDashboardStats);
 router.patch('/profile-photo', authenticateToken, uploadProfilePhoto, userController.updateProfilePhoto);
+router.patch('/profile', authenticateToken, userController.updateProfile);
 
 export default router;
 

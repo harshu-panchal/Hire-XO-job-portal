@@ -100,16 +100,23 @@ export class AuthService {
 
     public async login(credentials: any) {
         const { email, password } = credentials;
+        console.log(`[AuthService] Attempting login for: ${email}`);
 
         const user = await User.findOne({ email });
         if (!user) {
+            console.log(`[AuthService] User not found: ${email}`);
             throw new Error('Invalid credentials');
         }
 
+        console.log(`[AuthService] User found: ${user._id}, Role: ${user.role}`);
+
         const isMatch = await bcrypt.compare(password, user.password as string);
         if (!isMatch) {
+            console.log(`[AuthService] Password mismatch for: ${email}`);
             throw new Error('Invalid credentials');
         }
+
+        console.log(`[AuthService] Password matched. Generating token...`);
 
         let profile;
         if (user.role === 'job-seeker') {
