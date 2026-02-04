@@ -39,13 +39,12 @@ export class ApplicationController {
             }
 
             const { resourceId, resourceType } = req.params;
-            const { message } = req.body;
 
             const application = await this.applicationService.applyToResource(
                 userId,
                 resourceId,
                 resourceType,
-                message
+                req.body
             );
             res.status(201).json({
                 message: 'Application submitted successfully',
@@ -87,6 +86,21 @@ export class ApplicationController {
         }
     };
 
+    public getReceivedApplications = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const applications = await this.applicationService.getReceivedApplications(userId);
+            res.status(200).json(applications);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message || 'Failed to fetch applications' });
+        }
+    };
+
     public getResourceApplications = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const userId = req.user?.id;
@@ -104,6 +118,54 @@ export class ApplicationController {
             res.status(200).json(applications);
         } catch (error: any) {
             res.status(403).json({ message: error.message || 'Failed to fetch applications' });
+        }
+    };
+
+    public getReceivedResourceApplications = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            // We need the user's resource category. 
+            // We can fetch user profile or pass it if frontend knows.
+            // Better to fetch user profile here to be secure/accurate.
+            const { User } = require('../models/user.model');
+            const { ResourceProfile } = require('../models/resource-profile.model');
+            // Or use existing imports if available. Checking...
+            // User imported at top. ResourceProfile not imported.
+
+            // To avoid circular dependencies or clutter, let's assume we can pass category or fetch profile.
+            // Let's fetch profile using userId.
+            // HACK: I should use a UserService or just direct DB call.
+            // I'll dynamically import or rely on what's available.
+            // Wait, I can pass category in query param? No, safer to look up.
+
+            // Import ResourceProfile at top of controller or here?
+            // Controller has `User` imported? Let's check Step 430.
+            // No, ApplicationController imports: Response, ApplicationService, AuthRequest.
+            // It doesn't import User models directly.
+
+            // I'll use UserService? No, that's circular.
+            // I'll import ResourceProfile at the top of the file ideally.
+            // But I'm using `replace_file_content` on method block.
+            // I'll use simple `require` or rely on client sending it?
+            // Client sending it is easier but less secure (user could claim to be investor).
+            // But they can only see applications for resources they OWN (filtered by userId in service).
+            // So if they send wrong category, they find 0 resources -> 0 applications. Safe.
+
+            const { category } = req.query;
+            if (!category) {
+                res.status(400).json({ message: 'Category is required' });
+                return;
+            }
+
+            const applications = await this.applicationService.getReceivedResourceApplications(userId, category as string);
+            res.status(200).json(applications);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message || 'Failed to fetch applications' });
         }
     };
 

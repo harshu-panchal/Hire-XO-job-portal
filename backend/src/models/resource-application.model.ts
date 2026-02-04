@@ -5,19 +5,23 @@ export interface IResourceApplication extends Document {
     resourceId: mongoose.Types.ObjectId;
     resourceType: 'Investor' | 'Tender' | 'Equipment' | 'Machinery' | 'PMC' | 'CSM' | 'Logistics' | 'Vehicle';
     status: 'Pending' | 'Accepted' | 'Rejected';
-    message?: string;
+    bidAmount?: number;
+    coverLetter?: string;
+    message?: string; // Kept for backward compatibility
     appliedAt: Date;
 }
 
 const ResourceApplicationSchema: Schema = new Schema({
     applicantId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    resourceId: { type: Schema.Types.ObjectId, required: true },
+    resourceId: { type: Schema.Types.ObjectId, required: true, refPath: 'resourceType' },
     resourceType: {
         type: String,
         enum: ['Investor', 'Tender', 'Equipment', 'Machinery', 'PMC', 'CSM', 'Logistics', 'Vehicle'],
         required: true
     },
     status: { type: String, enum: ['Pending', 'Accepted', 'Rejected'], default: 'Pending' },
+    bidAmount: { type: Number },
+    coverLetter: { type: String },
     message: { type: String },
 }, { timestamps: { createdAt: 'appliedAt', updatedAt: 'updatedAt' } });
 

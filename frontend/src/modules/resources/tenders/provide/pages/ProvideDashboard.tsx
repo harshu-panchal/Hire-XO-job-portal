@@ -1,25 +1,77 @@
+import { useState, useEffect } from "react";
 import { PlusCircle, FileText, CheckCircle2, TrendingUp, Users, ArrowRight, MessageSquare, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
+import { applicationService } from "@/services/applicationService";
 
 const ProvideDashboard = () => {
-    const stats = [
-        { label: "Active Tenders", value: "15", icon: FileText, color: "text-indigo-600", bgColor: "bg-indigo-100 dark:bg-indigo-950/30" },
-        { label: "Bids Received", value: "142", icon: Users, color: "text-violet-600", bgColor: "bg-violet-100 dark:bg-violet-950/30" },
-        { label: "Awarded", value: "8", icon: CheckCircle2, color: "text-emerald-600", bgColor: "bg-emerald-100 dark:bg-emerald-950/30" },
-        { label: "Engagement", value: "+24%", icon: TrendingUp, color: "text-blue-600", bgColor: "bg-blue-100 dark:bg-blue-950/30" },
+    const [stats, setStats] = useState({
+        activeTenders: 0,
+        bidsReceived: 0,
+        awarded: 0,
+        engagement: "0%"
+    });
+    const [activeTenders, setActiveTenders] = useState<any[]>([]);
+    const [recentBids, setRecentBids] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch listings (Tenders)
+                const listings = await resourceService.getMyListings('tenders');
+
+                // Fetch bids (Applications)
+                const bids = await applicationService.getReceivedResourceApplications('tenders');
+
+                // Process Active Tenders
+                const tenders = listings.slice(0, 3).map((item: any) => ({
+                    id: item._id,
+                    title: item.title,
+                    bids: bids.filter((b: any) => (b.resourceId?._id || b.resourceId) === item._id).length,
+                    closing: item.duration || "N/A", // Or parse date if available
+                    status: item.status || "Active"
+                }));
+                setActiveTenders(tenders);
+
+                // Process Recent Bids
+                const recent = bids.slice(0, 3).map((bid: any) => ({
+                    id: bid._id,
+                    vendor: bid.applicantId?.name || "Unknown Vendor",
+                    tender: bid.resourceId?.title || "Tender",
+                    time: new Date(bid.appliedAt).toLocaleDateString(),
+                    amount: bid.bidAmount ? `₹${bid.bidAmount}` : "View Details"
+                }));
+                setRecentBids(recent);
+
+                // Update Stats
+                setStats({
+                    activeTenders: listings.length,
+                    bidsReceived: bids.length,
+                    awarded: listings.filter((l: any) => l.status === 'Closed').length, // Mock logic for 'Awarded'
+                    engagement: "+10%" // Mock
+                });
+
+            } catch (error) {
+                console.error("Failed to fetch dashboard data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const statCards = [
+        { label: "Active Tenders", value: stats.activeTenders, icon: FileText, color: "text-indigo-600", bgColor: "bg-indigo-100 dark:bg-indigo-950/30" },
+        { label: "Bids Received", value: stats.bidsReceived, icon: Users, color: "text-violet-600", bgColor: "bg-violet-100 dark:bg-violet-950/30" },
+        { label: "Awarded", value: stats.awarded, icon: CheckCircle2, color: "text-emerald-600", bgColor: "bg-emerald-100 dark:bg-emerald-950/30" },
+        { label: "Engagement", value: stats.engagement, icon: TrendingUp, color: "text-blue-600", bgColor: "bg-blue-100 dark:bg-blue-950/30" },
     ];
 
-    const activeTenders = [
-        { id: 1, title: "Smart City Infrastructure Phase 2", bids: 42, closing: "15 Oct 2024", status: "Evaluation" },
-        { id: 2, title: "Solar Power Plant Installation", bids: 28, closing: "20 Oct 2024", status: "Active" },
-        { id: 3, title: "E-Governance Software Solution", bids: 15, closing: "10 Oct 2024", status: "Closing" },
-    ];
-
-    const recentBids = [
-        { id: 1, vendor: "EcoBuild Infra", tender: "Smart City Project", time: "2h ago", amount: "₹23.5 Cr" },
-        { id: 2, vendor: "SolarTech Solutions", tender: "Solar Power Installation", time: "5h ago", amount: "₹11.2 Cr" },
-        { id: 3, vendor: "Global IT Systems", tender: "E-Governance Solution", time: "1d ago", amount: "₹4.8 Cr" },
-    ];
+    if (loading) {
+        return <div className="p-10 text-center animate-pulse">Loading Dashboard...</div>;
+    }
 
     return (
         <div className="py-6 space-y-8 select-none">
@@ -41,7 +93,7 @@ const ProvideDashboard = () => {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4">
-                {stats.map((stat, index) => (
+                {statCards.map((stat, index) => (
                     <div key={index} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2rem] p-5 flex flex-col items-center text-center space-y-2 group hover:scale-[1.02] transition-transform">
                         <div className={`size-12 rounded-2xl ${stat.bgColor} flex items-center justify-center`}>
                             <stat.icon className={`size-6 ${stat.color}`} />
@@ -64,7 +116,7 @@ const ProvideDashboard = () => {
                 </div>
 
                 <div className="space-y-3">
-                    {activeTenders.map((tender) => (
+                    {activeTenders.length > 0 ? activeTenders.map((tender) => (
                         <Link
                             key={tender.id}
                             to="/tenders/provide/my-tenders"
@@ -83,7 +135,7 @@ const ProvideDashboard = () => {
                                     <div className="size-1 rounded-full bg-slate-200 dark:bg-slate-800" />
                                     <div className="flex items-center gap-1 opacity-60">
                                         <Clock className="size-3" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest">Ends {tender.closing}</span>
+                                        <span className="text-[9px] font-black uppercase tracking-widest">Duration: {tender.closing}</span>
                                     </div>
                                 </div>
                             </div>
@@ -92,7 +144,9 @@ const ProvideDashboard = () => {
                                 {tender.status}
                             </div>
                         </Link>
-                    ))}
+                    )) : (
+                        <div className="text-center p-4 text-slate-400 text-xs font-bold uppercase">No active tenders</div>
+                    )}
                 </div>
             </div>
 
@@ -106,7 +160,7 @@ const ProvideDashboard = () => {
                 </div>
 
                 <div className="space-y-3">
-                    {recentBids.map((bid) => (
+                    {recentBids.length > 0 ? recentBids.map((bid) => (
                         <div key={bid.id} className="p-5 rounded-[2rem] bg-indigo-50/50 dark:bg-indigo-950/10 border border-indigo-100/50 dark:border-indigo-900/20 relative overflow-hidden group">
                             <div className="flex items-start justify-between relative z-10">
                                 <div className="space-y-1">
@@ -120,7 +174,9 @@ const ProvideDashboard = () => {
                             {/* Decorative element */}
                             <div className="absolute top-0 right-0 size-16 bg-indigo-600/5 rounded-full -mr-8 -mt-8 group-hover:scale-150 transition-transform duration-500" />
                         </div>
-                    ))}
+                    )) : (
+                        <div className="text-center p-4 text-slate-400 text-xs font-bold uppercase">No recent bids</div>
+                    )}
                 </div>
             </div>
 

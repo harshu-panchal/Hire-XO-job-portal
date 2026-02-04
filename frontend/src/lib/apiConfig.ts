@@ -52,6 +52,12 @@ apiClient.interceptors.response.use(
                 case 401:
                     // Unauthorized - token expired or invalid
                     console.error('Unauthorized access - redirecting to login');
+
+                    // Don't redirect if it's a login attempt (invalid credentials)
+                    if (error.config?.url?.includes('/auth/login')) {
+                        break;
+                    }
+
                     tokenManager.removeToken();
 
                     // Only redirect if not already on login page

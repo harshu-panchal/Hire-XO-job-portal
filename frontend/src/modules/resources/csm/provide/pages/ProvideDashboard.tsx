@@ -6,7 +6,7 @@ const ProvideDashboard = () => {
     const { myServices, myInquiries, stats } = useCSMStore();
 
     // Derived stats
-    const activeListingsCount = myServices.filter(s => s.status === "Active").length;
+    const activeListingsCount = myServices.filter((s: any) => s.status === "Active").length;
     const recentInquiries = myInquiries.slice(0, 2);
     return (
         <div className="py-6 space-y-8 select-none">
@@ -84,7 +84,7 @@ const ProvideDashboard = () => {
                 </div>
 
                 <div className="space-y-3">
-                    {recentInquiries.map((inquiry) => (
+                    {recentInquiries.map((inquiry: any) => (
                         <Link
                             key={inquiry.id}
                             to="/csm/provide/inquiries"

@@ -1,7 +1,18 @@
-import { useState } from "react";
-import { Upload, X, DollarSign, Calendar, Percent, FileText, Building2, MapPin } from "lucide-react";
+import { useState, useRef } from "react";
+import { Upload, X, DollarSign, Calendar, Percent, FileText, Building2, MapPin, Loader2 } from "lucide-react";
+import { resourceService } from "@/services/resourceService";
+import { uploadService } from "@/services/uploadService";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const PostFundingNeed = () => {
+    const navigate = useNavigate();
+    const { user } = useAuthStore();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+
     const [formData, setFormData] = useState({
         businessName: "",
         sector: "",
@@ -16,7 +27,7 @@ const PostFundingNeed = () => {
         teamSize: "",
     });
 
-    const [documents] = useState<string[]>([]);
+    const [documents, setDocuments] = useState<{ name: string; url: string }[]>([]);
 
     const sectors = [
         "Technology",
@@ -30,9 +41,76 @@ const PostFundingNeed = () => {
         "Other",
     ];
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Size check (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            toast.error("File size must be less than 10MB");
+            return;
+        }
+
+        try {
+            setIsUploading(true);
+            const response = await uploadService.uploadTenderDocument(file);
+            setDocuments(prev => [...prev, { name: file.name, url: response.url }]);
+            toast.success("Document uploaded successfully");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to upload document");
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+    };
+
+    const removeDocument = (index: number) => {
+        setDocuments(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Form submitted:", formData);
+
+        if (!user) {
+            toast.error("Please log in to post a funding need");
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+
+            const payload = {
+                title: `${formData.businessName} - Funding Request`,
+                company: formData.businessName,
+                category: "Investor",
+                location: formData.location,
+                compensation: formData.amount, // Required field
+                type: 'seeking-investment', // Required field
+                description: formData.description, // Required field
+                investorType: 'want-investment',
+                investmentAmount: formData.amount,
+                investmentSector: [formData.sector],
+                duration: formData.duration,
+                details: {
+                    useOfFunds: formData.useOfFunds,
+                    revenueModel: formData.revenueModel,
+                    currentRevenue: formData.currentRevenue,
+                    teamSize: formData.teamSize,
+                    equity: formData.equity,
+                    documents: documents
+                },
+                status: 'active'
+            };
+
+            await resourceService.create('investors', payload);
+
+            toast.success("Funding request posted successfully!");
+            navigate("/investor/seek/my-requests");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to post funding request");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -243,17 +321,27 @@ const PostFundingNeed = () => {
                 <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
                     <h2 className="text-xl font-black tracking-tight mb-4">Supporting Documents</h2>
                     <div className="space-y-4">
-                        <div className="border-2 border-dashed border-slate-200 dark:border-white/10 rounded-[1.5rem] p-8 text-center">
+                        <div
+                            onClick={() => fileInputRef.current?.click()}
+                            className={`border-2 border-dashed border-slate-200 dark:border-white/10 rounded-[1.5rem] p-8 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 transition-all ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+                        >
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                onChange={handleFileUpload}
+                                accept=".pdf,.doc,.docx"
+                            />
                             <div className="size-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                                <Upload className="size-8 text-primary" />
+                                {isUploading ? <Loader2 className="size-8 text-primary animate-spin" /> : <Upload className="size-8 text-primary" />}
                             </div>
-                            <p className="text-sm font-black mb-1">Upload Documents</p>
+                            <p className="text-sm font-black mb-1">{isUploading ? 'Uploading...' : 'Upload Documents'}</p>
                             <p className="text-xs text-slate-500 mb-4">Business plan, financial projections, pitch deck (PDF, max 10MB)</p>
                             <button
                                 type="button"
                                 className="px-6 py-3 rounded-xl bg-primary/10 text-primary font-black text-xs uppercase tracking-widest active:scale-95 transition-all"
                             >
-                                Choose Files
+                                {isUploading ? 'Please wait' : 'Choose Files'}
                             </button>
                         </div>
 
@@ -266,9 +354,13 @@ const PostFundingNeed = () => {
                                     >
                                         <div className="flex items-center gap-3">
                                             <FileText className="size-5 text-blue-600" />
-                                            <span className="text-sm font-bold">{doc}</span>
+                                            <span className="text-sm font-bold">{doc.name}</span>
                                         </div>
-                                        <button type="button" className="size-8 rounded-lg bg-red-50 dark:bg-red-950/20 flex items-center justify-center active:scale-90 transition-all">
+                                        <button
+                                            type="button"
+                                            onClick={() => removeDocument(index)}
+                                            className="size-8 rounded-lg bg-red-50 dark:bg-red-950/20 flex items-center justify-center active:scale-90 transition-all"
+                                        >
                                             <X className="size-4 text-red-600" />
                                         </button>
                                     </div>
@@ -279,18 +371,21 @@ const PostFundingNeed = () => {
                 </div>
 
                 {/* Submit Buttons */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 pb-12">
                     <button
                         type="button"
+                        onClick={() => toast.info("Drafts feature coming soon!")}
                         className="py-5 rounded-[1.5rem] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
                     >
                         Save Draft
                     </button>
                     <button
                         type="submit"
-                        className="py-5 rounded-[1.5rem] bg-gradient-to-r from-primary to-primary/80 text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all"
+                        disabled={isSubmitting}
+                        className="py-5 rounded-[1.5rem] bg-gradient-to-r from-primary to-primary/80 text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                     >
-                        Post Request
+                        {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : null}
+                        {isSubmitting ? "Posting..." : "Post Request"}
                     </button>
                 </div>
             </form>

@@ -76,7 +76,7 @@ export const BrowseNavbar = () => {
                     notifications={notifications}
                     onMarkAllRead={handleMarkAllRead}
                     onNotificationClick={handleNotificationClick}
-                    viewAllPath="/investor/browse/settings" // Change to actual notifications page if created
+                    viewAllPath="/investor/browse/notifications"
                 />
             </div>
         </header>

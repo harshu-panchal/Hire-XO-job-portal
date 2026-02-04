@@ -26,17 +26,27 @@ export class UserController {
                 return;
             }
 
-            // Count applications (both job and resource)
-            const jobAppsCount = await JobApplication.countDocuments({ applicantId: userId });
-            const resourceAppsCount = await ResourceApplication.countDocuments({ applicantId: userId });
+            let totalApplications = 0;
 
-            // Count jobs posted by this user
+            if (user.role === 'recruiter') {
+                // For Recruiters: Count applications received for their posted jobs
+                const myJobs = await Job.find({ userId });
+                const jobIds = myJobs.map(j => j._id);
+                totalApplications = await JobApplication.countDocuments({ jobId: { $in: jobIds } });
+            } else {
+                // For Job Seekers/Resources: Count applications they have made
+                const jobAppsCount = await JobApplication.countDocuments({ applicantId: userId });
+                const resourceAppsCount = await ResourceApplication.countDocuments({ applicantId: userId });
+                totalApplications = jobAppsCount + resourceAppsCount;
+            }
+
+            // Count jobs posted by this user (relevant for Recruiter)
             const activeJobsCount = await Job.countDocuments({ userId });
 
             res.status(200).json({
                 success: true,
                 stats: {
-                    totalApplications: jobAppsCount + resourceAppsCount,
+                    totalApplications,
                     activeJobs: activeJobsCount,
                     walletBalance: user.walletBalance || 0
                 }
@@ -96,12 +106,13 @@ export class UserController {
                 return;
             }
 
-            const { name, email, profile } = req.body;
+            const { name, email, phoneNumber, profile } = req.body;
 
             // Only update fields that are provided
             const updateData: any = {};
             if (name) updateData.name = name;
             if (email) updateData.email = email;
+            if (phoneNumber) updateData.phoneNumber = phoneNumber;
             if (profile) {
                 // Merge profile data
                 const user = await User.findById(userId);

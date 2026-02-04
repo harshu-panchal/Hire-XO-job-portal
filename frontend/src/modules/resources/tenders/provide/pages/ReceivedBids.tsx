@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Search, Filter, Building2, Clock, ChevronRight, MessageSquare, Download, Users, X, Send, FileText, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { applicationService } from "@/services/applicationService";
+import { toast } from "sonner";
 
 interface Bid {
-    id: number;
+    id: string;
     vendorName: string;
     tenderTitle: string;
     amount: string;
@@ -16,6 +18,7 @@ interface Bid {
     phone?: string;
     experience?: string;
     proposal?: string;
+    _id: string;
 }
 
 const ReceivedBids = () => {
@@ -26,79 +29,66 @@ const ReceivedBids = () => {
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [selectedBid, setSelectedBid] = useState<Bid | null>(null);
     const [message, setMessage] = useState("");
-    const [bids, setBids] = useState<Bid[]>([
-        {
-            id: 1,
-            vendorName: "EcoBuild Infrastructure Ltd.",
-            tenderTitle: "Smart City Infrastructure Phase 2",
-            amount: "₹23.5 Cr",
-            submittedDate: "12 Sep 2024",
-            status: "New",
-            statusColor: "text-blue-600",
-            statusBg: "bg-blue-100 dark:bg-blue-950/30",
-            location: "Mumbai",
-            rating: 4.8,
-            email: "contact@ecobuild.com",
-            phone: "+91 98765 43210",
-            experience: "15+ years in infrastructure development",
-            proposal: "We propose a comprehensive smart city infrastructure solution with IoT integration, sustainable materials, and advanced traffic management systems. Our team has successfully delivered 50+ similar projects across India."
-        },
-        {
-            id: 2,
-            vendorName: "SolarTech Solutions",
-            tenderTitle: "Solar Power Plant Installation",
-            amount: "₹11.2 Cr",
-            submittedDate: "05 Sep 2024",
-            status: "Under Review",
-            statusColor: "text-amber-600",
-            statusBg: "bg-amber-100 dark:bg-amber-950/30",
-            location: "Pune",
-            rating: 4.5,
-            email: "info@solartech.com",
-            phone: "+91 98765 43211",
-            experience: "10+ years in renewable energy",
-            proposal: "Our proposal includes high-efficiency solar panels, battery storage systems, and smart grid integration. We guarantee 25-year performance warranty and 24/7 monitoring."
-        },
-        {
-            id: 3,
-            vendorName: "Global IT Systems",
-            tenderTitle: "E-Governance Software Solution",
-            amount: "₹4.8 Cr",
-            submittedDate: "01 Sep 2024",
-            status: "Shortlisted",
-            statusColor: "text-emerald-600",
-            statusBg: "bg-emerald-100 dark:bg-emerald-950/30",
-            location: "Bangalore",
-            rating: 4.9,
-            email: "sales@globalit.com",
-            phone: "+91 98765 43212",
-            experience: "12+ years in government IT solutions",
-            proposal: "Cloud-based e-governance platform with citizen portal, document management, and analytics dashboard. Compliant with all government security standards."
-        },
-        {
-            id: 4,
-            vendorName: "Constructo Group",
-            tenderTitle: "Smart City Infrastructure Phase 2",
-            amount: "₹24.1 Cr",
-            submittedDate: "10 Sep 2024",
-            status: "Rejected",
-            statusColor: "text-rose-600",
-            statusBg: "bg-rose-100 dark:bg-rose-950/30",
-            location: "Hyderabad",
-            rating: 4.2,
-            email: "contact@constructo.com",
-            phone: "+91 98765 43213",
-            experience: "8+ years in construction",
-            proposal: "Traditional infrastructure approach with proven methodologies and experienced workforce."
-        }
-    ]);
+    const [bids, setBids] = useState<Bid[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const statuses = ["All", "New", "Under Review", "Shortlisted", "Rejected"];
+    const statuses = ["All", "Pending", "Accepted", "Rejected"];
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case "Pending":
+                return { statusColor: "text-blue-600", statusBg: "bg-blue-100 dark:bg-blue-950/30" };
+            case "Accepted":
+                return { statusColor: "text-emerald-600", statusBg: "bg-emerald-100 dark:bg-emerald-950/30" };
+            case "Rejected":
+                return { statusColor: "text-rose-600", statusBg: "bg-rose-100 dark:bg-rose-950/30" };
+            default:
+                return { statusColor: "text-slate-600", statusBg: "bg-slate-100 dark:bg-slate-800" };
+        }
+    };
+
+    const fetchBids = useCallback(async () => {
+        setLoading(true);
+        try {
+            const data: any[] = await applicationService.getReceivedResourceApplications('tenders');
+
+            if (Array.isArray(data)) {
+                const mappedBids = data.map(app => ({
+                    id: app.id,
+                    _id: app.id,
+                    vendorName: app.applicantId?.name || "Unknown Vendor",
+                    tenderTitle: app.resourceId?.title || "Tender Deleted",
+                    amount: app.bidAmount ? `₹${app.bidAmount}` : "Not Specified",
+                    submittedDate: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+                    status: app.status || "Pending",
+                    ...getStatusColor(app.status || "Pending"),
+                    location: app.applicantId?.location || "N/A",
+                    rating: app.applicantId?.rating || 0,
+                    email: app.applicantId?.email,
+                    phone: app.applicantId?.phone,
+                    experience: app.applicantId?.experience || "N/A",
+                    proposal: app.coverLetter || "No additional comments provided."
+                }));
+                setBids(mappedBids);
+            } else {
+                setBids([]);
+            }
+        } catch (error) {
+            console.error("Failed to fetch bids", error);
+            toast.error("Could not load bids");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchBids();
+    }, [fetchBids]);
 
     const filteredBids = bids.filter(bid =>
         (selectedStatus === "All" || bid.status === selectedStatus) &&
-        (bid.vendorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            bid.tenderTitle.toLowerCase().includes(searchQuery.toLowerCase()))
+        ((bid.vendorName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (bid.tenderTitle || "").toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     const handleViewProposal = (bid: Bid) => {
@@ -112,50 +102,32 @@ const ReceivedBids = () => {
     };
 
     const handleDownload = (bid: Bid) => {
-        alert(`Downloading proposal from ${bid.vendorName}...`);
-        // Simulate download
-        console.log("Downloading proposal for bid:", bid.id);
+        toast.info(`Downloading proposal from ${bid.vendorName}...`);
     };
 
     const sendMessage = () => {
         if (message.trim() && selectedBid) {
-            alert(`Message sent to ${selectedBid.vendorName}!`);
+            toast.success(`Message sent to ${selectedBid.vendorName}!`);
             setMessage("");
             setShowMessageModal(false);
         }
     };
 
-    const updateBidStatus = (bidId: number, newStatus: string) => {
-        setBids(bids.map(bid => {
-            if (bid.id === bidId) {
-                let statusColor = "";
-                let statusBg = "";
-
-                switch (newStatus) {
-                    case "New":
-                        statusColor = "text-blue-600";
-                        statusBg = "bg-blue-100 dark:bg-blue-950/30";
-                        break;
-                    case "Under Review":
-                        statusColor = "text-amber-600";
-                        statusBg = "bg-amber-100 dark:bg-amber-950/30";
-                        break;
-                    case "Shortlisted":
-                        statusColor = "text-emerald-600";
-                        statusBg = "bg-emerald-100 dark:bg-emerald-950/30";
-                        break;
-                    case "Rejected":
-                        statusColor = "text-rose-600";
-                        statusBg = "bg-rose-100 dark:bg-rose-950/30";
-                        break;
-                }
-
-                return { ...bid, status: newStatus, statusColor, statusBg };
-            }
-            return bid;
-        }));
-        setShowProposalModal(false);
+    const updateBidStatus = async (bidId: string, newStatus: 'Pending' | 'Accepted' | 'Rejected') => {
+        try {
+            await applicationService.updateApplicationStatus(bidId, newStatus, 'resource');
+            toast.success(`Bid status updated to ${newStatus}`);
+            fetchBids();
+            setShowProposalModal(false);
+        } catch (error) {
+            console.error("Failed to update bid status", error);
+            toast.error("Failed to update status");
+        }
     };
+
+    if (loading) {
+        return <div className="p-10 text-center animate-pulse font-bold text-slate-400">Loading received bids...</div>;
+    }
 
     return (
         <div className="py-6 space-y-6 select-none">
@@ -206,14 +178,12 @@ const ReceivedBids = () => {
             <div className="space-y-5">
                 {filteredBids.map((bid) => (
                     <div key={bid.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
-                        {/* Status Badge */}
                         <div className="absolute top-0 right-0 pt-6 pr-6">
                             <div className={`px-4 py-1.5 rounded-full ${bid.statusBg} ${bid.statusColor} text-[8px] font-black uppercase tracking-widest border border-current opacity-80 shrink-0`}>
                                 {bid.status}
                             </div>
                         </div>
 
-                        {/* Top Section */}
                         <div className="flex items-start gap-4 mb-4 pr-32">
                             <div className="size-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900 flex items-center justify-center shrink-0">
                                 <Building2 className="size-7 text-indigo-600" />
@@ -228,7 +198,6 @@ const ReceivedBids = () => {
                             </div>
                         </div>
 
-                        {/* Details Grid */}
                         <div className="grid grid-cols-2 gap-6 mb-6">
                             <div className="space-y-1">
                                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Proposed Amount</p>
@@ -243,7 +212,6 @@ const ReceivedBids = () => {
                             </div>
                         </div>
 
-                        {/* Actions */}
                         <div className="flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-white/5">
                             <button
                                 onClick={() => handleViewProposal(bid)}
@@ -270,13 +238,10 @@ const ReceivedBids = () => {
                 {filteredBids.length === 0 && (
                     <div className="text-center py-20 opacity-50 space-y-4">
                         <Users className="size-16 mx-auto text-slate-300" />
-                        <p className="text-xs font-black uppercase tracking-widest">No matching bids found</p>
+                        <p className="text-xs font-black uppercase tracking-widest">No bids found</p>
                     </div>
                 )}
             </div>
-
-            {/* Float Footer placeholder for mobile action */}
-            <div className="h-4" />
 
             {/* Proposal Modal */}
             {showProposalModal && selectedBid && (
@@ -295,7 +260,6 @@ const ReceivedBids = () => {
                             </button>
                         </div>
 
-                        {/* Vendor Info */}
                         <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
                             <div className="flex items-start gap-4 mb-4">
                                 <div className="size-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900 flex items-center justify-center">
@@ -323,7 +287,6 @@ const ReceivedBids = () => {
                             </div>
                         </div>
 
-                        {/* Tender Details */}
                         <div className="mb-6">
                             <h5 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-3">Tender Details</h5>
                             <div className="p-4 bg-indigo-50 dark:bg-indigo-950/20 rounded-2xl border border-indigo-100 dark:border-indigo-900">
@@ -342,7 +305,6 @@ const ReceivedBids = () => {
                             </div>
                         </div>
 
-                        {/* Proposal Content */}
                         <div className="mb-6">
                             <h5 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-3">Proposal Summary</h5>
                             <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
@@ -350,48 +312,20 @@ const ReceivedBids = () => {
                             </div>
                         </div>
 
-                        {/* Documents */}
-                        <div className="mb-6">
-                            <h5 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-3">Attached Documents</h5>
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                                    <FileText className="size-5 text-indigo-600" />
-                                    <div className="flex-1">
-                                        <p className="text-xs font-black">Technical Proposal.pdf</p>
-                                        <p className="text-[10px] text-slate-500">2.4 MB</p>
-                                    </div>
-                                    <button className="size-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-950/30 transition-all">
-                                        <Download className="size-4 text-indigo-600" />
-                                    </button>
-                                </div>
-                                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                                    <FileText className="size-5 text-indigo-600" />
-                                    <div className="flex-1">
-                                        <p className="text-xs font-black">Financial Proposal.pdf</p>
-                                        <p className="text-[10px] text-slate-500">1.8 MB</p>
-                                    </div>
-                                    <button className="size-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-950/30 transition-all">
-                                        <Download className="size-4 text-indigo-600" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Action Buttons */}
                         <div className="flex gap-3">
                             <button
-                                onClick={() => updateBidStatus(selectedBid.id, "Shortlisted")}
+                                onClick={() => updateBidStatus(selectedBid.id, "Accepted")}
                                 className="flex-1 px-4 py-3 rounded-xl bg-emerald-600 text-white font-black text-sm uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2"
                             >
                                 <CheckCircle className="size-4" />
-                                Shortlist
+                                Accept Bid
                             </button>
                             <button
                                 onClick={() => updateBidStatus(selectedBid.id, "Rejected")}
                                 className="flex-1 px-4 py-3 rounded-xl bg-rose-600 text-white font-black text-sm uppercase tracking-widest hover:bg-rose-700 active:scale-95 transition-all shadow-lg shadow-rose-600/20 flex items-center justify-center gap-2"
                             >
                                 <XCircle className="size-4" />
-                                Reject
+                                Reject Bid
                             </button>
                         </div>
                     </div>
@@ -465,7 +399,7 @@ const ReceivedBids = () => {
                         </div>
                         <button
                             onClick={() => setShowFilterModal(false)}
-                            className="w-full mt-4 px-4 py-3 rounded-xl bg-indigo-600 text-white font-black text-sm uppercase tracking-widest hover:bg-indigo-700 active:scale-95 transition-all shadow-lg shadow-indigo-600/20"
+                            className="w-full mt-4 h-14 rounded-2xl bg-indigo-600 text-white font-black text-sm uppercase tracking-widest hover:bg-indigo-700 active:scale-95 transition-all shadow-lg shadow-indigo-600/20 cursor-pointer"
                         >
                             Got It
                         </button>

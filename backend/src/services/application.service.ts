@@ -46,7 +46,11 @@ export class ApplicationService {
         applicantId: string,
         resourceId: string,
         resourceType: string,
-        message?: string
+        data: {
+            message?: string;
+            bidAmount?: number;
+            coverLetter?: string;
+        }
     ) {
         // Get the appropriate model
         const modelMap: any = {
@@ -91,7 +95,9 @@ export class ApplicationService {
             applicantId,
             resourceId,
             resourceType,
-            message,
+            message: data.message,
+            bidAmount: data.bidAmount,
+            coverLetter: data.coverLetter,
             status: 'Pending'
         });
 
@@ -105,6 +111,7 @@ export class ApplicationService {
             .sort({ appliedAt: -1 });
 
         const resourceApplications = await ResourceApplication.find({ applicantId: userId })
+            .populate('resourceId')
             .sort({ appliedAt: -1 });
 
         return {
@@ -127,6 +134,82 @@ export class ApplicationService {
 
         const applications = await JobApplication.find({ jobId })
             .populate('applicantId', 'name email phoneNumber')
+            .sort({ appliedAt: -1 });
+
+        return applications;
+    }
+
+    // Get all applications received for jobs posted by the user (Recruiter Dashboard)
+    public async getReceivedApplications(userId: string) {
+        // Find all jobs posted by the user
+        const jobs = await Job.find({ userId });
+        const jobIds = jobs.map(job => job._id);
+
+        // Find applications for these jobs
+        const applications = await JobApplication.find({ jobId: { $in: jobIds } })
+            .populate('applicantId', 'name email phoneNumber profilePhoto profile')
+            .populate('jobId', 'title')
+            .sort({ appliedAt: -1 });
+
+        return applications;
+    }
+
+    // Get all applications received for resources posted by the user
+    public async getReceivedResourceApplications(userId: string, category: string) {
+        // Map category to model
+        const modelMap: any = {
+            'investor': Investor,
+            'tenders': Tender,
+            'equipments': Equipment,
+            'machinery': Machinery,
+            'pmc': PMC,
+            'csm': CSM,
+            'logistics': Logistics,
+            'vehicles': Vehicle
+        };
+
+        // Handle case sensitivity or mapping differences if any
+        // Assuming category matches keys (lowercased or capitalized properly)
+        // The ResourceProfile category is usually lowercase (e.g. "investor").
+        // The modelMap keys above are capitalized. Adjusting.
+
+        const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+        // Special case for plurals/singulars if needed. 
+        // In AuthController/Service, 'investor' matches schema.
+        // Let's assume the mapping needs to be robust.
+
+        // Better map:
+        const refinedMap: any = {
+            'investor': Investor,
+            'investors': Investor,
+            'tender': Tender,
+            'tenders': Tender,
+            'equipment': Equipment,
+            'equipments': Equipment,
+            'machinery': Machinery,
+            'pmc': PMC,
+            'csm': CSM,
+            'logistics': Logistics,
+            'vehicle': Vehicle,
+            'vehicles': Vehicle
+        };
+
+        const ResourceModel = refinedMap[category.toLowerCase()];
+
+        if (!ResourceModel) {
+            // If no specific category logic or mixed, return empty or throw
+            // For now, return empty if category unknown
+            return [];
+        }
+
+        // Find all resources posted by the user
+        const resources = await ResourceModel.find({ userId });
+        const resourceIds = resources.map((r: any) => r._id);
+
+        // Find applications for these resources
+        const applications = await ResourceApplication.find({ resourceId: { $in: resourceIds } })
+            .populate('applicantId', 'name email phoneNumber profilePhoto')
+            .populate('resourceId')
             .sort({ appliedAt: -1 });
 
         return applications;

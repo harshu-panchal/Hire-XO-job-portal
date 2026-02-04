@@ -1,5 +1,7 @@
 import { Search, MessageSquare, Clock, CheckCircle2, XCircle, X, Send, Eye, Mail, Phone, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { applicationService, type Application } from "@/services/applicationService";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const InvestorInquiries = () => {
     const [filter, setFilter] = useState("all");
@@ -8,94 +10,61 @@ const InvestorInquiries = () => {
     const [showViewModal, setShowViewModal] = useState(false);
     const [selectedInquiry, setSelectedInquiry] = useState<any>(null);
     const [replyMessage, setReplyMessage] = useState("");
+    const [inquiries, setInquiries] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const [inquiries, setInquiries] = useState([
-        {
-            id: 1,
-            investorName: "Rajesh Kumar",
-            investorInitials: "RK",
-            investorGradient: "from-blue-500 to-cyan-600",
-            investorEmail: "rajesh.kumar@venture.com",
-            investorPhone: "+91 98765 43210",
-            fundingRequest: "AI-Powered SaaS Platform",
-            message: "Interested in your AI SaaS platform. Would like to discuss investment terms and growth projections. Can we schedule a call this week?",
-            fullMessage: "Hello, I came across your funding request for the AI-Powered SaaS Platform and I'm very interested in learning more. I have over 15 years of experience in the technology sector and have invested in several successful SaaS companies. I would like to discuss the investment terms, equity structure, and your growth projections for the next 3-5 years. Could we schedule a call this week to discuss this opportunity in detail? I'm particularly interested in understanding your customer acquisition strategy and current market traction.",
-            timestamp: "2 hours ago",
-            status: "unread",
-            requestAmount: "₹5 Cr",
-            date: "Feb 2, 2026",
-        },
-        {
-            id: 2,
-            investorName: "Anita Sharma",
-            investorInitials: "AS",
-            investorGradient: "from-purple-500 to-pink-600",
-            investorEmail: "anita.sharma@capitalfund.com",
-            investorPhone: "+91 98765 43211",
-            fundingRequest: "Solar Panel Manufacturing",
-            message: "Looking for more details on your manufacturing expansion plans. What are the projected returns and timeline for break-even?",
-            fullMessage: "Good day, I represent a green energy focused investment fund and your solar panel manufacturing project aligns perfectly with our investment thesis. We're looking for more comprehensive details on your manufacturing expansion plans, including the projected returns, timeline for break-even, and your competitive advantages in the market. Could you also share information about your supply chain partnerships and any government subsidies or incentives you've secured?",
-            timestamp: "5 hours ago",
-            status: "unread",
-            requestAmount: "₹12 Cr",
-            date: "Feb 2, 2026",
-        },
-        {
-            id: 3,
-            investorName: "Vikram Patel",
-            investorInitials: "VP",
-            investorGradient: "from-green-500 to-emerald-600",
-            investorEmail: "vikram.patel@healthtech.in",
-            investorPhone: "+91 98765 43212",
-            fundingRequest: "Telemedicine Platform",
-            message: "Your telemedicine platform looks promising. I have experience in healthcare tech. Let's connect to discuss partnership opportunities.",
-            fullMessage: "Hi there, your telemedicine platform caught my attention as I have extensive experience in healthcare technology investments. I've been involved with several successful healthtech startups and I believe there's great potential in this space. I'd love to connect and discuss not just investment, but also potential partnership opportunities where I can add strategic value beyond capital. Let's schedule a meeting to explore how we can work together.",
-            timestamp: "1 day ago",
-            status: "read",
-            requestAmount: "₹8 Cr",
-            date: "Feb 1, 2026",
-        },
-        {
-            id: 4,
-            investorName: "Priya Mehta",
-            investorInitials: "PM",
-            investorGradient: "from-orange-500 to-red-600",
-            investorEmail: "priya.mehta@angelinvestors.com",
-            investorPhone: "+91 98765 43213",
-            fundingRequest: "AI-Powered SaaS Platform",
-            message: "I'm interested in the technology sector. Can you share your pitch deck and financial projections?",
-            fullMessage: "Hello, I'm an angel investor with a strong focus on the technology sector, particularly AI and SaaS businesses. Your platform seems to have good potential and I'd like to learn more. Could you please share your pitch deck, detailed financial projections, and information about your current team and advisors? I'm also interested in understanding your go-to-market strategy and how you plan to scale the business.",
-            timestamp: "2 days ago",
-            status: "replied",
-            requestAmount: "₹5 Cr",
-            date: "Jan 31, 2026",
-        },
-        {
-            id: 5,
-            investorName: "Amit Singh",
-            investorInitials: "AS",
-            investorGradient: "from-cyan-500 to-blue-600",
-            investorEmail: "amit.singh@greenfund.in",
-            investorPhone: "+91 98765 43214",
-            fundingRequest: "Solar Panel Manufacturing",
-            message: "Have you secured any government subsidies or partnerships? Would like to know more about the regulatory approvals.",
-            fullMessage: "Greetings, I'm reaching out regarding your solar panel manufacturing venture. As someone who specializes in renewable energy investments, I'm keen to understand the regulatory landscape you're navigating. Have you secured any government subsidies, tax benefits, or strategic partnerships? What's the status of your regulatory approvals and environmental clearances? I'd also like to know about your manufacturing technology and whether you have any proprietary processes or patents.",
-            timestamp: "3 days ago",
-            status: "read",
-            requestAmount: "₹12 Cr",
-            date: "Jan 30, 2026",
-        },
-    ]);
+    useEffect(() => {
+        const fetchInquiries = async () => {
+            try {
+                // Fetch inquiries for 'investors' category (Funding Requests)
+                const data = await applicationService.getReceivedResourceApplications('investors');
+
+                // Map to component format
+                const formatted = data.map((app: any) => ({
+                    id: app._id,
+                    investorName: app.applicantId?.name || "Unknown Investor",
+                    investorInitials: (app.applicantId?.name || "U").substring(0, 2).toUpperCase(),
+                    investorGradient: "from-blue-500 to-cyan-600", // Static for now
+                    investorEmail: app.applicantId?.email || "N/A",
+                    investorPhone: app.applicantId?.phoneNumber || "N/A",
+                    fundingRequest: app.resourceId?.title || "Funding Request", // Assuming we populate resourceId or have title
+                    message: app.message?.substring(0, 100) + (app.message?.length > 100 ? "..." : "") || "No message",
+                    fullMessage: app.message || "No message provided.",
+                    timestamp: new Date(app.appliedAt).toLocaleDateString(),
+                    status: app.status.toLowerCase(), // 'pending', 'accepted', 'rejected'
+                    requestAmount: app.resourceId?.amount || "N/A", // If populated
+                    date: new Date(app.appliedAt).toLocaleDateString(),
+                    rawStatus: app.status // Keep original for logic if needed
+                }));
+
+                setInquiries(formatted);
+            } catch (error) {
+                console.error("Failed to fetch inquiries", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchInquiries();
+    }, []);
 
     const stats = {
         total: inquiries.length,
-        unread: inquiries.filter((i) => i.status === "unread").length,
-        replied: inquiries.filter((i) => i.status === "replied").length,
+        unread: inquiries.filter((i) => i.status === "pending").length, // Mapping Pending to Unread for UI
+        replied: inquiries.filter((i) => i.status === "accepted").length, // Mapping Accepted to Replied/Done
     };
 
     // Filter inquiries based on filter and search
     const filteredInquiries = inquiries.filter((inquiry) => {
-        const matchesFilter = filter === "all" || inquiry.status === filter;
+        // Map UI filters to Backend status
+        // UI: unread, read, replied
+        // Backend: Pending, Rejected, Accepted
+        let statusMatch = true;
+        if (filter === 'unread') statusMatch = inquiry.status === 'pending';
+        if (filter === 'read') statusMatch = inquiry.status !== 'pending'; // roughly
+        if (filter === 'replied') statusMatch = inquiry.status === 'accepted';
+
+        const matchesFilter = filter === "all" || statusMatch;
         const matchesSearch =
             inquiry.investorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             inquiry.fundingRequest.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -106,33 +75,19 @@ const InvestorInquiries = () => {
     const handleReply = (inquiry: any) => {
         setSelectedInquiry(inquiry);
         setShowReplyModal(true);
-        // Mark as read when opening reply
-        if (inquiry.status === "unread") {
-            markAsRead(inquiry.id);
-        }
     };
 
     const handleViewDetails = (inquiry: any) => {
         setSelectedInquiry(inquiry);
         setShowViewModal(true);
-        // Mark as read when viewing
-        if (inquiry.status === "unread") {
-            markAsRead(inquiry.id);
-        }
-    };
-
-    const markAsRead = (inquiryId: number) => {
-        setInquiries(inquiries.map(inq =>
-            inq.id === inquiryId ? { ...inq, status: "read" } : inq
-        ));
     };
 
     const sendReply = () => {
         if (replyMessage.trim() && selectedInquiry) {
-            // Update inquiry status to replied
-            setInquiries(inquiries.map(inq =>
-                inq.id === selectedInquiry.id ? { ...inq, status: "replied" } : inq
-            ));
+            // In a real app, this would send an email or internal message API call
+            alert(`Reply sent to ${selectedInquiry.investorEmail}`);
+            // Optimistically update status to 'replied' (Accepted in our mapping?)
+            // Or just close modal
             setShowReplyModal(false);
             setReplyMessage("");
             setSelectedInquiry(null);
@@ -141,16 +96,20 @@ const InvestorInquiries = () => {
 
     const getStatusBadge = (status: string) => {
         switch (status) {
-            case "unread":
+            case "pending":
                 return { color: "blue", icon: MessageSquare, label: "New" };
             case "read":
+            case "rejected":
                 return { color: "amber", icon: Clock, label: "Read" };
             case "replied":
+            case "accepted":
                 return { color: "emerald", icon: CheckCircle2, label: "Replied" };
             default:
                 return { color: "slate", icon: XCircle, label: "Unknown" };
         }
     };
+
+    if (loading) return <div className="p-10 text-center animate-pulse">Loading Inquiries...</div>;
 
     return (
         <div className="py-6 space-y-6 select-none">
@@ -172,7 +131,7 @@ const InvestorInquiries = () => {
                 </div>
                 <div className="bg-blue-50 dark:bg-blue-950/20 rounded-[2rem] p-4 border border-blue-200 dark:border-blue-900 text-center">
                     <p className="text-2xl font-black text-blue-600">{stats.unread}</p>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-blue-600 mt-0.5">Unread</p>
+                    <p className="text-[8px] font-black uppercase tracking-widest text-blue-600 mt-0.5">Pending</p>
                 </div>
                 <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-[2rem] p-4 border border-emerald-200 dark:border-emerald-900 text-center">
                     <p className="text-2xl font-black text-emerald-600">{stats.replied}</p>
@@ -204,8 +163,7 @@ const InvestorInquiries = () => {
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                     {[
                         { id: "all", label: "All Inquiries" },
-                        { id: "unread", label: "Unread" },
-                        { id: "read", label: "Read" },
+                        { id: "unread", label: "Pending" },
                         { id: "replied", label: "Replied" },
                     ].map((filterOption) => (
                         <button
@@ -241,7 +199,7 @@ const InvestorInquiries = () => {
                             <div
                                 key={inquiry.id}
                                 onClick={() => handleViewDetails(inquiry)}
-                                className={`bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border transition-all active:scale-[0.98] cursor-pointer hover:shadow-lg ${inquiry.status === "unread"
+                                className={`bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border transition-all active:scale-[0.98] cursor-pointer hover:shadow-lg ${inquiry.status === "pending"
                                     ? "border-primary/30 shadow-lg shadow-primary/5"
                                     : "border-slate-200 dark:border-white/10"
                                     }`}
@@ -327,7 +285,7 @@ const InvestorInquiries = () => {
                         {/* Original Message */}
                         <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
                             <p className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Original Message</p>
-                            <p className="text-sm text-slate-700 dark:text-slate-300">{selectedInquiry.message}</p>
+                            <p className="text-sm text-slate-700 dark:text-slate-300">{selectedInquiry.fullMessage}</p>
                             <div className="flex items-center gap-2 mt-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
                                 <Clock className="size-3" />
                                 <span>{selectedInquiry.timestamp}</span>

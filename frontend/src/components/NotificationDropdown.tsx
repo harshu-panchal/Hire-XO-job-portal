@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, CheckCircle, Clock, Info, Star } from "lucide-react";
+import { Bell, CheckCircle, Clock, Info, Star, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export interface Notification {
@@ -50,7 +50,18 @@ export const NotificationDropdown = ({
                         className="fixed right-4 top-20 w-[280px] sm:w-[320px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden"
                     >
                         <div className="p-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
-                            <h3 className="font-bold text-slate-900 dark:text-white">Notifications</h3>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onClose();
+                                    }}
+                                    className="p-1 -ml-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-slate-400"
+                                >
+                                    <ArrowLeft className="size-4" />
+                                </button>
+                                <h3 className="font-bold text-slate-900 dark:text-white">Notifications</h3>
+                            </div>
                             {unreadCount > 0 && onMarkAllRead && (
                                 <button
                                     onClick={(e) => {

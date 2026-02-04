@@ -1,4 +1,4 @@
-import { Bell, Lock, Moon, Globe, HelpCircle, LogOut, ChevronRight, Shield, CreditCard } from "lucide-react";
+import { Bell, Lock, Moon, Globe, HelpCircle, LogOut, ChevronRight, Shield, CreditCard, ArrowLeft } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -22,7 +22,16 @@ const BrowseSettings = () => {
         setLanguage(languages[nextIndex]);
     };
     return (
-        <div className="py-6 space-y-6 select-none">
+        <div className="py-6 space-y-6 select-none animate-in fade-in duration-500">
+            {/* Back Button */}
+            <button
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary transition-colors active:scale-95"
+            >
+                <ArrowLeft className="size-4" />
+                <span>Go Back</span>
+            </button>
+
             {/* Header */}
             <div className="px-1">
                 <h1 className="text-3xl font-black tracking-tight">

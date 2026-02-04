@@ -24,7 +24,11 @@ export const jobService = {
             const response = await apiClient.get<any>('/jobs', {
                 params: filters,
             });
-            return response.data.data || [];
+            const jobs = response.data.data || [];
+            return jobs.map((job: any) => ({
+                ...job,
+                id: job.id || job._id
+            }));
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }
@@ -36,7 +40,11 @@ export const jobService = {
     async getJobById(id: string): Promise<Job> {
         try {
             const response = await apiClient.get<Job>(`/jobs/${id}`);
-            return response.data;
+            const job = response.data;
+            return {
+                ...job,
+                id: (job as any).id || (job as any)._id
+            };
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }
@@ -84,7 +92,11 @@ export const jobService = {
     async getMyListings(): Promise<Job[]> {
         try {
             const response = await apiClient.get<any>('/jobs/my-listings');
-            return response.data.data || [];
+            const jobs = response.data.data || [];
+            return jobs.map((job: any) => ({
+                ...job,
+                id: job.id || job._id
+            }));
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }

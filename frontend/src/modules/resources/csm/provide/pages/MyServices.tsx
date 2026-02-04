@@ -34,7 +34,7 @@ const MyServices = () => {
 
             {/* List */}
             <div className="space-y-4">
-                {myServices.map((service) => (
+                {myServices.map((service: any) => (
                     <div
                         key={service.id}
                         className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-6 border border-slate-200 dark:border-white/10 shadow-sm"

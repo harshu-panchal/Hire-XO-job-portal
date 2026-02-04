@@ -26,8 +26,8 @@ const monthlyData = [
 ];
 
 const pieData = [
-    { name: "Job Seekers", value: 65 },
-    { name: "Recruiters", value: 25 },
+    { name: "Employees", value: 65 },
+    { name: "Employers", value: 25 },
     { name: "Resources", value: 10 },
 ];
 
@@ -212,24 +212,24 @@ export default function Reports() {
 
                 {/* Top Performing */}
                 <motion.div variants={itemVariants} className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-6">
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Top Recruiters</h3>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Top Employers</h3>
                     <div className="space-y-4">
                         {[
                             { name: "TechCorp India", jobs: 45, hires: 32 },
                             { name: "InnovateTech", jobs: 38, hires: 28 },
                             { name: "GlobalHR Solutions", jobs: 32, hires: 24 },
                             { name: "StartupHub", jobs: 28, hires: 18 },
-                        ].map((recruiter, index) => (
-                            <div key={recruiter.name} className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-white/5 last:border-0">
+                        ].map((employer, index) => (
+                            <div key={employer.name} className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-white/5 last:border-0">
                                 <div className="flex items-center gap-3">
                                     <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
                                         {index + 1}
                                     </span>
-                                    <span className="font-medium text-slate-900 dark:text-white">{recruiter.name}</span>
+                                    <span className="font-medium text-slate-900 dark:text-white">{employer.name}</span>
                                 </div>
                                 <div className="flex items-center gap-6 text-sm">
-                                    <span className="text-slate-500 dark:text-white/50">{recruiter.jobs} jobs</span>
-                                    <span className="text-green-600 dark:text-green-400 font-medium">{recruiter.hires} hires</span>
+                                    <span className="text-slate-500 dark:text-white/50">{employer.jobs} jobs</span>
+                                    <span className="text-green-600 dark:text-green-400 font-medium">{employer.hires} hires</span>
                                 </div>
                             </div>
                         ))}

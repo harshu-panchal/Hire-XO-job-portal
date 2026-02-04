@@ -13,7 +13,7 @@ interface AdminHeaderProps {
 const NOTIFICATIONS_DATA = [
     {
         id: 1,
-        title: "New Recruiter Registered",
+        title: "New Employer Registered",
         description: "TechCorp India has joined the platform.",
         time: "5m ago",
         type: "success",

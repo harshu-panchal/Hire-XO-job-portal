@@ -1,7 +1,75 @@
+import { useState, useEffect } from "react";
 import { TrendingUp, Eye, MessageSquare, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
+import { applicationService } from "@/services/applicationService";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const SeekDashboard = () => {
+    const { user } = useAuthStore();
+    const [stats, setStats] = useState({
+        activeRequests: 0,
+        totalViews: 0, // Mock for now
+        inquiries: 0
+    });
+    const [recentInquiries, setRecentInquiries] = useState<any[]>([]);
+    const [activeRequests, setActiveRequests] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch my listings (Active Requests)
+                // "investors" is the resource type for those seeking investment (SeekDashboard context)
+                // Wait, if I am a "Resource" user with category "investors", I post "investor" resources?
+                // Actually, the "Seek" dashboard is for those SEEKING investment.
+                // In my resource service, this maps to the 'Investor' model?
+                // Or 'Tender'?
+                // This dashboard is specifically in `investor/seek`.
+                // So I am posting requests for Investors to see.
+                // The Resource Type is "Investor" (meaning "Investment Opportunity"?) or are we posting "Startups"?
+                // The `Investor` model likely represents the "Need" or "Opportunity".
+
+                // Fetch listings
+                const listings = await resourceService.getMyListings('investors'); // OR 'investor'? Type is "investors" in service
+                setActiveRequests(listings.slice(0, 3));
+
+                // Fetch inquiries (Received Applications)
+                // We assume "investors" category for now as we are in Investor/Seek section
+                const inquiries = await applicationService.getReceivedResourceApplications('investors');
+
+                // Format inquiries
+                const formattedInquiries = inquiries.slice(0, 3).map((inq: any) => ({
+                    id: inq._id,
+                    name: inq.applicantId?.name || "Unknown Investor",
+                    message: inq.message || "No message provided",
+                    time: new Date(inq.appliedAt).toLocaleDateString(), // Simple date
+                    avatar: (inq.applicantId?.name || "U").charAt(0).toUpperCase(),
+                    // We don't have request title easily unless we populate resourceId in backend properly.
+                    // For now, assume it's linked.
+                }));
+                setRecentInquiries(formattedInquiries);
+
+                setStats({
+                    activeRequests: listings.length,
+                    totalViews: listings.reduce((acc: number, curr: any) => acc + (curr.views || 0), 0),
+                    inquiries: inquiries.length
+                });
+
+            } catch (error) {
+                console.error("Failed to fetch dashboard data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    if (loading) {
+        return <div className="p-10 text-center animate-pulse">Loading Dashboard...</div>;
+    }
+
     return (
         <div className="py-6 space-y-8 select-none">
             {/* Header */}
@@ -27,7 +95,7 @@ const SeekDashboard = () => {
                                 <p className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-0.5">
                                     Active Requests
                                 </p>
-                                <p className="text-2xl font-black tracking-tight">3</p>
+                                <p className="text-2xl font-black tracking-tight">{stats.activeRequests}</p>
                             </div>
                         </div>
                         <div className="text-[10px] font-black bg-primary/10 text-primary px-3 py-1 rounded-full uppercase tracking-widest">
@@ -43,9 +111,9 @@ const SeekDashboard = () => {
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
                                 Total Views
                             </p>
-                            <p className="text-xl font-black tracking-tight">1,247</p>
+                            <p className="text-xl font-black tracking-tight">{stats.totalViews}</p>
                             <p className="text-[8px] font-black uppercase tracking-widest text-blue-500/60 mt-2">
-                                This Month
+                                Lifetime
                             </p>
                         </div>
 
@@ -56,9 +124,9 @@ const SeekDashboard = () => {
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
                                 Inquiries
                             </p>
-                            <p className="text-xl font-black tracking-tight">18</p>
+                            <p className="text-xl font-black tracking-tight">{stats.inquiries}</p>
                             <p className="text-[8px] font-black uppercase tracking-widest text-emerald-500/60 mt-2">
-                                New This Week
+                                Total Received
                             </p>
                         </div>
                     </div>
@@ -78,63 +146,39 @@ const SeekDashboard = () => {
                 </div>
 
                 <div className="space-y-3">
-                    {/* Inquiry 1 */}
-                    <Link
-                        to="/investor/seek/inquiries"
-                        className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
-                    >
-                        <div className="flex items-start gap-3">
-                            <div className="size-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-black text-sm shrink-0">
-                                RK
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-2 mb-1">
-                                    <p className="font-black text-sm">Rajesh Kumar</p>
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 shrink-0">2h ago</span>
+                    {recentInquiries.length > 0 ? (
+                        recentInquiries.map((inq) => (
+                            <Link
+                                key={inq.id}
+                                to="/investor/seek/inquiries"
+                                className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
+                            >
+                                <div className="flex items-start gap-3">
+                                    <div className="size-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-black text-sm shrink-0">
+                                        {inq.avatar}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-2 mb-1">
+                                            <p className="font-black text-sm">{inq.name}</p>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 shrink-0">{inq.time}</span>
+                                        </div>
+                                        <p className="text-xs text-slate-600 dark:text-slate-400 mb-2 truncate">
+                                            {inq.message}
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 rounded-md">
+                                                Inquiry
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
-                                    Interested in your AI SaaS platform. Would like to discuss investment terms.
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 rounded-md">
-                                        Technology
-                                    </span>
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">
-                                        ₹5Cr Request
-                                    </span>
-                                </div>
-                            </div>
+                            </Link>
+                        ))
+                    ) : (
+                        <div className="text-center p-4 text-slate-400 text-xs font-bold uppercase tracking-widest">
+                            No inquiries yet
                         </div>
-                    </Link>
-
-                    {/* Inquiry 2 */}
-                    <Link
-                        to="/investor/seek/inquiries"
-                        className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
-                    >
-                        <div className="flex items-start gap-3">
-                            <div className="size-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-black text-sm shrink-0">
-                                AS
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-2 mb-1">
-                                    <p className="font-black text-sm">Anita Sharma</p>
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 shrink-0">5h ago</span>
-                                </div>
-                                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
-                                    Looking for more details on your manufacturing expansion plans.
-                                </p>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 rounded-md">
-                                        Manufacturing
-                                    </span>
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">
-                                        ₹12Cr Request
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
+                    )}
                 </div>
             </div>
 
@@ -151,36 +195,43 @@ const SeekDashboard = () => {
                 </div>
 
                 <div className="space-y-4">
-                    {/* Request Card */}
-                    <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10">
-                        <div className="flex items-start justify-between mb-3">
-                            <div>
-                                <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/10 mb-2">
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-blue-600">
-                                        Technology
-                                    </span>
+                    {activeRequests.length > 0 ? (
+                        activeRequests.map((req: any) => (
+                            <div key={req._id} className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10">
+                                <div className="flex items-start justify-between mb-3">
+                                    <div>
+                                        <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/10 mb-2">
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-blue-600">
+                                                {req.category || "General"}
+                                            </span>
+                                        </div>
+                                        <h3 className="font-black text-lg tracking-tight">{req.title || "Untitled Request"}</h3>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Seeking</p>
+                                        <p className="text-lg font-black text-emerald-600">{req.amount || "N/A"}</p>
+                                    </div>
                                 </div>
-                                <h3 className="font-black text-lg tracking-tight">AI-Powered SaaS Platform</h3>
+                                <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                                    <div className="flex items-center gap-1">
+                                        <Eye className="size-3" />
+                                        <span>{req.views || 0} views</span>
+                                    </div>
+                                    <div className="size-1 rounded-full bg-slate-200" />
+                                    <div className="flex items-center gap-1">
+                                        <MessageSquare className="size-3" />
+                                        <span>{stats.inquiries} inquiries</span> {/* Global count for now */}
+                                    </div>
+                                    <div className="size-1 rounded-full bg-slate-200" />
+                                    <span className="text-emerald-600">Active</span>
+                                </div>
                             </div>
-                            <div className="text-right">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Seeking</p>
-                                <p className="text-lg font-black text-emerald-600">₹5Cr</p>
-                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center p-4 text-slate-400 text-xs font-bold uppercase tracking-widest">
+                            No active requests
                         </div>
-                        <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
-                            <div className="flex items-center gap-1">
-                                <Eye className="size-3" />
-                                <span>245 views</span>
-                            </div>
-                            <div className="size-1 rounded-full bg-slate-200" />
-                            <div className="flex items-center gap-1">
-                                <MessageSquare className="size-3" />
-                                <span>8 inquiries</span>
-                            </div>
-                            <div className="size-1 rounded-full bg-slate-200" />
-                            <span className="text-emerald-600">Active</span>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </div>
 

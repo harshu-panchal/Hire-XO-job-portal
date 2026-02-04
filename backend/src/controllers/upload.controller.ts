@@ -105,4 +105,30 @@ export class UploadController {
             res.status(500).json({ message: 'Upload failed', error: error.message });
         }
     };
+
+    public uploadTenderDocument = async (req: Request, res: Response): Promise<void> => {
+        try {
+            if (!req.file) {
+                res.status(400).json({ message: 'No file uploaded' });
+                return;
+            }
+
+            // Upload to Cloudinary
+            const result = await CloudinaryUtil.uploadFile(req.file.path, 'tender-documents');
+
+            if (!result) {
+                res.status(500).json({ message: 'Cloudinary upload failed' });
+                return;
+            }
+
+            res.status(200).json({
+                message: 'Tender document uploaded successfully',
+                filename: req.file.filename,
+                url: result.url,
+                public_id: result.public_id
+            });
+        } catch (error: any) {
+            res.status(500).json({ message: 'Upload failed', error: error.message });
+        }
+    };
 }

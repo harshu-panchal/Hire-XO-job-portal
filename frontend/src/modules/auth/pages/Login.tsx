@@ -13,20 +13,20 @@ const Login = () => {
     const { login, logout, isLoading, isAuthenticated, user, clearError } = useAuthStore();
 
     const roleConfig: Record<string, any> = {
-        "job-seeker": {
-            title: "Job Seeker",
+        "employee": {
+            title: "Employee",
             subtitle: "Welcome back, talent!",
-            signupPath: "/signup/job-seeker",
+            signupPath: "/signup/employee",
             redirectPath: "/jobs",
             accent: "from-violet-500 to-purple-600",
             iconBg: "bg-violet-500/10 text-violet-600",
             icon: Briefcase
         },
-        "recruiter": {
-            title: "Recruiter",
+        "employer": {
+            title: "Employer",
             subtitle: "Welcome back, hiring manager!",
-            signupPath: "/signup/recruiter",
-            redirectPath: "/recruiter",
+            signupPath: "/signup/employer",
+            redirectPath: "/employer",
             accent: "from-blue-500 to-cyan-600",
             iconBg: "bg-blue-500/10 text-blue-600",
             icon: Building2
@@ -52,16 +52,16 @@ const Login = () => {
     };
 
     // Robust role detection
-    const roleId = role?.toLowerCase() || "job-seeker";
-    const currentRole = roleConfig[roleId] ? (roleId as UserRole) : "job-seeker";
+    const roleId = role?.toLowerCase() || "employee";
+    const currentRole = roleConfig[roleId] ? (roleId as UserRole) : "employee";
     const config = roleConfig[currentRole];
 
     const getResourceRedirectPath = (u: any) => {
         if (!u) return "/";
         if (u.role !== "resource") {
             const pathMap: Record<string, string> = {
-                "job-seeker": "/jobs",
-                "recruiter": "/recruiter",
+                "employee": "/jobs",
+                "employer": "/employer",
                 "admin": "/admin"
             };
             return pathMap[u.role] || "/";
@@ -97,7 +97,7 @@ const Login = () => {
                 navigate(getResourceRedirectPath(user));
             } else {
                 // If user is logged in with a DIFFERENT role, logout to allow switching
-                // This prevents "stuck" sessions where clicking "Recruiter" just redirects back to "Job Seeker" dashboard
+                // This prevents "stuck" sessions where clicking "Employer" just redirects back to "Employee" dashboard
                 logout();
             }
         }
@@ -304,7 +304,11 @@ const Login = () => {
                         )}
 
                         <div className="text-right">
-                            <button type="button" className="text-xs font-bold text-primary hover:text-primary/80 transition-colors">
+                            <button
+                                type="button"
+                                onClick={() => alert("Password reset functionality coming soon!")}
+                                className="text-xs font-bold text-primary hover:text-primary/80 transition-colors cursor-pointer"
+                            >
                                 Forgot Password?
                             </button>
                         </div>

@@ -50,8 +50,8 @@ const RoleSelection = () => {
     const handleRoleClick = (roleId: string, rolePath: string) => {
         if (isAuthenticated && user?.role === roleId) {
             const redirectPaths: Record<string, string> = {
-                "job-seeker": "/jobs",
-                "recruiter": "/recruiter",
+                "employee": "/jobs",
+                "employer": "/employer",
                 "admin": "/admin",
                 "resource": getResourceRedirectPath(user)
             };
@@ -63,25 +63,25 @@ const RoleSelection = () => {
 
     const roles = [
         {
-            id: "job-seeker",
-            title: "Job Seeker",
+            id: "employee",
+            title: "Employee",
             description: "Find your potential",
             icon: Briefcase,
             gradient: "from-violet-500 to-purple-600",
             bgGradient: "from-violet-500/10 to-purple-600/10",
             iconColor: "text-violet-600 dark:text-violet-400",
-            path: "/login/job-seeker",
+            path: "/login/employee",
             delay: "0ms"
         },
         {
-            id: "recruiter",
-            title: "Recruiter",
+            id: "employer",
+            title: "Employer",
             description: "Hire top talent",
             icon: Building2,
             gradient: "from-blue-500 to-cyan-600",
             bgGradient: "from-blue-500/10 to-cyan-600/10",
             iconColor: "text-blue-600 dark:text-blue-400",
-            path: "/login/recruiter",
+            path: "/login/employer",
             delay: "100ms"
         },
         {
@@ -184,9 +184,26 @@ const RoleSelection = () => {
                 </div>
 
                 {/* Footer */}
-                <p className="text-center text-xs font-semibold text-slate-400 dark:text-slate-600 uppercase tracking-widest">
-                    v1.0.4 • Terms & Privacy
-                </p>
+                <div className="flex flex-col items-center gap-2">
+                    <p className="text-center text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest">
+                        v1.0.4
+                    </p>
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => alert("Terms of Service coming soon!")}
+                            className="text-[10px] font-black text-slate-400 hover:text-primary uppercase tracking-widest transition-colors cursor-pointer"
+                        >
+                            Terms
+                        </button>
+                        <span className="size-1 rounded-full bg-slate-300 dark:bg-slate-800" />
+                        <button
+                            onClick={() => alert("Privacy Policy coming soon!")}
+                            className="text-[10px] font-black text-slate-400 hover:text-primary uppercase tracking-widest transition-colors cursor-pointer"
+                        >
+                            Privacy
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );

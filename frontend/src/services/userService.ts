@@ -33,7 +33,7 @@ export const userService = {
     async updateProfilePhoto(file: File): Promise<{ message: string; photoUrl: string }> {
         try {
             const formData = new FormData();
-            formData.append('photo', file);
+            formData.append('profilePhoto', file);
 
             const response = await apiClient.patch('/users/profile-photo', formData, {
                 headers: {

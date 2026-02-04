@@ -1,31 +1,88 @@
-import { Camera, Edit2, MapPin, Briefcase, DollarSign, Target, Mail, Phone, Building2, Save, X } from "lucide-react";
-import { useState } from "react";
+import { Camera, Edit2, MapPin, Briefcase, DollarSign, Target, Mail, Phone, Building2, Save, X, Loader2, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 const BrowseProfile = () => {
+    const navigate = useNavigate();
+    const { user, updateProfile } = useAuthStore();
     const [isEditing, setIsEditing] = useState(false);
     const [profile, setProfile] = useState({
-        name: "Rajesh Kumar",
-        email: "rajesh.investor@gmail.com",
-        phone: "+91 98765 43210",
-        location: "Mumbai, Maharashtra",
-        organization: "Kumar Investment Group",
-        designation: "Managing Partner",
-        experience: "15+ years",
-        totalInvestments: "₹45 Cr",
-        activeInvestments: 12,
-        sectors: ["Technology", "Healthcare", "Renewable Energy", "Real Estate"],
-        investmentRange: "₹50 Lakhs - ₹5 Cr",
-        preferredEquity: "10-25%",
-        bio: "Seasoned investor with focus on early-stage technology and healthcare startups. Looking for innovative businesses with strong growth potential and experienced founding teams.",
+        name: user?.name || "User",
+        email: user?.email || "",
+        phone: user?.phoneNumber || "Add phone number",
+        location: user?.profile?.location || "India",
+        organization: user?.profile?.company || "N/A",
+        designation: user?.profile?.jobTitle || "N/A",
+        experience: "N/A",
+        totalInvestments: "₹0 Cr",
+        activeInvestments: 0,
+        sectors: ["Technology"],
+        investmentRange: "₹0 - ₹0",
+        preferredEquity: "N/A",
+        bio: user?.profile?.bio || "No bio added yet.",
     });
 
-    const handleSave = () => {
-        setIsEditing(false);
-        alert("Profile updated successfully!");
+    useEffect(() => {
+        if (user) {
+            setProfile({
+                name: user.name,
+                email: user.email,
+                phone: user.phoneNumber || "Add phone number",
+                location: user.profile?.location || "India",
+                organization: user.profile?.company || "N/A",
+                designation: user.profile?.jobTitle || "N/A",
+                experience: "N/A",
+                totalInvestments: "₹0 Cr",
+                activeInvestments: 0,
+                sectors: ["Technology"],
+                investmentRange: user.profile?.investmentRange || "₹0 - ₹0",
+                preferredEquity: user.profile?.preferredEquity || "N/A",
+                bio: user.profile?.bio || "No bio added yet.",
+            });
+        }
+    }, [user]);
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSave = async () => {
+        try {
+            setIsLoading(true);
+            await updateProfile({
+                name: profile.name,
+                email: profile.email,
+                phoneNumber: profile.phone,
+                profile: {
+                    ...user?.profile,
+                    location: profile.location,
+                    company: profile.organization,
+                    jobTitle: profile.designation,
+                    investmentRange: profile.investmentRange,
+                    preferredEquity: profile.preferredEquity,
+                    bio: profile.bio
+                }
+            });
+            setIsEditing(false);
+            toast.success("Profile updated successfully!");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to update profile");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
-        <div className="py-6 space-y-6 select-none">
+        <div className="py-6 space-y-6 select-none animate-in fade-in duration-500">
+            {/* Back Button */}
+            <button
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary transition-colors active:scale-95"
+            >
+                <ArrowLeft className="size-4" />
+                <span>Go Back</span>
+            </button>
+
             {/* Header */}
             <div className="px-1">
                 <h1 className="text-3xl font-black tracking-tight">
@@ -294,10 +351,11 @@ const BrowseProfile = () => {
                         </button>
                         <button
                             onClick={handleSave}
-                            className="py-4 rounded-[1.5rem] bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-emerald-900/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                            disabled={isLoading}
+                            className="py-4 rounded-[1.5rem] bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-emerald-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                         >
-                            <Save className="size-4" />
-                            Save
+                            {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                            {isLoading ? "Saving..." : "Save"}
                         </button>
                     </>
                 ) : (

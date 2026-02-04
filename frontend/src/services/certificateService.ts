@@ -17,7 +17,14 @@ export const certificateService = {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            return response.data;
+            const data = response.data;
+            return {
+                ...data,
+                certificate: {
+                    ...data.certificate,
+                    id: data.certificate.id || data.certificate._id
+                }
+            };
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }
@@ -29,7 +36,11 @@ export const certificateService = {
     async getMyCertificates(): Promise<Certificate[]> {
         try {
             const response = await apiClient.get<Certificate[]>('/certificates/my-certificates');
-            return response.data;
+            const certificates = response.data || [];
+            return certificates.map((cert: any) => ({
+                ...cert,
+                id: cert.id || cert._id
+            }));
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }

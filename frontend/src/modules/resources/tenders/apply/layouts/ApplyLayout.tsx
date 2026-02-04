@@ -28,7 +28,7 @@ const ApplyLayout = () => {
                             key={item.path}
                             to={item.path}
                             className={({ isActive }) =>
-                                `flex flex-col items-center gap-1 transition-all duration-300 ${isActive ? "text-violet-600 scale-110" : "text-slate-400 hover:text-slate-600"
+                                `relative flex flex-col items-center gap-1 transition-all duration-300 min-w-[60px] ${isActive ? "text-violet-600 scale-110" : "text-slate-400 hover:text-slate-600"
                                 }`
                             }
                         >

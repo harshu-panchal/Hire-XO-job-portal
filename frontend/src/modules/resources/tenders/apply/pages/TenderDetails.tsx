@@ -1,50 +1,79 @@
-import { ArrowLeft, Building2, Calendar, Clock, Download, FileText, CheckCircle2, Phone, Mail, ShieldCheck } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import {
+    ArrowLeft, Building2, Calendar, Clock, Download, FileText,
+    CheckCircle2, Phone, Mail, ShieldCheck, Wallet, X, Send,
+    Briefcase, AlertCircle, Info, CheckCircle
+} from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
+import { applicationService } from "@/services/applicationService";
+import { toast } from "sonner";
 
 const TenderDetails = () => {
     const navigate = useNavigate();
+    const { id } = useParams<{ id: string }>();
+    const [tender, setTender] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [showBidModal, setShowBidModal] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
-    const tenderData = {
-        id: 1,
-        title: "Smart City Infrastructure Project Phase 2",
-        organization: "Mumbai Municipal Corporation",
-        refNo: "MMC/INFRA/2024/082",
-        value: "₹25 Cr",
-        deadline: "15 Oct 2024",
-        category: "Civil Works",
-        type: "Open Tender",
-        location: "Mumbai, Maharashtra",
-        postedDate: "10 Sep 2024",
-        description: "Comprehensive infrastructure development for the Smart City initiative, including road expansion, drainage systems, and street lighting installations in the South Mumbai district. The project aims to modernize existing public facilities while ensuring minimum disruption to city traffic.",
-        eligibility: [
-            "Minimum 10 years experience in large-scale civil works",
-            "Annual turnover of at least ₹50 Cr in the last 3 financial years",
-            "Successful completion of 3 similar 'Smart City' projects in India",
-            "Valid ISO 9001:2015 certification for quality management"
-        ],
-        documents: [
-            { name: "Technical Specifications.pdf", size: "2.4 MB" },
-            { name: "Financial Proposal Template.xlsx", size: "1.1 MB" },
-            { name: "General Terms & Conditions.pdf", size: "1.8 MB" },
-            { name: "Site Layout Drawings.zip", size: "15 MB" }
-        ],
-        dates: [
-            { label: "Tender Release", date: "10 Sep 2024" },
-            { label: "Pre-bid Meeting", date: "25 Sep 2024" },
-            { label: "Submission Deadline", date: "15 Oct 2024" },
-            { label: "Bid Opening Date", date: "16 Oct 2024" }
-        ],
-        contact: {
-            person: "Er. Arvind Kulkarni",
-            designation: "Chief Infrastructure Officer",
-            phone: "+91 22 2345 6789",
-            email: "tenders@mmc.gov.in",
-            website: "www.mmc.gov.in/tenders"
+    // Bid Form State
+    const [bidData, setBidData] = useState({
+        bidAmount: "",
+        coverLetter: ""
+    });
+
+    useEffect(() => {
+        const fetchTenderDetails = async () => {
+            if (!id) return;
+            try {
+                const data = await resourceService.getById('tenders', id);
+                setTender(data);
+            } catch (error) {
+                console.error("Failed to fetch tender details:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTenderDetails();
+    }, [id]);
+
+    const handleBidSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!id) return;
+
+        if (!bidData.bidAmount || !bidData.coverLetter) {
+            toast.error("Please fill in all fields");
+            return;
+        }
+
+        setSubmitting(true);
+        try {
+            await applicationService.applyToResource('Tender', id, {
+                bidAmount: Number(bidData.bidAmount),
+                coverLetter: bidData.coverLetter
+            });
+            toast.success("Bid submitted successfully!");
+            setShowBidModal(false);
+        } catch (error: any) {
+            toast.error(error.message || "Failed to submit bid");
+        } finally {
+            setSubmitting(false);
         }
     };
 
+    if (loading) {
+        return <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="animate-pulse text-sm font-black uppercase tracking-widest text-slate-400">Loading Details...</div>
+        </div>;
+    }
+
+    if (!tender) {
+        return <div className="p-10 text-center font-black">Tender not found</div>;
+    }
+
     return (
-        <div className="py-6 space-y-8 select-none">
+        <div className="py-6 space-y-8 select-none mb-24">
             {/* Action Bar */}
             <div className="flex items-center justify-between px-1">
                 <button
@@ -64,23 +93,27 @@ const TenderDetails = () => {
             <div className="space-y-4">
                 <div className="flex items-center gap-3">
                     <div className="size-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center text-white shadow-xl shadow-violet-500/20">
-                        <Building2 className="size-9" />
+                        {tender.companyLogo ? (
+                            <img src={tender.companyLogo} alt={tender.company} className="size-full rounded-2xl object-cover" />
+                        ) : (
+                            <Building2 className="size-9" />
+                        )}
                     </div>
                     <div className="space-y-1">
-                        <p className="text-violet-600 font-black text-[10px] uppercase tracking-[0.2em]">{tenderData.organization}</p>
-                        <h1 className="text-2xl font-black tracking-tight leading-tight">{tenderData.title}</h1>
+                        <p className="text-violet-600 font-black text-[10px] uppercase tracking-[0.2em]">{tender.company}</p>
+                        <h1 className="text-2xl font-black tracking-tight leading-tight">{tender.title}</h1>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
                     <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/5 text-[8px] font-black uppercase tracking-widest text-slate-500">
-                        REF: {tenderData.refNo}
+                        REF: {tender._id?.slice(-8).toUpperCase()}
                     </span>
                     <span className="px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-900 text-[8px] font-black uppercase tracking-widest text-violet-600">
-                        {tenderData.type}
+                        {tender.type || "Open Tender"}
                     </span>
                     <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-[8px] font-black uppercase tracking-widest text-emerald-600">
-                        {tenderData.category}
+                        {tender.category || "General"}
                     </span>
                 </div>
             </div>
@@ -89,15 +122,15 @@ const TenderDetails = () => {
             <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2rem] p-5 space-y-1 shadow-sm">
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Total Tender Value</p>
-                    <p className="text-2xl font-black text-emerald-600 tracking-tight">{tenderData.value}</p>
+                    <p className="text-2xl font-black text-emerald-600 tracking-tight">{tender.tenderValue || tender.compensation || "N/A"}</p>
                     <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic pt-1">Estimated Budget</p>
                 </div>
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2rem] p-5 space-y-1 shadow-sm">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Submission Ends</p>
-                    <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{tenderData.deadline}</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Duration / Urgency</p>
+                    <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{tender.duration || "Flexible"}</p>
                     <div className="flex items-center gap-1 pt-1">
                         <Clock className="size-3 text-amber-500" />
-                        <span className="text-[8px] font-black text-amber-600 uppercase tracking-widest">12 Days Left</span>
+                        <span className="text-[8px] font-black text-amber-600 uppercase tracking-widest">{tender.urgency || "Standard"}</span>
                     </div>
                 </div>
             </div>
@@ -110,105 +143,160 @@ const TenderDetails = () => {
                         <FileText className="size-5 text-violet-600" /> Tender Description
                     </h2>
                     <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-bold">
-                        {tenderData.description}
+                        {tender.description}
                     </p>
                 </div>
 
-                {/* Eligibility */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm">
-                    <h2 className="text-lg font-black tracking-tight mb-4 flex items-center gap-2">
-                        <ShieldCheck className="size-5 text-violet-600" /> Eligibility Criteria
-                    </h2>
-                    <div className="space-y-3">
-                        {tenderData.eligibility.map((item, index) => (
-                            <div key={index} className="flex gap-3">
-                                <div className="mt-1">
-                                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                {/* Requirements / Eligibility */}
+                {tender.requirements && tender.requirements.length > 0 && (
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm">
+                        <h2 className="text-lg font-black tracking-tight mb-4 flex items-center gap-2">
+                            <ShieldCheck className="size-5 text-violet-600" /> Requirements & Eligibility
+                        </h2>
+                        <div className="space-y-3">
+                            {tender.requirements.map((item: string, index: number) => (
+                                <div key={index} className="flex gap-3">
+                                    <div className="mt-1">
+                                        <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                                    </div>
+                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{item}</p>
                                 </div>
-                                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{item}</p>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Key Dates */}
+                {/* Key Schedule */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm">
                     <h2 className="text-lg font-black tracking-tight mb-6 flex items-center gap-2">
                         <Calendar className="size-5 text-violet-600" /> Key Schedule
                     </h2>
                     <div className="relative space-y-8 before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-violet-500 before:via-slate-200 before:to-transparent">
-                        {tenderData.dates.map((item, index) => (
-                            <div key={index} className="relative flex items-center gap-6 group">
-                                <div className="absolute left-0 size-8 rounded-full bg-white dark:bg-slate-900 border-2 border-violet-500 flex items-center justify-center shrink-0 z-10 group-first:scale-125 transition-transform shadow-lg shadow-violet-500/20">
-                                    <div className="size-2 rounded-full bg-violet-600" />
-                                </div>
-                                <div className="ml-10 space-y-0.5">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{item.label}</p>
-                                    <p className="text-sm font-black tracking-tight">{item.date}</p>
-                                </div>
+                        <div className="relative flex items-center gap-6 group">
+                            <div className="absolute left-0 size-8 rounded-full bg-white dark:bg-slate-900 border-2 border-violet-500 flex items-center justify-center shrink-0 z-10">
+                                <div className="size-2 rounded-full bg-violet-600" />
                             </div>
-                        ))}
+                            <div className="ml-10 space-y-0.5">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Posting Date</p>
+                                <p className="text-sm font-black tracking-tight">{new Date(tender.postedAt || tender.createdAt).toLocaleDateString()}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Contact Information */}
+                {/* Authority Contact */}
                 <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2.5rem] p-6 shadow-xl">
-                    <h2 className="text-lg font-black tracking-tight mb-4 uppercase tracking-widest opacity-80">Authority Contact</h2>
+                    <h2 className="text-lg font-black tracking-tight mb-4 uppercase tracking-widest opacity-80 font-black">Authority Contact</h2>
                     <div className="space-y-4">
                         <div className="flex items-center gap-4">
                             <div className="size-12 rounded-2xl bg-white/10 dark:bg-slate-950/10 flex items-center justify-center">
-                                <User className="size-6 opacity-60" />
+                                <Briefcase className="size-6 opacity-60" />
                             </div>
                             <div>
-                                <p className="text-sm font-black">{tenderData.contact.person}</p>
-                                <p className="text-[10px] font-black uppercase tracking-widest opacity-50">{tenderData.contact.designation}</p>
+                                <p className="text-sm font-black">{tender.company}</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Tender Authority</p>
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <a href={`tel:${tenderData.contact.phone}`} className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 dark:bg-slate-950/5 hover:bg-white/10 transition-colors">
-                                <Phone className="size-4 opacity-60" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Call</span>
-                            </a>
-                            <a href={`mailto:${tenderData.contact.email}`} className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 dark:bg-slate-950/5 hover:bg-white/10 transition-colors">
-                                <Mail className="size-4 opacity-60" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Email</span>
-                            </a>
+                        <div className="grid grid-cols-1 gap-3">
+                            <div className="p-3 rounded-2xl bg-white/5 dark:bg-slate-950/5 flex items-center justify-center">
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60 italic">Contact details available upon application</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Bid Footer */}
-            <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-40 pointer-events-none">
-                <div className="w-full max-w-[430px] flex gap-3 pointer-events-auto">
-                    <button className="flex-1 bg-gradient-to-r from-violet-600 to-purple-700 text-white font-black text-sm uppercase tracking-[0.2em] py-5 rounded-[2rem] shadow-2xl shadow-violet-500/40 active:scale-95 transition-all">
-                        Initiate Bid Now
-                    </button>
+            {!showBidModal && (
+                <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-40 pointer-events-none">
+                    <div className="w-full max-w-[430px] flex gap-3 pointer-events-auto">
+                        <button
+                            onClick={() => setShowBidModal(true)}
+                            className="flex-1 bg-gradient-to-r from-violet-600 to-purple-700 text-white font-black text-sm uppercase tracking-[0.2em] py-5 rounded-[2rem] shadow-2xl shadow-violet-500/40 active:scale-95 transition-all"
+                        >
+                            Initiate Bid Now
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
 
-            {/* Spacer for sticky footer */}
-            <div className="h-12" />
+            {/* Bid Modal Overlay */}
+            {showBidModal && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-end justify-center">
+                    <div className="bg-white dark:bg-slate-900 w-full max-w-xl rounded-t-[3rem] p-8 space-y-8 animate-in slide-in-from-bottom-full duration-500 overflow-y-auto max-h-[90vh]">
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-1">
+                                <h3 className="text-2xl font-black tracking-tight">Post Your Bid</h3>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Project: {tender.title}</p>
+                            </div>
+                            <button
+                                onClick={() => setShowBidModal(false)}
+                                className="size-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors"
+                            >
+                                <X className="size-6" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleBidSubmit} className="space-y-6">
+                            <div className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Proposed Bid Amount (₹)</label>
+                                    <div className="relative">
+                                        <Wallet className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-violet-600" />
+                                        <input
+                                            type="number"
+                                            value={bidData.bidAmount}
+                                            onChange={(e) => setBidData({ ...bidData, bidAmount: e.target.value })}
+                                            placeholder="e.g. 50,00,000"
+                                            className="w-full pl-14 pr-5 py-5 rounded-3xl bg-slate-50 dark:bg-slate-950 border-none font-black text-xl text-slate-900 dark:text-white focus:ring-4 focus:ring-violet-500/10 transition-all"
+                                            required
+                                        />
+                                    </div>
+                                    <p className="text-[9px] font-bold text-slate-400 ml-1 italic">* Enter your final competitive offer excluding taxes</p>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Proposal / Cover Letter</label>
+                                    <textarea
+                                        value={bidData.coverLetter}
+                                        onChange={(e) => setBidData({ ...bidData, coverLetter: e.target.value })}
+                                        placeholder="Explain why your firm is best suited for this tender..."
+                                        rows={6}
+                                        className="w-full px-6 py-5 rounded-[2.5rem] bg-slate-50 dark:bg-slate-950 border-none font-bold text-sm focus:ring-4 focus:ring-violet-500/10 transition-all resize-none"
+                                        required
+                                    ></textarea>
+                                </div>
+                            </div>
+
+                            <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 p-5 rounded-[2rem] flex gap-4">
+                                <AlertCircle className="size-6 text-amber-600 shrink-0" />
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-black text-amber-900 dark:text-amber-400 uppercase tracking-widest">Important Disclaimer</p>
+                                    <p className="text-[9px] font-bold text-amber-800 dark:text-amber-500 leading-relaxed opacity-80">
+                                        Once submitted, your bid cannot be edited. Ensure your amount and proposal are final. The authority will review your profile and company documents attached to your account.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={submitting}
+                                className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50 shadow-2xl shadow-indigo-500/20"
+                            >
+                                {submitting ? (
+                                    <>Submitting Bid...</>
+                                ) : (
+                                    <>
+                                        Submit Final Bid <Send className="size-4" />
+                                    </>
+                                )}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
-
-// Internal icon for user since it wasn't imported
-const User = ({ className }: { className?: string }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-    >
-        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-    </svg>
-);
 
 export default TenderDetails;

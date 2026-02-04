@@ -1,21 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FileText, Users, Clock, CheckCircle2, MoreVertical, Edit2, Archive, Eye, Plus, X, Copy, Calendar, MapPin, DollarSign, AlertCircle, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
+import { toast } from "sonner";
+import { applicationService } from "@/services/applicationService"; // To estimate bids count if not in tender object
 
 interface Tender {
-    id: number;
+    _id: string; // Updated ID type
+    id?: string; // fallback
     title: string;
-    refNo: string;
-    bids: number;
-    closingDate: string;
+    refNo?: string;
+    bids?: number;
+    closingDate?: string;
+    deadline?: string;
     status: string;
-    statusColor: string;
-    statusBg: string;
+    statusColor?: string; // These will be computed
+    statusBg?: string;    // These will be computed
     description?: string;
-    budget?: string;
+    tenderValue?: string; // API uses tenderValue
+    budget?: string;      // fallback
     location?: string;
     category?: string;
-    publishedDate?: string;
+    postedAt?: string;
+    publishedDate?: string; // fallback
 }
 
 const MyTenders = () => {
@@ -24,73 +31,73 @@ const MyTenders = () => {
     const [showViewModal, setShowViewModal] = useState(false);
     const [showMenuModal, setShowMenuModal] = useState(false);
     const [selectedTender, setSelectedTender] = useState<Tender | null>(null);
-    const [tenders, setTenders] = useState<Tender[]>([
-        {
-            id: 1,
-            title: "Smart City Infrastructure Phase 2",
-            refNo: "MMC/INFRA/2024/082",
-            bids: 42,
-            closingDate: "15 Oct 2024",
-            status: "Evaluation",
-            statusColor: "text-amber-600",
-            statusBg: "bg-amber-100 dark:bg-amber-950/30",
-            description: "Development of smart city infrastructure including IoT sensors, traffic management systems, and public Wi-Fi networks across the city.",
-            budget: "₹50 Cr",
-            location: "Mumbai Metropolitan Region",
-            category: "Infrastructure",
-            publishedDate: "01 Sep 2024"
-        },
-        {
-            id: 2,
-            title: "Solar Power Plant Installation",
-            refNo: "SEB/SLR/2024/015",
-            bids: 28,
-            closingDate: "20 Oct 2024",
-            status: "Active",
-            statusColor: "text-emerald-600",
-            statusBg: "bg-emerald-100 dark:bg-emerald-950/30",
-            description: "Installation of 100 MW solar power plant with battery storage system and grid integration.",
-            budget: "₹25 Cr",
-            location: "Pune District",
-            category: "Energy",
-            publishedDate: "10 Sep 2024"
-        },
-        {
-            id: 3,
-            title: "E-Governance Software Solution",
-            refNo: "ITD/SFT/2024/042",
-            bids: 15,
-            closingDate: "10 Oct 2024",
-            status: "Published",
-            statusColor: "text-blue-600",
-            statusBg: "bg-blue-100 dark:bg-blue-950/30",
-            description: "Cloud-based e-governance platform for citizen services, document management, and inter-departmental coordination.",
-            budget: "₹12 Cr",
-            location: "Karnataka State",
-            category: "IT & Software",
-            publishedDate: "25 Aug 2024"
-        },
-        {
-            id: 4,
-            title: "Metro Extension Phase 3",
-            refNo: "MRC/MET/2024/003",
-            bids: 0,
-            closingDate: "30 Nov 2024",
-            status: "Draft",
-            statusColor: "text-slate-600",
-            statusBg: "bg-slate-100 dark:bg-slate-800",
-            description: "Extension of metro rail network covering 25 km with 15 new stations and depot facilities.",
-            budget: "₹180 Cr",
-            location: "Delhi NCR",
-            category: "Transportation",
-            publishedDate: "Not Published"
+    const [tenders, setTenders] = useState<Tender[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchTenders = async () => {
+        setLoading(true);
+        try {
+            const data: any[] = await resourceService.getMyListings('tenders');
+
+            // Map API data to component structure and add UI helpers
+            const mappedTenders = data.map(t => ({
+                ...t,
+                id: t._id,
+                refNo: t._id.slice(-8).toUpperCase(), // Mock ref if missing
+                bids: t.bidsCount || 0, // Assuming backend might populate this, else defaulted
+                closingDate: t.deadline ? new Date(t.deadline).toLocaleDateString() : 'Open',
+                publishedDate: t.postedAt ? new Date(t.postedAt).toLocaleDateString() : 'N/A',
+                budget: t.tenderValue,
+                statusColor: getStatusColor(t.status || "Active").color,
+                statusBg: getStatusColor(t.status || "Active").bg
+            }));
+
+            setTenders(mappedTenders);
+        } catch (error) {
+            console.error("Failed to fetch tenders", error);
+            toast.error("Failed to load your tenders");
+        } finally {
+            setLoading(false);
         }
-    ]);
+    };
+
+    useEffect(() => {
+        fetchTenders();
+    }, []);
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case "Active": return { color: "text-emerald-600", bg: "bg-emerald-100 dark:bg-emerald-950/30" };
+            case "Published": return { color: "text-blue-600", bg: "bg-blue-100 dark:bg-blue-950/30" };
+            case "Evaluation": return { color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-950/30" };
+            case "Draft": return { color: "text-slate-600", bg: "bg-slate-100 dark:bg-slate-800" };
+            default: return { color: "text-slate-600", bg: "bg-slate-100 dark:bg-slate-800" };
+        }
+    };
 
     const stats = [
-        { label: "Active", value: "8", icon: FileText, color: "text-indigo-600", bgColor: "bg-indigo-100 dark:bg-indigo-950/30" },
-        { label: "Bids Recv.", value: "142", icon: Users, color: "text-violet-600", bgColor: "bg-violet-100 dark:bg-violet-950/30" },
-        { label: "Awarded", value: "24", icon: CheckCircle2, color: "text-emerald-600", bgColor: "bg-emerald-100 dark:bg-emerald-950/30" },
+        {
+            label: "Active",
+            value: tenders.filter(t => t.status === 'Active' || t.status === 'Published').length.toString(),
+            icon: FileText,
+            color: "text-indigo-600",
+            bgColor: "bg-indigo-100 dark:bg-indigo-950/30"
+        },
+        {
+            label: "Total Tenders",
+            value: tenders.length.toString(),
+            icon: Users,
+            color: "text-violet-600",
+            bgColor: "bg-violet-100 dark:bg-violet-950/30"
+        },
+        // Mocking 'Awarded' count for now as it depends on application statuses
+        {
+            label: "Closed",
+            value: tenders.filter(t => t.status === 'Closed').length.toString(),
+            icon: CheckCircle2,
+            color: "text-emerald-600",
+            bgColor: "bg-emerald-100 dark:bg-emerald-950/30"
+        },
     ];
 
     const tabs = ["All", "Active", "Evaluation", "Drafts"];
@@ -109,14 +116,14 @@ const MyTenders = () => {
     };
 
     const handleEdit = (tender: Tender) => {
-        // Navigate to edit page with tender data
         navigate('/tenders/provide/post', { state: { tender } });
     };
 
-    const handleArchive = (tenderId: number) => {
+    const handleArchive = async (tenderId: string) => {
         if (confirm("Are you sure you want to archive this tender?")) {
-            setTenders(tenders.filter(t => t.id !== tenderId));
-            alert("Tender archived successfully!");
+            // Logic to archive via API would go here, for now just UI update or delete
+            // For real implementation: await resourceService.update('tenders', tenderId, { status: 'Archived' });
+            toast.info("Archive functionality to be implemented");
         }
     };
 
@@ -125,18 +132,30 @@ const MyTenders = () => {
         setShowMenuModal(true);
     };
 
-    const copyRefNo = (refNo: string) => {
-        navigator.clipboard.writeText(refNo);
-        alert("Reference number copied to clipboard!");
-    };
-
-    const handleDelete = (tenderId: number) => {
-        if (confirm("Are you sure you want to delete this tender? This action cannot be undone.")) {
-            setTenders(tenders.filter(t => t.id !== tenderId));
-            setShowMenuModal(false);
-            alert("Tender deleted successfully!");
+    const copyRefNo = (refNo: string | undefined) => {
+        if (refNo) {
+            navigator.clipboard.writeText(refNo);
+            toast.success("Reference number copied!");
         }
     };
+
+    const handleDelete = async (tenderId: string) => {
+        if (confirm("Are you sure you want to delete this tender? This action cannot be undone.")) {
+            try {
+                await resourceService.delete('tenders', tenderId);
+                setTenders(tenders.filter(t => t._id !== tenderId)); // Optimistic update
+                setShowMenuModal(false);
+                toast.success("Tender deleted successfully!");
+            } catch (error) {
+                console.error("Failed to delete tender", error);
+                toast.error("Failed to delete tender");
+            }
+        }
+    };
+
+    if (loading) {
+        return <div className="p-10 text-center animate-pulse font-bold text-slate-400">Loading Tenders...</div>;
+    }
 
     return (
         <div className="py-6 space-y-8 select-none">
@@ -187,10 +206,10 @@ const MyTenders = () => {
             {/* Tenders List */}
             <div className="space-y-5">
                 {filteredTenders.map((tender) => (
-                    <div key={tender.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+                    <div key={tender._id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
                         <div className="flex items-start justify-between mb-4">
                             <div className="space-y-1.5 flex-1 pr-12">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600">{tender.refNo}</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600">REF: {tender.refNo}</p>
                                 <h3 className="text-base font-black tracking-tight group-hover:text-indigo-600 transition-colors leading-tight">{tender.title}</h3>
                             </div>
                             <button
@@ -238,7 +257,7 @@ const MyTenders = () => {
                                     <Eye className="size-4" />
                                 </button>
                                 <button
-                                    onClick={() => handleArchive(tender.id)}
+                                    onClick={() => handleDelete(tender._id)}
                                     className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 active:scale-95 transition-all"
                                 >
                                     <Archive className="size-4" />
@@ -254,7 +273,7 @@ const MyTenders = () => {
                 {filteredTenders.length === 0 && (
                     <div className="text-center py-20 opacity-50 space-y-4">
                         <FileText className="size-16 mx-auto text-slate-300" />
-                        <p className="text-xs font-black uppercase tracking-widest">No tenders found in this category</p>
+                        <p className="text-xs font-black uppercase tracking-widest">No tenders found</p>
                     </div>
                 )}
             </div>
@@ -269,7 +288,7 @@ const MyTenders = () => {
                         <div className="flex items-center justify-between mb-6">
                             <div>
                                 <h3 className="text-xl font-black">Tender Details</h3>
-                                <p className="text-xs text-slate-500 mt-1">{selectedTender.refNo}</p>
+                                <p className="text-xs text-slate-500 mt-1">REF: {selectedTender.refNo}</p>
                             </div>
                             <button
                                 onClick={() => setShowViewModal(false)}
@@ -299,7 +318,7 @@ const MyTenders = () => {
                                     <DollarSign className="size-4 text-indigo-600" />
                                     <p className="text-[8px] font-black uppercase tracking-widest text-slate-500">Budget</p>
                                 </div>
-                                <p className="text-xl font-black text-indigo-600">{selectedTender.budget}</p>
+                                <p className="text-xl font-black text-indigo-600">{selectedTender.budget || selectedTender.tenderValue || "N/A"}</p>
                             </div>
                             <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
                                 <div className="flex items-center gap-2 mb-2">
@@ -320,7 +339,7 @@ const MyTenders = () => {
                                     <MapPin className="size-4 text-slate-500" />
                                     <p className="text-[8px] font-black uppercase tracking-widest text-slate-500">Location</p>
                                 </div>
-                                <p className="text-sm font-black">{selectedTender.location}</p>
+                                <p className="text-sm font-black">{selectedTender.location || "N/A"}</p>
                             </div>
                         </div>
 
@@ -425,7 +444,7 @@ const MyTenders = () => {
 
                             <button
                                 onClick={() => {
-                                    handleArchive(selectedTender.id);
+                                    handleArchive(selectedTender._id);
                                     setShowMenuModal(false);
                                 }}
                                 className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-all group"
@@ -440,7 +459,7 @@ const MyTenders = () => {
                             </button>
 
                             <button
-                                onClick={() => handleDelete(selectedTender.id)}
+                                onClick={() => handleDelete(selectedTender._id)}
                                 className="w-full flex items-center gap-3 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/30 transition-all group border border-rose-200 dark:border-rose-900"
                             >
                                 <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-rose-100 dark:group-hover:bg-rose-950/40 transition-all">

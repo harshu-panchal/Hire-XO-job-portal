@@ -1,20 +1,20 @@
 export const USER_ROLES = {
-    JOB_SEEKER: 'job-seeker',
-    RECRUITER: 'recruiter',
+    EMPLOYEE: 'employee',
+    EMPLOYER: 'employer',
     RESOURCE: 'resource'
 } as const;
 
 export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
 
 export const ROLE_PERMISSIONS = {
-    [USER_ROLES.JOB_SEEKER]: [
+    [USER_ROLES.EMPLOYEE]: [
         'apply_to_jobs',
         'view_jobs',
         'manage_profile',
         'upload_cv',
         'view_applications'
     ],
-    [USER_ROLES.RECRUITER]: [
+    [USER_ROLES.EMPLOYER]: [
         'post_jobs',
         'view_jobs',
         'manage_profile',

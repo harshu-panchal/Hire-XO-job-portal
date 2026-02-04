@@ -20,9 +20,14 @@ export class ResourceFactoryController<T extends Document> {
                 return;
             }
 
+            // Fetch user to get company name
+            const User = require('../models/user.model').default;
+            const user = await User.findById(userId);
+
             const newItem = await this.model.create({
                 ...req.body,
                 userId,
+                company: user?.profile?.company || user?.company || 'Confidential',
                 postedAt: new Date()
             });
 

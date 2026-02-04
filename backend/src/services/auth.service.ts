@@ -29,7 +29,7 @@ export class AuthService {
 
         let profile;
 
-        if (role === 'job-seeker') {
+        if (role === 'job-seeker' || role === 'employee') {
             profile = await JobSeeker.create({
                 userId: newUser._id,
                 education: profileData.education,
@@ -38,7 +38,7 @@ export class AuthService {
                 interestedCompanies: profileData.interestedCompanies,
                 cv: profileData.cv?.name || profileData.cv,
             });
-        } else if (role === 'recruiter') {
+        } else if (role === 'recruiter' || role === 'employer') {
             profile = await Recruiter.create({
                 userId: newUser._id,
                 company: profileData.company,
@@ -119,9 +119,9 @@ export class AuthService {
         console.log(`[AuthService] Password matched. Generating token...`);
 
         let profile;
-        if (user.role === 'job-seeker') {
+        if (user.role === 'job-seeker' || user.role === 'employee') {
             profile = await JobSeeker.findOne({ userId: user._id });
-        } else if (user.role === 'recruiter') {
+        } else if (user.role === 'recruiter' || user.role === 'employer') {
             profile = await Recruiter.findOne({ userId: user._id });
         } else if (user.role === 'resource') {
             profile = await ResourceProfile.findOne({ userId: user._id });
@@ -170,9 +170,9 @@ export class AuthService {
         }
 
         let profile;
-        if (user.role === 'job-seeker') {
+        if (user.role === 'job-seeker' || user.role === 'employee') {
             profile = await JobSeeker.findOne({ userId: user._id });
-        } else if (user.role === 'recruiter') {
+        } else if (user.role === 'recruiter' || user.role === 'employer') {
             profile = await Recruiter.findOne({ userId: user._id });
         } else if (user.role === 'resource') {
             profile = await ResourceProfile.findOne({ userId: user._id });
@@ -218,7 +218,7 @@ export class AuthService {
 
         // Update role-specific profile
         let profile;
-        if (user.role === 'job-seeker') {
+        if (user.role === 'job-seeker' || user.role === 'employee') {
             const profileUpdates: any = {};
             if (updateData.education) profileUpdates.education = updateData.education;
             if (updateData.age) profileUpdates.age = updateData.age;
@@ -231,7 +231,7 @@ export class AuthService {
                 profileUpdates,
                 { new: true }
             );
-        } else if (user.role === 'recruiter') {
+        } else if (user.role === 'recruiter' || user.role === 'employer') {
             const profileUpdates: any = {};
             if (updateData.company) profileUpdates.company = updateData.company;
             if (updateData.companyLogo) profileUpdates.companyLogo = updateData.companyLogo;

@@ -1,45 +1,69 @@
 import { TrendingUp, Clock, FileText, ArrowRight, MapPin, Building2, Calendar, Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { resourceService } from "@/services/resourceService";
+import { applicationService } from "@/services/applicationService"; // Use existing service
 
 const ApplyDashboard = () => {
-    const stats = [
-        { label: "Active Tenders", value: "1,245+", icon: TrendingUp, color: "text-violet-600", bgColor: "bg-violet-100 dark:bg-violet-950/30" },
-        { label: "Closing Soon", value: "84", icon: Clock, color: "text-amber-600", bgColor: "bg-amber-100 dark:bg-amber-950/30" },
-        { label: "My Active Bids", value: "12", icon: FileText, color: "text-emerald-600", bgColor: "bg-emerald-100 dark:bg-emerald-950/30" },
+    const [tenders, setTenders] = useState<any[]>([]);
+    const [stats, setStats] = useState({
+        activeTenders: 0,
+        closingSoon: 0,
+        myBids: 0
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                // Fetch all tenders to show recommended and calculate stats
+                const tendersData = await resourceService.getAll('tenders');
+
+                // Get my applications to count active bids
+                const myApps: any = await applicationService.getMyApplications();
+                const myTenderBids = (myApps.resources || []).filter((app: any) => app.resourceType === 'Tender');
+
+                // Process tenders for "Closing Soon" (e.g., deadline within 7 days)
+                const now = new Date();
+                const sevenDaysFromNow = new Date();
+                sevenDaysFromNow.setDate(now.getDate() + 7);
+
+                const closingSoonCount = tendersData.filter((t: any) => {
+                    if (!t.deadline && !t.applicationDeadline) return false;
+                    const deadline = new Date(t.deadline || t.applicationDeadline);
+                    return deadline > now && deadline <= sevenDaysFromNow;
+                }).length;
+
+                setTenders(tendersData.slice(0, 5)); // Show top 5 recommended
+                setStats({
+                    activeTenders: tendersData.length,
+                    closingSoon: closingSoonCount,
+                    myBids: myTenderBids.length
+                });
+
+            } catch (error) {
+                console.error("Failed to load dashboard data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
+
+    const dashboardStats = [
+        { label: "Active Tenders", value: stats.activeTenders.toString(), icon: TrendingUp, color: "text-violet-600", bgColor: "bg-violet-100 dark:bg-violet-950/30" },
+        { label: "Closing Soon", value: stats.closingSoon.toString(), icon: Clock, color: "text-amber-600", bgColor: "bg-amber-100 dark:bg-amber-950/30" },
+        { label: "My Active Bids", value: stats.myBids.toString(), icon: FileText, color: "text-emerald-600", bgColor: "bg-emerald-100 dark:bg-emerald-950/30" },
     ];
 
-    const recommendedTenders = [
-        {
-            id: 1,
-            title: "Smart City Infrastructure Project",
-            organization: "Municipal Corporation",
-            location: "Mumbai, Maharashtra",
-            value: "₹25 Cr",
-            deadline: "15 Oct 2024",
-            category: "Civil Works",
-            type: "Open Tender"
-        },
-        {
-            id: 2,
-            title: "Solar Power Plant Installation",
-            organization: "State Energy Board",
-            location: "Pune, Maharashtra",
-            value: "₹12 Cr",
-            deadline: "20 Oct 2024",
-            category: "Renewable Energy",
-            type: "Limited Tender"
-        },
-        {
-            id: 3,
-            title: "E-Governance Software Solution",
-            organization: "IT Department",
-            location: "New Delhi",
-            value: "₹5 Cr",
-            deadline: "10 Oct 2024",
-            category: "IT Services",
-            type: "Open Tender"
-        }
-    ];
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[50vh]">
+                <div className="animate-pulse text-sm font-black uppercase tracking-widest text-slate-400">Loading Dashboard...</div>
+            </div>
+        );
+    }
 
     return (
         <div className="py-6 space-y-8 select-none">
@@ -56,7 +80,7 @@ const ApplyDashboard = () => {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-3">
-                {stats.map((stat, index) => (
+                {dashboardStats.map((stat, index) => (
                     <div key={index} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-4 flex flex-col items-center text-center space-y-2">
                         <div className={`size-10 rounded-2xl ${stat.bgColor} flex items-center justify-center`}>
                             <stat.icon className={`size-5 ${stat.color}`} />
@@ -79,54 +103,62 @@ const ApplyDashboard = () => {
                 </div>
 
                 <div className="space-y-4">
-                    {recommendedTenders.map((tender) => (
-                        <Link
-                            key={tender.id}
-                            to={`/tenders/apply/tenders/${tender.id}`}
-                            className="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative"
-                        >
-                            <div className="flex items-start justify-between mb-4">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <Building2 className="size-3.5 text-violet-600" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{tender.organization}</span>
+                    {tenders.length === 0 ? (
+                        <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-white/5">
+                            <p className="text-sm font-bold text-slate-500">No active tenders found at the moment.</p>
+                        </div>
+                    ) : (
+                        tenders.map((tender) => (
+                            <Link
+                                key={tender._id}
+                                to={`/tenders/apply/tenders/${tender._id}`}
+                                className="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative shadow-sm hover:shadow-md"
+                            >
+                                <div className="flex items-start justify-between mb-4">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <Building2 className="size-3.5 text-violet-600" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{tender.company || "Organization"}</span>
+                                        </div>
+                                        <h3 className="text-lg font-black tracking-tight group-hover:text-violet-600 transition-colors leading-tight line-clamp-2">
+                                            {tender.title}
+                                        </h3>
                                     </div>
-                                    <h3 className="text-lg font-black tracking-tight group-hover:text-violet-600 transition-colors leading-tight">
-                                        {tender.title}
-                                    </h3>
-                                </div>
-                                <div className="bg-violet-50 dark:bg-violet-950/30 text-violet-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-violet-100 dark:border-violet-900">
-                                    {tender.type}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="space-y-1">
-                                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Tender Value</p>
-                                    <p className="text-base font-black text-emerald-600">{tender.value}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Deadline</p>
-                                    <div className="flex items-center gap-1">
-                                        <Calendar className="size-3 text-amber-500" />
-                                        <p className="text-[12px] font-black">{tender.deadline}</p>
+                                    <div className="bg-violet-50 dark:bg-violet-950/30 text-violet-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-violet-100 dark:border-violet-900 shrink-0">
+                                        {tender.type || "Open"}
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-white/5">
-                                <div className="flex items-center gap-1.5 text-slate-400">
-                                    <MapPin className="size-3" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">{tender.location}</span>
+                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                    <div className="space-y-1">
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Tender Value</p>
+                                        <p className="text-base font-black text-emerald-600">{tender.tenderValue || tender.compensation || "N/A"}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Deadline</p>
+                                        <div className="flex items-center gap-1">
+                                            <Calendar className="size-3 text-amber-500" />
+                                            <p className="text-[12px] font-black">
+                                                {tender.deadline ? new Date(tender.deadline).toLocaleDateString() : (tender.applicationDeadline ? new Date(tender.applicationDeadline).toLocaleDateString() : "Open")}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="size-1 rounded-full bg-slate-200 dark:bg-slate-800" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-violet-500/70">{tender.category}</span>
-                            </div>
 
-                            {/* Decorative element */}
-                            <div className="absolute top-0 right-0 size-24 bg-violet-500/5 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-500" />
-                        </Link>
-                    ))}
+                                <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-white/5">
+                                    <div className="flex items-center gap-1.5 text-slate-400">
+                                        <MapPin className="size-3" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest truncate max-w-[100px]">{tender.location}</span>
+                                    </div>
+                                    <div className="size-1 rounded-full bg-slate-200 dark:bg-slate-800" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-violet-500/70 truncate max-w-[120px]">{tender.category || "General"}</span>
+                                </div>
+
+                                {/* Decorative element */}
+                                <div className="absolute top-0 right-0 size-24 bg-violet-500/5 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-500" />
+                            </Link>
+                        ))
+                    )}
                 </div>
             </div>
 

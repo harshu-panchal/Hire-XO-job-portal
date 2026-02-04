@@ -14,15 +14,12 @@ export const uploadService = {
     /**
      * Upload a file
      */
-    async uploadFile(file: File, type?: string): Promise<UploadResponse> {
+    async uploadFile(file: File, endpoint: string = '/upload/file', fieldName: string = 'file'): Promise<UploadResponse> {
         try {
             const formData = new FormData();
-            formData.append('file', file);
-            if (type) {
-                formData.append('type', type);
-            }
+            formData.append(fieldName, file);
 
-            const response = await apiClient.post<UploadResponse>('/upload', formData, {
+            const response = await apiClient.post<UploadResponse>(endpoint, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -34,11 +31,18 @@ export const uploadService = {
     },
 
     /**
+     * Upload tender document
+     */
+    async uploadTenderDocument(file: File): Promise<UploadResponse> {
+        return this.uploadFile(file, '/upload/tender-document', 'tender-document');
+    },
+
+    /**
      * Upload multiple files
      */
-    async uploadMultipleFiles(files: File[], type?: string): Promise<UploadResponse[]> {
+    async uploadMultipleFiles(files: File[], endpoint: string = '/upload/file', fieldName: string = 'file'): Promise<UploadResponse[]> {
         try {
-            const uploadPromises = files.map((file) => this.uploadFile(file, type));
+            const uploadPromises = files.map((file) => this.uploadFile(file, endpoint, fieldName));
             return await Promise.all(uploadPromises);
         } catch (error) {
             throw new Error(getErrorMessage(error));

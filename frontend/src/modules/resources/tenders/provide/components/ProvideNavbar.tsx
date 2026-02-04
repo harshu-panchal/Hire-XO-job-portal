@@ -72,7 +72,7 @@ const ProvideNavbar = () => {
                         notifications={notifications}
                         onMarkAllRead={handleMarkAllRead}
                         onNotificationClick={handleMarkRead}
-                        viewAllPath="/resources/tenders/provide/notifications"
+                        viewAllPath="/tenders/provide/notifications"
                     />
                 </div>
             </div>

@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, Edit2, Trash2, MoreVertical, TrendingUp, MessageSquare, Calendar, X, Search, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
+import { applicationService } from "@/services/applicationService";
+// import { toast } from "sonner"; // Assuming toast exists or use alert
 
 const MyFundingRequests = () => {
     const navigate = useNavigate();
@@ -10,76 +13,62 @@ const MyFundingRequests = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [requestToDelete, setRequestToDelete] = useState<any>(null);
     const [showViewModal, setShowViewModal] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    const [allRequests, setAllRequests] = useState([
-        {
-            id: 1,
-            title: "AI-Powered SaaS Platform Expansion",
-            sector: "Technology",
-            sectorColor: "blue",
-            amount: "₹5 Cr",
-            equity: "15%",
-            duration: "24 months",
-            status: "Active",
-            statusColor: "emerald",
-            postedDate: "Jan 15, 2024",
-            views: 245,
-            inquiries: 8,
-            description: "Looking for strategic investment to scale our AI-driven customer analytics platform...",
-            fullDescription: "We are seeking strategic investment to scale our AI-driven customer analytics platform. Our platform uses advanced machine learning algorithms to provide real-time insights into customer behavior, helping businesses optimize their marketing strategies and improve customer retention. We have already secured partnerships with 50+ enterprise clients and are looking to expand our operations across Asia-Pacific markets.",
-        },
-        {
-            id: 2,
-            title: "Solar Panel Manufacturing Unit",
-            sector: "Renewable Energy",
-            sectorColor: "green",
-            amount: "₹12 Cr",
-            equity: "20%",
-            duration: "36 months",
-            status: "Active",
-            statusColor: "emerald",
-            postedDate: "Dec 10, 2023",
-            views: 189,
-            inquiries: 12,
-            description: "Establishing state-of-the-art solar panel manufacturing facility...",
-            fullDescription: "We are establishing a state-of-the-art solar panel manufacturing facility with cutting-edge technology. The facility will have a production capacity of 500MW annually and will focus on high-efficiency monocrystalline panels. We have secured land and preliminary approvals, and are now seeking investment to complete the setup and begin operations.",
-        },
-        {
-            id: 3,
-            title: "Telemedicine Platform Development",
-            sector: "Healthcare",
-            sectorColor: "purple",
-            amount: "₹8 Cr",
-            equity: "18%",
-            duration: "30 months",
-            status: "Under Review",
-            statusColor: "amber",
-            postedDate: "Nov 5, 2023",
-            views: 312,
-            inquiries: 15,
-            description: "Building comprehensive telemedicine platform connecting patients with specialists...",
-            fullDescription: "Building a comprehensive telemedicine platform that connects patients with medical specialists across India. The platform will feature AI-powered symptom analysis, instant doctor consultations, prescription management, and integration with diagnostic labs. We have already onboarded 200+ doctors and are ready to launch in 15 cities.",
-        },
-        {
-            id: 4,
-            title: "E-commerce Platform Scaling",
-            sector: "Technology",
-            sectorColor: "blue",
-            amount: "₹3 Cr",
-            equity: "12%",
-            duration: "18 months",
-            status: "Closed",
-            statusColor: "slate",
-            postedDate: "Sep 20, 2023",
-            views: 156,
-            inquiries: 6,
-            description: "Expanding our e-commerce platform to tier-2 and tier-3 cities...",
-            fullDescription: "Expanding our successful e-commerce platform to tier-2 and tier-3 cities across India. We have achieved profitability in metro cities and now want to tap into the growing market in smaller cities. The funding will be used for logistics infrastructure, local partnerships, and marketing campaigns.",
-        },
-    ]);
+    const [allRequests, setAllRequests] = useState<any[]>([]);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            // Fetch Resources and Inquiries in parallel
+            const [resources, applications] = await Promise.all([
+                resourceService.getMyListings('investors'),
+                applicationService.getReceivedResourceApplications('investors').catch(() => [])
+            ]);
+
+            // Count inquiries per resource
+            const inquiryCounts: Record<string, number> = {};
+            applications.forEach((app: any) => {
+                const resId = app.resourceId?._id || app.resourceId; // dependent on populate or not
+                if (resId) {
+                    inquiryCounts[resId] = (inquiryCounts[resId] || 0) + 1;
+                }
+            });
+
+            // Format resources
+            const formatted = resources.map((res: any) => ({
+                id: res._id,
+                title: res.title,
+                sector: res.category || "General",
+                sectorColor: "blue", // Dynamic mapping could be added
+                amount: res.amount || "N/A",
+                equity: res.equity || "N/A",
+                duration: res.duration || "N/A",
+                status: res.status || "Active",
+                statusColor: res.status === "Active" ? "emerald" : "slate",
+                postedDate: new Date(res.createdAt).toLocaleDateString(),
+                views: res.views || 0,
+                inquiries: inquiryCounts[res._id] || 0,
+                description: res.description,
+                fullDescription: res.description, // Same for now
+            }));
+
+            setAllRequests(formatted);
+        } catch (error) {
+            console.error("Failed to fetch funding requests", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Filter requests based on active filter and search query
     const filteredRequests = allRequests.filter((request) => {
+        // Map backend status to UI filters if needed
+        // Since we likely just use strings, basic match is fine
         const matchesFilter = activeFilter === "All" || request.status === activeFilter;
         const matchesSearch = request.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             request.sector.toLowerCase().includes(searchQuery.toLowerCase());
@@ -103,11 +92,18 @@ const MyFundingRequests = () => {
         setShowDeleteModal(true);
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (requestToDelete) {
-            setAllRequests(allRequests.filter((r) => r.id !== requestToDelete.id));
-            setShowDeleteModal(false);
-            setRequestToDelete(null);
+            try {
+                await resourceService.delete('investors', requestToDelete.id);
+                setAllRequests(allRequests.filter((r) => r.id !== requestToDelete.id));
+                setShowDeleteModal(false);
+                setRequestToDelete(null);
+                // toast.success("Request deleted successfully");
+            } catch (error) {
+                console.error("Failed to delete request", error);
+                // toast.error("Failed to delete request");
+            }
         }
     };
 
@@ -199,7 +195,9 @@ const MyFundingRequests = () => {
 
             {/* Requests List */}
             <div className="space-y-4">
-                {filteredRequests.map((request) => (
+                {loading ? (
+                    <div className="text-center py-10">Loading requests...</div>
+                ) : filteredRequests.map((request) => (
                     <div
                         key={request.id}
                         className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10"
@@ -287,22 +285,8 @@ const MyFundingRequests = () => {
                 ))}
             </div>
 
-            {/* Empty State (if no requests) */}
-            {/* Uncomment when needed
-      <div className="text-center py-12">
-        <div className="size-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
-          <FileText className="size-8 text-slate-400" />
-        </div>
-        <p className="text-lg font-black text-slate-400">No funding requests yet</p>
-        <p className="text-xs text-slate-500 mt-1 mb-4">Start by posting your first funding need</p>
-        <button className="px-6 py-3 rounded-xl bg-primary text-white font-black text-xs uppercase tracking-widest active:scale-95 transition-all">
-          Post Funding Need
-        </button>
-      </div>
-      */}
-
             {/* Empty State for filtered results */}
-            {filteredRequests.length === 0 && (
+            {!loading && filteredRequests.length === 0 && (
                 <div className="text-center py-12">
                     <div className="size-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
                         <FileText className="size-8 text-slate-400" />

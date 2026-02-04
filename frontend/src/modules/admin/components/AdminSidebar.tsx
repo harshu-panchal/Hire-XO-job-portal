@@ -24,9 +24,9 @@ import { useAuthStore } from "@/store/useAuthStore";
 
 const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
-    { icon: Users, label: "Recruiters", path: "/admin/recruiters" },
-    { icon: CreditCard, label: "Job Seeker Plans", path: "/admin/job-seeker-plans" },
-    { icon: CreditCard, label: "Recruiter Plans", path: "/admin/recruiter-plans" },
+    { icon: Users, label: "Employers", path: "/admin/employers" },
+    { icon: CreditCard, label: "Employee Plans", path: "/admin/employee-plans" },
+    { icon: CreditCard, label: "Employer Plans", path: "/admin/employer-plans" },
     { icon: BarChart3, label: "Reports", path: "/admin/reports" },
     { icon: Shield, label: "Certificates", path: "/admin/certificates" },
     { icon: Settings, label: "Settings", path: "/admin/settings" },

@@ -37,8 +37,8 @@ const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
     if (!allowedRoles.includes(user.role)) {
         // Redirect to appropriate dashboard based on role
         const redirectPaths: Record<string, string> = {
-            "job-seeker": "/jobs",
-            "recruiter": "/recruiter",
+            "employee": "/jobs",
+            "employer": "/employer",
             "admin": "/admin",
             "resource": getResourceRedirectPath(user),
         };

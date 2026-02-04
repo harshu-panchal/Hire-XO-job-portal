@@ -23,7 +23,14 @@ export const applicationService = {
     async applyToJob(jobId: string, applicationData: any): Promise<{ message: string; application: Application }> {
         try {
             const response = await apiClient.post(`/applications/jobs/${jobId}/apply`, applicationData);
-            return response.data;
+            const data = response.data;
+            return {
+                ...data,
+                application: {
+                    ...data.application,
+                    id: data.application.id || data.application._id
+                }
+            };
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }
@@ -42,7 +49,14 @@ export const applicationService = {
                 `/applications/resources/${resourceType}/${resourceId}/apply`,
                 applicationData
             );
-            return response.data;
+            const data = response.data;
+            return {
+                ...data,
+                application: {
+                    ...data.application,
+                    id: data.application.id || data.application._id
+                }
+            };
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }
@@ -51,10 +65,21 @@ export const applicationService = {
     /**
      * Get my applications
      */
-    async getMyApplications(): Promise<Application[]> {
+    async getMyApplications(): Promise<{ jobs: Application[]; resources: Application[] }> {
         try {
-            const response = await apiClient.get<Application[]>('/applications/my-applications');
-            return response.data;
+            const response = await apiClient.get<{ jobs: any[]; resources: any[] }>('/applications/my-applications');
+            const { jobs = [], resources = [] } = response.data || {};
+
+            return {
+                jobs: jobs.map((app: any) => ({
+                    ...app,
+                    id: app.id || app._id
+                })),
+                resources: resources.map((app: any) => ({
+                    ...app,
+                    id: app.id || app._id
+                }))
+            };
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }
@@ -66,7 +91,27 @@ export const applicationService = {
     async getJobApplications(jobId: string): Promise<Application[]> {
         try {
             const response = await apiClient.get<Application[]>(`/applications/jobs/${jobId}/applications`);
-            return response.data;
+            const apps = response.data || [];
+            return apps.map((app: any) => ({
+                ...app,
+                id: app.id || app._id
+            }));
+        } catch (error) {
+            throw new Error(getErrorMessage(error));
+        }
+    },
+
+    /**
+     * Get all applications received across all jobs (Recruiter Dashboard)
+     */
+    async getReceivedApplications(): Promise<Application[]> {
+        try {
+            const response = await apiClient.get<Application[]>('/applications/received');
+            const apps = response.data || [];
+            return apps.map((app: any) => ({
+                ...app,
+                id: app.id || app._id
+            }));
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }
@@ -80,7 +125,29 @@ export const applicationService = {
             const response = await apiClient.get<Application[]>(
                 `/applications/resources/${resourceType}/${resourceId}/applications`
             );
-            return response.data;
+            const apps = response.data || [];
+            return apps.map((app: any) => ({
+                ...app,
+                id: app.id || app._id
+            }));
+        } catch (error) {
+            throw new Error(getErrorMessage(error));
+        }
+    },
+
+    /**
+     * Get all applications received for my resources
+     */
+    async getReceivedResourceApplications(category: string): Promise<Application[]> {
+        try {
+            const response = await apiClient.get<Application[]>('/applications/resources/received', {
+                params: { category }
+            });
+            const apps = response.data || [];
+            return apps.map((app: any) => ({
+                ...app,
+                id: app.id || app._id
+            }));
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }
@@ -91,10 +158,11 @@ export const applicationService = {
      */
     async updateApplicationStatus(
         applicationId: string,
-        status: 'Pending' | 'Accepted' | 'Rejected'
+        status: 'Pending' | 'Accepted' | 'Rejected',
+        type: 'job' | 'resource' = 'job'
     ): Promise<{ message: string; application: Application }> {
         try {
-            const response = await apiClient.put(`/applications/${applicationId}/status`, { status });
+            const response = await apiClient.put(`/applications/${applicationId}/status`, { status, type });
             return response.data;
         } catch (error) {
             throw new Error(getErrorMessage(error));

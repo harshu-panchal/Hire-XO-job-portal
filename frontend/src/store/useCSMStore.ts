@@ -6,7 +6,9 @@ import type { Resource } from "../types";
 interface CSMState {
     services: any[];
     myServices: Resource[];
+    myInquiries: any[];
     inquiries: any[];
+    stats: any;
     isLoading: boolean;
     filters: {
         search: string;
@@ -15,6 +17,8 @@ interface CSMState {
     error: string | null;
 
     // CSM Actions
+    addService: (serviceData: any) => Promise<void>; // Alias
+    deleteService: (id: string) => Promise<void>; // Alias
     fetchCSMServices: (filters?: any) => Promise<void>;
     getCSMById: (id: string) => Promise<Resource | undefined>;
     createCSMService: (serviceData: Partial<Resource>) => Promise<void>;
@@ -36,7 +40,13 @@ interface CSMState {
 export const useCSMStore = create<CSMState>((set, get) => ({
     services: [],
     myServices: [],
+    myInquiries: [], // Alias or separate?
     inquiries: [],
+    stats: {
+        profileViews: 0,
+        avgRating: 0,
+        totalReviews: 0,
+    },
     isLoading: false,
     filters: {
         search: '',
@@ -55,6 +65,14 @@ export const useCSMStore = create<CSMState>((set, get) => ({
         }));
     },
     error: null,
+
+    // Aliases
+    addService: async (serviceData: any) => {
+        return get().createCSMService(serviceData);
+    },
+    deleteService: async (id: string) => {
+        return get().deleteCSMService(id);
+    },
 
     fetchCSMServices: async (filters?: any) => {
         set({ isLoading: true, error: null });

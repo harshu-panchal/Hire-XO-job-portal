@@ -1,30 +1,216 @@
-import { Building2, MapPin, Globe, Award, ShieldCheck, Briefcase, ChevronRight, Edit3, FileCheck } from "lucide-react";
+import { useState } from "react";
+import { Building2, MapPin, Globe, Award, ShieldCheck, Briefcase, ChevronRight, Edit3, FileCheck, User, X, Save, Loader2 } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 const ApplyProfile = () => {
+    const { user, updateProfile } = useAuthStore();
+    const [isEditing, setIsEditing] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Initialize form data with safe defaults
+    const [formData, setFormData] = useState({
+        company: user?.profile?.company || user?.name || "",
+        bio: user?.profile?.bio || "",
+        location: user?.profile?.location || "",
+        website: user?.profile?.website || "",
+        founded: user?.profile?.founded || "",
+        projectsWon: user?.profile?.projectsWon || 0,
+        experience: user?.profile?.experience || "",
+        skills: user?.profile?.skills?.join(", ") || "" // Comma separated for input
+    });
+
+    if (!user) {
+        return <div className="p-10 text-center font-black">Please log in to view your profile.</div>;
+    }
+
     const companyData = {
-        name: "EcoBuild Infrastructure Ltd.",
-        bio: "Leading construction and infrastructure development company specializing in sustainable urban projects and smart city solutions across India.",
-        location: "Mumbai, Maharashtra",
-        website: "www.ecobuild.infra.in",
-        founded: "2012",
-        projectsWon: 14,
-        experience: "12+ Years",
-        expertises: ["Civil Works", "Smart City", "Water Management", "Urban Planning"],
+        name: user.profile?.company || user.name || "Organization Name",
+        bio: user.profile?.bio || "No bio available. Please edit your profile to add a description.",
+        location: user.profile?.location || "Location not set",
+        website: user.profile?.website || "Website not set",
+        founded: user.profile?.founded || "N/A",
+        projectsWon: user.profile?.projectsWon || 0,
+        experience: user.profile?.experience || "N/A",
+        expertises: user.profile?.skills || ["General"],
         regDetails: [
-            { label: "CIN", value: "U45200MH2012PLC234567" },
-            { label: "GSTIN", value: "27AAACE1234F1Z5" },
-            { label: "Class", value: "Class A Contractor" }
+            { label: "Email", value: user.email },
+            { label: "Phone", value: user.phoneNumber || "N/A" },
+            { label: "Role", value: user.role }
         ]
     };
 
+    const handleEditClick = () => {
+        setFormData({
+            company: user.profile?.company || user.name || "",
+            bio: user.profile?.bio || "",
+            location: user.profile?.location || "",
+            website: user.profile?.website || "",
+            founded: user.profile?.founded || "",
+            projectsWon: user.profile?.projectsWon || 0,
+            experience: user.profile?.experience || "",
+            skills: user.profile?.skills?.join(", ") || ""
+        });
+        setIsEditing(true);
+    };
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+            // Convert comma separated skills back to array
+            const skillsArray = formData.skills.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
+            await updateProfile({
+                profile: {
+                    ...user.profile,
+                    company: formData.company,
+                    bio: formData.bio,
+                    location: formData.location,
+                    website: formData.website,
+                    founded: formData.founded,
+                    projectsWon: Number(formData.projectsWon),
+                    experience: formData.experience,
+                    skills: skillsArray
+                }
+            });
+            toast.success("Profile updated successfully");
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Failed to update profile", error);
+            toast.error("Failed to update profile");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <div className="py-6 space-y-8 select-none">
+        <div className="py-6 space-y-8 select-none relative">
+            {/* Edit Modal */}
+            {isEditing && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[2rem] p-6 shadow-2xl border border-slate-200 dark:border-white/10 max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-lg font-black tracking-tight">Edit Organization Profile</h2>
+                            <button
+                                onClick={() => setIsEditing(false)}
+                                className="size-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:text-rose-600 transition-colors"
+                            >
+                                <X className="size-4" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSave} className="space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Organization Name</label>
+                                <input
+                                    type="text"
+                                    value={formData.company}
+                                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                                    placeholder="Enter company name"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Location</label>
+                                    <input
+                                        type="text"
+                                        value={formData.location}
+                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                                        placeholder="City, Country"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Website</label>
+                                    <input
+                                        type="text"
+                                        value={formData.website}
+                                        onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                                        placeholder="www.example.com"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Projects Won</label>
+                                    <input
+                                        type="number"
+                                        value={formData.projectsWon}
+                                        onChange={(e) => setFormData({ ...formData, projectsWon: parseInt(e.target.value) || 0 })}
+                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Experience</label>
+                                    <input
+                                        type="text"
+                                        value={formData.experience}
+                                        onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                                        placeholder="e.g. 10+ Years"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Key Sectors (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={formData.skills}
+                                    onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                                    placeholder="Civil, Electrical, Smart City"
+                                />
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Organization Bio</label>
+                                <textarea
+                                    rows={4}
+                                    value={formData.bio}
+                                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm resize-none"
+                                    placeholder="Brief description of your organization..."
+                                />
+                            </div>
+
+                            <div className="pt-4 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditing(false)}
+                                    className="flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-xs border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="flex-1 py-3 rounded-xl bg-violet-600 text-white font-black uppercase tracking-widest text-xs hover:bg-violet-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             {/* Profile Header */}
             <div className="relative pt-4">
                 <div className="bg-gradient-to-br from-violet-600 to-indigo-700 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-violet-500/30 overflow-hidden relative">
                     <div className="relative z-10 flex flex-col items-center text-center space-y-4">
-                        <div className="size-24 rounded-[2rem] bg-white/20 backdrop-blur-md border-2 border-white/30 flex items-center justify-center p-4">
-                            <Building2 className="size-full text-white" />
+                        <div className="size-24 rounded-[2rem] bg-white/20 backdrop-blur-md border-2 border-white/30 flex items-center justify-center p-1 overflow-hidden">
+                            {user.profile?.profilePhoto || user.profilePhoto ? (
+                                <img src={user.profile?.profilePhoto || user.profilePhoto} alt={companyData.name} className="size-full rounded-[1.8rem] object-cover" />
+                            ) : (
+                                <Building2 className="size-12 text-white" />
+                            )}
                         </div>
                         <div className="space-y-1">
                             <h1 className="text-2xl font-black tracking-tight">{companyData.name}</h1>
@@ -33,7 +219,10 @@ const ApplyProfile = () => {
                                 <p className="text-[10px] font-black uppercase tracking-widest">{companyData.location}</p>
                             </div>
                         </div>
-                        <button className="bg-white text-violet-600 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest active:scale-95 transition-transform flex items-center gap-2 shadow-lg shadow-black/10">
+                        <button
+                            onClick={handleEditClick}
+                            className="bg-white text-violet-600 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest active:scale-95 transition-transform flex items-center gap-2 shadow-lg shadow-black/10 hover:bg-slate-50"
+                        >
                             <Edit3 className="size-3" /> Edit Profile
                         </button>
                     </div>
@@ -70,7 +259,7 @@ const ApplyProfile = () => {
                     </div>
                     <div>
                         <p className="text-xl font-black tracking-tight">Active</p>
-                        <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">8 Bids</p>
+                        <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Status</p>
                     </div>
                 </div>
             </div>
@@ -84,12 +273,14 @@ const ApplyProfile = () => {
                     <p className="text-sm font-bold text-slate-600 dark:text-slate-400 leading-relaxed italic">
                         "{companyData.bio}"
                     </p>
-                    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-4">
-                        <a href={`https://${companyData.website}`} className="flex items-center gap-2 text-violet-600">
-                            <Globe className="size-4" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Visit Website</span>
-                        </a>
-                    </div>
+                    {companyData.website !== "Website not set" && (
+                        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-4">
+                            <a href={companyData.website.startsWith('http') ? companyData.website : `https://${companyData.website}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-violet-600">
+                                <Globe className="size-4" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Visit Website</span>
+                            </a>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -97,17 +288,21 @@ const ApplyProfile = () => {
             <div className="space-y-4">
                 <h2 className="px-1 text-lg font-black tracking-tight uppercase tracking-widest text-slate-400 text-[10px]">Prime Sectors</h2>
                 <div className="flex flex-wrap gap-2">
-                    {companyData.expertises.map((exp) => (
+                    {companyData.expertises?.length > 0 ? companyData.expertises.map((exp: string) => (
                         <span key={exp} className="px-5 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest">
                             {exp}
                         </span>
-                    ))}
+                    )) : (
+                        <span className="px-5 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest">
+                            No sectors listed
+                        </span>
+                    )}
                 </div>
             </div>
 
             {/* Registration Details */}
             <div className="space-y-4 pb-4">
-                <h2 className="px-1 text-lg font-black tracking-tight">Verification Assets</h2>
+                <h2 className="px-1 text-lg font-black tracking-tight">Contact & Verification</h2>
                 <div className="space-y-3">
                     {companyData.regDetails.map((reg) => (
                         <div key={reg.label} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl p-4 flex items-center justify-between group">

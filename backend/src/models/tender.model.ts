@@ -19,6 +19,7 @@ export interface ITender extends Document {
     duration?: string;
     urgency?: "Immediate" | "Within Week" | "Flexible";
     postedAt: Date;
+    documents?: string[];
 }
 
 const TenderSchema: Schema = new Schema({
@@ -39,6 +40,7 @@ const TenderSchema: Schema = new Schema({
     tenderCategory: [{ type: String }],
     duration: { type: String },
     urgency: { type: String, enum: ["Immediate", "Within Week", "Flexible"] },
+    documents: [{ type: String }],
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
 export default mongoose.model<ITender>('Tender', TenderSchema);

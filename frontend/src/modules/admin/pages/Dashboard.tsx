@@ -50,7 +50,7 @@ const itemVariants: Variants = {
 } as const;
 
 const recentActivity = [
-    { id: 1, action: "New recruiter registered", user: "Acme Corp", time: "2 min ago" },
+    { id: 1, action: "New employer registered", user: "Acme Corp", time: "2 min ago" },
     { id: 2, action: "Plan upgraded to Premium", user: "John Doe", time: "15 min ago" },
     { id: 3, action: "New job posting created", user: "TechStart Inc", time: "1 hour ago" },
     { id: 4, action: "Payment received", user: "Global HR", time: "2 hours ago" },

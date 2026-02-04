@@ -9,8 +9,10 @@ const applicationController = new ApplicationController();
 router.post('/jobs/:jobId/apply', authenticateToken, applicationController.applyToJob);
 router.post('/resources/:resourceType/:resourceId/apply', authenticateToken, applicationController.applyToResource);
 router.get('/my-applications', authenticateToken, applicationController.getMyApplications);
+router.get('/received', authenticateToken, applicationController.getReceivedApplications);
 router.get('/jobs/:jobId/applications', authenticateToken, applicationController.getJobApplications);
 router.get('/resources/:resourceType/:resourceId/applications', authenticateToken, applicationController.getResourceApplications);
+router.get('/resources/received', authenticateToken, applicationController.getReceivedResourceApplications);
 router.put('/:applicationId/status', authenticateToken, applicationController.updateApplicationStatus);
 
 export default router;

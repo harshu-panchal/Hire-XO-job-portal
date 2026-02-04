@@ -33,7 +33,11 @@ export const resourceService = {
             const response = await apiClient.get<any>(`/${resourceType}`, {
                 params: filters,
             });
-            return response.data.data || [];
+            const resources = response.data.data || [];
+            return resources.map((res: any) => ({
+                ...res,
+                id: res.id || res._id
+            }));
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }
@@ -45,7 +49,11 @@ export const resourceService = {
     async getById(resourceType: ResourceType, id: string): Promise<Resource> {
         try {
             const response = await apiClient.get<Resource>(`/${resourceType}/${id}`);
-            return response.data;
+            const resource = response.data;
+            return {
+                ...resource,
+                id: (resource as any).id || (resource as any)._id
+            };
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }
@@ -97,7 +105,11 @@ export const resourceService = {
     async getMyListings(resourceType: ResourceType): Promise<Resource[]> {
         try {
             const response = await apiClient.get<any>(`/${resourceType}/my-listings`);
-            return response.data.data || [];
+            const resources = response.data.data || [];
+            return resources.map((res: any) => ({
+                ...res,
+                id: res.id || res._id
+            }));
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }

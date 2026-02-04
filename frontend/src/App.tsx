@@ -2,15 +2,15 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Layouts
-import JobSeekerLayout from "./layouts/JobSeekerLayout";
-import RecruiterLayout from "./layouts/RecruiterLayout";
+import EmployeeLayout from "./layouts/EmployeeLayout";
+import EmployerLayout from "./layouts/EmployerLayout";
 import AdminLayout from "./layouts/AdminLayout";
 
 // Auth Pages
 import RoleSelection from "./modules/auth/pages/RoleSelection";
 import Login from "./modules/auth/pages/Login";
-import JobSeekerSignup from "./modules/auth/pages/JobSeekerSignup";
-import RecruiterSignup from "./modules/auth/pages/RecruiterSignup";
+import EmployeeSignup from "./modules/auth/pages/EmployeeSignup";
+import EmployerSignup from "./modules/auth/pages/EmployerSignup";
 import ResourceCategories from "./modules/auth/pages/ResourceCategories";
 import InvestorOptions from "./modules/auth/pages/InvestorOptions";
 import TenderOptions from "./modules/auth/pages/TenderOptions";
@@ -22,38 +22,41 @@ import LogisticsOptions from "./modules/auth/pages/LogisticsOptions";
 import VehicleOptions from "./modules/auth/pages/VehicleOptions";
 import ResourceSignup from "./modules/auth/pages/ResourceSignup";
 
-// Job Seeker Pages
-import JobList from "./modules/job-seeker/pages/JobList";
-import JobDetails from "./modules/job-seeker/pages/JobDetails";
-import Subscriptions from "./modules/job-seeker/pages/Subscriptions";
-import Certificates from "./modules/job-seeker/pages/Certificates";
-import Profile from "./modules/job-seeker/pages/Profile";
-import MyApplications from "./modules/job-seeker/pages/MyApplications";
-import SavedJobs from "./modules/job-seeker/pages/SavedJobs";
-import Settings from "./modules/job-seeker/pages/Settings";
-import ResourcesList from "./modules/job-seeker/pages/ResourcesList";
-import ResourceDetails from "./modules/job-seeker/pages/ResourceDetails";
+// Employee Pages
+import JobList from "./modules/employee/pages/JobList";
+import JobDetails from "./modules/employee/pages/JobDetails";
+import Subscriptions from "./modules/employee/pages/Subscriptions";
+import Certificates from "./modules/employee/pages/Certificates";
+import Profile from "./modules/employee/pages/Profile";
+import MyApplications from "./modules/employee/pages/MyApplications";
+import SavedJobs from "./modules/employee/pages/SavedJobs";
+import Settings from "./modules/employee/pages/Settings";
+import ResourcesList from "./modules/employee/pages/ResourcesList";
+import ResourceDetails from "./modules/employee/pages/ResourceDetails";
+import Notifications from "./modules/employee/pages/Notifications";
 
-// Recruiter Pages
-import RecruiterDashboard from "./modules/recruiter/pages/RecruiterDashboard";
-import PostJob from "./modules/recruiter/pages/PostJob";
-import ManageApplications from "./modules/recruiter/pages/ManageApplications";
-import RecruiterSettings from "./modules/recruiter/pages/RecruiterSettings";
-import Subscription from "./modules/recruiter/pages/Subscription";
-import RecruiterProfile from "./modules/recruiter/pages/RecruiterProfile";
-import RecruiterCompany from "./modules/recruiter/pages/RecruiterCompany";
-import RecruiterWallet from "./modules/recruiter/pages/RecruiterWallet";
-import RecruiterNotifications from "./modules/recruiter/pages/RecruiterNotifications";
-import RecruiterSecurity from "./modules/recruiter/pages/RecruiterSecurity";
+// Employer Pages
+import EmployerDashboard from "./modules/employer/pages/EmployerDashboard";
+import MyJobs from "./modules/employer/pages/MyJobs";
+import PostJob from "./modules/employer/pages/PostJob";
+import ManageApplications from "./modules/employer/pages/ManageApplications";
+import EmployerSettings from "./modules/employer/pages/EmployerSettings";
+import Subscription from "./modules/employer/pages/Subscription";
+import EmployerProfile from "./modules/employer/pages/EmployerProfile";
+import EmployerCompany from "./modules/employer/pages/EmployerCompany";
+import EmployerWallet from "./modules/employer/pages/EmployerWallet";
+import EmployerActivity from "./modules/employer/pages/EmployerActivity";
+import EmployerNotificationSettings from "./modules/employer/pages/EmployerNotificationSettings";
+import EmployerSecurity from "./modules/employer/pages/EmployerSecurity";
 
 // Other Pages
 import StyleGuide from "./modules/resources/pages/StyleGuide";
 
 // Admin Pages
 import AdminDashboard from "./modules/admin/pages/Dashboard";
-import Recruiters from "./modules/admin/pages/Recruiters";
-import JobSeekerPlans from "./modules/admin/pages/JobSeekerPlans";
-import RecruiterPlans from "./modules/admin/pages/RecruiterPlans";
+import Employers from "./modules/admin/pages/Employers";
+import EmployeePlans from "./modules/admin/pages/EmployeePlans";
+import EmployerPlans from "./modules/admin/pages/EmployerPlans";
 import Payments from "./modules/admin/pages/Payments";
 import AdminCertificates from "./modules/admin/pages/Certificates";
 import AdminReports from "./modules/admin/pages/Reports";
@@ -74,6 +77,7 @@ import BrowseProfile from "./modules/resources/investor/browse/pages/BrowseProfi
 import OpportunitiesList from "./modules/resources/investor/browse/pages/OpportunitiesList";
 import OpportunityDetails from "./modules/resources/investor/browse/pages/OpportunityDetails";
 import MyInvestments from "./modules/resources/investor/browse/pages/MyInvestments";
+import InvestorBrowseNotifications from "./modules/resources/investor/browse/pages/InvestorBrowseNotifications";
 import BrowseSettings from "./modules/resources/investor/browse/pages/BrowseSettings";
 
 // Investor Seek App (Want Investment)
@@ -91,7 +95,8 @@ import TendersList from "./modules/resources/tenders/apply/pages/TendersList";
 import TenderDetails from "./modules/resources/tenders/apply/pages/TenderDetails";
 import ApplyMyApplications from "./modules/resources/tenders/apply/pages/MyApplications";
 import ApplyProfile from "./modules/resources/tenders/apply/pages/ApplyProfile";
-import ApplySettings from "./modules/resources/tenders/apply/pages/ApplySettings";
+import ApplySettings from "./modules/resources/tenders/apply/pages/ApplySettingsPage";
+import TenderApplyNotifications from "./modules/resources/tenders/apply/pages/TenderApplyNotifications";
 
 // Tender Provide App (Provide Tenders)
 import ProvideLayout from "./modules/resources/tenders/provide/layouts/ProvideLayout";
@@ -99,6 +104,7 @@ import ProvideDashboard from "./modules/resources/tenders/provide/pages/ProvideD
 import PostTender from "./modules/resources/tenders/provide/pages/PostTender";
 import MyTenders from "./modules/resources/tenders/provide/pages/MyTenders";
 import ReceivedBids from "./modules/resources/tenders/provide/pages/ReceivedBids";
+import TenderProvideNotifications from "./modules/resources/tenders/provide/pages/TenderProvideNotifications";
 import ProvideProfile from "./modules/resources/tenders/provide/pages/ProvideProfile";
 import ProvideSettings from "./modules/resources/tenders/provide/pages/ProvideSettings";
 
@@ -208,6 +214,7 @@ import MyVehicles from "./modules/resources/vehicles/provide/pages/MyVehicles";
 import VehicleInquiries from "./modules/resources/vehicles/provide/pages/VehicleInquiries";
 import VehicleProvideProfile from "./modules/resources/vehicles/provide/pages/ProvideProfile";
 import VehicleProvideSettings from "./modules/resources/vehicles/provide/pages/ProvideSettings";
+import VehicleProvideNotifications from "./modules/resources/vehicles/provide/pages/VehicleProvideNotifications";
 
 function App() {
   return (
@@ -219,8 +226,8 @@ function App() {
           element={<RoleSelection />}
         />
         <Route path="/login/:role" element={<Login />} />
-        <Route path="/signup/job-seeker" element={<JobSeekerSignup />} />
-        <Route path="/signup/recruiter" element={<RecruiterSignup />} />
+        <Route path="/signup/employee" element={<EmployeeSignup />} />
+        <Route path="/signup/employer" element={<EmployerSignup />} />
         <Route path="/resources/categories" element={<ResourceCategories />} />
         {/* Resource Sub-Option Routes */}
         <Route path="/resources/investor" element={<InvestorOptions />} />
@@ -233,11 +240,11 @@ function App() {
         <Route path="/resources/vehicles" element={<VehicleOptions />} />
         <Route path="/signup/resource/:category" element={<ResourceSignup />} />
 
-        {/* Protected Job Seeker Routes */}
+        {/* Protected Employee Routes */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={["job-seeker"]}>
-              <JobSeekerLayout />
+            <ProtectedRoute allowedRoles={["employee"]}>
+              <EmployeeLayout />
             </ProtectedRoute>
           }
         >
@@ -251,27 +258,31 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/resources" element={<ResourcesList />} />
           <Route path="/resources/:id" element={<ResourceDetails />} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route path="/style-guide" element={<StyleGuide />} />
         </Route>
 
-        {/* Protected Recruiter Routes */}
+        {/* Protected Employer Routes */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={["recruiter"]}>
-              <RecruiterLayout />
+            <ProtectedRoute allowedRoles={["employer"]}>
+              <EmployerLayout />
             </ProtectedRoute>
           }
         >
-          <Route path="/recruiter" element={<RecruiterDashboard />} />
-          <Route path="/recruiter/post-job" element={<PostJob />} />
-          <Route path="/recruiter/applications" element={<ManageApplications />} />
-          <Route path="/recruiter/settings" element={<RecruiterSettings />} />
-          <Route path="/recruiter/subscription" element={<Subscription />} />
-          <Route path="/recruiter/profile" element={<RecruiterProfile />} />
-          <Route path="/recruiter/company" element={<RecruiterCompany />} />
-          <Route path="/recruiter/wallet" element={<RecruiterWallet />} />
-          <Route path="/recruiter/notifications" element={<RecruiterNotifications />} />
-          <Route path="/recruiter/security" element={<RecruiterSecurity />} />
+          <Route path="/employer" element={<EmployerDashboard />} />
+          <Route path="/employer/jobs" element={<MyJobs />} />
+          <Route path="/employer/post-job" element={<PostJob />} />
+          <Route path="/employer/applications" element={<ManageApplications />} />
+          <Route path="/employer/settings" element={<EmployerSettings />} />
+          <Route path="/employer/subscription" element={<Subscription />} />
+          <Route path="/employer/profile" element={<EmployerProfile />} />
+          <Route path="/employer/company" element={<EmployerCompany />} />
+          <Route path="/employer/wallet" element={<EmployerWallet />} />
+          {/* Employer Activities and Settings */}
+          <Route path="/employer/notifications" element={<EmployerActivity />} />
+          <Route path="/employer/settings/notifications" element={<EmployerNotificationSettings />} />
+          <Route path="/employer/security" element={<EmployerSecurity />} />
         </Route>
 
         {/* Protected Investor Browse Routes (Want to Invest) */}
@@ -288,6 +299,7 @@ function App() {
           <Route path="/investor/browse/opportunities/:id" element={<OpportunityDetails />} />
           <Route path="/investor/browse/my-investments" element={<MyInvestments />} />
           <Route path="/investor/browse/settings" element={<BrowseSettings />} />
+          <Route path="/investor/browse/notifications" element={<InvestorBrowseNotifications />} />
         </Route>
 
         {/* Protected Investor Seek Routes (Want Investment) */}
@@ -319,6 +331,7 @@ function App() {
           <Route path="/tenders/apply/my-bids" element={<ApplyMyApplications />} />
           <Route path="/tenders/apply/profile" element={<ApplyProfile />} />
           <Route path="/tenders/apply/settings" element={<ApplySettings />} />
+          <Route path="/tenders/apply/notifications" element={<TenderApplyNotifications />} />
         </Route>
 
         {/* Protected Tender Provide Routes (Provide Tenders) */}
@@ -335,6 +348,7 @@ function App() {
           <Route path="/tenders/provide/bids" element={<ReceivedBids />} />
           <Route path="/tenders/provide/profile" element={<ProvideProfile />} />
           <Route path="/tenders/provide/settings" element={<ProvideSettings />} />
+          <Route path="/tenders/provide/notifications" element={<TenderProvideNotifications />} />
         </Route>
 
         {/* Protected Equipment Rent Routes (Rent Gear) */}
@@ -527,6 +541,7 @@ function App() {
           <Route path="/vehicles/provide/inquiries" element={<VehicleInquiries />} />
           <Route path="/vehicles/provide/profile" element={<VehicleProvideProfile />} />
           <Route path="/vehicles/provide/settings" element={<VehicleProvideSettings />} />
+          <Route path="/vehicles/provide/notifications" element={<VehicleProvideNotifications />} />
         </Route>
 
         {/* Protected Admin Routes */}
@@ -536,9 +551,9 @@ function App() {
           }
         >
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/recruiters" element={<Recruiters />} />
-          <Route path="/admin/job-seeker-plans" element={<JobSeekerPlans />} />
-          <Route path="/admin/recruiter-plans" element={<RecruiterPlans />} />
+          <Route path="/admin/employers" element={<Employers />} />
+          <Route path="/admin/employee-plans" element={<EmployeePlans />} />
+          <Route path="/admin/employer-plans" element={<EmployerPlans />} />
           <Route path="/admin/payments" element={<Payments />} />
           <Route path="/admin/certificates" element={<AdminCertificates />} />
           <Route path="/admin/reports" element={<AdminReports />} />
