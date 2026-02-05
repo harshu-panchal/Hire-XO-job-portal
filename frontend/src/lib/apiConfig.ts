@@ -49,6 +49,11 @@ apiClient.interceptors.response.use(
             const status = error.response.status;
 
             switch (status) {
+                case 400:
+                    // Bad Request
+                    console.error('Bad Request:', (error.response?.data as any)?.message || 'Invalid data');
+                    break;
+
                 case 401:
                     // Unauthorized - token expired or invalid
                     console.error('Unauthorized access - redirecting to login');

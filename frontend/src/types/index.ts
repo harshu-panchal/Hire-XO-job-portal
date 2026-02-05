@@ -34,41 +34,7 @@ export interface Certificate {
   status: "Active" | "Expired";
 }
 
-export interface UserProfile {
-  id: string;
-  name: string;
-  username?: string;
-  email: string;
-  role: "employee" | "employer" | "resource" | "admin";
-  interviewSuccessRate: number;
-  activeSubscriptionId?: string;
-  walletBalance?: number;
-  subscriptionExpiry?: string | null;
-  // Additional fields for different roles
-  phoneNumber?: string;
-  location?: string; // Added to fix build
-  company?: string;
-  jobTitle?: string;
-  companyLogo?: string;
-  profilePhoto?: string;
-  bio?: string;
-  skills?: string[];
-  experience?: Array<{ company: string; role: string; period: string }>;
-  education?: Array<{ school: string; degree: string; period: string }>;
-  githubUrl?: string;
-  linkedinUrl?: string;
-  twitterUrl?: string;
-  resourceCategory?: ResourceCategory;
-  category?: ResourceCategory;
-  investorType?: InvestorType;
-  tenderType?: TenderType;
-  equipmentType?: EquipmentType;
-  machineryType?: MachineryType;
-  pmcType?: PMCType;
-  csmType?: CSMType;
-  logisticsType?: LogisticsType;
-  vehicleType?: VehicleType;
-}
+
 
 export type ResourceCategory =
   | "Investor"
@@ -90,6 +56,11 @@ export interface Resource {
   userId: string;
   company?: string;
   postedAt?: string;
+  requirements?: string[];
+  responsibilities?: string[];
+  benefits?: string[];
+  duration?: string;
+  urgency?: string;
   [key: string]: any;
 }
 
@@ -140,4 +111,71 @@ export interface EmployeeSignupData {
   cv?: File;
   profilePhoto?: File;
   password: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+  role?: string;
+}
+
+export type SignupData = EmployerSignupData | EmployeeSignupData | ResourceSignupData;
+
+export interface ResourceSignupData {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  category: ResourceCategory;
+  organizationName: string;
+  [key: string]: any; // For dynamic fields based on category
+}
+
+export type ResourceSubType = string;
+
+// Update UserProfile to include missing fields
+export interface UserProfile {
+  id: string;
+  name: string;
+  username?: string;
+  email: string;
+  role: "employee" | "employer" | "resource" | "admin";
+  interviewSuccessRate: number;
+  activeSubscriptionId?: string;
+  walletBalance?: number;
+  subscriptionExpiry?: string | null;
+  // Additional fields for different roles
+  phoneNumber?: string;
+  location?: string;
+  company?: string;
+  jobTitle?: string;
+  companyLogo?: string;
+  profilePhoto?: string;
+  bio?: string;
+  skills?: string[];
+  experience?: Array<{ company: string; role: string; period: string }> | any; // Updated to any to fix build error
+  education?: Array<{ school: string; degree: string; period: string }>;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  twitterUrl?: string;
+  resourceCategory?: ResourceCategory;
+  category?: ResourceCategory;
+  investorType?: InvestorType;
+  tenderType?: TenderType;
+  equipmentType?: EquipmentType;
+  machineryType?: MachineryType;
+  pmcType?: PMCType;
+  csmType?: CSMType;
+  logisticsType?: LogisticsType;
+  vehicleType?: VehicleType;
+
+  // Investor specific
+  investmentRange?: string;
+  preferredEquity?: string;
+
+  // Tender specific
+  website?: string;
+  founded?: string;
+  projectsWon?: number;
 }

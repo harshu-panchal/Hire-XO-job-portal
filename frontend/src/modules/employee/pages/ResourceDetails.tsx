@@ -277,7 +277,7 @@ const ResourceDetails = () => {
                 <section className="space-y-4">
                     <h2 className="text-xl font-black tracking-tight">Requirements</h2>
                     <div className="space-y-3">
-                        {resource.requirements.map((req, i) => (
+                        {resource.requirements?.map((req, i) => (
                             <div key={i} className="flex items-start gap-3 group">
                                 <div className="size-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5 transition-colors">
                                     <CheckCircle2 className="size-3.5 text-primary" />
@@ -291,7 +291,7 @@ const ResourceDetails = () => {
                 <section className="space-y-4">
                     <h2 className="text-xl font-black tracking-tight">Responsibilities</h2>
                     <div className="space-y-3">
-                        {resource.responsibilities.map((resp, i) => (
+                        {resource.responsibilities?.map((resp, i) => (
                             <div key={i} className="flex items-start gap-3 group">
                                 <div className="size-6 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center shrink-0 mt-0.5">
                                     <span className="text-[10px] font-black text-slate-400">{i + 1}</span>
@@ -305,7 +305,7 @@ const ResourceDetails = () => {
                 <section className="space-y-4">
                     <h2 className="text-xl font-black tracking-tight">Benefits</h2>
                     <div className="flex flex-wrap gap-2">
-                        {resource.benefits.map((benefit, i) => (
+                        {resource.benefits?.map((benefit, i) => (
                             <div
                                 key={i}
                                 className="px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-xs font-black uppercase tracking-widest"

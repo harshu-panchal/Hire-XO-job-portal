@@ -5,6 +5,7 @@ import { uploadService } from "@/services/uploadService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import type { ResourceCategory } from "@/types";
 
 const PostFundingNeed = () => {
     const navigate = useNavigate();
@@ -82,7 +83,7 @@ const PostFundingNeed = () => {
             const payload = {
                 title: `${formData.businessName} - Funding Request`,
                 company: formData.businessName,
-                category: "Investor",
+                category: "Investor" as ResourceCategory,
                 location: formData.location,
                 compensation: formData.amount, // Required field
                 type: 'seeking-investment', // Required field

@@ -16,7 +16,7 @@ const ApplyProfile = () => {
         website: user?.profile?.website || "",
         founded: user?.profile?.founded || "",
         projectsWon: user?.profile?.projectsWon || 0,
-        experience: user?.profile?.experience || "",
+        experience: Array.isArray(user?.profile?.experience) ? "" : (user?.profile?.experience || ""),
         skills: user?.profile?.skills?.join(", ") || "" // Comma separated for input
     });
 
@@ -31,7 +31,7 @@ const ApplyProfile = () => {
         website: user.profile?.website || "Website not set",
         founded: user.profile?.founded || "N/A",
         projectsWon: user.profile?.projectsWon || 0,
-        experience: user.profile?.experience || "N/A",
+        experience: Array.isArray(user.profile?.experience) ? "N/A" : (user.profile?.experience || "N/A"),
         expertises: user.profile?.skills || ["General"],
         regDetails: [
             { label: "Email", value: user.email },
@@ -48,7 +48,7 @@ const ApplyProfile = () => {
             website: user.profile?.website || "",
             founded: user.profile?.founded || "",
             projectsWon: user.profile?.projectsWon || 0,
-            experience: user.profile?.experience || "",
+            experience: Array.isArray(user.profile?.experience) ? "" : (user.profile?.experience || ""),
             skills: user.profile?.skills?.join(", ") || ""
         });
         setIsEditing(true);

@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { resourceService } from "@/services/resourceService";
 import { uploadService } from "@/services/uploadService";
 import { toast } from "sonner";
+import type { ResourceCategory } from "@/types";
 
 const PostTender = () => {
     const location = useLocation();
@@ -106,7 +107,7 @@ const PostTender = () => {
 
             const payload = {
                 title: formData.title,
-                category: "Tenders", // Use consistent category for the model
+                category: "Tenders" as ResourceCategory, // Use consistent category for the model
                 tenderCategory: [formData.category], // Store sub-category here
                 type: formData.type,
                 tenderValue: formData.tenderValue,

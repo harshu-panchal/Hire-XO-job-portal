@@ -9,7 +9,7 @@ router.get('/', jobController.getAll);
 
 // Protected Routes - Must come BEFORE parameterized routes
 router.get('/my-listings', authenticateToken, jobController.getMyListings);
-router.post('/', authenticateToken, requireRole('recruiter'), jobController.create);
+router.post('/', authenticateToken, requireRole('recruiter', 'employer'), jobController.create);
 
 // Parameterized routes (must be last)
 router.get('/:id', jobController.getById);

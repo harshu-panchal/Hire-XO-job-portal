@@ -115,8 +115,8 @@ const EmployeeSignup = () => {
 
             await signup(signupData, "employee");
             navigate("/jobs");
-        } catch (err) {
-            setError("Failed to create account. Please try again.");
+        } catch (err: any) {
+            setError(err.message || "Failed to create account. Please try again.");
         }
     };
 
