@@ -7,7 +7,6 @@ import EmployerLayout from "./layouts/EmployerLayout";
 import AdminLayout from "./layouts/AdminLayout";
 
 // Auth Pages
-// Auth Pages
 import RoleSelection from "./modules/auth/pages/RoleSelection";
 import Login from "./modules/auth/pages/Login";
 import ForgotPassword from "./modules/auth/pages/ForgotPassword";
@@ -147,7 +146,7 @@ import MachineryInquiries from "./modules/resources/machinery/sell/pages/Machine
 import SellProfile from "./modules/resources/machinery/sell/pages/SellProfile";
 import SellSettings from "./modules/resources/machinery/sell/pages/SellSettings";
 
-// PMC Browse App (Hire PMC)
+// PMC App (Need Service)
 import PMCBrowseLayout from "./modules/resources/pmc/browse/layouts/BrowseLayout";
 import PMCBrowseDashboard from "./modules/resources/pmc/browse/pages/BrowseDashboard";
 import PMCConsultantList from "./modules/resources/pmc/browse/pages/ConsultantList";
@@ -156,7 +155,7 @@ import PMCMyHires from "./modules/resources/pmc/browse/pages/MyHires";
 import PMCBrowseProfile from "./modules/resources/pmc/browse/pages/BrowseProfile";
 import PMCBrowseSettings from "./modules/resources/pmc/browse/pages/BrowseSettings";
 
-// PMC Provide App (Offer PMC)
+// PMC Provider App (Provide Service)
 import PMCProvideLayout from "./modules/resources/pmc/provide/layouts/ProvideLayout";
 import PMCProvideDashboard from "./modules/resources/pmc/provide/pages/ProvideDashboard";
 import PMCPostService from "./modules/resources/pmc/provide/pages/PostService";

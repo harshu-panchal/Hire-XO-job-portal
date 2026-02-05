@@ -80,7 +80,7 @@ const ResourceSignup = () => {
       fields: subType === "provide-machinery" ? ["machineryTypes"] : ["machineryTypes"],
     },
     pmc: {
-      title: subType === "offer-pmc-services" ? "Offer PMC Services" : "Hire PMC",
+      title: subType === "offer-pmc-services" ? "Provide Service" : "Need Service",
       fields: ["projectExperience", "certifications"],
     },
     csm: {

@@ -21,8 +21,8 @@ const PMCOptions = () => {
   const options = [
     {
       id: "offer-pmc-services",
-      title: "Offer PMC Services",
-      description: "Provide project management consultancy services",
+      title: "Provide Service",
+      description: "Offer project management consultancy services",
       icon: Building,
       color: "from-indigo-500 to-blue-600",
       bgColor: "bg-indigo-50 dark:bg-indigo-950/20",
@@ -31,7 +31,7 @@ const PMCOptions = () => {
     },
     {
       id: "hire-pmc",
-      title: "Hire PMC",
+      title: "Need Service",
       description: "Find project management consultants for your project",
       icon: Briefcase,
       color: "from-blue-500 to-cyan-600",
