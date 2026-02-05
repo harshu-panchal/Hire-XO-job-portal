@@ -306,7 +306,7 @@ const PostJob = () => {
             type={step === 2 ? "submit" : "button"}
             onClick={(e) => {
               if (step === 1) {
-                const form = e.currentTarget.closest('form');
+                const form = e.currentTarget.closest("form");
                 if (form) {
                   if (form.checkValidity()) {
                     setStep(2);

@@ -48,6 +48,7 @@ const limiter = rateLimit({
 });
 
 app.get('/api/test', (req, res) => res.json({ message: 'API is working' }));
+app.get('/api/notifications-test', (req, res) => res.json({ message: 'Notifications test working' }));
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/', limiter);
 
