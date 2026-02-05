@@ -48,7 +48,7 @@ const ResourceCategoryFilter = ({
             className={`whitespace-nowrap px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 flex items-center gap-2 ${
               isActive
                 ? categoryColors[cat.id]
-                : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
+                : "bg-white border border-slate-200 text-slate-400"
             }`}
           >
             <Icon className="size-4" />

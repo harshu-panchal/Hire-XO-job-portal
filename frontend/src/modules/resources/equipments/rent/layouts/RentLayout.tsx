@@ -18,10 +18,10 @@ const RentLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white pb-24">
-      <div className="max-w-[430px] mx-auto min-h-screen bg-white dark:bg-slate-950 shadow-2xl relative border-x border-slate-100 dark:border-white/5">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24">
+      <div className="max-w-[430px] mx-auto min-h-screen bg-white shadow-2xl relative border-x border-slate-100">
         {/* Sticky Header */}
-        <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-100 dark:border-white/5 px-6 py-4 flex items-center justify-between">
+        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-100 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="size-8 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
               <span className="font-black text-lg italic">XO</span>
@@ -38,11 +38,11 @@ const RentLayout = () => {
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 relative"
+              className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center text-slate-500 relative"
             >
               <Bell className="size-5" />
               {unreadCount > 0 && (
-                <span className="absolute top-2.5 right-2.5 size-2 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-950"></span>
+                <span className="absolute top-2.5 right-2.5 size-2 bg-emerald-500 rounded-full border-2 border-white"></span>
               )}
             </button>
             <NotificationDropdown

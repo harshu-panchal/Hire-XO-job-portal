@@ -165,8 +165,8 @@ export default function EmployerPlans() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Employer Plans</h1>
-          <p className="text-slate-500 dark:text-white/60 mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">Employer Plans</h1>
+          <p className="text-slate-500 mt-1">
             Manage subscription plans for employers
           </p>
         </div>
@@ -184,45 +184,45 @@ export default function EmployerPlans() {
 
       {/* Stats */}
       <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-500/20">
-              <CreditCard className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 rounded-lg bg-blue-100">
+              <CreditCard className="w-5 h-5 text-blue-600" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white">{plans.length}</p>
-          <p className="text-sm text-slate-500 dark:text-white/50 mt-1">Active Plans</p>
+          <p className="text-2xl font-bold text-slate-900">{plans.length}</p>
+          <p className="text-sm text-slate-500 mt-1">Active Plans</p>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-lg bg-green-100 dark:bg-green-500/20">
-              <Briefcase className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <div className="p-2 rounded-lg bg-green-100">
+              <Briefcase className="w-5 h-5 text-green-600" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white">
+          <p className="text-2xl font-bold text-slate-900">
             {totalSubscribers.toLocaleString()}
           </p>
-          <p className="text-sm text-slate-500 dark:text-white/50 mt-1">Total Employers</p>
+          <p className="text-sm text-slate-500 mt-1">Total Employers</p>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-500/20">
-              <Star className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <div className="p-2 rounded-lg bg-purple-100">
+              <Star className="w-5 h-5 text-purple-600" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white">
+          <p className="text-2xl font-bold text-slate-900">
             ₹{(totalRevenue / 100000).toFixed(1)}L
           </p>
-          <p className="text-sm text-slate-500 dark:text-white/50 mt-1">Monthly Revenue</p>
+          <p className="text-sm text-slate-500 mt-1">Monthly Revenue</p>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-500/20">
-              <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+            <div className="p-2 rounded-lg bg-orange-100">
+              <TrendingUp className="w-5 h-5 text-orange-600" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-green-600 dark:text-green-400">+24%</p>
-          <p className="text-sm text-slate-500 dark:text-white/50 mt-1">Growth Rate</p>
+          <p className="text-2xl font-bold text-green-600">+24%</p>
+          <p className="text-sm text-slate-500 mt-1">Growth Rate</p>
         </div>
       </motion.div>
 
@@ -234,10 +234,10 @@ export default function EmployerPlans() {
         {plans.map((plan) => (
           <div
             key={plan.id}
-            className={`bg-white dark:bg-slate-900 rounded-xl border p-6 relative ${
+            className={`bg-white rounded-xl border p-6 relative ${
               plan.isPopular
                 ? "border-primary ring-2 ring-primary/20"
-                : "border-slate-200 dark:border-white/10"
+                : "border-slate-200"
             }`}
           >
             {plan.isPopular && (
@@ -247,14 +247,14 @@ export default function EmployerPlans() {
             )}
 
             <div className="text-center mb-6">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{plan.name}</h3>
+              <h3 className="text-lg font-semibold text-slate-900">{plan.name}</h3>
               <div className="mt-4">
-                <span className="text-4xl font-bold text-slate-900 dark:text-white">
+                <span className="text-4xl font-bold text-slate-900">
                   ₹{plan.price.toLocaleString()}
                 </span>
-                <span className="text-slate-500 dark:text-white/50">/{plan.duration}</span>
+                <span className="text-slate-500">/{plan.duration}</span>
               </div>
-              <p className="text-sm text-slate-500 dark:text-white/50 mt-2">
+              <p className="text-sm text-slate-500 mt-2">
                 {plan.subscribers.toLocaleString()} employers
               </p>
             </div>
@@ -263,7 +263,7 @@ export default function EmployerPlans() {
               {plan.features.map((feature, index) => (
                 <li
                   key={index}
-                  className="flex items-center gap-3 text-sm text-slate-600 dark:text-white/70"
+                  className="flex items-center gap-3 text-sm text-slate-600"
                 >
                   <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
                   {feature}
@@ -271,17 +271,17 @@ export default function EmployerPlans() {
               ))}
             </ul>
 
-            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-white/5">
+            <div className="flex gap-2 pt-4 border-t border-slate-100">
               <button
                 onClick={() => handleEdit(plan)}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
               >
                 <Edit2 className="w-4 h-4" />
                 Edit
               </button>
               <button
                 onClick={() => handleDelete(plan.id)}
-                className="px-4 py-2.5 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                className="px-4 py-2.5 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -305,51 +305,51 @@ export default function EmployerPlans() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 shadow-xl z-50 p-6"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-xl border border-slate-200 shadow-xl z-50 p-6"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-slate-900">
                   {editingPlan ? "Edit Plan" : "Add New Plan"}
                 </h3>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg"
+                  className="p-2 hover:bg-slate-100 rounded-lg"
                 >
                   <X className="w-5 h-5 text-slate-500" />
                 </button>
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Plan Name
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Price (₹)
                     </label>
                     <input
                       type="number"
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Duration
                     </label>
                     <select
                       value={formData.duration}
                       onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     >
                       <option value="month">month</option>
                       <option value="year">year</option>
@@ -357,21 +357,21 @@ export default function EmployerPlans() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Features (one per line)
                   </label>
                   <textarea
                     rows={4}
                     value={formData.features}
                     onChange={(e) => setFormData({ ...formData, features: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                   />
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                  className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>

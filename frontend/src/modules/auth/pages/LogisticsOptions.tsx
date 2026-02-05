@@ -25,8 +25,8 @@ const LogisticsOptions = () => {
       description: "Offer your logistics services",
       icon: Truck,
       color: "from-orange-500 to-red-600",
-      bgColor: "bg-orange-50 dark:bg-orange-950/20",
-      iconColor: "text-orange-600 dark:text-orange-400",
+      bgColor: "bg-orange-50",
+      iconColor: "text-orange-600",
       dashboardPath: "/logistics/provide/dashboard",
     },
     {
@@ -35,8 +35,8 @@ const LogisticsOptions = () => {
       description: "Find logistics service providers",
       icon: MapPin,
       color: "from-red-500 to-rose-600",
-      bgColor: "bg-red-50 dark:bg-red-950/20",
-      iconColor: "text-red-600 dark:text-red-400",
+      bgColor: "bg-red-50",
+      iconColor: "text-red-600",
       dashboardPath: "/logistics/browse/dashboard",
     },
   ];
@@ -46,11 +46,11 @@ const LogisticsOptions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-background dark:via-slate-950 dark:to-background flex items-center justify-center p-5">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-5">
       <div className="w-full max-w-[430px]">
         <button
           onClick={() => navigate("/resources/categories")}
-          className="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+          className="mb-6 flex items-center gap-2 text-slate-600 hover:text-primary transition-colors"
         >
           <ArrowLeft className="size-5" />
           <span className="font-semibold">Back</span>
@@ -61,7 +61,7 @@ const LogisticsOptions = () => {
             <Truck className="size-8 text-white" />
           </div>
           <h1 className="text-3xl font-black tracking-tighter mb-2">Logistics Options</h1>
-          <p className="text-slate-600 dark:text-slate-400">Choose your logistics preference</p>
+          <p className="text-slate-600">Choose your logistics preference</p>
         </div>
 
         <div className="space-y-4">
@@ -86,7 +86,7 @@ const LogisticsOptions = () => {
 
                   <div className="flex-1">
                     <h3 className="text-xl font-black tracking-tight mb-1">{option.title}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                    <p className="text-sm text-slate-600">
                       {option.description}
                     </p>
                   </div>
@@ -116,8 +116,8 @@ const LogisticsOptions = () => {
           })}
         </div>
 
-        <div className="mt-8 p-4 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900 rounded-xl">
-          <p className="text-sm text-orange-900 dark:text-indigo-100 text-center">
+        <div className="mt-8 p-4 bg-orange-50 border border-orange-200 rounded-xl">
+          <p className="text-sm text-orange-900 text-center">
             {isAuthenticated && user?.role === "resource" ? (
               <span>
                 <strong>Note:</strong> Select the module you want to access

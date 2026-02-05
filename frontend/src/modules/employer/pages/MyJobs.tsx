@@ -59,10 +59,10 @@ const MyJobs = () => {
   return (
     <div className="pb-32 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 -mx-5 px-5">
+      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
         >
           <ChevronLeft className="size-6" />
         </button>
@@ -79,10 +79,10 @@ const MyJobs = () => {
       <div className="space-y-4 mt-2">
         {jobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="size-20 rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
+            <div className="size-20 rounded-full bg-slate-100 flex items-center justify-center mb-4">
               <Clock className="size-8 text-slate-300" />
             </div>
-            <h3 className="text-lg font-black tracking-tight text-slate-900 dark:text-white mb-1">
+            <h3 className="text-lg font-black tracking-tight text-slate-900 mb-1">
               No Active Jobs
             </h3>
             <p className="text-xs font-black uppercase tracking-widest text-slate-400 max-w-[200px] mb-6">
@@ -100,7 +100,7 @@ const MyJobs = () => {
             <div
               key={job.id}
               // onClick={() => navigate(`/employer/jobs/${job.id}`)} // Placeholder detail page
-              className="group bg-white dark:bg-slate-900/50 p-5 rounded-[2rem] border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all relative overflow-hidden"
+              className="group bg-white p-5 rounded-[2rem] border border-slate-200 active:scale-[0.98] transition-all relative overflow-hidden"
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
@@ -125,19 +125,19 @@ const MyJobs = () => {
               </div>
 
               <div className="flex flex-wrap gap-2 mb-4">
-                <div className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center gap-1.5">
+                <div className="px-3 py-1.5 rounded-xl bg-slate-100 flex items-center gap-1.5">
                   <MapPin className="size-3 text-slate-400" />
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
                     {job.location}
                   </span>
                 </div>
-                <div className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center gap-1.5">
+                <div className="px-3 py-1.5 rounded-xl bg-slate-100 flex items-center gap-1.5">
                   <DollarSign className="size-3 text-slate-400" />
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
                     {job.salary}
                   </span>
                 </div>
-                <div className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center gap-1.5">
+                <div className="px-3 py-1.5 rounded-xl bg-slate-100 flex items-center gap-1.5">
                   <Clock className="size-3 text-slate-400" />
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
                     {new Date(job.postedAt).toLocaleDateString()}
@@ -145,7 +145,7 @@ const MyJobs = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/5">
+              <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                   {job.type}
                 </span>

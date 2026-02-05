@@ -35,13 +35,13 @@ const Certificates = () => {
       <div className="flex items-center gap-4 px-1">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all shadow-sm"
+          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all shadow-sm"
         >
           <ChevronLeft className="size-6" />
         </button>
         <div className="space-y-1">
           <h1 className="text-2xl font-black tracking-tight leading-tight">Certifications</h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
             Verified achievements
           </p>
         </div>
@@ -88,7 +88,7 @@ const Certificates = () => {
           <h2 className="text-xl font-black tracking-tight">My Collection</h2>
           <button
             onClick={handleClaimCertificate}
-            className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400 active:scale-90 active:bg-slate-50 dark:active:bg-white/5 transition-all shadow-sm"
+            className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 text-slate-400 active:scale-90 active:bg-slate-50 transition-all shadow-sm"
           >
             <Plus className="size-5" />
           </button>
@@ -103,15 +103,15 @@ const Certificates = () => {
                   key={cert.id}
                   className={`relative overflow-hidden rounded-3xl p-6 border transition-all active:scale-[0.98] active:shadow-md ${
                     expired
-                      ? "bg-slate-50 dark:bg-white/5 border-slate-100 dark:border-white/5 opacity-60"
-                      : "bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 shadow-sm active:border-primary/20"
+                      ? "bg-slate-50 border-slate-100 opacity-60"
+                      : "bg-white border-slate-200 shadow-sm active:border-primary/20"
                   }`}
                 >
                   <div className="flex items-start gap-5">
                     <div
                       className={`size-16 rounded-2xl shrink-0 flex items-center justify-center border transition-colors ${
                         expired
-                          ? "bg-slate-200 dark:bg-white/10 border-transparent text-slate-400"
+                          ? "bg-slate-200 border-transparent text-slate-400"
                           : "bg-primary/5 border-primary/10 text-primary"
                       }`}
                     >
@@ -123,14 +123,14 @@ const Certificates = () => {
                         <div
                           className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border ${
                             expired
-                              ? "border-slate-200 dark:border-white/10 text-slate-400"
+                              ? "border-slate-200 text-slate-400"
                               : "border-primary/20 text-primary bg-primary/5"
                           }`}
                         >
                           {cert.status}
                         </div>
                       </div>
-                      <p className="text-sm font-black text-slate-400 dark:text-slate-500 mb-5">
+                      <p className="text-sm font-black text-slate-400 mb-5">
                         Issued on{" "}
                         {new Date(cert.issueDate).toLocaleDateString(undefined, {
                           month: "long",
@@ -169,11 +169,11 @@ const Certificates = () => {
             })}
           </div>
         ) : (
-          <div className="text-center py-16 rounded-[2.5rem] border-4 border-dashed border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
-            <div className="size-20 rounded-[2rem] bg-white dark:bg-slate-900 shadow-xl border border-slate-100 dark:border-white/5 flex items-center justify-center mx-auto mb-6">
+          <div className="text-center py-16 rounded-[2.5rem] border-4 border-dashed border-slate-100 bg-slate-50/50">
+            <div className="size-20 rounded-[2rem] bg-white shadow-xl border border-slate-100 flex items-center justify-center mx-auto mb-6">
               <Award className="h-10 w-10 text-slate-300" />
             </div>
-            <p className="text-slate-900 dark:text-white font-black text-lg tracking-tight">
+            <p className="text-slate-900 font-black text-lg tracking-tight">
               No certificates yet
             </p>
             <p className="text-sm font-black text-slate-400 uppercase tracking-widest mt-1">

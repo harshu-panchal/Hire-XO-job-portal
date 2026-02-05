@@ -32,13 +32,13 @@ const ResourceCard = ({ resource }: ResourceCardProps) => {
   return (
     <Link
       to={`/resources/${resource.id}`}
-      className="flex flex-col h-full group relative bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 shadow-sm active:shadow-md active:scale-[0.98] active:border-primary/20 transition-all"
+      className="flex flex-col h-full group relative bg-white rounded-[2rem] p-4 border border-slate-200 shadow-sm active:shadow-md active:scale-[0.98] active:border-primary/20 transition-all"
     >
       <div className="flex-1">
         {/* Top row: Company & Bookmark */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 flex items-center justify-center overflow-hidden">
+            <div className="size-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
               {resource.companyLogo ? (
                 <img
                   src={resource.companyLogo}
@@ -67,7 +67,7 @@ const ResourceCard = ({ resource }: ResourceCardProps) => {
               e.preventDefault();
               toggleBookmark(resource.id);
             }}
-            className="size-9 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center active:scale-90 transition-transform border border-slate-100 dark:border-white/10"
+            className="size-9 rounded-xl bg-slate-50 flex items-center justify-center active:scale-90 transition-transform border border-slate-100"
           >
             <Bookmark
               className={`size-4 ${isBookmarked ? "fill-primary text-primary" : "text-slate-300"}`}
@@ -98,19 +98,19 @@ const ResourceCard = ({ resource }: ResourceCardProps) => {
         </div>
       </div>
       {/* Bottom row: Info Badges */}
-      <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100 dark:border-white/5">
+      <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
         <div className="flex items-center text-[9px] font-black uppercase tracking-widest text-slate-400">
           <MapPin className="size-3 mr-1.5 text-primary/60" />
           {resource.location}
         </div>
-        <div className="size-1 rounded-full bg-slate-200 dark:bg-white/10" />
+        <div className="size-1 rounded-full bg-slate-200" />
         <div className="flex items-center text-[9px] font-black uppercase tracking-widest text-slate-400">
           <Briefcase className="size-3 mr-1.5 text-primary/60" />
           {resource.type}
         </div>
         {resource.urgency && (
           <>
-            <div className="size-1 rounded-full bg-slate-200 dark:bg-white/10" />
+            <div className="size-1 rounded-full bg-slate-200" />
             <div
               className={`flex items-center text-[9px] font-black uppercase tracking-widest ${
                 resource.urgency === "Immediate" ? "text-red-500" : "text-slate-400"

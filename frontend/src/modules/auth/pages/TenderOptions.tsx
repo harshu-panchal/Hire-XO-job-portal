@@ -25,8 +25,8 @@ const TenderOptions = () => {
       description: "Publish a new tender opportunity",
       icon: FileText,
       color: "from-violet-500 to-purple-600",
-      bgColor: "bg-violet-50 dark:bg-violet-950/20",
-      iconColor: "text-violet-600 dark:text-violet-400",
+      bgColor: "bg-violet-50",
+      iconColor: "text-violet-600",
       dashboardPath: "/tenders/provide/dashboard",
     },
     {
@@ -35,8 +35,8 @@ const TenderOptions = () => {
       description: "Browse and apply for tenders",
       icon: Search,
       color: "from-purple-500 to-indigo-600",
-      bgColor: "bg-purple-50 dark:bg-purple-950/20",
-      iconColor: "text-purple-600 dark:text-purple-400",
+      bgColor: "bg-purple-50",
+      iconColor: "text-purple-600",
       dashboardPath: "/tenders/apply/dashboard",
     },
   ];
@@ -50,12 +50,12 @@ const TenderOptions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-background dark:via-slate-950 dark:to-background flex items-center justify-center p-5">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-5">
       <div className="w-full max-w-[430px]">
         {/* Back Button */}
         <button
           onClick={() => navigate("/resources/categories")}
-          className="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+          className="mb-6 flex items-center gap-2 text-slate-600 hover:text-primary transition-colors"
         >
           <ArrowLeft className="size-5" />
           <span className="font-semibold">Back</span>
@@ -67,7 +67,7 @@ const TenderOptions = () => {
             <FileText className="size-8 text-white" />
           </div>
           <h1 className="text-3xl font-black tracking-tighter mb-2">Tender Options</h1>
-          <p className="text-slate-600 dark:text-slate-400">Choose your tender preference</p>
+          <p className="text-slate-600">Choose your tender preference</p>
         </div>
 
         {/* Option Cards */}
@@ -95,7 +95,7 @@ const TenderOptions = () => {
                   {/* Content */}
                   <div className="flex-1">
                     <h3 className="text-xl font-black tracking-tight mb-1">{option.title}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                    <p className="text-sm text-slate-600">
                       {option.description}
                     </p>
                   </div>
@@ -128,8 +128,8 @@ const TenderOptions = () => {
         </div>
 
         {/* Info */}
-        <div className="mt-8 p-4 bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-900 rounded-xl">
-          <p className="text-sm text-violet-900 dark:text-indigo-100 text-center">
+        <div className="mt-8 p-4 bg-violet-50 border border-violet-200 rounded-xl">
+          <p className="text-sm text-violet-900 text-center">
             {isAuthenticated && user?.role === "resource" ? (
               <span>
                 <strong>Note:</strong> Select the module you want to access

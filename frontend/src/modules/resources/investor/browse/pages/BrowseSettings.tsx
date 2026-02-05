@@ -15,13 +15,11 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "@/context/ThemeContext";
 import { toast } from "sonner";
 
 const BrowseSettings = () => {
   const navigate = useNavigate();
   const { logout, user, updateProfile } = useAuthStore();
-  const { theme, setTheme: setGlobalTheme } = useTheme();
   const [language, setLanguage] = useState("English (India)");
 
   // Sync notifications from profile

@@ -86,7 +86,7 @@ const Profile = () => {
       <div className="relative pt-6">
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="relative group">
-            <div className="size-32 rounded-[3rem] border-4 border-white dark:border-slate-800 shadow-2xl overflow-hidden ring-4 ring-primary/20">
+            <div className="size-32 rounded-[3rem] border-4 border-white shadow-2xl overflow-hidden ring-4 ring-primary/20">
               <img
                 src={
                   user.profilePhoto ||
@@ -98,7 +98,7 @@ const Profile = () => {
             </div>
             <button
               onClick={() => navigate("/settings")}
-              className="absolute bottom-0 right-0 size-10 bg-primary text-white rounded-2xl flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-lg active:scale-90 transition-all"
+              className="absolute bottom-0 right-0 size-10 bg-primary text-white rounded-2xl flex items-center justify-center border-4 border-white shadow-lg active:scale-90 transition-all"
             >
               <Camera className="size-5" />
             </button>
@@ -113,7 +113,7 @@ const Profile = () => {
             {user.profile?.githubUrl && (
               <button
                 onClick={() => window.open(user.profile.githubUrl, "_blank")}
-                className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all"
+                className="size-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center active:scale-90 transition-all"
               >
                 <Github className="size-5 text-slate-400" />
               </button>
@@ -121,7 +121,7 @@ const Profile = () => {
             {user.profile?.linkedinUrl && (
               <button
                 onClick={() => window.open(user.profile.linkedinUrl, "_blank")}
-                className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all"
+                className="size-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center active:scale-90 transition-all"
               >
                 <Linkedin className="size-5 text-slate-400" />
               </button>
@@ -129,7 +129,7 @@ const Profile = () => {
             {user.profile?.twitterUrl && (
               <button
                 onClick={() => window.open(user.profile.twitterUrl, "_blank")}
-                className="size-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-all"
+                className="size-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center active:scale-90 transition-all"
               >
                 <Twitter className="size-5 text-slate-400" />
               </button>
@@ -140,9 +140,9 @@ const Profile = () => {
 
       {/* Info Cards */}
       <div className="grid gap-4">
-        <div className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-4">
+        <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="size-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
+            <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
               <Mail className="size-5 text-primary" />
             </div>
             <div className="min-w-0">
@@ -153,7 +153,7 @@ const Profile = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="size-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
+            <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
               <MapPin className="size-5 text-primary" />
             </div>
             <div className="min-w-0">
@@ -167,7 +167,7 @@ const Profile = () => {
 
         {/* Skills */}
         {user.profile?.skills && user.profile.skills.length > 0 && (
-          <div className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-4">
+          <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 space-y-4">
             <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
               Skills & Expertise
             </h3>
@@ -186,7 +186,7 @@ const Profile = () => {
 
         {/* Experience */}
         {user.profile?.experience && user.profile.experience.length > 0 && (
-          <div className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-6">
+          <div className="bg-white p-6 rounded-[2.5rem] border border-slate-200 space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
                 Experience
@@ -202,7 +202,7 @@ const Profile = () => {
               {Array.isArray(user.profile.experience) &&
                 user.profile.experience.map((exp, i) => (
                   <div key={i} className="flex gap-4">
-                    <div className="size-12 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
+                    <div className="size-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0">
                       <Briefcase className="size-6 text-slate-400" />
                     </div>
                     <div className="flex-1">
@@ -221,13 +221,13 @@ const Profile = () => {
         )}
 
         {/* Menu Items */}
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden">
+        <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
           {menuItems.map((item, i) => (
             <button
               key={i}
               onClick={() => navigate(item.path)}
-              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${
-                i !== menuItems.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
+              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all ${
+                i !== menuItems.length - 1 ? "border-b border-slate-100" : ""
               }`}
             >
               <div className="flex items-center gap-4">
@@ -238,7 +238,7 @@ const Profile = () => {
               </div>
               <div className="flex items-center gap-2">
                 {item.count !== undefined && (
-                  <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-white/10 text-[10px] font-black text-slate-400">
+                  <span className="px-2 py-0.5 rounded-lg bg-slate-100 text-[10px] font-black text-slate-400">
                     {item.count}
                   </span>
                 )}
@@ -249,14 +249,14 @@ const Profile = () => {
         </div>
 
         {/* Secondary Items */}
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden">
+        <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
           {secondaryItems.map((item, i) => (
             <button
               key={i}
               onClick={() => navigate(item.path)}
-              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${
+              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all ${
                 i !== secondaryItems.length - 1
-                  ? "border-b border-slate-100 dark:border-white/5"
+                  ? "border-b border-slate-100"
                   : ""
               }`}
             >

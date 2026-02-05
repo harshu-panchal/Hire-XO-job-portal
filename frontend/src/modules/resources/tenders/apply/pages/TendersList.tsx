@@ -75,7 +75,7 @@ const TendersList = () => {
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-black tracking-tight">Browse Tenders</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
           {filteredTenders.length} Active opportunities found
         </p>
       </div>
@@ -89,7 +89,7 @@ const TendersList = () => {
             placeholder="Search by title, organization or ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-14 pl-12 pr-12 py-0 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm"
+            className="w-full h-14 pl-12 pr-12 py-0 rounded-2xl bg-white border border-slate-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm"
           />
           <button className="absolute right-3 top-1/2 -translate-y-1/2 size-9 rounded-xl bg-violet-600 flex items-center justify-center text-white active:scale-95 transition-transform shadow-lg shadow-violet-500/20">
             <Filter className="size-4" />
@@ -105,7 +105,7 @@ const TendersList = () => {
               className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
                 selectedCategory === cat
                   ? "bg-violet-600 text-white border-violet-600 shadow-lg shadow-violet-500/20"
-                  : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-white/10 hover:border-violet-300 dark:hover:border-violet-700"
+                  : "bg-white text-slate-500 border-slate-200 hover:border-violet-300"
               }`}
             >
               {cat}
@@ -120,7 +120,7 @@ const TendersList = () => {
           <div
             key={tender.id}
             onClick={() => navigate(`/tenders/apply/tenders/${tender.id}`)}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2rem] p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer"
+            className="bg-white border border-slate-200 rounded-[2rem] p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer"
           >
             {/* Status/Type Badge */}
             <div className="absolute top-0 right-0 pt-5 pr-5">
@@ -128,8 +128,8 @@ const TendersList = () => {
                 <span
                   className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${
                     tender.type?.includes("Global")
-                      ? "bg-purple-100 dark:bg-purple-950/30 text-purple-600 border-purple-200 dark:border-purple-900"
-                      : "bg-violet-100 dark:bg-violet-950/30 text-violet-600 border-violet-200 dark:border-violet-900"
+                      ? "bg-purple-100 text-purple-600 border-purple-200"
+                      : "bg-violet-100 text-violet-600 border-violet-200"
                   }`}
                 >
                   {tender.type || "Open Tender"}
@@ -142,7 +142,7 @@ const TendersList = () => {
 
             {/* Top Section */}
             <div className="flex items-start gap-4 mb-4 pr-32">
-              <div className="size-14 rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-950/20 dark:to-indigo-950/20 border border-violet-100 dark:border-violet-900 flex items-center justify-center shrink-0">
+              <div className="size-14 rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-100 flex items-center justify-center shrink-0">
                 {tender.companyLogo ? (
                   <img
                     src={tender.companyLogo}
@@ -188,7 +188,7 @@ const TendersList = () => {
             </div>
 
             {/* Bottom Section - Location & Action */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/5">
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <div className="flex items-center gap-2">
                 <MapPin className="size-3.5 text-slate-400" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
@@ -204,11 +204,11 @@ const TendersList = () => {
 
         {filteredTenders.length === 0 && (
           <div className="text-center py-20 space-y-4">
-            <div className="size-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto">
+            <div className="size-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto">
               <Search className="size-8 text-slate-400" />
             </div>
             <div className="space-y-1">
-              <p className="font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">
+              <p className="font-black text-slate-600 uppercase tracking-widest">
                 No tenders found
               </p>
               <p className="text-xs text-slate-500">
@@ -230,7 +230,7 @@ const TendersList = () => {
 
       {/* Load More Button - Only show if there are many items */}
       {filteredTenders.length >= 20 && (
-        <button className="w-full py-5 rounded-[2rem] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-black text-xs uppercase tracking-widest active:scale-95 transition-transform border border-slate-200 dark:border-white/5">
+        <button className="w-full py-5 rounded-[2rem] bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest active:scale-95 transition-transform border border-slate-200">
           Load More Opportunities
         </button>
       )}

@@ -16,21 +16,21 @@ const ProvideDashboard = () => {
       value: "24",
       icon: Package,
       color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-950/30",
+      bgColor: "bg-blue-100",
     },
     {
       label: "Active Rentals",
       value: "15",
       icon: UserCheck,
       color: "text-emerald-600",
-      bgColor: "bg-emerald-100 dark:bg-emerald-950/30",
+      bgColor: "bg-emerald-100",
     },
     {
       label: "Utilization",
       value: "82%",
       icon: BarChart3,
       color: "text-violet-600",
-      bgColor: "bg-violet-100 dark:bg-violet-950/30",
+      bgColor: "bg-violet-100",
     },
   ];
 
@@ -83,7 +83,7 @@ const ProvideDashboard = () => {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-black tracking-tight leading-none">Fleet Manager</h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
             Manage your rental operations
           </p>
         </div>
@@ -100,7 +100,7 @@ const ProvideDashboard = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm"
+            className="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm"
           >
             <div className={`size-10 rounded-2xl ${stat.bgColor} flex items-center justify-center`}>
               <stat.icon className={`size-5 ${stat.color}`} />
@@ -124,7 +124,7 @@ const ProvideDashboard = () => {
           {alerts.map((alert) => (
             <div
               key={alert.id}
-              className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5 group active:scale-[0.98] transition-all"
+              className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 group active:scale-[0.98] transition-all"
             >
               <div
                 className={`size-2 shrink-0 rounded-full ${alert.urgent ? "bg-rose-500 animate-pulse" : "bg-blue-400"}`}
@@ -159,7 +159,7 @@ const ProvideDashboard = () => {
           {activeInventory.map((item) => (
             <div
               key={item.id}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm relative overflow-hidden group"
+              className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm relative overflow-hidden group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="space-y-1">
@@ -181,7 +181,7 @@ const ProvideDashboard = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-white/5">
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
                 <div className="space-y-1">
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Current Tenant

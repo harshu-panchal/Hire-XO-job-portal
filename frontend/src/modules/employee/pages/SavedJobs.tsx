@@ -23,11 +23,11 @@ const SavedJobs = () => {
   return (
     <div className="pb-32 min-h-screen">
       {/* Header */}
-      <div className="sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 px-5 py-6">
+      <div className="sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 px-5 py-6">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all shadow-sm"
+            className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all shadow-sm"
           >
             <ChevronLeft className="size-6" />
           </button>
@@ -51,10 +51,10 @@ const SavedJobs = () => {
             <input
               type="text"
               placeholder="Search saved..."
-              className="w-full h-14 pl-12 pr-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-400"
+              className="w-full h-14 pl-12 pr-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-400"
             />
           </div>
-          <button className="size-14 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-95 transition-all text-slate-400">
+          <button className="size-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center active:scale-95 transition-all text-slate-400">
             <SlidersHorizontal className="size-6" />
           </button>
         </div>
@@ -65,7 +65,7 @@ const SavedJobs = () => {
             <div key={job.id} className="relative group">
               <JobCard job={job} />
               <button
-                className="absolute top-4 right-4 size-10 rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-slate-200 dark:border-white/10 flex items-center justify-center text-red-500 active:scale-90 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                className="absolute top-4 right-4 size-10 rounded-xl bg-white/90 backdrop-blur-sm border border-slate-200 flex items-center justify-center text-red-500 active:scale-90 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -79,11 +79,11 @@ const SavedJobs = () => {
 
           {displayJobs.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-              <div className="size-20 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+              <div className="size-20 rounded-full bg-slate-100 flex items-center justify-center">
                 <Trash2 className="size-10 text-slate-300" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-slate-900 dark:text-white">No Saved Jobs</h3>
+                <h3 className="text-lg font-black text-slate-900">No Saved Jobs</h3>
                 <p className="text-slate-500 text-sm font-medium mt-1">
                   Jobs you bookmark will appear here.
                 </p>

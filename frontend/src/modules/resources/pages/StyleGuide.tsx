@@ -48,7 +48,7 @@ const StyleGuide = () => {
           </div>
           <h2 className="text-2xl font-black tracking-tight">Typography</h2>
         </div>
-        <div className="grid gap-6 p-8 rounded-[2.5rem] bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+        <div className="grid gap-6 p-8 rounded-[2.5rem] bg-slate-100 border border-slate-200">
           <div className="space-y-1">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
               Heading 1
@@ -65,7 +65,7 @@ const StyleGuide = () => {
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
               Body Bold
             </p>
-            <p className="text-base font-bold text-slate-600 dark:text-slate-400">
+            <p className="text-base font-bold text-slate-600">
               The quick brown fox jumps over the lazy dog
             </p>
           </div>
@@ -80,7 +80,7 @@ const StyleGuide = () => {
           </div>
           <h2 className="text-2xl font-black tracking-tight">Core Components</h2>
         </div>
-        <div className="grid gap-8 p-8 rounded-[2.5rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10">
+        <div className="grid gap-8 p-8 rounded-[2.5rem] bg-white border border-slate-200">
           <div className="space-y-4">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
               Buttons

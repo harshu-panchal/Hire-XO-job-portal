@@ -131,14 +131,14 @@ const PostFundingNeed = () => {
         <h1 className="text-3xl font-black tracking-tight">
           Post Funding <span className="text-primary">Need</span>
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest mt-1">
+        <p className="text-slate-500 font-black text-xs uppercase tracking-widest mt-1">
           Share your funding requirements with investors
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
+        <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
           <h2 className="text-xl font-black tracking-tight mb-4">Basic Information</h2>
           <div className="space-y-4">
             <div>
@@ -153,7 +153,7 @@ const PostFundingNeed = () => {
                   value={formData.businessName}
                   onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                   placeholder="Enter your business name"
-                  className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-200 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </div>
             </div>
@@ -166,7 +166,7 @@ const PostFundingNeed = () => {
                 required
                 value={formData.sector}
                 onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
-                className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               >
                 <option value="">Select sector</option>
                 {sectors.map((sector) => (
@@ -189,7 +189,7 @@ const PostFundingNeed = () => {
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder="City, State"
-                  className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-200 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </div>
             </div>
@@ -197,7 +197,7 @@ const PostFundingNeed = () => {
         </div>
 
         {/* Funding Details */}
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
+        <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
           <h2 className="text-xl font-black tracking-tight mb-4">Funding Details</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -213,7 +213,7 @@ const PostFundingNeed = () => {
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                     placeholder="₹5 Cr"
-                    className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900 text-sm font-bold placeholder:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                    className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-emerald-50 border border-emerald-200 text-sm font-bold placeholder:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                   />
                 </div>
               </div>
@@ -229,7 +229,7 @@ const PostFundingNeed = () => {
                     value={formData.equity}
                     onChange={(e) => setFormData({ ...formData, equity: e.target.value })}
                     placeholder="15%"
-                    className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 text-sm font-bold placeholder:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                    className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-blue-50 border border-blue-200 text-sm font-bold placeholder:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   />
                 </div>
               </div>
@@ -247,7 +247,7 @@ const PostFundingNeed = () => {
                   value={formData.duration}
                   onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                   placeholder="24 months"
-                  className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900 text-sm font-bold placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-purple-50 border border-purple-200 text-sm font-bold placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
                 />
               </div>
             </div>
@@ -255,7 +255,7 @@ const PostFundingNeed = () => {
         </div>
 
         {/* Business Details */}
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
+        <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
           <h2 className="text-xl font-black tracking-tight mb-4">Business Details</h2>
           <div className="space-y-4">
             <div>
@@ -268,7 +268,7 @@ const PostFundingNeed = () => {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Describe your business, project goals, market opportunity, and why investors should invest..."
-                className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-200 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
               />
             </div>
 
@@ -282,7 +282,7 @@ const PostFundingNeed = () => {
                 value={formData.useOfFunds}
                 onChange={(e) => setFormData({ ...formData, useOfFunds: e.target.value })}
                 placeholder="Explain how you plan to use the investment (e.g., Product Development: 40%, Marketing: 30%, etc.)"
-                className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-200 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
               />
             </div>
 
@@ -296,7 +296,7 @@ const PostFundingNeed = () => {
                   value={formData.currentRevenue}
                   onChange={(e) => setFormData({ ...formData, currentRevenue: e.target.value })}
                   placeholder="₹12 Cr (FY 2023-24)"
-                  className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-200 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </div>
               <div>
@@ -308,7 +308,7 @@ const PostFundingNeed = () => {
                   value={formData.teamSize}
                   onChange={(e) => setFormData({ ...formData, teamSize: e.target.value })}
                   placeholder="45-50 employees"
-                  className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-200 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </div>
             </div>
@@ -322,19 +322,19 @@ const PostFundingNeed = () => {
                 value={formData.revenueModel}
                 onChange={(e) => setFormData({ ...formData, revenueModel: e.target.value })}
                 placeholder="Describe how your business generates revenue..."
-                className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-200 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
               />
             </div>
           </div>
         </div>
 
         {/* Documents */}
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
+        <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
           <h2 className="text-xl font-black tracking-tight mb-4">Supporting Documents</h2>
           <div className="space-y-4">
             <div
               onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed border-slate-200 dark:border-white/10 rounded-[1.5rem] p-8 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 transition-all ${isUploading ? "opacity-50 pointer-events-none" : ""}`}
+              className={`border-2 border-dashed border-slate-200 rounded-[1.5rem] p-8 text-center cursor-pointer hover:bg-slate-50 transition-all ${isUploading ? "opacity-50 pointer-events-none" : ""}`}
             >
               <input
                 type="file"
@@ -369,7 +369,7 @@ const PostFundingNeed = () => {
                 {documents.map((doc, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800"
+                    className="flex items-center justify-between p-3 rounded-xl bg-slate-50"
                   >
                     <div className="flex items-center gap-3">
                       <FileText className="size-5 text-blue-600" />
@@ -378,7 +378,7 @@ const PostFundingNeed = () => {
                     <button
                       type="button"
                       onClick={() => removeDocument(index)}
-                      className="size-8 rounded-lg bg-red-50 dark:bg-red-950/20 flex items-center justify-center active:scale-90 transition-all"
+                      className="size-8 rounded-lg bg-red-50 flex items-center justify-center active:scale-90 transition-all"
                     >
                       <X className="size-4 text-red-600" />
                     </button>
@@ -394,7 +394,7 @@ const PostFundingNeed = () => {
           <button
             type="button"
             onClick={() => toast.info("Drafts feature coming soon!")}
-            className="py-5 rounded-[1.5rem] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
+            className="py-5 rounded-[1.5rem] bg-slate-100 text-slate-600 font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
           >
             Save Draft
           </button>

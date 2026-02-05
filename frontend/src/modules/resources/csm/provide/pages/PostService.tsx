@@ -43,7 +43,7 @@ const PostService = () => {
       <div className="flex items-center justify-between px-1">
         <button
           onClick={() => navigate(-1)}
-          className="size-12 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-transform"
+          className="size-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center active:scale-90 transition-transform"
         >
           <ArrowLeft className="size-6" />
         </button>
@@ -54,7 +54,7 @@ const PostService = () => {
       {/* Form */}
       <div className="space-y-6">
         {/* Basic Info */}
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-6 border border-slate-200 dark:border-white/10 space-y-4 shadow-sm">
+        <div className="bg-white rounded-[2.5rem] p-6 border border-slate-200 space-y-4 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <div className="size-8 rounded-lg bg-rose-600/10 flex items-center justify-center text-rose-600">
               <Building2 className="size-4" />
@@ -72,7 +72,7 @@ const PostService = () => {
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="e.g. Structural Safety & Site Supervision"
-                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans"
+                className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans"
               />
             </div>
 
@@ -84,7 +84,7 @@ const PostService = () => {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans appearance-none"
+                  className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans appearance-none"
                 >
                   <option>Structural Audit</option>
                   <option>Quality Control</option>
@@ -98,7 +98,7 @@ const PostService = () => {
         </div>
 
         {/* Details & Experience */}
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-6 border border-slate-200 dark:border-white/10 space-y-4 shadow-sm">
+        <div className="bg-white rounded-[2.5rem] p-6 border border-slate-200 space-y-4 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <div className="size-8 rounded-lg bg-emerald-600/10 flex items-center justify-center text-emerald-600">
               <FileText className="size-4" />
@@ -118,7 +118,7 @@ const PostService = () => {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Describe your supervision process and safety standards..."
-                className="w-full bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl p-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans resize-none"
+                className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans resize-none"
               />
             </div>
 
@@ -132,7 +132,7 @@ const PostService = () => {
                   value={formData.experience}
                   onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                   placeholder="5"
-                  className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans"
+                  className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans"
                 />
               </div>
               <div className="space-y-1.5">
@@ -142,7 +142,7 @@ const PostService = () => {
                 <select
                   value={formData.certification}
                   onChange={(e) => setFormData({ ...formData, certification: e.target.value })}
-                  className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans appearance-none"
+                  className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans appearance-none"
                 >
                   <option>Structural Engineer</option>
                   <option>ISO 45001 (Safety)</option>
@@ -155,7 +155,7 @@ const PostService = () => {
         </div>
 
         {/* Attachments */}
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-6 border border-slate-200 dark:border-white/10 space-y-4 shadow-sm">
+        <div className="bg-white rounded-[2.5rem] p-6 border border-slate-200 space-y-4 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <div className="size-8 rounded-lg bg-amber-600/10 flex items-center justify-center text-amber-600">
               <Camera className="size-4" />
@@ -168,7 +168,7 @@ const PostService = () => {
           <div className="grid grid-cols-3 gap-3">
             <button
               onClick={() => alert("Portfolio upload coming soon!")}
-              className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center gap-2 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+              className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 hover:bg-slate-50 transition-colors group"
             >
               <Plus className="size-5 text-slate-400 group-hover:text-rose-600 transition-colors" />
               <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">

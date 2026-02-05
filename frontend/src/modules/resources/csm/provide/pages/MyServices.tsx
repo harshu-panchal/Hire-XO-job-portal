@@ -28,13 +28,13 @@ const MyServices = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/csm/provide/dashboard")}
-            className="size-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-slate-400 active:scale-95 transition-all"
+            className="size-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 active:scale-95 transition-all"
           >
             <ArrowLeft className="size-5" />
           </button>
           <div>
             <h1 className="text-3xl font-black tracking-tighter">My Listings</h1>
-            <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
+            <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
               Manage your active CSM offerings
             </p>
           </div>
@@ -46,7 +46,7 @@ const MyServices = () => {
         {myServices.map((service: any) => (
           <div
             key={service.id}
-            className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-6 border border-slate-200 dark:border-white/10 shadow-sm"
+            className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ const MyServices = () => {
                   {service.status}
                 </div>
               </div>
-              <button className="size-10 rounded-full hover:bg-slate-50 dark:hover:bg-white/5 flex items-center justify-center text-slate-400 transition-colors">
+              <button className="size-10 rounded-full hover:bg-slate-50 flex items-center justify-center text-slate-400 transition-colors">
                 <MoreVertical className="size-5" />
               </button>
             </div>
@@ -79,8 +79,8 @@ const MyServices = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
+              <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
                   <Eye className="size-4 text-slate-400" />
                 </div>
                 <div>
@@ -90,8 +90,8 @@ const MyServices = () => {
                   <p className="text-xs font-black italic">{service.views}</p>
                 </div>
               </div>
-              <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
+              <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
                   <MessageSquare className="size-4 text-slate-400" />
                 </div>
                 <div>
@@ -104,7 +104,7 @@ const MyServices = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <button className="h-12 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform">
+              <button className="h-12 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform">
                 <Edit3 className="size-3.5" />
                 Edit Listing
               </button>
@@ -120,8 +120,8 @@ const MyServices = () => {
         ))}
 
         {myServices.length === 0 && (
-          <div className="text-center py-20 bg-slate-50 dark:bg-white/5 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/10">
-            <div className="size-16 bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+          <div className="text-center py-20 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200">
+            <div className="size-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
               <ShieldCheck className="size-7 text-slate-300" />
             </div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">
@@ -133,7 +133,7 @@ const MyServices = () => {
 
       <button
         onClick={() => navigate("/csm/provide/post")}
-        className="w-full h-16 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/10 flex items-center justify-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-rose-600 hover:text-rose-600 transition-all active:scale-[0.98]"
+        className="w-full h-16 rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-rose-600 hover:text-rose-600 transition-all active:scale-[0.98]"
       >
         <Plus className="size-4" />
         Post New CSM Offering

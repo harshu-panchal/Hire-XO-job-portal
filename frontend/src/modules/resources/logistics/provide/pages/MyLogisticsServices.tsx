@@ -56,7 +56,7 @@ const MyLogisticsServices = () => {
       {/* Header */}
       <div className="space-y-1 px-1">
         <h1 className="text-3xl font-black tracking-tighter">My Listings</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
           Manage your active transport offerings
         </p>
       </div>
@@ -66,7 +66,7 @@ const MyLogisticsServices = () => {
         {services.map((service) => (
           <div
             key={service.id}
-            className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-6 border border-slate-200 dark:border-white/10 shadow-sm"
+            className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -86,24 +86,24 @@ const MyLogisticsServices = () => {
               <div className="relative">
                 <button
                   onClick={() => toggleMenu(service.id)}
-                  className="size-10 rounded-full hover:bg-slate-50 dark:hover:bg-white/5 flex items-center justify-center text-slate-400 transition-colors active:scale-90"
+                  className="size-10 rounded-full hover:bg-slate-50 flex items-center justify-center text-slate-400 transition-colors active:scale-90"
                 >
                   <MoreVertical className="size-5" />
                 </button>
                 {openMenuId === service.id && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                    <div className="absolute right-0 top-12 z-20 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-white/10 overflow-hidden">
+                    <div className="absolute right-0 top-12 z-20 w-48 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
                       <button
                         onClick={() => handleEdit(service.id)}
-                        className="w-full px-4 py-3 text-left text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
+                        className="w-full px-4 py-3 text-left text-sm font-bold hover:bg-slate-50 transition-colors flex items-center gap-2"
                       >
                         <Edit3 className="size-4" />
                         Edit Service
                       </button>
                       <button
                         onClick={() => handleDelete(service.id)}
-                        className="w-full px-4 py-3 text-left text-sm font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors flex items-center gap-2"
+                        className="w-full px-4 py-3 text-left text-sm font-bold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
                       >
                         <Trash2 className="size-4" />
                         Delete Service
@@ -125,8 +125,8 @@ const MyLogisticsServices = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
+              <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
                   <Eye className="size-4 text-slate-400" />
                 </div>
                 <div>
@@ -136,8 +136,8 @@ const MyLogisticsServices = () => {
                   <p className="text-xs font-black italic">{service.views}</p>
                 </div>
               </div>
-              <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
+              <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
                   <MessageSquare className="size-4 text-slate-400" />
                 </div>
                 <div>
@@ -152,7 +152,7 @@ const MyLogisticsServices = () => {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => handleEdit(service.id)}
-                className="h-12 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                className="h-12 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <Edit3 className="size-3.5" />
                 Edit Listing
@@ -171,7 +171,7 @@ const MyLogisticsServices = () => {
 
       <button
         onClick={handlePostNew}
-        className="w-full h-16 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/10 flex items-center justify-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-orange-600 hover:text-orange-600 transition-all active:scale-[0.98]"
+        className="w-full h-16 rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-orange-600 hover:text-orange-600 transition-all active:scale-[0.98]"
       >
         <Plus className="size-5" />
         Post New Fleet Offering

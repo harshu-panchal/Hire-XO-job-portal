@@ -127,8 +127,8 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">{title}</h1>
-          <p className="text-slate-500 dark:text-white/60 mt-1">Manage all {title.toLowerCase()}</p>
+          <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
+          <p className="text-slate-500 mt-1">Manage all {title.toLowerCase()}</p>
         </div>
         <button
           onClick={() => openModal()}
@@ -141,22 +141,22 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
 
       {/* Stats */}
       <motion.div variants={itemVariants} className="grid grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2 rounded-lg bg-primary/10">
               <Icon className="w-5 h-5 text-primary" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white">{items.length}</p>
-          <p className="text-sm text-slate-500 dark:text-white/50 mt-1">Total {title}</p>
+          <p className="text-2xl font-bold text-slate-900">{items.length}</p>
+          <p className="text-sm text-slate-500 mt-1">Total {title}</p>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
-          <p className="text-2xl font-bold text-green-600 dark:text-green-400">{activeCount}</p>
-          <p className="text-sm text-slate-500 dark:text-white/50 mt-1">Active</p>
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <p className="text-2xl font-bold text-green-600">{activeCount}</p>
+          <p className="text-sm text-slate-500 mt-1">Active</p>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
           <p className="text-2xl font-bold text-slate-400">{items.length - activeCount}</p>
-          <p className="text-sm text-slate-500 dark:text-white/50 mt-1">Inactive</p>
+          <p className="text-sm text-slate-500 mt-1">Inactive</p>
         </div>
       </motion.div>
 
@@ -168,7 +168,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
           placeholder={`Search ${title.toLowerCase()}...`}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
         />
       </motion.div>
 
@@ -180,7 +180,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
         {filteredItems.map((item) => (
           <div
             key={item.id}
-            className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-6 flex flex-col h-full"
+            className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col h-full"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="p-3 rounded-lg bg-primary/10">
@@ -189,47 +189,47 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
               <span
                 className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                   item.status === "Active"
-                    ? "bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400"
-                    : "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/50"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-slate-100 text-slate-600"
                 }`}
               >
                 {item.status}
               </span>
             </div>
 
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
               {item.name}
             </h3>
-            <p className="text-sm text-slate-500 dark:text-white/50 mb-4 line-clamp-2">
+            <p className="text-sm text-slate-500 mb-4 line-clamp-2">
               {item.description}
             </p>
 
             <div className="space-y-2 text-sm mb-4 flex-grow">
-              <div className="flex items-center gap-2 text-slate-600 dark:text-white/60">
+              <div className="flex items-center gap-2 text-slate-600">
                 <MapPin className="w-4 h-4 text-slate-400" />
                 {item.location}
               </div>
-              <div className="flex items-center gap-2 text-slate-600 dark:text-white/60">
+              <div className="flex items-center gap-2 text-slate-600">
                 <Phone className="w-4 h-4 text-slate-400" />
                 {item.contact}
               </div>
-              <div className="flex items-center gap-2 text-slate-600 dark:text-white/60">
+              <div className="flex items-center gap-2 text-slate-600">
                 <Mail className="w-4 h-4 text-slate-400" />
                 {item.email}
               </div>
             </div>
 
-            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-white/5 mt-auto">
+            <div className="flex gap-2 pt-4 border-t border-slate-100 mt-auto">
               <button
                 onClick={() => openModal(item)}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-slate-200 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
               >
                 <Edit2 className="w-4 h-4" />
                 Edit
               </button>
               <button
                 onClick={() => handleDelete(item.id)}
-                className="px-3 py-2 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                className="px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -239,9 +239,9 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
       </motion.div>
 
       {filteredItems.length === 0 && (
-        <div className="py-12 text-center bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10">
-          <Icon className="w-12 h-12 text-slate-300 dark:text-white/20 mx-auto mb-4" />
-          <p className="text-slate-500 dark:text-white/50">No {title.toLowerCase()} found</p>
+        <div className="py-12 text-center bg-white rounded-xl border border-slate-200">
+          <Icon className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+          <p className="text-slate-500">No {title.toLowerCase()} found</p>
         </div>
       )}
 
@@ -260,22 +260,22 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 shadow-xl z-50 p-6 max-h-[90vh] overflow-y-auto"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-xl border border-slate-200 shadow-xl z-50 p-6 max-h-[90vh] overflow-y-auto"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-slate-900">
                   {editingItem ? `Edit ${title.slice(0, -1)}` : `Add New ${title.slice(0, -1)}`}
                 </h3>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg"
+                  className="p-2 hover:bg-slate-100 rounded-lg"
                 >
                   <X className="w-5 h-5 text-slate-500" />
                 </button>
               </div>
               <form onSubmit={handleSave} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Name
                   </label>
                   <input
@@ -283,11 +283,11 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                     required
                     value={formState.name || ""}
                     onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Description
                   </label>
                   <textarea
@@ -295,11 +295,11 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                     required
                     value={formState.description || ""}
                     onChange={(e) => setFormState({ ...formState, description: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Location
                   </label>
                   <input
@@ -307,12 +307,12 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                     required
                     value={formState.location || ""}
                     onChange={(e) => setFormState({ ...formState, location: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Contact
                     </label>
                     <input
@@ -320,11 +320,11 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                       required
                       value={formState.contact || ""}
                       onChange={(e) => setFormState({ ...formState, contact: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Email
                     </label>
                     <input
@@ -332,12 +332,12 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                       required
                       value={formState.email || ""}
                       onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Status
                   </label>
                   <select
@@ -348,7 +348,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                         status: e.target.value as "Active" | "Inactive",
                       })
                     }
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -358,7 +358,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                    className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
                   >
                     Cancel
                   </button>

@@ -17,21 +17,21 @@ const RentDashboard = () => {
       value: "3",
       icon: Package,
       color: "text-emerald-600",
-      bgColor: "bg-emerald-100 dark:bg-emerald-950/30",
+      bgColor: "bg-emerald-100",
     },
     {
       label: "Hours Logged",
       value: "142h",
       icon: Clock,
       color: "text-amber-600",
-      bgColor: "bg-amber-100 dark:bg-amber-950/30",
+      bgColor: "bg-amber-100",
     },
     {
       label: "Available Near",
       value: "85+",
       icon: TrendingUp,
       color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-950/30",
+      bgColor: "bg-blue-100",
     },
   ];
 
@@ -77,7 +77,7 @@ const RentDashboard = () => {
           Find Your <br />
           <span className="text-emerald-600">Equipment</span>
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
           High performance gear for your project
         </p>
       </div>
@@ -87,7 +87,7 @@ const RentDashboard = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm"
+            className="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm"
           >
             <div className={`size-10 rounded-2xl ${stat.bgColor} flex items-center justify-center`}>
               <stat.icon className={`size-5 ${stat.color}`} />
@@ -111,7 +111,7 @@ const RentDashboard = () => {
               key={cat.name}
               className="flex flex-col items-center gap-2 group cursor-pointer shrink-0"
             >
-              <div className="size-16 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/20 group-hover:border-emerald-200 transition-all">
+              <div className="size-16 rounded-[2rem] bg-white border border-slate-200 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 group-hover:bg-emerald-50 group-hover:border-emerald-200 transition-all">
                 {cat.icon}
               </div>
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
@@ -139,10 +139,10 @@ const RentDashboard = () => {
             <Link
               key={item.id}
               to={`/equipments/rent/equipment/${item.id}`}
-              className="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative"
+              className="block bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative"
             >
               <div className="flex gap-4">
-                <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
+                <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 shrink-0">
                   <img
                     src={item.image}
                     alt={item.name}
@@ -171,7 +171,7 @@ const RentDashboard = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
+              <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
                 <div className="flex items-center gap-1.5 text-slate-400">
                   <MapPin className="size-3" />
                   <span className="text-[10px] font-black uppercase tracking-widest">

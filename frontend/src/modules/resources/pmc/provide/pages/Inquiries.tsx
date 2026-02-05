@@ -38,7 +38,7 @@ const Inquiries = () => {
           <input
             type="text"
             placeholder="Search leads..."
-            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] py-4 pl-14 pr-6 text-sm font-medium focus:outline-none focus:border-indigo-600 transition-all font-sans"
+            className="w-full bg-white border border-slate-200 rounded-[2rem] py-4 pl-14 pr-6 text-sm font-medium focus:outline-none focus:border-indigo-600 transition-all font-sans"
           />
         </div>
       </div>
@@ -48,7 +48,7 @@ const Inquiries = () => {
         {inquiries.map((inquiry) => (
           <div
             key={inquiry.id}
-            className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-5 border border-slate-200 dark:border-white/10 group active:scale-[0.98] transition-all"
+            className="bg-white rounded-[2.5rem] p-5 border border-slate-200 group active:scale-[0.98] transition-all"
           >
             <div className="flex items-start gap-4">
               <div
@@ -68,16 +68,16 @@ const Inquiries = () => {
                     {inquiry.time}
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 font-medium leading-relaxed">
+                <p className="text-xs text-slate-600 line-clamp-2 mb-4 font-medium leading-relaxed">
                   "{inquiry.message}"
                 </p>
 
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
-                    <button className="size-9 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition-colors border border-slate-100 dark:border-white/5">
+                    <button className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors border border-slate-100">
                       <Phone className="size-4" />
                     </button>
-                    <button className="size-9 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition-colors border border-slate-100 dark:border-white/5">
+                    <button className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-indigo-600 transition-colors border border-slate-100">
                       <Mail className="size-4" />
                     </button>
                   </div>
@@ -85,7 +85,7 @@ const Inquiries = () => {
                     className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
                       inquiry.status === "New"
                         ? "bg-indigo-600 text-white"
-                        : "bg-slate-100 text-slate-400 dark:bg-white/5"
+                        : "bg-slate-100 text-slate-400"
                     }`}
                   >
                     {inquiry.status}

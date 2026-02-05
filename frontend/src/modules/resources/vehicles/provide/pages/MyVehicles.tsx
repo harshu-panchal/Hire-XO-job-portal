@@ -118,20 +118,20 @@ const MyVehicles = () => {
       {/* Header */}
       <div className="space-y-1 px-1">
         <h1 className="text-3xl font-black tracking-tighter">My Fleet</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
           Manage your active rental vehicles
         </p>
       </div>
 
       {/* Stats Overview */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-2xl border border-blue-200 dark:border-blue-900">
+        <div className="bg-blue-50 p-4 rounded-2xl border border-blue-200">
           <p className="text-[9px] font-black uppercase tracking-widest text-blue-600 mb-1">
             Total Vehicles
           </p>
           <p className="text-2xl font-black text-blue-600">{vehicles.length}</p>
         </div>
-        <div className="bg-emerald-50 dark:bg-emerald-950/20 p-4 rounded-2xl border border-emerald-200 dark:border-emerald-900">
+        <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
           <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600 mb-1">
             Total Views
           </p>
@@ -139,7 +139,7 @@ const MyVehicles = () => {
             {vehicles.reduce((sum, v) => sum + v.views, 0)}
           </p>
         </div>
-        <div className="bg-orange-50 dark:bg-orange-950/20 p-4 rounded-2xl border border-orange-200 dark:border-orange-900">
+        <div className="bg-orange-50 p-4 rounded-2xl border border-orange-200">
           <p className="text-[9px] font-black uppercase tracking-widest text-orange-600 mb-1">
             Total Leads
           </p>
@@ -154,7 +154,7 @@ const MyVehicles = () => {
         {vehicles.map((vehicle) => (
           <div
             key={vehicle.id}
-            className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-6 border border-slate-200 dark:border-white/10 shadow-sm"
+            className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -173,7 +173,7 @@ const MyVehicles = () => {
               </div>
               <button
                 onClick={() => handleMenu(vehicle)}
-                className="size-10 rounded-full hover:bg-slate-50 dark:hover:bg-white/5 flex items-center justify-center text-slate-400 transition-colors"
+                className="size-10 rounded-full hover:bg-slate-50 flex items-center justify-center text-slate-400 transition-colors"
               >
                 <MoreVertical className="size-5" />
               </button>
@@ -192,8 +192,8 @@ const MyVehicles = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
+              <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
                   <Eye className="size-4 text-slate-400" />
                 </div>
                 <div>
@@ -203,8 +203,8 @@ const MyVehicles = () => {
                   <p className="text-xs font-black italic">{vehicle.views}</p>
                 </div>
               </div>
-              <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
+              <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
                   <MessageSquare className="size-4 text-slate-400" />
                 </div>
                 <div>
@@ -226,7 +226,7 @@ const MyVehicles = () => {
               </button>
               <button
                 onClick={() => handleEdit(vehicle)}
-                className="h-12 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                className="h-12 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <Edit3 className="size-3.5" />
                 Edit
@@ -245,7 +245,7 @@ const MyVehicles = () => {
 
       <button
         onClick={handleAddNew}
-        className="w-full h-16 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/10 flex items-center justify-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-blue-600 hover:text-blue-600 transition-all active:scale-[0.98]"
+        className="w-full h-16 rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-center gap-2 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:border-blue-600 hover:text-blue-600 transition-all active:scale-[0.98]"
       >
         <Plus className="size-4" />
         List New Vehicle
@@ -259,7 +259,7 @@ const MyVehicles = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-2xl w-full border border-slate-200 dark:border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto"
+            className="bg-white rounded-3xl p-6 max-w-2xl w-full border border-slate-200 shadow-2xl max-h-[85vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -270,7 +270,7 @@ const MyVehicles = () => {
               </div>
               <button
                 onClick={() => setShowViewModal(false)}
-                className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-10 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-5" />
               </button>
@@ -291,14 +291,14 @@ const MyVehicles = () => {
               {/* Title */}
               <div>
                 <h4 className="text-2xl font-black mb-2">{selectedVehicle.title}</h4>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-slate-600">
                   {selectedVehicle.description}
                 </p>
               </div>
 
               {/* Key Info Grid */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-2xl border border-blue-200 dark:border-blue-900">
+                <div className="p-4 bg-blue-50 rounded-2xl border border-blue-200">
                   <div className="flex items-center gap-2 mb-2">
                     <DollarSign className="size-4 text-blue-600" />
                     <p className="text-xs font-black uppercase tracking-widest text-blue-600">
@@ -308,7 +308,7 @@ const MyVehicles = () => {
                   <p className="text-lg font-black text-blue-600">{selectedVehicle.price}</p>
                 </div>
 
-                <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-200 dark:border-emerald-900">
+                <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
                   <div className="flex items-center gap-2 mb-2">
                     <Eye className="size-4 text-emerald-600" />
                     <p className="text-xs font-black uppercase tracking-widest text-emerald-600">
@@ -318,7 +318,7 @@ const MyVehicles = () => {
                   <p className="text-lg font-black text-emerald-600">{selectedVehicle.views}</p>
                 </div>
 
-                <div className="p-4 bg-orange-50 dark:bg-orange-950/20 rounded-2xl border border-orange-200 dark:border-orange-900">
+                <div className="p-4 bg-orange-50 rounded-2xl border border-orange-200">
                   <div className="flex items-center gap-2 mb-2">
                     <MessageSquare className="size-4 text-orange-600" />
                     <p className="text-xs font-black uppercase tracking-widest text-orange-600">
@@ -328,7 +328,7 @@ const MyVehicles = () => {
                   <p className="text-lg font-black text-orange-600">{selectedVehicle.inquiries}</p>
                 </div>
 
-                <div className="p-4 bg-purple-50 dark:bg-purple-950/20 rounded-2xl border border-purple-200 dark:border-purple-900">
+                <div className="p-4 bg-purple-50 rounded-2xl border border-purple-200">
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="size-4 text-purple-600" />
                     <p className="text-xs font-black uppercase tracking-widest text-purple-600">
@@ -341,7 +341,7 @@ const MyVehicles = () => {
 
               {/* Additional Details */}
               <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
                   <MapPin className="size-5 text-slate-400" />
                   <div>
                     <p className="text-xs font-black uppercase tracking-widest text-slate-400">
@@ -351,7 +351,7 @@ const MyVehicles = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
                   <Users className="size-5 text-slate-400" />
                   <div>
                     <p className="text-xs font-black uppercase tracking-widest text-slate-400">
@@ -361,7 +361,7 @@ const MyVehicles = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
                   <Car className="size-5 text-slate-400" />
                   <div>
                     <p className="text-xs font-black uppercase tracking-widest text-slate-400">
@@ -382,7 +382,7 @@ const MyVehicles = () => {
                     {selectedVehicle.features.map((feature, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-900"
+                        className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-200"
                       >
                         <CheckCircle className="size-3 text-blue-600" />
                         <span className="text-xs font-bold text-blue-600">{feature}</span>
@@ -393,7 +393,7 @@ const MyVehicles = () => {
               )}
             </div>
 
-            <div className="flex gap-3 mt-6 pt-6 border-t border-slate-200 dark:border-white/10">
+            <div className="flex gap-3 mt-6 pt-6 border-t border-slate-200">
               <button
                 onClick={() => {
                   setShowViewModal(false);
@@ -405,7 +405,7 @@ const MyVehicles = () => {
               </button>
               <button
                 onClick={() => handleCopyId(selectedVehicle.id)}
-                className="px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center gap-2"
+                className="px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-sm uppercase tracking-widest hover:bg-slate-200 active:scale-95 transition-all flex items-center gap-2"
               >
                 <Copy className="size-4" />
                 Copy ID
@@ -423,7 +423,7 @@ const MyVehicles = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl"
+            className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -432,7 +432,7 @@ const MyVehicles = () => {
               </div>
               <button
                 onClick={() => setShowMenuModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-4" />
               </button>
@@ -444,9 +444,9 @@ const MyVehicles = () => {
                   setShowMenuModal(false);
                   handleView(selectedVehicle);
                 }}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-950/30 transition-all group border border-blue-200 dark:border-blue-900"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-blue-50 hover:bg-blue-100 transition-all group border border-blue-200"
               >
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-950/40 transition-all">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-blue-100 transition-all">
                   <Eye className="size-5 text-blue-600" />
                 </div>
                 <div className="flex-1 text-left">
@@ -460,10 +460,10 @@ const MyVehicles = () => {
                   setShowMenuModal(false);
                   handleEdit(selectedVehicle);
                 }}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all group border border-slate-200 dark:border-white/10"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-all group border border-slate-200"
               >
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-slate-100 dark:group-hover:bg-slate-800 transition-all">
-                  <Edit3 className="size-5 text-slate-600 dark:text-slate-400" />
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-slate-100 transition-all">
+                  <Edit3 className="size-5 text-slate-600" />
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-sm font-black">Edit Vehicle</p>
@@ -473,9 +473,9 @@ const MyVehicles = () => {
 
               <button
                 onClick={() => handleCopyId(selectedVehicle.id)}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/20 hover:bg-purple-100 dark:hover:bg-purple-950/30 transition-all group border border-purple-200 dark:border-purple-900"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-purple-50 hover:bg-purple-100 transition-all group border border-purple-200"
               >
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-purple-100 dark:group-hover:bg-purple-950/40 transition-all">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-purple-100 transition-all">
                   <Copy className="size-5 text-purple-600" />
                 </div>
                 <div className="flex-1 text-left">
@@ -488,9 +488,9 @@ const MyVehicles = () => {
 
               <button
                 onClick={() => handleArchive(selectedVehicle.id)}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-950/30 transition-all group border border-amber-200 dark:border-amber-900"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-amber-50 hover:bg-amber-100 transition-all group border border-amber-200"
               >
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-amber-100 dark:group-hover:bg-amber-950/40 transition-all">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-amber-100 transition-all">
                   <Archive className="size-5 text-amber-600" />
                 </div>
                 <div className="flex-1 text-left">
@@ -501,9 +501,9 @@ const MyVehicles = () => {
 
               <button
                 onClick={() => handleDelete(selectedVehicle.id)}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/30 transition-all group border border-red-200 dark:border-red-900"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-50 hover:bg-red-100 transition-all group border border-red-200"
               >
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-red-100 dark:group-hover:bg-red-950/40 transition-all">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-red-100 transition-all">
                   <Trash2 className="size-5 text-red-600" />
                 </div>
                 <div className="flex-1 text-left">

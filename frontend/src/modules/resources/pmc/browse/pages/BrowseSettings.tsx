@@ -19,7 +19,7 @@ const BrowseSettings = () => {
       {/* Header */}
       <div className="space-y-1 px-1">
         <h1 className="text-3xl font-black tracking-tighter">Settings</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
           App & Security Preferences
         </p>
       </div>
@@ -31,9 +31,9 @@ const BrowseSettings = () => {
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 px-1">
             General
           </h3>
-          <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            <div className="divide-y divide-slate-100 dark:divide-white/5">
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm">
+            <div className="divide-y divide-slate-100">
+              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
                     <Bell className="size-5" />
@@ -48,7 +48,7 @@ const BrowseSettings = () => {
                 </div>
               </button>
 
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center">
                     <Moon className="size-5" />
@@ -63,7 +63,7 @@ const BrowseSettings = () => {
                 </div>
               </button>
 
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
                     <Globe className="size-5" />
@@ -84,9 +84,9 @@ const BrowseSettings = () => {
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 px-1">
             Security
           </h3>
-          <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            <div className="divide-y divide-slate-100 dark:divide-white/5">
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm">
+            <div className="divide-y divide-slate-100">
+              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
                     <Lock className="size-5" />
@@ -96,7 +96,7 @@ const BrowseSettings = () => {
                 <ChevronRight className="size-5 text-slate-300" />
               </button>
 
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
                     <Smartphone className="size-5" />
@@ -117,8 +117,8 @@ const BrowseSettings = () => {
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 px-1">
             Support
           </h3>
-          <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm">
+            <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
               <div className="flex items-center gap-4">
                 <div className="size-11 rounded-xl bg-slate-500/10 text-slate-500 flex items-center justify-center">
                   <HelpCircle className="size-5" />

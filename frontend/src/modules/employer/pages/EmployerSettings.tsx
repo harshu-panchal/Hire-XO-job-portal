@@ -18,14 +18,12 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "@/context/ThemeContext";
 import { toast } from "sonner";
 
 const EmployerSettings = () => {
   const navigate = useNavigate();
   const { logout, user, updateProfile } = useAuthStore();
   const { t, i18n } = useTranslation();
-  const { theme, setTheme: setGlobalTheme } = useTheme();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [language, setLanguage] = useState(localStorage.getItem("app-language") || "English");
 

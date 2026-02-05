@@ -14,7 +14,6 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { useTheme } from "../../../context/ThemeContext";
 import { useAuthStore } from "../../../store/useAuthStore";
 
 const containerVariants: Variants = {
@@ -517,7 +516,6 @@ function SecuritySettings() {
 }
 
 function AppearanceSettings() {
-  const { theme, setTheme } = useTheme();
 
   const themes = [
     { id: "light", label: "Light" },

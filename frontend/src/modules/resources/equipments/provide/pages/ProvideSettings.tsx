@@ -22,9 +22,9 @@ interface SettingItemProps {
 }
 
 const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProps) => (
-  <div className="flex items-center gap-4 p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 shadow-sm group">
-    <div className="size-12 rounded-2xl bg-blue-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-950/30 transition-colors shrink-0">
-      <Icon className="size-6 text-slate-600 dark:text-slate-400 group-hover:text-blue-600" />
+  <div className="flex items-center gap-4 p-4 rounded-3xl bg-white border border-slate-100 shadow-sm group">
+    <div className="size-12 rounded-2xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors shrink-0">
+      <Icon className="size-6 text-slate-600 group-hover:text-blue-600" />
     </div>
     <div className="flex-1 space-y-0.5 min-w-0">
       <h3 className="text-sm font-black tracking-tight truncate leading-none">{label}</h3>
@@ -53,7 +53,7 @@ const ProvideSettings = () => {
         <h1 className="text-2xl font-black tracking-tight uppercase italic italic underline decoration-blue-500 underline-offset-8">
           Authority Console
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest mt-4">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest mt-4">
           Operation controls and business configuration
         </p>
       </div>
@@ -148,11 +148,11 @@ const ProvideSettings = () => {
             logout();
             navigate("/");
           }}
-          className="w-full p-5 rounded-[2.5rem] bg-rose-50 dark:bg-rose-950/20 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 dark:border-rose-900/30 shadow-lg shadow-rose-500/5"
+          className="w-full p-5 rounded-[2.5rem] bg-rose-50 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 shadow-lg shadow-rose-500/5"
         >
           <LogOut className="size-5" /> Sign Out Authority
         </button>
-        <p className="text-[8px] font-black uppercase tracking-[0.5em] text-slate-300 dark:text-slate-700">
+        <p className="text-[8px] font-black uppercase tracking-[0.5em] text-slate-300">
           Enterprise Edition v4.0.0
         </p>
       </div>

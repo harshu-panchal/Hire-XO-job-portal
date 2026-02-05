@@ -40,9 +40,9 @@ const EmployerLayout = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-background text-slate-900 dark:text-slate-100 font-sans selection:bg-primary/30">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-primary/30">
       {/* Mobile-optimized Header */}
-      <header className="sticky top-0 z-50 w-full bg-slate-50/80 dark:bg-background/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/5">
+      <header className="sticky top-0 z-50 w-full bg-slate-50/80 backdrop-blur-xl border-b border-slate-200">
         <div className="max-w-[430px] mx-auto px-5 h-20 flex items-center justify-between">
           <Link
             to="/employer"
@@ -59,7 +59,7 @@ const EmployerLayout = () => {
             {!isAuthenticated ? (
               <Link
                 to="/login/employer"
-                className="h-11 px-5 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center gap-2 font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all"
+                className="h-11 px-5 rounded-2xl bg-slate-900 text-white flex items-center gap-2 font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all"
               >
                 <LogIn className="size-4" />
                 <span>Login</span>
@@ -70,12 +70,12 @@ const EmployerLayout = () => {
                   onClick={() => setShowNotifications(!showNotifications)}
                   className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${showNotifications
                     ? "bg-primary/10 border-primary text-primary"
-                    : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400"
+                    : "bg-white border-slate-200 text-slate-400"
                     }`}
                 >
                   <Bell className="size-5" />
                   {unreadCount > 0 && (
-                    <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-4 ring-slate-50 dark:ring-background animate-pulse"></span>
+                    <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-4 ring-slate-50 animate-pulse"></span>
                   )}
                 </button>
 
@@ -99,7 +99,7 @@ const EmployerLayout = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 px-8 py-4 z-50">
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/80 backdrop-blur-xl border-t border-slate-200 px-8 py-4 z-50">
         <div className="flex items-center justify-between">
           <Link
             to="/employer"

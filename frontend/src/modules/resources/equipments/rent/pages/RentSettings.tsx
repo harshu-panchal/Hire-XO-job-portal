@@ -20,9 +20,9 @@ interface SettingItemProps {
 }
 
 const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProps) => (
-  <div className="flex items-center gap-4 p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 shadow-sm group">
-    <div className="size-12 rounded-2xl bg-emerald-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-950/30 transition-colors">
-      <Icon className="size-6 text-slate-600 dark:text-slate-400 group-hover:text-emerald-600" />
+  <div className="flex items-center gap-4 p-4 rounded-3xl bg-white border border-slate-100 shadow-sm group">
+    <div className="size-12 rounded-2xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+      <Icon className="size-6 text-slate-600 group-hover:text-emerald-600" />
     </div>
     <div className="flex-1 space-y-0.5">
       <h3 className="text-sm font-black tracking-tight leading-none">{label}</h3>
@@ -42,14 +42,13 @@ const RentSettings = () => {
   const navigate = useNavigate();
   const { logout } = useAuthStore();
   const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
 
   return (
     <div className="py-6 space-y-8 select-none">
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-black tracking-tight leading-none">Settings</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
           Manage your rental preferences and account
         </p>
       </div>
@@ -81,11 +80,8 @@ const RentSettings = () => {
             description="Adjust the interface vibe"
             action={
               <button
-                onClick={() => setDarkMode(!darkMode)}
-                className={`w-12 h-6 rounded-full transition-colors relative ${darkMode ? "bg-emerald-600" : "bg-slate-200"}`}
               >
                 <div
-                  className={`absolute top-1 size-4 bg-white rounded-full transition-all ${darkMode ? "left-7" : "left-1"}`}
                 />
               </button>
             }
@@ -134,7 +130,7 @@ const RentSettings = () => {
             logout();
             navigate("/");
           }}
-          className="w-full p-5 rounded-[2.5rem] bg-rose-50 dark:bg-rose-950/20 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 dark:border-rose-900/30 shadow-lg shadow-rose-500/5"
+          className="w-full p-5 rounded-[2.5rem] bg-rose-50 text-rose-600 font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 shadow-lg shadow-rose-500/5"
         >
           <LogOut className="size-5" /> Deactivate Rental Mode
         </button>

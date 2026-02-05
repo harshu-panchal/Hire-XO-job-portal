@@ -96,14 +96,14 @@ const JobDetails = () => {
           <div className="size-32 rounded-[3rem] bg-green-500/10 flex items-center justify-center animate-bounce-subtle">
             <CheckCircle2 className="size-16 text-green-500" />
           </div>
-          <div className="absolute -top-2 -right-2 size-8 bg-green-500 rounded-full border-4 border-slate-50 dark:border-background flex items-center justify-center shadow-lg">
+          <div className="absolute -top-2 -right-2 size-8 bg-green-500 rounded-full border-4 border-slate-50 flex items-center justify-center shadow-lg">
             <span className="text-white text-[10px] font-black">1</span>
           </div>
         </div>
 
         <div className="space-y-3 mb-10">
           <h1 className="text-3xl font-black tracking-tight">Application Sent!</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-black leading-relaxed max-w-[280px] mx-auto">
+          <p className="text-slate-500 text-sm font-black leading-relaxed max-w-[280px] mx-auto">
             Your profile has been shared with <span className="text-primary">{job.company}</span>.
             They will contact you via email if your profile matches.
           </p>
@@ -119,7 +119,7 @@ const JobDetails = () => {
           </button>
           <button
             onClick={() => navigate("/my-applications")}
-            className="h-16 w-full rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400 font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
+            className="h-16 w-full rounded-3xl bg-white border border-slate-200 text-slate-400 font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
           >
             View Applications
           </button>
@@ -131,23 +131,23 @@ const JobDetails = () => {
   return (
     <div className="pb-32 select-none">
       {/* Top Header */}
-      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 -mx-5 px-5">
+      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
         >
           <ChevronLeft className="size-6" />
         </button>
         <div className="flex gap-3">
           <button
             onClick={handleShare}
-            className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+            className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
           >
             <Share2 className="size-5 text-slate-400" />
           </button>
           <button
             onClick={toggleSave}
-            className={`size-11 flex items-center justify-center rounded-2xl border transition-all active:scale-90 ${isBookmarked ? "bg-primary/10 border-primary" : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10"}`}
+            className={`size-11 flex items-center justify-center rounded-2xl border transition-all active:scale-90 ${isBookmarked ? "bg-primary/10 border-primary" : "bg-white border-slate-200"}`}
           >
             <Bookmark
               className={`size-5 ${isBookmarked ? "fill-primary text-primary" : "text-slate-400"}`}
@@ -159,7 +159,7 @@ const JobDetails = () => {
       {/* Company & Title Section */}
       <div className="space-y-6 pt-4">
         <div className="flex flex-col items-center text-center space-y-4">
-          <div className="size-24 rounded-[2rem] bg-white dark:bg-slate-900 shadow-xl border border-slate-100 dark:border-white/5 flex items-center justify-center overflow-hidden">
+          <div className="size-24 rounded-[2rem] bg-white shadow-xl border border-slate-100 flex items-center justify-center overflow-hidden">
             {job.companyLogo ? (
               <img
                 src={
@@ -192,8 +192,8 @@ const JobDetails = () => {
 
         {/* Quick Info Grid */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white dark:bg-slate-900/50 p-4 rounded-3xl border border-slate-200 dark:border-white/10 flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
               <MapPin className="size-5 text-slate-400" />
             </div>
             <div className="min-w-0">
@@ -203,8 +203,8 @@ const JobDetails = () => {
               <p className="text-xs font-black truncate">{job.location}</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-900/50 p-4 rounded-3xl border border-slate-200 dark:border-white/10 flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
               <DollarSign className="size-5 text-slate-400" />
             </div>
             <div className="min-w-0">
@@ -214,8 +214,8 @@ const JobDetails = () => {
               <p className="text-xs font-black truncate">{job.salary}</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-900/50 p-4 rounded-3xl border border-slate-200 dark:border-white/10 flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
               <Clock className="size-5 text-slate-400" />
             </div>
             <div className="min-w-0">
@@ -225,8 +225,8 @@ const JobDetails = () => {
               <p className="text-xs font-black truncate">{job.postedAt}</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-900/50 p-4 rounded-3xl border border-slate-200 dark:border-white/10 flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
               <Briefcase className="size-5 text-slate-400" />
             </div>
             <div className="min-w-0">
@@ -243,7 +243,7 @@ const JobDetails = () => {
       <div className="mt-10 space-y-10">
         <section className="space-y-4">
           <h2 className="text-xl font-black tracking-tight flex items-center gap-2">Description</h2>
-          <p className="text-slate-600 dark:text-slate-400 text-sm font-black leading-relaxed">
+          <p className="text-slate-600 text-sm font-black leading-relaxed">
             {job.description}
           </p>
         </section>
@@ -256,7 +256,7 @@ const JobDetails = () => {
                 <div className="size-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5 transition-colors">
                   <CheckCircle2 className="size-3.5 text-primary" />
                 </div>
-                <p className="text-sm font-black text-slate-600 dark:text-slate-400">{req}</p>
+                <p className="text-sm font-black text-slate-600">{req}</p>
               </div>
             ))}
           </div>
@@ -267,10 +267,10 @@ const JobDetails = () => {
           <div className="space-y-3">
             {job.responsibilities.map((resp, i) => (
               <div key={i} className="flex items-start gap-3 group">
-                <div className="size-6 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="size-6 rounded-full bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
                   <span className="text-[10px] font-black text-slate-400">{i + 1}</span>
                 </div>
-                <p className="text-sm font-black text-slate-600 dark:text-slate-400">{resp}</p>
+                <p className="text-sm font-black text-slate-600">{resp}</p>
               </div>
             ))}
           </div>
@@ -282,7 +282,7 @@ const JobDetails = () => {
             {job.benefits.map((benefit, i) => (
               <div
                 key={i}
-                className="px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 text-xs font-black uppercase tracking-widest"
+                className="px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-600 text-xs font-black uppercase tracking-widest"
               >
                 {benefit}
               </div>
@@ -293,7 +293,7 @@ const JobDetails = () => {
 
       {/* Sticky Bottom Action */}
       <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 z-40">
-        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-4 shadow-2xl shadow-primary/20 flex items-center gap-4">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-[2.5rem] p-4 shadow-2xl shadow-primary/20 flex items-center gap-4">
           <div className="flex-1">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-0.5">
               Application

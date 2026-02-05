@@ -83,13 +83,13 @@ const EquipmentList = () => {
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-black tracking-tight">Available Gear</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
           {filteredEquipments.length} Heavy machines found
         </p>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="space-y-4 sticky top-[72px] z-30 bg-white dark:bg-slate-950 py-2 -mx-2 px-2">
+      <div className="space-y-4 sticky top-[72px] z-30 bg-white py-2 -mx-2 px-2">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
           <input
@@ -97,7 +97,7 @@ const EquipmentList = () => {
             placeholder="Search by machine name or provider..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-12 py-4 rounded-3xl bg-slate-100 dark:bg-slate-900 border-none font-bold text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none"
+            className="w-full pl-12 pr-12 py-4 rounded-3xl bg-slate-100 border-none font-bold text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none"
           />
           {searchQuery && (
             <button
@@ -120,8 +120,8 @@ const EquipmentList = () => {
               onClick={() => setActiveCategory(cat)}
               className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
                 activeCategory === cat
-                  ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white shadow-xl shadow-slate-900/20"
-                  : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-white/10"
+                  ? "bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-900/20"
+                  : "bg-white text-slate-500 border-slate-200"
               }`}
             >
               {cat}
@@ -136,22 +136,22 @@ const EquipmentList = () => {
           <Link
             key={item.id}
             to={`/equipments/rent/equipment/${item.id}`}
-            className="group block bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-5 hover:shadow-xl hover:shadow-black/5 transition-all relative overflow-hidden"
+            className="group block bg-white border border-slate-200 rounded-[2.5rem] p-5 hover:shadow-xl hover:shadow-black/5 transition-all relative overflow-hidden"
           >
             <div className="flex gap-5">
-              <div className="size-28 rounded-3xl overflow-hidden bg-slate-50 dark:bg-slate-800 shrink-0 relative">
+              <div className="size-28 rounded-3xl overflow-hidden bg-slate-50 shrink-0 relative">
                 <img
                   src={item.image}
                   alt={item.name}
                   className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm text-[8px] font-black uppercase tracking-widest border border-slate-100 dark:border-white/5">
+                <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-white/90 backdrop-blur-sm text-[8px] font-black uppercase tracking-widest border border-slate-100">
                   {item.category}
                 </div>
               </div>
               <div className="flex-1 space-y-2 py-0.5">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 border border-emerald-100 dark:border-emerald-900/50">
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
                     <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span className="text-[9px] font-black uppercase tracking-widest">
                       {item.status}
@@ -174,7 +174,7 @@ const EquipmentList = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
+            <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
               <div className="flex items-center gap-1.5 text-slate-400">
                 <MapPin className="size-3" />
                 <span className="text-[10px] font-black uppercase tracking-widest">
@@ -182,13 +182,13 @@ const EquipmentList = () => {
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <p className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                <p className="text-xl font-black tracking-tight text-slate-900">
                   {item.price}
                   <span className="text-[10px] text-slate-400 tracking-widest font-black uppercase">
                     /{item.unit}
                   </span>
                 </p>
-                <div className="size-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:bg-slate-900 dark:group-hover:bg-white dark:group-hover:text-black transition-colors">
+                <div className="size-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:bg-slate-900 transition-colors">
                   <ChevronRight className="size-5" />
                 </div>
               </div>
@@ -198,7 +198,7 @@ const EquipmentList = () => {
 
         {filteredEquipments.length === 0 && (
           <div className="py-20 text-center space-y-4">
-            <div className="size-20 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center mx-auto">
+            <div className="size-20 rounded-full bg-slate-50 flex items-center justify-center mx-auto">
               <Search className="size-8 text-slate-300" />
             </div>
             <div>

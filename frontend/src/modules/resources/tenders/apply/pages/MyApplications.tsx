@@ -52,28 +52,28 @@ const MyApplications = () => {
       value: totalBids,
       icon: FileText,
       color: "text-violet-600",
-      bgColor: "bg-violet-100 dark:bg-violet-950/30",
+      bgColor: "bg-violet-100",
     },
     {
       label: "Active",
       value: activeBids,
       icon: Timer,
       color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-950/30",
+      bgColor: "bg-blue-100",
     },
     {
       label: "Won",
       value: wonBids,
       icon: CheckCircle2,
       color: "text-emerald-600",
-      bgColor: "bg-emerald-100 dark:bg-emerald-950/30",
+      bgColor: "bg-emerald-100",
     },
     {
       label: "Rejected",
       value: rejectedBids,
       icon: XCircle,
       color: "text-rose-600",
-      bgColor: "bg-rose-100 dark:bg-rose-950/30",
+      bgColor: "bg-rose-100",
     },
   ];
 
@@ -87,13 +87,13 @@ const MyApplications = () => {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "Accepted":
-        return { bg: "bg-emerald-100 dark:bg-emerald-950/30", color: "text-emerald-600" };
+        return { bg: "bg-emerald-100", color: "text-emerald-600" };
       case "Rejected":
-        return { bg: "bg-rose-100 dark:bg-rose-950/30", color: "text-rose-600" };
+        return { bg: "bg-rose-100", color: "text-rose-600" };
       case "Pending":
-        return { bg: "bg-amber-100 dark:bg-amber-950/30", color: "text-amber-600" };
+        return { bg: "bg-amber-100", color: "text-amber-600" };
       default:
-        return { bg: "bg-slate-100 dark:bg-slate-800", color: "text-slate-600" };
+        return { bg: "bg-slate-100", color: "text-slate-600" };
     }
   };
 
@@ -112,7 +112,7 @@ const MyApplications = () => {
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-black tracking-tight">My Bid Portfolio</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
           Manage and track your submitted tender applications
         </p>
       </div>
@@ -122,7 +122,7 @@ const MyApplications = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2rem] p-5 flex flex-col items-center text-center space-y-2 hover:scale-105 transition-transform cursor-pointer shadow-sm"
+            className="bg-white border border-slate-200 rounded-[2rem] p-5 flex flex-col items-center text-center space-y-2 hover:scale-105 transition-transform cursor-pointer shadow-sm"
           >
             <div className={`size-12 rounded-2xl ${stat.bgColor} flex items-center justify-center`}>
               <stat.icon className={`size-6 ${stat.color}`} />
@@ -145,8 +145,8 @@ const MyApplications = () => {
             onClick={() => setActiveTab(tab)}
             className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
               activeTab === tab
-                ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white shadow-xl shadow-slate-900/20 dark:shadow-white/20"
-                : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-white/10 hover:border-slate-400 dark:hover:border-slate-600"
+                ? "bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-900/20"
+                : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"
             }`}
           >
             {tab}
@@ -164,7 +164,7 @@ const MyApplications = () => {
               <div
                 key={app._id}
                 onClick={() => navigate(`/tenders/apply/tenders/${tender._id}`)}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group cursor-pointer"
+                className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="space-y-1.5 flex-1 pr-8">
@@ -221,7 +221,7 @@ const MyApplications = () => {
                           : "50%"}
                     </p>
                   </div>
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                     <div
                       className={`h-full transition-all duration-1000 ${
                         app.status === "Accepted"
@@ -235,7 +235,7 @@ const MyApplications = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/5">
+                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                   <div className="flex items-center gap-1.5">
                     <MapPin className="size-3 text-slate-400" />
                     <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">

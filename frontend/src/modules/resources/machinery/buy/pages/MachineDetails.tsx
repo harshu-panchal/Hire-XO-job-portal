@@ -51,11 +51,11 @@ const MachineDetails = () => {
       <div className="flex items-center justify-between px-1">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-500 shadow-sm active:scale-90 transition-transform"
+          className="size-11 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm active:scale-90 transition-transform"
         >
           <ArrowLeft className="size-5" />
         </button>
-        <div className="px-5 py-2 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-600 border border-amber-100 dark:border-amber-900/50 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+        <div className="px-5 py-2 rounded-full bg-amber-50 text-amber-600 border border-amber-100 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
           <Zap className="size-3 fill-amber-500" />
           Hot Listing
         </div>
@@ -63,7 +63,7 @@ const MachineDetails = () => {
 
       {/* Gallery */}
       <div className="relative group">
-        <div className="w-full h-72 rounded-[3rem] overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-2xl relative">
+        <div className="w-full h-72 rounded-[3rem] overflow-hidden bg-slate-100 shadow-2xl relative">
           <img src={machine.images[0]} alt={machine.name} className="size-full object-cover" />
         </div>
         <div className="absolute top-4 left-4 flex gap-2">
@@ -83,7 +83,7 @@ const MachineDetails = () => {
             <span className="text-amber-600 text-[10px] font-black uppercase tracking-widest">
               {machine.brand}
             </span>
-            <div className="size-1 rounded-full bg-slate-200 dark:bg-slate-800" />
+            <div className="size-1 rounded-full bg-slate-200" />
             <div className="flex items-center gap-1 font-black text-xs">
               <Star className="size-3 text-amber-500 fill-amber-500" />
               {machine.rating} <span className="text-slate-400 font-bold">({machine.reviews})</span>
@@ -94,9 +94,9 @@ const MachineDetails = () => {
           </h1>
         </div>
 
-        <div className="flex items-center justify-between p-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 rounded-[2rem] shadow-sm">
+        <div className="flex items-center justify-between p-5 bg-white border border-slate-100 rounded-[2rem] shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="size-12 rounded-2xl bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center text-amber-600">
+            <div className="size-12 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600">
               <Building2 className="size-6" />
             </div>
             <div>
@@ -119,7 +119,7 @@ const MachineDetails = () => {
           {machine.specs.map((spec) => (
             <div
               key={spec.label}
-              className="p-4 rounded-[1.5rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 shadow-sm"
+              className="p-4 rounded-[1.5rem] bg-white border border-slate-100 shadow-sm"
             >
               <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">
                 {spec.label}
@@ -152,13 +152,13 @@ const MachineDetails = () => {
       {/* Description */}
       <div className="space-y-4 px-1">
         <h2 className="text-xl font-black tracking-tight italic">Detailed Overview</h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400 font-bold leading-relaxed tracking-tight">
+        <p className="text-sm text-slate-500 font-bold leading-relaxed tracking-tight">
           {machine.description}
         </p>
       </div>
 
       {/* Footer Contact bar */}
-      <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-sm space-y-6">
+      <div className="p-6 bg-slate-50 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -170,7 +170,7 @@ const MachineDetails = () => {
             <button className="size-12 rounded-2xl bg-amber-600 text-white flex items-center justify-center active:scale-90 transition-transform shadow-lg shadow-amber-500/20">
               <Phone className="size-5" />
             </button>
-            <button className="size-12 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center border border-white/10 active:scale-90 transition-transform">
+            <button className="size-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center border border-white/10 active:scale-90 transition-transform">
               <MessageSquare className="size-5" />
             </button>
           </div>
@@ -179,7 +179,7 @@ const MachineDetails = () => {
 
       {/* Price & Buy Button */}
       <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-40 pointer-events-none">
-        <div className="w-full max-w-[430px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-4 flex items-center justify-between shadow-2xl pointer-events-auto">
+        <div className="w-full max-w-[430px] bg-white border border-slate-200 rounded-[2.5rem] p-4 flex items-center justify-between shadow-2xl pointer-events-auto">
           <div className="px-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Buying Price

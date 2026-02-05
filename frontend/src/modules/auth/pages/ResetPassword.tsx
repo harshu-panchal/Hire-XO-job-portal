@@ -49,8 +49,8 @@ const ResetPassword = () => {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-background flex flex-col justify-center p-6">
-        <Card className="max-w-[400px] mx-auto w-full p-8 text-center bg-white dark:bg-slate-900 border-0 shadow-xl">
+      <div className="min-h-screen bg-slate-50 flex flex-col justify-center p-6">
+        <Card className="max-w-[400px] mx-auto w-full p-8 text-center bg-white border-0 shadow-xl">
           <div className="size-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="size-8" />
           </div>
@@ -66,8 +66,8 @@ const ResetPassword = () => {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-background flex flex-col justify-center p-6">
-        <Card className="max-w-[400px] mx-auto w-full p-8 text-center bg-white dark:bg-slate-900 border-0 shadow-xl animate-in zoom-in-95">
+      <div className="min-h-screen bg-slate-50 flex flex-col justify-center p-6">
+        <Card className="max-w-[400px] mx-auto w-full p-8 text-center bg-white border-0 shadow-xl animate-in zoom-in-95">
           <div className="size-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="size-8" />
           </div>
@@ -84,16 +84,16 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-background flex flex-col justify-center p-6 text-slate-900 dark:text-white">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center p-6 text-slate-900">
       <div className="w-full max-w-[400px] mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-black tracking-tight">Reset Password</h1>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">
+          <p className="text-slate-500 font-medium">
             Create a new strong password
           </p>
         </div>
 
-        <Card className="border-0 bg-white dark:bg-slate-900 shadow-xl p-6">
+        <Card className="border-0 bg-white shadow-xl p-6">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
@@ -108,7 +108,7 @@ const ResetPassword = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-12 pr-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                  className="pl-12 pr-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                   required
                 />
                 <button
@@ -134,7 +134,7 @@ const ResetPassword = () => {
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-12 pr-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                  className="pl-12 pr-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                   required
                 />
               </div>
@@ -142,7 +142,7 @@ const ResetPassword = () => {
 
             {error && (
               <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in zoom-in-95 duration-200">
-                <p className="text-sm text-red-600 dark:text-red-400 font-bold text-center">
+                <p className="text-sm text-red-600 font-bold text-center">
                   {error}
                 </p>
               </div>
@@ -151,7 +151,7 @@ const ResetPassword = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-14 rounded-2xl text-base font-bold tracking-wide bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-90 transition-all shadow-lg"
+              className="w-full h-14 rounded-2xl text-base font-bold tracking-wide bg-slate-900 text-white hover:opacity-90 transition-all shadow-lg"
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">

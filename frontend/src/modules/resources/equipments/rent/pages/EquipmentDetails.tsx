@@ -58,11 +58,11 @@ const EquipmentDetails = () => {
       <div className="flex items-center justify-between px-1">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-500 shadow-sm active:scale-90 transition-transform"
+          className="size-11 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 shadow-sm active:scale-90 transition-transform"
         >
           <ArrowLeft className="size-5" />
         </button>
-        <div className="px-5 py-2 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 border border-emerald-100 dark:border-emerald-900/50 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+        <div className="px-5 py-2 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
           <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
           {equipment.status}
         </div>
@@ -70,7 +70,7 @@ const EquipmentDetails = () => {
 
       {/* Image Gallery */}
       <div className="relative group">
-        <div className="w-full h-72 rounded-[3rem] overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-2xl">
+        <div className="w-full h-72 rounded-[3rem] overflow-hidden bg-slate-100 shadow-2xl">
           <img src={equipment.images[0]} alt={equipment.name} className="size-full object-cover" />
         </div>
         <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-md text-white px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-white/20">
@@ -83,19 +83,19 @@ const EquipmentDetails = () => {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
             <span>{equipment.category}</span>
-            <div className="size-1 rounded-full bg-emerald-200 dark:bg-emerald-800" />
+            <div className="size-1 rounded-full bg-emerald-200" />
             <div className="flex items-center gap-1">
               <Star className="size-3 fill-amber-500 text-amber-500" />
-              <span className="text-slate-900 dark:text-white">{equipment.rating}</span>
+              <span className="text-slate-900">{equipment.rating}</span>
               <span className="text-slate-400">({equipment.reviews})</span>
             </div>
           </div>
           <h1 className="text-2xl font-black tracking-tight leading-tight">{equipment.name}</h1>
         </div>
 
-        <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-white/5 rounded-[2rem] border border-slate-100 dark:border-white/5">
+        <div className="flex items-center justify-between p-5 bg-slate-50 rounded-[2rem] border border-slate-100">
           <div className="flex items-center gap-4">
-            <div className="size-12 rounded-2xl bg-white dark:bg-slate-900 shadow-sm flex items-center justify-center text-slate-400">
+            <div className="size-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-slate-400">
               <Building2 className="size-6" />
             </div>
             <div>
@@ -118,7 +118,7 @@ const EquipmentDetails = () => {
           {equipment.specs.map((spec) => (
             <div
               key={spec.label}
-              className="p-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-white/5 space-y-1"
+              className="p-4 rounded-[1.5rem] bg-slate-50 border border-slate-100 space-y-1"
             >
               <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                 {spec.label}
@@ -132,14 +132,14 @@ const EquipmentDetails = () => {
       {/* Description */}
       <div className="space-y-4 px-1">
         <h2 className="text-xl font-black tracking-tight">Overview</h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400 font-bold leading-relaxed tracking-tight">
+        <p className="text-sm text-slate-500 font-bold leading-relaxed tracking-tight">
           {equipment.description}
         </p>
       </div>
 
       {/* Features List */}
-      <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-[2.5rem] p-8 space-y-6">
-        <h3 className="text-lg font-black tracking-tight text-emerald-700 dark:text-emerald-400 italic">
+      <div className="bg-emerald-50 rounded-[2.5rem] p-8 space-y-6">
+        <h3 className="text-lg font-black tracking-tight text-emerald-700 italic">
           Why this gear?
         </h3>
         <div className="space-y-4">
@@ -148,7 +148,7 @@ const EquipmentDetails = () => {
               <div className="size-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-lg shadow-emerald-500/20">
                 <CheckCircle2 className="size-3" />
               </div>
-              <p className="text-xs font-black tracking-tight text-emerald-900/70 dark:text-emerald-300/70 leading-relaxed uppercase">
+              <p className="text-xs font-black tracking-tight text-emerald-900/70 leading-relaxed uppercase">
                 {feature}
               </p>
             </div>
@@ -164,7 +164,7 @@ const EquipmentDetails = () => {
         <div className="grid grid-cols-2 gap-4">
           {equipment.rentIncludes.map((inc) => (
             <div key={inc} className="flex items-center gap-2 text-slate-500">
-              <div className="size-1.5 rounded-full bg-slate-200 dark:bg-slate-700" />
+              <div className="size-1.5 rounded-full bg-slate-200" />
               <span className="text-[10px] font-black uppercase tracking-widest">{inc}</span>
             </div>
           ))}
@@ -172,7 +172,7 @@ const EquipmentDetails = () => {
       </div>
 
       {/* Static Contact Strip */}
-      <div className="p-6 bg-slate-900 dark:bg-white rounded-[2.5rem] text-white dark:text-black shadow-2xl space-y-6">
+      <div className="p-6 bg-slate-900 rounded-[2.5rem] text-white shadow-2xl space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">
@@ -181,10 +181,10 @@ const EquipmentDetails = () => {
             <h4 className="text-lg font-black tracking-tight">{equipment.location}</h4>
           </div>
           <div className="flex gap-2">
-            <button className="size-12 rounded-2xl bg-white/10 dark:bg-black/5 flex items-center justify-center active:scale-90 transition-transform border border-white/10 dark:border-black/5">
+            <button className="size-12 rounded-2xl bg-white/10 flex items-center justify-center active:scale-90 transition-transform border border-white/10">
               <Phone className="size-5" />
             </button>
-            <button className="size-12 rounded-2xl bg-white/10 dark:bg-black/5 flex items-center justify-center active:scale-90 transition-transform border border-white/10 dark:border-black/5">
+            <button className="size-12 rounded-2xl bg-white/10 flex items-center justify-center active:scale-90 transition-transform border border-white/10">
               <MessageSquare className="size-5" />
             </button>
           </div>
@@ -193,7 +193,7 @@ const EquipmentDetails = () => {
 
       {/* Floating Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-40 pointer-events-none">
-        <div className="w-full max-w-[430px] bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 rounded-[2.5rem] p-4 flex items-center justify-between shadow-2xl pointer-events-auto">
+        <div className="w-full max-w-[430px] bg-white border border-slate-100 rounded-[2.5rem] p-4 flex items-center justify-between shadow-2xl pointer-events-auto">
           <div className="px-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Per {equipment.unit}

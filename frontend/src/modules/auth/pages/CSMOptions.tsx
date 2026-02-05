@@ -25,8 +25,8 @@ const CSMOptions = () => {
       description: "Offer your CSM services",
       icon: HardHat,
       color: "from-rose-500 to-pink-600",
-      bgColor: "bg-rose-50 dark:bg-rose-950/20",
-      iconColor: "text-rose-600 dark:text-rose-400",
+      bgColor: "bg-rose-50",
+      iconColor: "text-rose-600",
       dashboardPath: "/csm/provide/dashboard",
     },
     {
@@ -35,8 +35,8 @@ const CSMOptions = () => {
       description: "Find CSM service providers",
       icon: UserCheck,
       color: "from-pink-500 to-fuchsia-600",
-      bgColor: "bg-pink-50 dark:bg-pink-950/20",
-      iconColor: "text-pink-600 dark:text-pink-400",
+      bgColor: "bg-pink-50",
+      iconColor: "text-pink-600",
       dashboardPath: "/csm/browse/dashboard",
     },
   ];
@@ -50,11 +50,11 @@ const CSMOptions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-background dark:via-slate-950 dark:to-background flex items-center justify-center p-5">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-5">
       <div className="w-full max-w-[430px]">
         <button
           onClick={() => navigate("/resources/categories")}
-          className="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+          className="mb-6 flex items-center gap-2 text-slate-600 hover:text-primary transition-colors"
         >
           <ArrowLeft className="size-5" />
           <span className="font-semibold">Back</span>
@@ -65,7 +65,7 @@ const CSMOptions = () => {
             <HardHat className="size-8 text-white" />
           </div>
           <h1 className="text-3xl font-black tracking-tighter mb-2">CSM Options</h1>
-          <p className="text-slate-600 dark:text-slate-400">Choose your CSM preference</p>
+          <p className="text-slate-600">Choose your CSM preference</p>
         </div>
 
         <div className="space-y-4">
@@ -90,7 +90,7 @@ const CSMOptions = () => {
 
                   <div className="flex-1">
                     <h3 className="text-xl font-black tracking-tight mb-1">{option.title}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                    <p className="text-sm text-slate-600">
                       {option.description}
                     </p>
                   </div>
@@ -120,8 +120,8 @@ const CSMOptions = () => {
           })}
         </div>
 
-        <div className="mt-8 p-4 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 rounded-xl">
-          <p className="text-sm text-rose-900 dark:text-indigo-100 text-center">
+        <div className="mt-8 p-4 bg-rose-50 border border-rose-200 rounded-xl">
+          <p className="text-sm text-rose-900 text-center">
             {isAuthenticated && user?.role === "resource" ? (
               <span>
                 <strong>Note:</strong> Select the module you want to access

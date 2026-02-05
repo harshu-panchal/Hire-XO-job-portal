@@ -21,7 +21,7 @@ const Inquiries = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="size-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-slate-400 active:scale-95 transition-all"
+            className="size-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 active:scale-95 transition-all"
           >
             <ArrowLeft className="size-5" />
           </button>
@@ -38,7 +38,7 @@ const Inquiries = () => {
             placeholder="Search leads..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] py-4 pl-14 pr-6 text-sm font-medium focus:outline-none focus:border-rose-600 transition-all font-sans"
+            className="w-full bg-white border border-slate-200 rounded-[2rem] py-4 pl-14 pr-6 text-sm font-medium focus:outline-none focus:border-rose-600 transition-all font-sans"
           />
         </div>
       </div>
@@ -48,7 +48,7 @@ const Inquiries = () => {
         {filteredInquiries.map((inquiry) => (
           <div
             key={inquiry.id}
-            className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-5 border border-slate-200 dark:border-white/10 group active:scale-[0.98] transition-all"
+            className="bg-white rounded-[2.5rem] p-5 border border-slate-200 group active:scale-[0.98] transition-all"
           >
             <div className="flex items-start gap-4">
               <div
@@ -68,7 +68,7 @@ const Inquiries = () => {
                     {inquiry.time}
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 font-medium leading-relaxed">
+                <p className="text-xs text-slate-600 line-clamp-2 mb-4 font-medium leading-relaxed">
                   "{inquiry.message}"
                 </p>
 
@@ -76,13 +76,13 @@ const Inquiries = () => {
                   <div className="flex gap-2">
                     <a
                       href={`tel:+910000000000`}
-                      className="size-9 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-rose-600 transition-colors border border-slate-100 dark:border-white/5"
+                      className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-rose-600 transition-colors border border-slate-100"
                     >
                       <Phone className="size-4" />
                     </a>
                     <a
                       href={`mailto:contact@example.com`}
-                      className="size-9 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-rose-600 transition-colors border border-slate-100 dark:border-white/5"
+                      className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-rose-600 transition-colors border border-slate-100"
                     >
                       <Mail className="size-4" />
                     </a>
@@ -91,7 +91,7 @@ const Inquiries = () => {
                     className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
                       inquiry.status === "New"
                         ? "bg-rose-600 text-white"
-                        : "bg-slate-100 text-slate-400 dark:bg-white/5"
+                        : "bg-slate-100 text-slate-400"
                     }`}
                   >
                     {inquiry.status}
@@ -103,8 +103,8 @@ const Inquiries = () => {
         ))}
 
         {filteredInquiries.length === 0 && (
-          <div className="text-center py-20 bg-slate-50 dark:bg-white/5 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/10">
-            <div className="size-16 bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+          <div className="text-center py-20 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200">
+            <div className="size-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
               <Search className="size-6 text-slate-300" />
             </div>
             <p className="text-xs font-black text-slate-400 uppercase tracking-widest">

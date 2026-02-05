@@ -67,21 +67,21 @@ const ApplyDashboard = () => {
       value: stats.activeTenders.toString(),
       icon: TrendingUp,
       color: "text-violet-600",
-      bgColor: "bg-violet-100 dark:bg-violet-950/30",
+      bgColor: "bg-violet-100",
     },
     {
       label: "Closing Soon",
       value: stats.closingSoon.toString(),
       icon: Clock,
       color: "text-amber-600",
-      bgColor: "bg-amber-100 dark:bg-amber-950/30",
+      bgColor: "bg-amber-100",
     },
     {
       label: "My Active Bids",
       value: stats.myBids.toString(),
       icon: FileText,
       color: "text-emerald-600",
-      bgColor: "bg-emerald-100 dark:bg-emerald-950/30",
+      bgColor: "bg-emerald-100",
     },
   ];
 
@@ -103,7 +103,7 @@ const ApplyDashboard = () => {
           Find Your Next <br />
           <span className="text-violet-600">Opportunity</span>
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
           Browse latest tenders and bidding opportunities
         </p>
       </div>
@@ -113,7 +113,7 @@ const ApplyDashboard = () => {
         {dashboardStats.map((stat, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-4 flex flex-col items-center text-center space-y-2"
+            className="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col items-center text-center space-y-2"
           >
             <div className={`size-10 rounded-2xl ${stat.bgColor} flex items-center justify-center`}>
               <stat.icon className={`size-5 ${stat.color}`} />
@@ -142,7 +142,7 @@ const ApplyDashboard = () => {
 
         <div className="space-y-4">
           {tenders.length === 0 ? (
-            <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-white/5">
+            <div className="p-8 text-center bg-white rounded-[2.5rem] border border-slate-200">
               <p className="text-sm font-bold text-slate-500">
                 No active tenders found at the moment.
               </p>
@@ -152,7 +152,7 @@ const ApplyDashboard = () => {
               <Link
                 key={tender._id}
                 to={`/tenders/apply/tenders/${tender._id}`}
-                className="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative shadow-sm hover:shadow-md"
+                className="block bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative shadow-sm hover:shadow-md"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="space-y-1">
@@ -166,7 +166,7 @@ const ApplyDashboard = () => {
                       {tender.title}
                     </h3>
                   </div>
-                  <div className="bg-violet-50 dark:bg-violet-950/30 text-violet-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-violet-100 dark:border-violet-900 shrink-0">
+                  <div className="bg-violet-50 text-violet-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-violet-100 shrink-0">
                     {tender.type || "Open"}
                   </div>
                 </div>
@@ -197,14 +197,14 @@ const ApplyDashboard = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-white/5">
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
                   <div className="flex items-center gap-1.5 text-slate-400">
                     <MapPin className="size-3" />
                     <span className="text-[10px] font-black uppercase tracking-widest truncate max-w-[100px]">
                       {tender.location}
                     </span>
                   </div>
-                  <div className="size-1 rounded-full bg-slate-200 dark:bg-slate-800" />
+                  <div className="size-1 rounded-full bg-slate-200" />
                   <span className="text-[10px] font-black uppercase tracking-widest text-violet-500/70 truncate max-w-[120px]">
                     {tender.category || "General"}
                   </span>
@@ -234,10 +234,10 @@ const ApplyDashboard = () => {
         </Link>
         <Link
           to="/tenders/apply/my-bids"
-          className="bg-slate-900 dark:bg-white rounded-[2rem] p-6 text-white dark:text-slate-900 active:scale-95 transition-transform shadow-xl shadow-slate-900/20"
+          className="bg-slate-900 rounded-[2rem] p-6 text-white active:scale-95 transition-transform shadow-xl shadow-slate-900/20"
         >
-          <div className="size-10 rounded-2xl bg-white/10 dark:bg-slate-900/10 flex items-center justify-center mb-4">
-            <FileText className="size-6 text-white dark:text-slate-900" />
+          <div className="size-10 rounded-2xl bg-white/10 flex items-center justify-center mb-4">
+            <FileText className="size-6 text-white" />
           </div>
           <p className="text-sm font-black tracking-tight">My Active Bids</p>
           <p className="text-[9px] font-black uppercase tracking-widest opacity-60">

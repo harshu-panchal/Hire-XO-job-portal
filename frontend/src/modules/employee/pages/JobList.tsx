@@ -38,7 +38,7 @@ const JobList = () => {
             Find Your <br />
             <span className="text-primary">Perfect Career</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-xs uppercase tracking-widest">
             {filteredJobs.length} opportunities waiting for you
           </p>
         </div>
@@ -68,7 +68,7 @@ const JobList = () => {
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => setSearch("Tech")}
-              className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
+              className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
             >
               <div className="size-12 rounded-xl bg-orange-500/10 flex items-center justify-center mb-4">
                 <Users className="size-6 text-orange-500" />
@@ -84,7 +84,7 @@ const JobList = () => {
 
             <button
               onClick={() => setSearch("Senior")}
-              className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
+              className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
             >
               <div className="size-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4">
                 <TrendingUp className="size-6 text-emerald-500" />
@@ -110,7 +110,7 @@ const JobList = () => {
             placeholder="Search roles or companies..."
             value={filters.search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-16 pl-14 pr-6 rounded-[2rem] bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black placeholder:text-slate-400 placeholder:font-black"
+            className="w-full h-16 pl-14 pr-6 rounded-[2rem] bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black placeholder:text-slate-400 placeholder:font-black"
           />
         </div>
 
@@ -123,7 +123,7 @@ const JobList = () => {
               className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${
                 filters.type === cat.id
                   ? "bg-primary text-white shadow-lg shadow-primary/20"
-                  : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
+                  : "bg-white border border-slate-200 text-slate-400"
               }`}
             >
               {cat.label}

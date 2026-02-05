@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "@/context/ThemeContext";
 import { subscriptionService } from "@/services/subscriptionService";
 import { authService } from "@/services/authService";
 import { toast } from "sonner";
@@ -59,7 +58,6 @@ const SettingItem = ({ icon: Icon, label, description, action, onClick }: any) =
 const ApplySettingsPage = () => {
   const navigate = useNavigate();
   const { logout, user, updateProfile } = useAuthStore();
-  const { theme: currentTheme, setTheme: setGlobalTheme } = useTheme();
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   // Local state for preferences synced with user profile

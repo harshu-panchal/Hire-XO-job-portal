@@ -12,9 +12,9 @@ const ProvideLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center">
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center">
       {/* Mobile Container */}
-      <div className="w-full max-w-[430px] flex flex-col min-h-screen bg-white dark:bg-slate-900 shadow-2xl relative">
+      <div className="w-full max-w-[430px] flex flex-col min-h-screen bg-white shadow-2xl relative">
         <ProvideNavbar />
 
         <main className="flex-1 overflow-y-auto pb-24 px-4">
@@ -22,7 +22,7 @@ const ProvideLayout = () => {
         </main>
 
         {/* Bottom Navigation */}
-        <nav className="fixed bottom-0 w-full max-w-[430px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-t border-slate-200 dark:border-white/10 px-6 py-4 flex items-center justify-between z-50 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+        <nav className="fixed bottom-0 w-full max-w-[430px] bg-white/80 backdrop-blur-lg border-t border-slate-200 px-6 py-4 flex items-center justify-between z-50 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
           {navItems.map((item) => (
             <NavLink
               key={item.path}

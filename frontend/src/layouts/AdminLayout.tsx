@@ -4,10 +4,7 @@ import { AdminSidebar } from "../modules/admin/components/AdminSidebar";
 import { AdminHeader } from "../modules/admin/components/AdminHeader";
 import { Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "../context/ThemeContext";
-
 export default function AdminLayout() {
-  const { effectiveTheme } = useTheme();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -33,7 +30,7 @@ export default function AdminLayout() {
 
   return (
     <div
-      className={`flex h-screen overflow-hidden transition-colors duration-300 font-sans ${effectiveTheme} ${effectiveTheme === "dark" ? "bg-slate-950 text-white" : "bg-slate-50 text-slate-900"}`}
+      className="flex h-screen overflow-hidden transition-colors duration-300 font-sans bg-slate-50 text-slate-900"
     >
       {/* Desktop Sidebar (Persistent) */}
       <aside className="hidden lg:flex w-[280px] flex-shrink-0">
@@ -72,7 +69,7 @@ export default function AdminLayout() {
           onMenuClick={() => setIsSidebarOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
+        <main className="flex-1 overflow-y-auto bg-slate-50">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -90,7 +87,7 @@ export default function AdminLayout() {
         </main>
 
         {/* Mobile Bottom Nav */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-white/10 px-4 py-3 flex items-center justify-center z-40">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-center z-40">
           <button
             onClick={() => setIsSidebarOpen(true)}
             className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg font-medium text-sm"

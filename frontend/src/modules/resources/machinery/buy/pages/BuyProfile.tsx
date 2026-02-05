@@ -58,8 +58,8 @@ const BuyProfile = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 space-y-3 shadow-sm text-center">
-          <div className="size-12 rounded-2xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center mx-auto text-amber-600">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 space-y-3 shadow-sm text-center">
+          <div className="size-12 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto text-amber-600">
             <CreditCard className="size-6" />
           </div>
           <div>
@@ -71,8 +71,8 @@ const BuyProfile = () => {
             </p>
           </div>
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 space-y-3 shadow-sm text-center">
-          <div className="size-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center mx-auto text-slate-600">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 space-y-3 shadow-sm text-center">
+          <div className="size-12 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto text-slate-600">
             <Package className="size-6" />
           </div>
           <div>
@@ -91,7 +91,7 @@ const BuyProfile = () => {
         <h2 className="px-1 text-xs font-black uppercase tracking-[0.2em] text-amber-600 italic">
           Procurement Profile
         </h2>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm space-y-6">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-1">
               <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
@@ -109,12 +109,12 @@ const BuyProfile = () => {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 dark:border-white/5">
+          <div className="pt-4 border-t border-slate-100">
             <div className="flex flex-wrap gap-2">
               {buyerData.verifications.map((v) => (
                 <span
                   key={v}
-                  className="px-5 py-2.5 rounded-full bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-slate-100 dark:border-white/5"
+                  className="px-5 py-2.5 rounded-full bg-slate-50 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-slate-100"
                 >
                   <ShieldCheck className="size-3.5 text-emerald-500" /> {v}
                 </span>

@@ -71,7 +71,7 @@ const RoleSelection = () => {
       icon: Briefcase,
       gradient: "from-violet-500 to-purple-600",
       bgGradient: "from-violet-500/10 to-purple-600/10",
-      iconColor: "text-violet-600 dark:text-violet-400",
+      iconColor: "text-violet-600",
       path: "/jobs",
       delay: "0ms",
     },
@@ -82,7 +82,7 @@ const RoleSelection = () => {
       icon: Building2,
       gradient: "from-blue-500 to-cyan-600",
       bgGradient: "from-blue-500/10 to-cyan-600/10",
-      iconColor: "text-blue-600 dark:text-blue-400",
+      iconColor: "text-blue-600",
       path: "/employer",
       delay: "100ms",
     },
@@ -93,14 +93,14 @@ const RoleSelection = () => {
       icon: Package,
       gradient: "from-emerald-500 to-teal-600",
       bgGradient: "from-emerald-500/10 to-teal-600/10",
-      iconColor: "text-emerald-600 dark:text-emerald-400",
+      iconColor: "text-emerald-600",
       path: "/login/resource",
       delay: "200ms",
     },
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-background flex flex-col justify-center p-6">
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 flex flex-col justify-center p-6">
       {/* Animated Background Elements */}
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/10 to-transparent rounded-b-[4rem] -z-10" />
       <div className="absolute top-20 -right-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
@@ -109,16 +109,16 @@ const RoleSelection = () => {
       <div className="w-full max-w-[400px] mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <div className="inline-flex items-center justify-center p-1 rounded-3xl bg-gradient-to-br from-slate-200 to-white dark:from-slate-800 dark:to-slate-900 shadow-xl mb-4">
+          <div className="inline-flex items-center justify-center p-1 rounded-3xl bg-gradient-to-br from-slate-200 to-white shadow-xl mb-4">
             <div className="size-20 bg-gradient-to-br from-primary to-purple-600 rounded-[1.4rem] flex items-center justify-center shadow-inner">
               <span className="text-white font-black text-4xl tracking-tighter italic">H</span>
             </div>
           </div>
           <div>
-            <h1 className="text-4xl font-black tracking-normal text-slate-900 dark:text-white mb-2 font-branding">
+            <h1 className="text-4xl font-black tracking-normal text-slate-900 mb-2 font-branding">
               Hire<span className="text-primary">XO</span>
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">
+            <p className="text-slate-500 font-medium text-lg">
               The future of hiring is here.
             </p>
           </div>
@@ -126,7 +126,7 @@ const RoleSelection = () => {
 
         {/* Status indicator / Logout if logged in */}
         {isAuthenticated && user && (
-          <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-4 rounded-3xl border border-slate-200 dark:border-white/5 flex items-center justify-between animate-in fade-in zoom-in-95 duration-500">
+          <div className="bg-white/50 backdrop-blur-sm p-4 rounded-3xl border border-slate-200 flex items-center justify-between animate-in fade-in zoom-in-95 duration-500">
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <User className="size-5 text-primary" />
@@ -135,7 +135,7 @@ const RoleSelection = () => {
                 <p className="text-xs font-black uppercase tracking-widest text-primary">
                   Logged in as
                 </p>
-                <p className="text-sm font-bold text-slate-700 dark:text-slate-300 capitalize">
+                <p className="text-sm font-bold text-slate-700 capitalize">
                   {user.role.replace("-", " ")}
                 </p>
               </div>
@@ -163,7 +163,7 @@ const RoleSelection = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 z-10" />
 
-                <Card className="relative overflow-hidden border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-lg shadow-slate-200/50 dark:shadow-none hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 p-1">
+                <Card className="relative overflow-hidden border-0 bg-white/80 backdrop-blur-xl shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 p-1">
                   <div className="p-4 flex items-center gap-5">
                     <div
                       className={`size-14 rounded-2xl bg-gradient-to-br ${role.bgGradient} flex items-center justify-center shrink-0`}
@@ -171,14 +171,14 @@ const RoleSelection = () => {
                       <Icon className={`size-7 ${role.iconColor}`} />
                     </div>
                     <div className="flex-1 text-left">
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                      <h3 className="text-lg font-bold text-slate-900 leading-tight">
                         {role.title}
                       </h3>
-                      <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                      <p className="text-sm font-medium text-slate-500">
                         {role.description}
                       </p>
                     </div>
-                    <div className="size-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                    <div className="size-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                       <ArrowRight className="size-4" />
                     </div>
                   </div>
@@ -195,7 +195,7 @@ const RoleSelection = () => {
 
         {/* Footer */}
         <div className="flex flex-col items-center gap-2">
-          <p className="text-center text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest">
+          <p className="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
             v1.0.4
           </p>
           <div className="flex items-center gap-4">
@@ -205,7 +205,7 @@ const RoleSelection = () => {
             >
               Terms
             </button>
-            <span className="size-1 rounded-full bg-slate-300 dark:bg-slate-800" />
+            <span className="size-1 rounded-full bg-slate-300" />
             <button
               onClick={() => alert("Privacy Policy coming soon!")}
               className="text-[10px] font-black text-slate-400 hover:text-primary uppercase tracking-widest transition-colors cursor-pointer"

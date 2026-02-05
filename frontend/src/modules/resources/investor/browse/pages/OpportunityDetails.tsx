@@ -110,7 +110,7 @@ const OpportunityDetails = () => {
       </button>
 
       {/* Main Header Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[3rem] p-8 shadow-sm">
+      <div className="bg-white border border-slate-200 rounded-[3rem] p-8 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
           <div className="flex items-start gap-5">
             <div className="size-20 rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center text-white font-black text-4xl shadow-lg shadow-violet-500/20">
@@ -124,10 +124,10 @@ const OpportunityDetails = () => {
                 {opportunity.title}
               </h1>
               <div className="flex flex-wrap gap-2 pt-1">
-                <span className="px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-950/30 text-violet-600 text-[9px] font-black uppercase tracking-widest border border-violet-200/50">
+                <span className="px-3 py-1 rounded-full bg-violet-100 text-violet-600 text-[9px] font-black uppercase tracking-widest border border-violet-200/50">
                   {opportunity.industry || opportunity.category || "Investment"}
                 </span>
-                <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
                   <MapPin className="size-3" /> {opportunity.location || "Remote"}
                 </span>
               </div>
@@ -136,7 +136,7 @@ const OpportunityDetails = () => {
           <div className="flex gap-2">
             <button
               onClick={() => setIsBookmarked(!isBookmarked)}
-              className="size-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all border border-slate-100 dark:border-white/5"
+              className="size-12 rounded-2xl bg-slate-50 flex items-center justify-center active:scale-90 transition-all border border-slate-100"
             >
               <Bookmark
                 className={`size-5 ${isBookmarked ? "fill-violet-600 text-violet-600" : "text-slate-400"}`}
@@ -151,7 +151,7 @@ const OpportunityDetails = () => {
                   toast.success("Link copied to clipboard");
                 }
               }}
-              className="size-12 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all border border-slate-100 dark:border-white/5"
+              className="size-12 rounded-2xl bg-slate-50 flex items-center justify-center active:scale-90 transition-all border border-slate-100"
             >
               <Share2 className="size-5 text-slate-400" />
             </button>
@@ -160,40 +160,40 @@ const OpportunityDetails = () => {
 
         {/* Investment Board */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-[2rem] p-5 border border-emerald-100 dark:border-emerald-900/30">
+          <div className="bg-emerald-50 rounded-[2rem] p-5 border border-emerald-100">
             <div className="size-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3">
               <DollarSign className="size-5 text-emerald-600" />
             </div>
             <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600 mb-1">
               Total Seeking
             </p>
-            <p className="text-xl font-black text-emerald-700 dark:text-emerald-500">
+            <p className="text-xl font-black text-emerald-700">
               ₹{opportunity.amount || opportunity.seekingAmount || "Negotiable"}
             </p>
           </div>
-          <div className="bg-violet-50 dark:bg-violet-950/20 rounded-[2rem] p-5 border border-violet-100 dark:border-violet-900/30">
+          <div className="bg-violet-50 rounded-[2rem] p-5 border border-violet-100">
             <div className="size-10 rounded-xl bg-violet-600/10 flex items-center justify-center mb-3">
               <Percent className="size-5 text-violet-600" />
             </div>
             <p className="text-[9px] font-black uppercase tracking-widest text-violet-600 mb-1">
               Equity Offered
             </p>
-            <p className="text-xl font-black text-violet-700 dark:text-violet-500">
+            <p className="text-xl font-black text-violet-700">
               {opportunity.equity || "Discussion"}
             </p>
           </div>
-          <div className="bg-indigo-50 dark:bg-indigo-950/20 rounded-[2rem] p-5 border border-indigo-100 dark:border-indigo-900/30">
+          <div className="bg-indigo-50 rounded-[2rem] p-5 border border-indigo-100">
             <div className="size-10 rounded-xl bg-indigo-600/10 flex items-center justify-center mb-3">
               <TrendingUp className="size-5 text-indigo-600" />
             </div>
             <p className="text-[9px] font-black uppercase tracking-widest text-indigo-600 mb-1">
               Expected ROI
             </p>
-            <p className="text-xl font-black text-indigo-700 dark:text-indigo-500">
+            <p className="text-xl font-black text-indigo-700">
               {opportunity.roi || "18-25%"}
             </p>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-[2rem] p-5 border border-slate-100 dark:border-white/5">
+          <div className="bg-slate-50 rounded-[2rem] p-5 border border-slate-100">
             <div className="size-10 rounded-xl bg-slate-500/10 flex items-center justify-center mb-3">
               <Calendar className="size-5 text-slate-500" />
             </div>
@@ -208,14 +208,14 @@ const OpportunityDetails = () => {
       <div className="grid md:grid-cols-3 gap-6">
         {/* Left Side: Stats & Info */}
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-4">
+          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 space-y-4">
             <h2 className="text-xl font-black tracking-tight">Executive Summary</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 font-bold leading-relaxed">
+            <p className="text-sm text-slate-600 font-bold leading-relaxed">
               {opportunity.description}
             </p>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8">
+          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8">
             <h2 className="text-xl font-black tracking-tight mb-6">Company Profile</h2>
             <div className="grid grid-cols-2 gap-6">
               {[
@@ -225,7 +225,7 @@ const OpportunityDetails = () => {
                 { icon: Building2, label: "Sector", value: opportunity.category || "Technology" },
               ].map((stat, i) => (
                 <div key={i} className="flex gap-4">
-                  <div className="size-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                  <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
                     <stat.icon className="size-5 text-slate-400" />
                   </div>
                   <div>
@@ -242,7 +242,7 @@ const OpportunityDetails = () => {
 
         {/* Right Side: CTA & Contact */}
         <div className="space-y-6">
-          <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2.5rem] p-8 shadow-xl shadow-slate-900/10">
+          <div className="bg-slate-900 text-white rounded-[2.5rem] p-8 shadow-xl shadow-slate-900/10">
             <h3 className="text-lg font-black tracking-tight mb-4">
               Invest in {opportunity.company || "Tomorrow"}
             </h3>
@@ -271,12 +271,12 @@ const OpportunityDetails = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-6">
+          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 space-y-6">
             <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 text-center">
               Contact Info
             </h3>
             <div className="space-y-3">
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-white/5 flex items-center gap-3">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3">
                 <Mail className="size-5 text-violet-600" />
                 <span className="text-[11px] font-black truncate">
                   {user
@@ -287,7 +287,7 @@ const OpportunityDetails = () => {
                     : "••••••••••••••"}
                 </span>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-white/5 flex items-center gap-3">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3">
                 <Phone className="size-5 text-violet-600" />
                 <span className="text-[11px] font-black">
                   {user ? opportunity.phone || "+91 ••••• •••••" : "••••••••••••••"}

@@ -11,7 +11,7 @@ const ProvideDashboard = () => {
             Vehicle <br />
             <span className="text-blue-600">Admin</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-xs uppercase tracking-widest">
             Manage your rental fleet
           </p>
         </div>
@@ -36,7 +36,7 @@ const ProvideDashboard = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
+            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
               <div className="size-12 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-4">
                 <Eye className="size-6 text-cyan-500" />
               </div>
@@ -49,7 +49,7 @@ const ProvideDashboard = () => {
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
+            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
               <div className="size-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4">
                 <Star className="size-6 text-amber-500 fill-amber-500" />
               </div>
@@ -81,7 +81,7 @@ const ProvideDashboard = () => {
           {/* Inquiry 1 */}
           <Link
             to="/vehicles/provide/inquiries"
-            className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
+            className="block bg-white rounded-[2rem] p-4 border border-slate-200 active:scale-[0.98] transition-all"
           >
             <div className="flex items-start gap-3">
               <div className="size-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-black text-sm shrink-0">
@@ -94,7 +94,7 @@ const ProvideDashboard = () => {
                     2h ago
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                <p className="text-xs text-slate-600 mb-2">
                   Interested in renting the Tata Ace for 3 days for local shifting.
                 </p>
                 <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ const ProvideDashboard = () => {
           {/* Inquiry 2 */}
           <Link
             to="/vehicles/provide/inquiries"
-            className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
+            className="block bg-white rounded-[2rem] p-4 border border-slate-200 active:scale-[0.98] transition-all"
           >
             <div className="flex items-start gap-3">
               <div className="size-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-black text-sm shrink-0">
@@ -125,7 +125,7 @@ const ProvideDashboard = () => {
                     5h ago
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                <p className="text-xs text-slate-600 mb-2">
                   Need a luxury sedan for a wedding ceremony in South Delhi next week.
                 </p>
                 <div className="flex items-center gap-2">
@@ -183,7 +183,7 @@ const ProvideDashboard = () => {
         <div className="grid grid-cols-2 gap-4">
           <Link
             to="/vehicles/provide/post"
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] p-5 active:scale-95 transition-transform"
+            className="bg-white border border-slate-200 rounded-[2rem] p-5 active:scale-95 transition-transform"
           >
             <div className="size-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3">
               <PlusSquare className="size-5" />
@@ -195,7 +195,7 @@ const ProvideDashboard = () => {
           </Link>
           <Link
             to="/vehicles/provide/my-vehicles"
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] p-5 active:scale-95 transition-transform"
+            className="bg-white border border-slate-200 rounded-[2rem] p-5 active:scale-95 transition-transform"
           >
             <div className="size-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-3">
               <FileText className="size-5" />

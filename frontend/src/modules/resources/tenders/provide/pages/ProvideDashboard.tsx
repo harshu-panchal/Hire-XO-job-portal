@@ -76,28 +76,28 @@ const ProvideDashboard = () => {
       value: stats.activeTenders,
       icon: FileText,
       color: "text-indigo-600",
-      bgColor: "bg-indigo-100 dark:bg-indigo-950/30",
+      bgColor: "bg-indigo-100",
     },
     {
       label: "Bids Received",
       value: stats.bidsReceived,
       icon: Users,
       color: "text-violet-600",
-      bgColor: "bg-violet-100 dark:bg-violet-950/30",
+      bgColor: "bg-violet-100",
     },
     {
       label: "Awarded",
       value: stats.awarded,
       icon: CheckCircle2,
       color: "text-emerald-600",
-      bgColor: "bg-emerald-100 dark:bg-emerald-950/30",
+      bgColor: "bg-emerald-100",
     },
     {
       label: "Engagement",
       value: stats.engagement,
       icon: TrendingUp,
       color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-950/30",
+      bgColor: "bg-blue-100",
     },
   ];
 
@@ -114,7 +114,7 @@ const ProvideDashboard = () => {
             Tender <br />
             <span className="text-indigo-600">Management</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
+          <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
             Organize and award your business opportunities
           </p>
         </div>
@@ -131,7 +131,7 @@ const ProvideDashboard = () => {
         {statCards.map((stat, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2rem] p-5 flex flex-col items-center text-center space-y-2 group hover:scale-[1.02] transition-transform"
+            className="bg-white border border-slate-200 rounded-[2rem] p-5 flex flex-col items-center text-center space-y-2 group hover:scale-[1.02] transition-transform"
           >
             <div className={`size-12 rounded-2xl ${stat.bgColor} flex items-center justify-center`}>
               <stat.icon className={`size-6 ${stat.color}`} />
@@ -164,9 +164,9 @@ const ProvideDashboard = () => {
               <Link
                 key={tender.id}
                 to="/tenders/provide/my-tenders"
-                className="flex items-center gap-4 p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 shadow-sm group hover:border-indigo-200 transition-all"
+                className="flex items-center gap-4 p-4 rounded-3xl bg-white border border-slate-100 shadow-sm group hover:border-indigo-200 transition-all"
               >
-                <div className="size-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center shrink-0">
+                <div className="size-12 rounded-2xl bg-indigo-50 flex items-center justify-center shrink-0">
                   <FileText className="size-6 text-indigo-600" />
                 </div>
                 <div className="flex-1 min-w-0 pr-4">
@@ -180,7 +180,7 @@ const ProvideDashboard = () => {
                         {tender.bids} Bids
                       </span>
                     </div>
-                    <div className="size-1 rounded-full bg-slate-200 dark:bg-slate-800" />
+                    <div className="size-1 rounded-full bg-slate-200" />
                     <div className="flex items-center gap-1 opacity-60">
                       <Clock className="size-3" />
                       <span className="text-[9px] font-black uppercase tracking-widest">
@@ -227,7 +227,7 @@ const ProvideDashboard = () => {
             recentBids.map((bid) => (
               <div
                 key={bid.id}
-                className="p-5 rounded-[2rem] bg-indigo-50/50 dark:bg-indigo-950/10 border border-indigo-100/50 dark:border-indigo-900/20 relative overflow-hidden group"
+                className="p-5 rounded-[2rem] bg-indigo-50/50 border border-indigo-100/50 relative overflow-hidden group"
               >
                 <div className="flex items-start justify-between relative z-10">
                   <div className="space-y-1">

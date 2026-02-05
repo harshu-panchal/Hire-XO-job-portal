@@ -150,8 +150,8 @@ export default function Employers() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Employers</h1>
-          <p className="text-slate-500 dark:text-white/60 mt-1">Manage all registered employers</p>
+          <h1 className="text-2xl font-semibold text-slate-900">Employers</h1>
+          <p className="text-slate-500 mt-1">Manage all registered employers</p>
         </div>
         <button
           onClick={() => handleOpenModal()}
@@ -171,13 +171,13 @@ export default function Employers() {
             placeholder="Search employers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+          className="px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/50"
         >
           <option value="">All Status</option>
           <option value="Active">Active</option>
@@ -187,26 +187,26 @@ export default function Employers() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-white/10 p-4">
-          <p className="text-sm text-slate-500 dark:text-white/50">Total Employers</p>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+        <div className="bg-white rounded-lg border border-slate-200 p-4">
+          <p className="text-sm text-slate-500">Total Employers</p>
+          <p className="text-2xl font-bold text-slate-900 mt-1">
             {employers.length}
           </p>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-white/10 p-4">
-          <p className="text-sm text-slate-500 dark:text-white/50">Active</p>
-          <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
+        <div className="bg-white rounded-lg border border-slate-200 p-4">
+          <p className="text-sm text-slate-500">Active</p>
+          <p className="text-2xl font-bold text-green-600 mt-1">
             {employers.filter((r) => r.status === "Active").length}
           </p>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-white/10 p-4">
-          <p className="text-sm text-slate-500 dark:text-white/50">Inactive</p>
+        <div className="bg-white rounded-lg border border-slate-200 p-4">
+          <p className="text-sm text-slate-500">Inactive</p>
           <p className="text-2xl font-bold text-slate-400 mt-1">
             {employers.filter((r) => r.status === "Inactive").length}
           </p>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-white/10 p-4">
-          <p className="text-sm text-slate-500 dark:text-white/50">Total Jobs Posted</p>
+        <div className="bg-white rounded-lg border border-slate-200 p-4">
+          <p className="text-sm text-slate-500">Total Jobs Posted</p>
           <p className="text-2xl font-bold text-primary mt-1">
             {employers.reduce((acc, r) => acc + r.jobsPosted, 0)}
           </p>
@@ -214,27 +214,27 @@ export default function Employers() {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-white/10">
-                <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider">
+              <tr className="border-b border-slate-200">
+                <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Employer
                 </th>
-                <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider">
+                <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Company
                 </th>
-                <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider">
+                <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider">
+                <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Joined
                 </th>
-                <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider">
+                <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Jobs
                 </th>
-                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider">
+                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -248,7 +248,7 @@ export default function Employers() {
                     initial="hidden"
                     animate="show"
                     exit={{ opacity: 0, x: -20 }}
-                    className="border-b border-slate-100 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                    className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -259,46 +259,46 @@ export default function Employers() {
                             .join("")}
                         </div>
                         <div>
-                          <p className="font-medium text-slate-900 dark:text-white">
+                          <p className="font-medium text-slate-900">
                             {employer.name}
                           </p>
-                          <p className="text-sm text-slate-500 dark:text-white/50">
+                          <p className="text-sm text-slate-500">
                             {employer.email}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-white/70">
+                    <td className="px-6 py-4 text-sm text-slate-600">
                       {employer.company}
                     </td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                           employer.status === "Active"
-                            ? "bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400"
-                            : "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/50"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-slate-100 text-slate-600"
                         }`}
                       >
                         {employer.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-white/70">
+                    <td className="px-6 py-4 text-sm text-slate-600">
                       {employer.joinedDate}
                     </td>
-                    <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+                    <td className="px-6 py-4 text-sm font-medium text-slate-900">
                       {employer.jobsPosted}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleOpenModal(employer)}
-                          className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+                          className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
                         >
-                          <Edit2 className="w-4 h-4 text-slate-500 dark:text-white/50" />
+                          <Edit2 className="w-4 h-4 text-slate-500" />
                         </button>
                         <button
                           onClick={() => handleDelete(employer.id)}
-                          className="p-2 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
                         >
                           <Trash2 className="w-4 h-4 text-red-500" />
                         </button>
@@ -313,8 +313,8 @@ export default function Employers() {
 
         {filteredEmployers.length === 0 && (
           <div className="py-12 text-center">
-            <Users className="w-12 h-12 text-slate-300 dark:text-white/20 mx-auto mb-4" />
-            <p className="text-slate-500 dark:text-white/50">No employers found</p>
+            <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <p className="text-slate-500">No employers found</p>
           </div>
         )}
       </div>
@@ -334,22 +334,22 @@ export default function Employers() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 shadow-xl z-50 p-6"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-xl border border-slate-200 shadow-xl z-50 p-6"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-slate-900">
                   {editingEmployer ? "Edit Employer" : "Add New Employer"}
                 </h3>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg"
+                  className="p-2 hover:bg-slate-100 rounded-lg"
                 >
                   <X className="w-5 h-5 text-slate-500" />
                 </button>
               </div>
               <form onSubmit={handleSave} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Full Name
                   </label>
                   <input
@@ -357,11 +357,11 @@ export default function Employers() {
                     required
                     value={formData.name || ""}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Company
                   </label>
                   <input
@@ -369,11 +369,11 @@ export default function Employers() {
                     required
                     value={formData.company || ""}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Email
                   </label>
                   <input
@@ -381,11 +381,11 @@ export default function Employers() {
                     required
                     value={formData.email || ""}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Status
                   </label>
                   <select
@@ -393,7 +393,7 @@ export default function Employers() {
                     onChange={(e) =>
                       setFormData({ ...formData, status: e.target.value as "Active" | "Inactive" })
                     }
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -403,7 +403,7 @@ export default function Employers() {
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                    className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
                   >
                     Cancel
                   </button>

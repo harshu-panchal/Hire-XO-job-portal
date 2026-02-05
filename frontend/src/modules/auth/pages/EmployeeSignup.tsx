@@ -136,7 +136,7 @@ const EmployeeSignup = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-background flex flex-col justify-center p-6">
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 flex flex-col justify-center p-6">
       {/* Animated Background Elements */}
       <div className="absolute top-0 left-0 w-full h-[400px] bg-gradient-to-b from-violet-500/10 to-transparent rounded-b-[4rem] -z-10" />
       <div className="absolute top-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse" />
@@ -145,9 +145,9 @@ const EmployeeSignup = () => {
         {/* Back Button */}
         <button
           onClick={() => (currentStep === 1 ? navigate("/login/employee") : handleBack())}
-          className="group flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+          className="group flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors"
         >
-          <div className="size-8 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center group-hover:bg-slate-100 dark:group-hover:bg-slate-800 transition-colors">
+          <div className="size-8 rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:bg-slate-100 transition-colors">
             <ArrowLeft className="size-4" />
           </div>
           <span className="text-sm font-semibold">Back</span>
@@ -155,10 +155,10 @@ const EmployeeSignup = () => {
 
         {/* Header */}
         <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-3xl font-black tracking-tight text-slate-900">
             Create Account
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">
+          <p className="text-slate-500 font-medium">
             Step {currentStep} of {totalSteps} •{" "}
             <span className="text-primary font-bold">
               {currentStep === 1 ? "Basic Details" : currentStep === 2 ? "Experience" : "Security"}
@@ -174,14 +174,14 @@ const EmployeeSignup = () => {
               className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
                 step <= currentStep
                   ? "bg-gradient-to-r from-primary to-purple-600 shadow-[0_0_10px_rgba(124,58,237,0.5)]"
-                  : "bg-slate-200 dark:bg-slate-800"
+                  : "bg-slate-200"
               }`}
             />
           ))}
         </div>
 
         {/* Form Card */}
-        <Card className="border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-xl shadow-slate-200/50 dark:shadow-none p-6 animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-backwards delay-100">
+        <Card className="border-0 bg-white/80 backdrop-blur-xl shadow-xl shadow-slate-200/50 p-6 animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-backwards delay-100">
           <form onSubmit={handleSubmit}>
             {/* Step 1: Basic Info */}
             {currentStep === 1 && (
@@ -197,7 +197,7 @@ const EmployeeSignup = () => {
                       placeholder="John Doe"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                       required
                     />
                   </div>
@@ -214,7 +214,7 @@ const EmployeeSignup = () => {
                       placeholder="johndoe"
                       value={formData.username}
                       onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                       required
                     />
                   </div>
@@ -231,7 +231,7 @@ const EmployeeSignup = () => {
                       placeholder="+91 98765 43210"
                       value={formData.phoneNumber}
                       onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                       required
                     />
                   </div>
@@ -248,7 +248,7 @@ const EmployeeSignup = () => {
                       placeholder="john@example.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                       required
                     />
                   </div>
@@ -270,7 +270,7 @@ const EmployeeSignup = () => {
                       placeholder="Degree / Major"
                       value={formData.education}
                       onChange={(e) => setFormData({ ...formData, education: e.target.value })}
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                       required
                     />
                   </div>
@@ -290,7 +290,7 @@ const EmployeeSignup = () => {
                         onChange={(e) =>
                           setFormData({ ...formData, age: parseInt(e.target.value) || 0 })
                         }
-                        className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                        className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                         min="18"
                         max="100"
                         required
@@ -311,7 +311,7 @@ const EmployeeSignup = () => {
                         onChange={(e) =>
                           setFormData({ ...formData, experience: parseInt(e.target.value) || 0 })
                         }
-                        className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                        className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                         min="0"
                         max="50"
                         required
@@ -335,13 +335,13 @@ const EmployeeSignup = () => {
                         onKeyPress={(e) =>
                           e.key === "Enter" && (e.preventDefault(), handleAddCompany())
                         }
-                        className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                        className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                       />
                     </div>
                     <Button
                       type="button"
                       onClick={handleAddCompany}
-                      className="h-14 px-6 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90"
+                      className="h-14 px-6 rounded-2xl bg-slate-900 text-white font-bold hover:opacity-90"
                     >
                       Add
                     </Button>
@@ -382,7 +382,7 @@ const EmployeeSignup = () => {
                       type="file"
                       accept=".pdf,.doc,.docx"
                       onChange={(e) => setCvFile(e.target.files?.[0] || null)}
-                      className="pl-12 h-14 pt-3.5 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium text-sm text-slate-500 file:mr-4 file:py-0 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                      className="pl-12 h-14 pt-3.5 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium text-sm text-slate-500 file:mr-4 file:py-0 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
                     />
                   </div>
                   {cvFile && (
@@ -402,7 +402,7 @@ const EmployeeSignup = () => {
                       type="file"
                       accept="image/*"
                       onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
-                      className="pl-12 h-14 pt-3.5 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium text-sm text-slate-500 file:mr-4 file:py-0 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                      className="pl-12 h-14 pt-3.5 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium text-sm text-slate-500 file:mr-4 file:py-0 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
                     />
                   </div>
                   {photoFile && (
@@ -425,13 +425,13 @@ const EmployeeSignup = () => {
                       placeholder="Min. 6 characters"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="pl-12 pr-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                      className="pl-12 pr-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                     >
                       {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                     </button>
@@ -453,13 +453,13 @@ const EmployeeSignup = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, confirmPassword: e.target.value })
                       }
-                      className="pl-12 pr-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                      className="pl-12 pr-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="size-5" />
@@ -475,7 +475,7 @@ const EmployeeSignup = () => {
             {/* Error Message */}
             {error && (
               <div className="mt-5 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in zoom-in-95 duration-200">
-                <p className="text-sm text-red-600 dark:text-red-400 font-bold text-center">
+                <p className="text-sm text-red-600 font-bold text-center">
                   {error}
                 </p>
               </div>
