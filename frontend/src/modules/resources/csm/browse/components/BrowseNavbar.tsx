@@ -46,4 +46,3 @@ export const BrowseNavbar = () => {
     </header>
   );
 };
-

@@ -288,7 +288,10 @@ function App() {
           <Route path="/employer/wallet" element={<EmployerWallet />} />
           {/* Employer Activities and Settings */}
           <Route path="/employer/notifications" element={<EmployerActivity />} />
-          <Route path="/employer/settings/notifications" element={<EmployerNotificationSettings />} />
+          <Route
+            path="/employer/settings/notifications"
+            element={<EmployerNotificationSettings />}
+          />
           <Route path="/employer/security" element={<EmployerSecurity />} />
         </Route>
       </Route>

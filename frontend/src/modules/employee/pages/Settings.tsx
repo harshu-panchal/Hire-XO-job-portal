@@ -91,8 +91,8 @@ const Settings = () => {
           profilePhoto: newPhotoUrl,
           profile: {
             ...userProfile.profile,
-            profilePhoto: newPhotoUrl
-          }
+            profilePhoto: newPhotoUrl,
+          },
         });
         toast.success("Profile photo updated!");
       }
@@ -120,8 +120,8 @@ const Settings = () => {
           experience: form.experience,
           preferences: {
             theme,
-            notifications: pushEnabled
-          }
+            notifications: pushEnabled,
+          },
         },
       };
       await updateProfile(updatedProfile);
@@ -136,10 +136,7 @@ const Settings = () => {
   const handleAddExperience = () => {
     setForm((f) => ({
       ...f,
-      experience: [
-        ...f.experience,
-        { company: "", role: "", period: "" },
-      ],
+      experience: [...f.experience, { company: "", role: "", period: "" }],
     }));
   };
 
@@ -153,9 +150,7 @@ const Settings = () => {
   const handleExperienceChange = (index: number, field: string, value: string) => {
     setForm((f) => ({
       ...f,
-      experience: f.experience.map((exp, i) =>
-        i === index ? { ...exp, [field]: value } : exp
-      ),
+      experience: f.experience.map((exp, i) => (i === index ? { ...exp, [field]: value } : exp)),
     }));
   };
 
@@ -185,7 +180,7 @@ const Settings = () => {
                   `https://api.dicebear.com/7.x/avataaars/svg?seed=${userProfile?.name}`
                 }
                 alt="Profile"
-                className={`w-full h-full object-cover transition-opacity ${isUploading ? 'opacity-50' : 'opacity-100'}`}
+                className={`w-full h-full object-cover transition-opacity ${isUploading ? "opacity-50" : "opacity-100"}`}
               />
               {isUploading && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -402,10 +397,11 @@ const Settings = () => {
                     key={t.id}
                     type="button"
                     onClick={() => setTheme(t.id as any)}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${theme === t.id
-                      ? "bg-primary/5 border-primary text-primary"
-                      : "bg-slate-50 dark:bg-white/5 border-transparent text-slate-400"
-                      }`}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${
+                      theme === t.id
+                        ? "bg-primary/5 border-primary text-primary"
+                        : "bg-slate-50 dark:bg-white/5 border-transparent text-slate-400"
+                    }`}
                   >
                     <t.icon className="size-5" />
                     <span className="text-[10px] font-black uppercase tracking-widest">

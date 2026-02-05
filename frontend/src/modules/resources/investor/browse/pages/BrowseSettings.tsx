@@ -188,15 +188,14 @@ const BrowseSettings = () => {
             <button
               key={t.id}
               onClick={() => handleThemeChange(t.id as any)}
-              className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${theme === t.id
+              className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
+                theme === t.id
                   ? "bg-primary/5 border-primary text-primary"
                   : "bg-slate-50 dark:bg-slate-800 border-transparent text-slate-400"
-                }`}
+              }`}
             >
               <t.icon className="size-5" />
-              <span className="text-[10px] font-black uppercase tracking-widest">
-                {t.label}
-              </span>
+              <span className="text-[10px] font-black uppercase tracking-widest">{t.label}</span>
             </button>
           ))}
         </div>

@@ -9,7 +9,7 @@ const Notifications = () => {
     markAllRead,
     deleteNotification,
     handleNotificationClick,
-    loading
+    loading,
   } = useNotifications();
 
   const getTypeStyles = (type: string) => {
@@ -72,17 +72,20 @@ const Notifications = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
             <div className="animate-spin size-10 border-4 border-primary border-t-transparent rounded-full" />
-            <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Loading notifications...</p>
+            <p className="text-sm font-black text-slate-400 uppercase tracking-widest">
+              Loading notifications...
+            </p>
           </div>
         ) : notifs.length > 0 ? (
           notifs.map((notif) => (
             <div
               key={notif.id}
               onClick={() => handleNotificationClick(notif.id)}
-              className={`group relative p-5 rounded-[2rem] bg-white dark:bg-slate-900/50 border transition-all cursor-pointer ${notif.unread
+              className={`group relative p-5 rounded-[2rem] bg-white dark:bg-slate-900/50 border transition-all cursor-pointer ${
+                notif.unread
                   ? "border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10"
                   : "border-slate-100 dark:border-white/5 opacity-80"
-                }`}
+              }`}
             >
               <div className="flex gap-4">
                 <div

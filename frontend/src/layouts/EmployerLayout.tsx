@@ -1,13 +1,6 @@
 import { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  LayoutDashboard,
-  PlusSquare,
-  Users,
-  Settings,
-  Bell,
-  LogIn,
-} from "lucide-react";
+import { LayoutDashboard, PlusSquare, Users, Settings, Bell, LogIn } from "lucide-react";
 import { NotificationDropdown } from "../components/NotificationDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -16,7 +9,12 @@ const EmployerLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const { notifications: notifs, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
+  const {
+    notifications: notifs,
+    unreadCount,
+    markAllRead,
+    handleNotificationClick,
+  } = useNotifications();
   const { isAuthenticated } = useAuthStore();
 
   const handleMarkAllRead = () => {
@@ -28,12 +26,12 @@ const EmployerLayout = () => {
     const notification = notifs.find((n) => n.id === id);
     if (notification) {
       // Navigate based on type
-      if (notification.relatedType === 'job_application') {
+      if (notification.relatedType === "job_application") {
         // Ideally navigate to specific application, but for now lists
-        navigate('/employer/applications');
-      } else if (notification.relatedType === 'resource_application') {
+        navigate("/employer/applications");
+      } else if (notification.relatedType === "resource_application") {
         // Navigate to resource applications (if page exists) or generic applications
-        navigate('/employer/applications');
+        navigate("/employer/applications");
       }
     }
     setShowNotifications(false);
@@ -70,10 +68,11 @@ const EmployerLayout = () => {
               <>
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${showNotifications
+                  className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${
+                    showNotifications
                       ? "bg-primary/10 border-primary text-primary"
                       : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400"
-                    }`}
+                  }`}
                 >
                   <Bell className="size-5" />
                   {unreadCount > 0 && (
@@ -105,22 +104,25 @@ const EmployerLayout = () => {
         <div className="flex items-center justify-between">
           <Link
             to="/employer"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/employer") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer")
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${
+                isActive("/employer")
                   ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
                   : "bg-transparent"
-                }`}
+              }`}
             >
               <LayoutDashboard
                 className={`h-6 w-6 ${isActive("/employer") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer") ? "opacity-100" : "opacity-40"
-                }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
+                isActive("/employer") ? "opacity-100" : "opacity-40"
+              }`}
             >
               Dash
             </span>
@@ -128,22 +130,25 @@ const EmployerLayout = () => {
 
           <Link
             to={isAuthenticated ? "/employer/post-job" : "/login/employer"}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/post-job") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/employer/post-job") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/post-job")
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${
+                isActive("/employer/post-job")
                   ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
                   : "bg-transparent"
-                }`}
+              }`}
             >
               <PlusSquare
                 className={`h-6 w-6 ${isActive("/employer/post-job") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/post-job") ? "opacity-100" : "opacity-40"
-                }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
+                isActive("/employer/post-job") ? "opacity-100" : "opacity-40"
+              }`}
             >
               Post
             </span>
@@ -151,22 +156,25 @@ const EmployerLayout = () => {
 
           <Link
             to={isAuthenticated ? "/employer/applications" : "/login/employer"}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/applications") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/employer/applications") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/applications")
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${
+                isActive("/employer/applications")
                   ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
                   : "bg-transparent"
-                }`}
+              }`}
             >
               <Users
                 className={`h-6 w-6 ${isActive("/employer/applications") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/applications") ? "opacity-100" : "opacity-40"
-                }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
+                isActive("/employer/applications") ? "opacity-100" : "opacity-40"
+              }`}
             >
               Apps
             </span>
@@ -174,22 +182,25 @@ const EmployerLayout = () => {
 
           <Link
             to={isAuthenticated ? "/employer/settings" : "/login/employer"}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/settings") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/employer/settings") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/settings")
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${
+                isActive("/employer/settings")
                   ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
                   : "bg-transparent"
-                }`}
+              }`}
             >
               <Settings
                 className={`h-6 w-6 ${isActive("/employer/settings") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/settings") ? "opacity-100" : "opacity-40"
-                }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
+                isActive("/employer/settings") ? "opacity-100" : "opacity-40"
+              }`}
             >
               Setup
             </span>

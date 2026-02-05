@@ -38,7 +38,8 @@ const RentLayout = () => {
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 relative">
+              className="size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 relative"
+            >
               <Bell className="size-5" />
               {unreadCount > 0 && (
                 <span className="absolute top-2.5 right-2.5 size-2 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-950"></span>

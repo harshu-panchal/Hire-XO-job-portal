@@ -34,8 +34,9 @@ const EmployeeLayout = () => {
         <div className="flex justify-between items-center h-20">
           <Link
             to="/jobs"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/jobs") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/jobs") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/jobs") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -50,8 +51,9 @@ const EmployeeLayout = () => {
           </Link>
           <Link
             to="/resources"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/resources") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/resources") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/resources") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -67,8 +69,9 @@ const EmployeeLayout = () => {
           <Link
             to="/profile"
             onClick={(e) => handleProtectedNavigation("/profile", e)}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/profile") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/profile") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/profile") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -84,8 +87,9 @@ const EmployeeLayout = () => {
           <Link
             to="/subscriptions"
             onClick={(e) => handleProtectedNavigation("/subscriptions", e)}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/subscriptions") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/subscriptions") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/subscriptions") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}

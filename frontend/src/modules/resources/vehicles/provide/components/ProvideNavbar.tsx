@@ -15,7 +15,7 @@ export const ProvideNavbar = () => {
 
   const handleNotifClick = (id: string | number) => {
     handleNotificationClick(id);
-    const n = notifications.find(x => x.id === id);
+    const n = notifications.find((x) => x.id === id);
     if (n) {
       // Navigate based on type if needed
       // For now, standard click behavior (mark read) is done.
@@ -23,8 +23,6 @@ export const ProvideNavbar = () => {
     }
     setShowNotifications(false);
   };
-
-
 
   return (
     <>

@@ -41,10 +41,11 @@ const ApplyNavbar = () => {
           </button>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className={`size-10 rounded-xl flex items-center justify-center relative active:scale-95 transition-transform ${showNotifications
-              ? "bg-primary/10 text-primary"
-              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-              }`}
+            className={`size-10 rounded-xl flex items-center justify-center relative active:scale-95 transition-transform ${
+              showNotifications
+                ? "bg-primary/10 text-primary"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+            }`}
           >
             <Bell className="size-5" />
             {unreadCount > 0 && (

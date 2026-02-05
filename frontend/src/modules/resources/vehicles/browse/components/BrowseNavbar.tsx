@@ -33,7 +33,8 @@ export const BrowseNavbar = () => {
         </button>
         <button
           onClick={() => setShowNotifications(!showNotifications)}
-          className="relative size-12 flex items-center justify-center rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 active:bg-slate-100 dark:active:bg-white/10 active:scale-90 transition-all duration-200">
+          className="relative size-12 flex items-center justify-center rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 active:bg-slate-100 dark:active:bg-white/10 active:scale-90 transition-all duration-200"
+        >
           <Bell className="h-6 w-6" />
           {unreadCount > 0 && (
             <span className="absolute top-3.5 right-3.5 size-2.5 bg-cyan-600 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>

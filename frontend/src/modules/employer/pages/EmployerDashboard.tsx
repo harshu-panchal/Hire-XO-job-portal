@@ -1,5 +1,16 @@
 import { useState, useEffect } from "react";
-import { Users, Briefcase, TrendingUp, Clock, Plus, Search, ArrowUpRight, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
+import {
+  Users,
+  Briefcase,
+  TrendingUp,
+  Clock,
+  Plus,
+  Search,
+  ArrowUpRight,
+  CheckCircle2,
+  ShieldCheck,
+  Zap,
+} from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { userService } from "@/services/userService";
 import { applicationService } from "@/services/applicationService";
@@ -114,7 +125,9 @@ const EmployerDashboard = () => {
           </div>
           <div>
             <h3 className="text-2xl font-black mb-2">Post a Job</h3>
-            <p className="text-white/80 text-sm font-medium">Reach thousands of qualified candidates.</p>
+            <p className="text-white/80 text-sm font-medium">
+              Reach thousands of qualified candidates.
+            </p>
           </div>
           <Link
             to="/login/employer"
@@ -158,7 +171,10 @@ const EmployerDashboard = () => {
         {/* Login Prompt */}
         <div className="text-center">
           <p className="text-xs font-bold text-slate-400 mb-2">Already have an account?</p>
-          <Link to="/login/employer" className="text-primary font-black uppercase tracking-widest text-xs hover:underline">
+          <Link
+            to="/login/employer"
+            className="text-primary font-black uppercase tracking-widest text-xs hover:underline"
+          >
             Login to Dashboard
           </Link>
         </div>
@@ -286,12 +302,13 @@ const EmployerDashboard = () => {
               </div>
               <div className="flex flex-col items-end gap-1.5">
                 <div
-                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${app.status === "Pending"
+                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                    app.status === "Pending"
                       ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
                       : app.status === "Accepted"
                         ? "bg-green-500/10 text-green-600 border-green-500/20"
                         : "bg-red-500/10 text-red-600 border-red-500/20"
-                    }`}
+                  }`}
                 >
                   {app.status}
                 </div>
@@ -312,6 +329,5 @@ const EmployerDashboard = () => {
     </div>
   );
 };
-
 
 export default EmployerDashboard;

@@ -305,10 +305,11 @@ const JobDetails = () => {
           <button
             onClick={handleApply}
             disabled={isApplied}
-            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${isApplied
-              ? "bg-green-500 text-white shadow-green-500/20"
-              : "bg-primary text-white shadow-xl shadow-primary/20"
-              }`}
+            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${
+              isApplied
+                ? "bg-green-500 text-white shadow-green-500/20"
+                : "bg-primary text-white shadow-xl shadow-primary/20"
+            }`}
           >
             {isApplied ? (
               <>

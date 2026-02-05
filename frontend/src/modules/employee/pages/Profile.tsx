@@ -12,6 +12,7 @@ import {
   Linkedin,
   Twitter,
   Bookmark,
+  User,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEmployeeStore } from "@/store/useEmployeeStore";
@@ -225,8 +226,9 @@ const Profile = () => {
             <button
               key={i}
               onClick={() => navigate(item.path)}
-              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${i !== menuItems.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
-                }`}
+              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${
+                i !== menuItems.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
+              }`}
             >
               <div className="flex items-center gap-4">
                 <div className={`size-12 rounded-2xl ${item.bg} flex items-center justify-center`}>
@@ -252,8 +254,11 @@ const Profile = () => {
             <button
               key={i}
               onClick={() => navigate(item.path)}
-              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${i !== secondaryItems.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
-                }`}
+              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${
+                i !== secondaryItems.length - 1
+                  ? "border-b border-slate-100 dark:border-white/5"
+                  : ""
+              }`}
             >
               <div className="flex items-center gap-4">
                 <div className={`size-12 rounded-2xl ${item.bg} flex items-center justify-center`}>

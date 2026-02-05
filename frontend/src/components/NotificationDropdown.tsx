@@ -85,12 +85,13 @@ export const NotificationDropdown = ({
                     className={`p-4 flex gap-3 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer border-b border-slate-100 dark:border-white/5 last:border-0 ${notif.unread ? "bg-primary/[0.02]" : ""}`}
                   >
                     <div
-                      className={`size-8 shrink-0 rounded-xl flex items-center justify-center ${notif.type === "success"
+                      className={`size-8 shrink-0 rounded-xl flex items-center justify-center ${
+                        notif.type === "success"
                           ? "bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400"
                           : notif.type === "info"
                             ? "bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400"
                             : "bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400"
-                        }`}
+                      }`}
                     >
                       <notif.icon className="size-4" />
                     </div>

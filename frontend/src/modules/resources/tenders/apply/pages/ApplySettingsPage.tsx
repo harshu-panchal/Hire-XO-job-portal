@@ -63,7 +63,9 @@ const ApplySettingsPage = () => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   // Local state for preferences synced with user profile
-  const [tenderAlerts, setTenderAlerts] = useState(user?.profile?.preferences?.notifications ?? true);
+  const [tenderAlerts, setTenderAlerts] = useState(
+    user?.profile?.preferences?.notifications ?? true
+  );
   const [wallet, setWallet] = useState<SettingsWallet | null>(null);
   const darkMode = currentTheme === "dark";
 
@@ -104,9 +106,9 @@ const ApplySettingsPage = () => {
           ...user?.profile,
           preferences: {
             ...user?.profile?.preferences,
-            notifications: newState
-          }
-        }
+            notifications: newState,
+          },
+        },
       });
       toast.success(`Tender alerts ${newState ? "enabled" : "disabled"}`);
     } catch (error: any) {
@@ -125,9 +127,9 @@ const ApplySettingsPage = () => {
           ...user?.profile,
           preferences: {
             ...user?.profile?.preferences,
-            theme: newTheme
-          }
-        }
+            theme: newTheme,
+          },
+        },
       });
       toast.success(`Switched to ${newTheme} mode`);
     } catch (error: any) {

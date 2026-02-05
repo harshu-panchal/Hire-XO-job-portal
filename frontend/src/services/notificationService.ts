@@ -4,10 +4,10 @@ export interface Notification {
   _id: string;
   title: string;
   message: string;
-  type: 'success' | 'info' | 'warning' | 'error';
+  type: "success" | "info" | "warning" | "error";
   read: boolean;
   relatedId?: string;
-  relatedType?: 'job_application' | 'resource_application';
+  relatedType?: "job_application" | "resource_application";
   createdAt: string;
 }
 

@@ -8,7 +8,12 @@ import { useAuthStore } from "@/store/useAuthStore";
 export const EmployeeNavbar = () => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const { notifications: notifs, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
+  const {
+    notifications: notifs,
+    unreadCount,
+    markAllRead,
+    handleNotificationClick,
+  } = useNotifications();
   const { isAuthenticated } = useAuthStore();
 
   const handleMarkAllRead = () => {
@@ -19,8 +24,11 @@ export const EmployeeNavbar = () => {
     handleNotificationClick(id);
     const notification = notifs.find((n) => n.id === id);
     if (notification) {
-      if (notification.relatedType === 'job_application' || notification.relatedType === 'resource_application') {
-        navigate('/my-applications');
+      if (
+        notification.relatedType === "job_application" ||
+        notification.relatedType === "resource_application"
+      ) {
+        navigate("/my-applications");
       }
     }
     setShowNotifications(false);
@@ -49,10 +57,11 @@ export const EmployeeNavbar = () => {
           <>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${showNotifications
+              className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${
+                showNotifications
                   ? "bg-primary/10 border-primary text-primary"
                   : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300"
-                }`}
+              }`}
             >
               <Bell className="h-6 w-6" />
               {unreadCount > 0 && (
