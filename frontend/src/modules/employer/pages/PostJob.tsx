@@ -9,7 +9,7 @@ import {
   ArrowRight,
   MapPin,
   DollarSign,
-  Type
+  Type,
 } from "lucide-react";
 import { jobService } from "@/services/jobService";
 
@@ -28,24 +28,28 @@ const PostJob = () => {
     responsibilities: ["", ""],
   });
 
-  const handleAddField = (field: 'requirements' | 'responsibilities') => {
-    setFormData(prev => ({
+  const handleAddField = (field: "requirements" | "responsibilities") => {
+    setFormData((prev) => ({
       ...prev,
-      [field]: [...prev[field], ""]
+      [field]: [...prev[field], ""],
     }));
   };
 
-  const handleRemoveField = (field: 'requirements' | 'responsibilities', index: number) => {
-    setFormData(prev => ({
+  const handleRemoveField = (field: "requirements" | "responsibilities", index: number) => {
+    setFormData((prev) => ({
       ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
+      [field]: prev[field].filter((_, i) => i !== index),
     }));
   };
 
-  const handleInputChange = (field: 'requirements' | 'responsibilities', index: number, value: string) => {
+  const handleInputChange = (
+    field: "requirements" | "responsibilities",
+    index: number,
+    value: string
+  ) => {
     const newArr = [...formData[field]];
     newArr[index] = value;
-    setFormData(prev => ({ ...prev, [field]: newArr }));
+    setFormData((prev) => ({ ...prev, [field]: newArr }));
   };
 
   const [loading, setLoading] = useState(false);
@@ -64,8 +68,8 @@ const PostJob = () => {
         location: formData.location,
         salary: formData.salary,
         description: formData.description,
-        requirements: formData.requirements.filter(r => r.trim() !== ""),
-        responsibilities: formData.responsibilities.filter(r => r.trim() !== "")
+        requirements: formData.requirements.filter((r) => r.trim() !== ""),
+        responsibilities: formData.responsibilities.filter((r) => r.trim() !== ""),
       });
       setStep(3); // Success step
     } catch (error) {
@@ -84,7 +88,8 @@ const PostJob = () => {
         </div>
         <h1 className="text-3xl font-black tracking-tight mb-3">Job Posted!</h1>
         <p className="text-slate-500 text-sm font-black leading-relaxed max-w-[280px] mx-auto mb-10">
-          Your job listing for <span className="text-primary">{formData.title}</span> is now live. <br />
+          Your job listing for <span className="text-primary">{formData.title}</span> is now live.{" "}
+          <br />
           <span className="text-xs text-green-500 mt-2 block">Posted for Free!</span>
         </p>
         <button
@@ -102,13 +107,15 @@ const PostJob = () => {
       {/* Header */}
       <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 -mx-5 px-5">
         <button
-          onClick={() => step > 1 ? setStep(step - 1) : navigate(-1)}
+          onClick={() => (step > 1 ? setStep(step - 1) : navigate(-1))}
           className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
         >
           <ChevronLeft className="size-6" />
         </button>
         <div className="flex flex-col items-center">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Step {step} of 2</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            Step {step} of 2
+          </p>
           <h2 className="text-sm font-black uppercase tracking-widest">Post a New Job</h2>
         </div>
         <div className="size-11" /> {/* Spacer */}
@@ -118,7 +125,9 @@ const PostJob = () => {
         {step === 1 ? (
           <div className="space-y-6">
             <div className="space-y-4">
-              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Basic Information</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">
+                Basic Information
+              </label>
 
               <div className="relative group">
                 <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
@@ -129,7 +138,7 @@ const PostJob = () => {
                   placeholder="Job Title (e.g. Senior React Dev)"
                   required
                   value={formData.title}
-                  onChange={e => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
@@ -138,7 +147,7 @@ const PostJob = () => {
                 <div className="relative group">
                   <select
                     value={formData.category}
-                    onChange={e => setFormData({ ...formData, category: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full h-16 px-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
                   >
                     <option>Development</option>
@@ -150,7 +159,7 @@ const PostJob = () => {
                 <div className="relative group">
                   <select
                     value={formData.type}
-                    onChange={e => setFormData({ ...formData, type: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                     className="w-full h-16 px-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
                   >
                     <option>Full-time</option>
@@ -170,7 +179,7 @@ const PostJob = () => {
                   placeholder="Location (e.g. Remote, Bangalore)"
                   required
                   value={formData.location}
-                  onChange={e => setFormData({ ...formData, location: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
@@ -184,20 +193,22 @@ const PostJob = () => {
                   placeholder="Salary Range (e.g. ₹15L - ₹25L)"
                   required
                   value={formData.salary}
-                  onChange={e => setFormData({ ...formData, salary: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
                   className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
             </div>
 
             <div className="space-y-4 pt-4">
-              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">Job Description</label>
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">
+                Job Description
+              </label>
               <textarea
                 placeholder="Describe the role and your company..."
                 required
                 rows={5}
                 value={formData.description}
-                onChange={e => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black resize-none"
               />
             </div>
@@ -206,10 +217,12 @@ const PostJob = () => {
           <div className="space-y-10">
             <div className="space-y-6">
               <div className="flex items-center justify-between px-1">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Requirements</label>
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400">
+                  Requirements
+                </label>
                 <button
                   type="button"
-                  onClick={() => handleAddField('requirements')}
+                  onClick={() => handleAddField("requirements")}
                   className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center active:scale-90 transition-all"
                 >
                   <Plus className="size-4" />
@@ -223,13 +236,13 @@ const PostJob = () => {
                       placeholder={`Requirement #${i + 1}`}
                       required
                       value={req}
-                      onChange={e => handleInputChange('requirements', i, e.target.value)}
+                      onChange={(e) => handleInputChange("requirements", i, e.target.value)}
                       className="flex-1 h-14 px-5 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
                     />
                     {formData.requirements.length > 1 && (
                       <button
                         type="button"
-                        onClick={() => handleRemoveField('requirements', i)}
+                        onClick={() => handleRemoveField("requirements", i)}
                         className="size-14 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 active:scale-90 transition-all"
                       >
                         <Trash2 className="size-5" />
@@ -242,10 +255,12 @@ const PostJob = () => {
 
             <div className="space-y-6">
               <div className="flex items-center justify-between px-1">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Responsibilities</label>
+                <label className="text-xs font-black uppercase tracking-widest text-slate-400">
+                  Responsibilities
+                </label>
                 <button
                   type="button"
-                  onClick={() => handleAddField('responsibilities')}
+                  onClick={() => handleAddField("responsibilities")}
                   className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center active:scale-90 transition-all"
                 >
                   <Plus className="size-4" />
@@ -259,13 +274,13 @@ const PostJob = () => {
                       placeholder={`Responsibility #${i + 1}`}
                       required
                       value={resp}
-                      onChange={e => handleInputChange('responsibilities', i, e.target.value)}
+                      onChange={(e) => handleInputChange("responsibilities", i, e.target.value)}
                       className="flex-1 h-14 px-5 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
                     />
                     {formData.responsibilities.length > 1 && (
                       <button
                         type="button"
-                        onClick={() => handleRemoveField('responsibilities', i)}
+                        onClick={() => handleRemoveField("responsibilities", i)}
                         className="size-14 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 active:scale-90 transition-all"
                       >
                         <Trash2 className="size-5" />
@@ -284,9 +299,7 @@ const PostJob = () => {
               <span className="text-slate-400 text-xs font-black uppercase tracking-widest">
                 Job Posting Fee
               </span>
-              <span className="text-green-500 font-black">
-                FREE
-              </span>
+              <span className="text-green-500 font-black">FREE</span>
             </div>
           )}
           <button

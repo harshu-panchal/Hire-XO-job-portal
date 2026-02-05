@@ -10,7 +10,7 @@ const EmployerDashboard = () => {
   const [stats, setStats] = useState({
     activeJobs: 0,
     totalApplications: 0,
-    interviews: 0
+    interviews: 0,
   });
   const [recentApplications, setRecentApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,13 +21,13 @@ const EmployerDashboard = () => {
         const [statsData, appsData, myJobs] = await Promise.all([
           userService.getDashboardStats(),
           applicationService.getReceivedApplications(),
-          jobService.getMyListings()
+          jobService.getMyListings(),
         ]);
 
         setStats({
           activeJobs: myJobs.length || statsData.activeJobs || 0,
           totalApplications: statsData.totalApplications || 0,
-          interviews: 0
+          interviews: 0,
         });
 
         // Format applications
@@ -36,8 +36,8 @@ const EmployerDashboard = () => {
           name: app.applicantId?.name || "Unknown Candidate",
           role: app.jobId?.title || "Unknown Role",
           status: app.status,
-          time: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : 'N/A',
-          avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase()
+          time: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+          avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase(),
         }));
         setRecentApplications(formattedApps);
       } catch (error) {
@@ -51,15 +51,37 @@ const EmployerDashboard = () => {
   }, []);
 
   const statCards = [
-    { label: "Active Jobs", value: stats.activeJobs, icon: Briefcase, color: "text-primary", bg: "bg-primary/10", to: "/employer/jobs" },
-    { label: "Total Applications", value: stats.totalApplications, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10", to: "/employer/applications" },
-    { label: "Interviews", value: stats.interviews, icon: TrendingUp, color: "text-green-500", bg: "bg-green-500/10" },
+    {
+      label: "Active Jobs",
+      value: stats.activeJobs,
+      icon: Briefcase,
+      color: "text-primary",
+      bg: "bg-primary/10",
+      to: "/employer/jobs",
+    },
+    {
+      label: "Total Applications",
+      value: stats.totalApplications,
+      icon: Users,
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
+      to: "/employer/applications",
+    },
+    {
+      label: "Interviews",
+      value: stats.interviews,
+      icon: TrendingUp,
+      color: "text-green-500",
+      bg: "bg-green-500/10",
+    },
   ];
 
   if (loading) {
     return (
       <div className="p-10 text-center animate-pulse">
-        <div className="text-sm font-black uppercase tracking-widest text-slate-400">Loading Dashboard...</div>
+        <div className="text-sm font-black uppercase tracking-widest text-slate-400">
+          Loading Dashboard...
+        </div>
       </div>
     );
   }
@@ -69,8 +91,13 @@ const EmployerDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between px-1">
         <div className="space-y-1">
-          <h1 className="text-3xl font-black tracking-tighter">Employer <br /><span className="text-primary">Dashboard</span></h1>
-          <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">Manage your hiring pipeline</p>
+          <h1 className="text-3xl font-black tracking-tighter">
+            Employer <br />
+            <span className="text-primary">Dashboard</span>
+          </h1>
+          <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
+            Manage your hiring pipeline
+          </p>
         </div>
         <Link
           to="/employer/post-job"
@@ -82,15 +109,21 @@ const EmployerDashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-4">
-        {statCards.map((stat, i) => (
+        {statCards.map((stat, i) =>
           stat.to ? (
-            <Link key={i} to={stat.to} className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 flex items-center justify-between active:scale-[0.98] transition-all">
+            <Link
+              key={i}
+              to={stat.to}
+              className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 flex items-center justify-between active:scale-[0.98] transition-all"
+            >
               <div className="flex items-center gap-4">
                 <div className={`size-14 rounded-2xl ${stat.bg} flex items-center justify-center`}>
                   <stat.icon className={`size-7 ${stat.color}`} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{stat.label}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">
+                    {stat.label}
+                  </p>
                   <p className="text-2xl font-black tracking-tight">{stat.value}</p>
                 </div>
               </div>
@@ -99,13 +132,18 @@ const EmployerDashboard = () => {
               </div>
             </Link>
           ) : (
-            <div key={i} className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 flex items-center justify-between">
+            <div
+              key={i}
+              className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 flex items-center justify-between"
+            >
               <div className="flex items-center gap-4">
                 <div className={`size-14 rounded-2xl ${stat.bg} flex items-center justify-center`}>
                   <stat.icon className={`size-7 ${stat.color}`} />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{stat.label}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">
+                    {stat.label}
+                  </p>
                   <p className="text-2xl font-black tracking-tight">{stat.value}</p>
                 </div>
               </div>
@@ -114,7 +152,7 @@ const EmployerDashboard = () => {
               </div>
             </div>
           )
-        ))}
+        )}
       </div>
 
       {/* Search Applications */}
@@ -138,7 +176,9 @@ const EmployerDashboard = () => {
       {/* Recent Applications */}
       <div className="space-y-4">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Recent Applications</h2>
+          <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+            Recent Applications
+          </h2>
           <Link
             to="/employer/applications"
             className="text-[10px] font-black text-primary uppercase tracking-widest active:scale-95 transition-transform"
@@ -159,13 +199,20 @@ const EmployerDashboard = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="font-black text-sm truncate tracking-tight">{app.name}</h4>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">{app.role}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest truncate">
+                  {app.role}
+                </p>
               </div>
               <div className="flex flex-col items-end gap-1.5">
-                <div className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${app.status === "Pending" ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
-                  app.status === "Accepted" ? "bg-green-500/10 text-green-600 border-green-500/20" :
-                    "bg-red-500/10 text-red-600 border-red-500/20"
-                  }`}>
+                <div
+                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                    app.status === "Pending"
+                      ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                      : app.status === "Accepted"
+                        ? "bg-green-500/10 text-green-600 border-green-500/20"
+                        : "bg-red-500/10 text-red-600 border-red-500/20"
+                  }`}
+                >
                   {app.status}
                 </div>
                 <div className="flex items-center text-[9px] font-black text-slate-300 uppercase tracking-widest">

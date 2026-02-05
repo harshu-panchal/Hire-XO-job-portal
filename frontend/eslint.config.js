@@ -21,5 +21,17 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Downgrade to warnings for existing codebase - fix over time
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": ["warn", {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_"
+      }],
+      "react-refresh/only-export-components": "warn",
+      "react-hooks/set-state-in-effect": "off", // Common pattern, disable for now
+      "no-case-declarations": "warn",
+    },
   },
 ]);

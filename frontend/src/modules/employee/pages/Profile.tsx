@@ -31,7 +31,7 @@ const Profile = () => {
       color: "text-green-500",
       bg: "bg-green-500/10",
       path: "/certificates",
-      count: Array.isArray(certificates) ? certificates.length : 0
+      count: Array.isArray(certificates) ? certificates.length : 0,
     },
     {
       label: "My Applications",
@@ -39,7 +39,7 @@ const Profile = () => {
       color: "text-blue-500",
       bg: "bg-blue-500/10",
       path: "/my-applications",
-      count: applications?.jobs?.length || 0
+      count: applications?.jobs?.length || 0,
     },
     {
       label: "Saved Jobs",
@@ -47,14 +47,14 @@ const Profile = () => {
       color: "text-amber-500",
       bg: "bg-amber-500/10",
       path: "/saved-jobs",
-      count: Array.isArray(savedJobs) ? savedJobs.length : 0
+      count: Array.isArray(savedJobs) ? savedJobs.length : 0,
     },
     {
       label: "Account Settings",
       icon: Settings,
       color: "text-slate-500",
       bg: "bg-slate-500/10",
-      path: "/settings"
+      path: "/settings",
     },
   ];
 
@@ -68,7 +68,14 @@ const Profile = () => {
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="relative group">
             <div className="size-32 rounded-[3rem] border-4 border-white dark:border-slate-800 shadow-2xl overflow-hidden ring-4 ring-primary/20">
-              <img src={user.profilePhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} alt={user.name} className="w-full h-full object-cover" />
+              <img
+                src={
+                  user.profilePhoto ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
+                }
+                alt={user.name}
+                className="w-full h-full object-cover"
+              />
             </div>
             <button
               onClick={() => navigate("/settings")}
@@ -173,22 +180,23 @@ const Profile = () => {
               </button>
             </div>
             <div className="space-y-6">
-              {Array.isArray(user.profile.experience) && user.profile.experience.map((exp, i) => (
-                <div key={i} className="flex gap-4">
-                  <div className="size-12 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
-                    <Briefcase className="size-6 text-slate-400" />
+              {Array.isArray(user.profile.experience) &&
+                user.profile.experience.map((exp, i) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="size-12 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center shrink-0">
+                      <Briefcase className="size-6 text-slate-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-black text-sm tracking-tight">{exp.role}</h4>
+                      <p className="text-primary font-black text-[10px] uppercase tracking-widest">
+                        {exp.company}
+                      </p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                        {exp.period}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-black text-sm tracking-tight">{exp.role}</h4>
-                    <p className="text-primary font-black text-[10px] uppercase tracking-widest">
-                      {exp.company}
-                    </p>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                      {exp.period}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         )}
@@ -199,8 +207,9 @@ const Profile = () => {
             <button
               key={i}
               onClick={() => navigate(item.path)}
-              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${i !== menuItems.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
-                }`}
+              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${
+                i !== menuItems.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
+              }`}
             >
               <div className="flex items-center gap-4">
                 <div className={`size-12 rounded-2xl ${item.bg} flex items-center justify-center`}>

@@ -74,7 +74,6 @@ const ManageApplications = () => {
     }
   }, [searchQuery, linkedId]);
 
-
   const statusColors = {
     Shortlisted: "bg-blue-500/10 text-blue-600 border-blue-500/20",
     Interviewed: "bg-green-500/10 text-green-600 border-green-500/20",
@@ -92,9 +91,9 @@ const ManageApplications = () => {
     try {
       setUpdating(appId);
       await applicationService.updateApplicationStatus(appId, newStatus as any);
-      setApplications(prev => prev.map(app =>
-        app.id === appId ? { ...app, status: newStatus } : app
-      ));
+      setApplications((prev) =>
+        prev.map((app) => (app.id === appId ? { ...app, status: newStatus } : app))
+      );
       setActiveMenu(null);
     } catch (error) {
       console.error("Failed to update status:", error);
@@ -137,10 +136,11 @@ const ManageApplications = () => {
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${filter === f
-              ? "bg-primary text-white shadow-lg shadow-primary/20"
-              : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
-              }`}
+            className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${
+              filter === f
+                ? "bg-primary text-white shadow-lg shadow-primary/20"
+                : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
+            }`}
           >
             {f}
           </button>
@@ -166,9 +166,10 @@ const ManageApplications = () => {
         {applications.length > 0 ? (
           applications
             .filter((app) => filter === "All" || app.status === filter)
-            .filter((app) =>
-              app.name.toLowerCase().includes(search.toLowerCase()) ||
-              app.role.toLowerCase().includes(search.toLowerCase())
+            .filter(
+              (app) =>
+                app.name.toLowerCase().includes(search.toLowerCase()) ||
+                app.role.toLowerCase().includes(search.toLowerCase())
             )
             .map((app) => (
               <div
@@ -193,7 +194,7 @@ const ManageApplications = () => {
                       <button
                         type="button"
                         onClick={() => setActiveMenu(activeMenu === app.id ? null : app.id)}
-                        className={`size-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 active:scale-90 transition-all ${activeMenu === app.id ? 'ring-2 ring-primary/20 bg-primary/5 text-primary' : ''}`}
+                        className={`size-10 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 active:scale-90 transition-all ${activeMenu === app.id ? "ring-2 ring-primary/20 bg-primary/5 text-primary" : ""}`}
                       >
                         <MoreVertical className="size-5" />
                       </button>
@@ -201,10 +202,7 @@ const ManageApplications = () => {
                       {/* Dropdown Menu */}
                       {activeMenu === app.id && (
                         <>
-                          <div
-                            className="fixed inset-0 z-10"
-                            onClick={() => setActiveMenu(null)}
-                          />
+                          <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
                           <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-white/10 shadow-xl z-20 overflow-hidden animate-in fade-in zoom-in duration-200">
                             <div className="p-2 space-y-1">
                               <button
@@ -262,8 +260,10 @@ const ManageApplications = () => {
 
                   <div className="flex items-center justify-between pt-2">
                     <div
-                      className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${statusColors[app.status as keyof typeof statusColors] || statusColors.Pending
-                        }`}
+                      className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                        statusColors[app.status as keyof typeof statusColors] ||
+                        statusColors.Pending
+                      }`}
                     >
                       {app.status}
                     </div>
@@ -312,14 +312,20 @@ const ManageApplications = () => {
               <div className="flex items-center gap-4">
                 <div className="size-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-2xl uppercase">
                   {selectedApp.avatarUrl ? (
-                    <img src={selectedApp.avatarUrl} alt={selectedApp.name} className="w-full h-full object-cover rounded-2xl" />
+                    <img
+                      src={selectedApp.avatarUrl}
+                      alt={selectedApp.name}
+                      className="w-full h-full object-cover rounded-2xl"
+                    />
                   ) : (
                     selectedApp.avatar
                   )}
                 </div>
                 <div>
                   <h2 className="text-2xl font-black tracking-tight">{selectedApp.name}</h2>
-                  <p className="text-[10px] font-black text-primary uppercase tracking-widest">{selectedApp.role}</p>
+                  <p className="text-[10px] font-black text-primary uppercase tracking-widest">
+                    {selectedApp.role}
+                  </p>
                 </div>
               </div>
               <button
@@ -335,7 +341,9 @@ const ManageApplications = () => {
             <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 no-scrollbar">
               {/* Bio Section */}
               <div className="space-y-3">
-                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">About Candidate</h3>
+                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
+                  About Candidate
+                </h3>
                 <p className="text-sm font-bold text-slate-600 dark:text-slate-300 leading-relaxed italic">
                   "{selectedApp.bio}"
                 </p>
@@ -371,23 +379,32 @@ const ManageApplications = () => {
                         <div className="space-y-1 pb-4">
                           <h4 className="font-black text-sm">{exp.role}</h4>
                           <p className="text-xs font-bold text-primary">{exp.company}</p>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">{exp.period}</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">
+                            {exp.period}
+                          </p>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="text-sm font-bold text-slate-400">No experience details provided.</p>
+                    <p className="text-sm font-bold text-slate-400">
+                      No experience details provided.
+                    </p>
                   )}
                 </div>
               </div>
 
               {/* Skills */}
               <div className="space-y-4">
-                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Key Expertise</h3>
+                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
+                  Key Expertise
+                </h3>
                 <div className="flex flex-wrap gap-2">
                   {selectedApp.skills.length > 0 ? (
                     selectedApp.skills.map((skill: string, i: number) => (
-                      <span key={i} className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">
+                      <span
+                        key={i}
+                        className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400"
+                      >
                         {skill}
                       </span>
                     ))
@@ -399,14 +416,18 @@ const ManageApplications = () => {
 
               {/* Contact Information (Restricted) */}
               <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-white/5">
-                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Contact Details</h3>
+                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
+                  Contact Details
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 space-y-1">
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1">
                       <Mail className="size-3" /> Email Address
                     </p>
                     <p className="text-sm font-black truncate">
-                      {checkSubscription() ? selectedApp.email : selectedApp.email.replace(/(?<=.{3}).(?=.*@)/g, "*")}
+                      {checkSubscription()
+                        ? selectedApp.email
+                        : selectedApp.email.replace(/(?<=.{3}).(?=.*@)/g, "*")}
                     </p>
                   </div>
                   <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 space-y-1">
@@ -414,7 +435,11 @@ const ManageApplications = () => {
                       <Phone className="size-3" /> Phone Number
                     </p>
                     <p className="text-sm font-black">
-                      {checkSubscription() ? (selectedApp.phone || "Not provided") : (selectedApp.phone ? selectedApp.phone.replace(/.(?=.{4})/g, "*") : "Not provided")}
+                      {checkSubscription()
+                        ? selectedApp.phone || "Not provided"
+                        : selectedApp.phone
+                          ? selectedApp.phone.replace(/.(?=.{4})/g, "*")
+                          : "Not provided"}
                     </p>
                   </div>
                 </div>

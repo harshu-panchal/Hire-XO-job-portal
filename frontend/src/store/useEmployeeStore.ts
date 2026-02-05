@@ -46,19 +46,19 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
   isLoading: false,
   error: null,
   filters: {
-    search: '',
-    type: 'all',
+    search: "",
+    type: "all",
   },
 
   setSearch: (search: string) => {
     set((state) => ({
-      filters: { ...state.filters, search }
+      filters: { ...state.filters, search },
     }));
   },
 
   setType: (type: string) => {
     set((state) => ({
-      filters: { ...state.filters, type }
+      filters: { ...state.filters, type },
     }));
   },
 
@@ -69,8 +69,8 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       set({ jobs, isLoading: false });
     } catch (error: any) {
       set({
-        error: error.message || 'Failed to fetch jobs',
-        isLoading: false
+        error: error.message || "Failed to fetch jobs",
+        isLoading: false,
       });
     }
   },
@@ -83,8 +83,8 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       return job;
     } catch (error: any) {
       set({
-        error: error.message || 'Failed to fetch job',
-        isLoading: false
+        error: error.message || "Failed to fetch job",
+        isLoading: false,
       });
       return undefined;
     }
@@ -95,10 +95,10 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     try {
       await userService.addBookmark(jobId);
       set((state) => ({
-        savedJobs: [...state.savedJobs, jobId]
+        savedJobs: [...state.savedJobs, jobId],
       }));
     } catch (error: any) {
-      set({ error: error.message || 'Failed to save job' });
+      set({ error: error.message || "Failed to save job" });
       throw error;
     }
   },
@@ -108,10 +108,10 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     try {
       await userService.removeBookmark(jobId);
       set((state) => ({
-        savedJobs: state.savedJobs.filter(id => id !== jobId)
+        savedJobs: state.savedJobs.filter((id) => id !== jobId),
       }));
     } catch (error: any) {
-      set({ error: error.message || 'Failed to unsave job' });
+      set({ error: error.message || "Failed to unsave job" });
       throw error;
     }
   },
@@ -122,14 +122,14 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       set((state) => ({
         applications: {
           ...state.applications,
-          jobs: [...state.applications.jobs, response.application]
+          jobs: [...state.applications.jobs, response.application],
         },
-        isLoading: false
+        isLoading: false,
       }));
     } catch (error: any) {
       set({
-        error: error.message || 'Failed to apply to job',
-        isLoading: false
+        error: error.message || "Failed to apply to job",
+        isLoading: false,
       });
       throw error;
     }
@@ -142,8 +142,8 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       set({ applications, isLoading: false });
     } catch (error: any) {
       set({
-        error: error.message || 'Failed to fetch applications',
-        isLoading: false
+        error: error.message || "Failed to fetch applications",
+        isLoading: false,
       });
     }
   },
@@ -154,12 +154,12 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       const response = await certificateService.uploadCertificate(certificateData);
       set((state) => ({
         certificates: [...state.certificates, response.certificate],
-        isLoading: false
+        isLoading: false,
       }));
     } catch (error: any) {
       set({
-        error: error.message || 'Failed to upload certificate',
-        isLoading: false
+        error: error.message || "Failed to upload certificate",
+        isLoading: false,
       });
       throw error;
     }
@@ -172,8 +172,8 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       set({ certificates, isLoading: false });
     } catch (error: any) {
       set({
-        error: error.message || 'Failed to fetch certificates',
-        isLoading: false
+        error: error.message || "Failed to fetch certificates",
+        isLoading: false,
       });
     }
   },
@@ -183,13 +183,13 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     try {
       await certificateService.deleteCertificate(id);
       set((state) => ({
-        certificates: state.certificates.filter(cert => cert.id !== id),
-        isLoading: false
+        certificates: state.certificates.filter((cert) => cert.id !== id),
+        isLoading: false,
       }));
     } catch (error: any) {
       set({
-        error: error.message || 'Failed to delete certificate',
-        isLoading: false
+        error: error.message || "Failed to delete certificate",
+        isLoading: false,
       });
       throw error;
     }

@@ -17,33 +17,37 @@ const MyApplications = () => {
   const resourceApplications = (applications as any)?.resources || [];
 
   // Combine and format
-  const formattedJobs = Array.isArray(jobApplications) ? jobApplications.map((app: any) => ({
-    id: app.id,
-    title: app.jobId?.title || "Unknown Job",
-    company: app.jobId?.company || "Unknown Company",
-    companyLogo: app.jobId?.companyLogo, // Assuming populated
-    location: app.jobId?.location || "N/A",
-    postedAt: app.jobId?.postedAt ? new Date(app.jobId.postedAt).toLocaleDateString() : "N/A",
-    appType: "Job",
-    status: app.status
-  })) : [];
+  const formattedJobs = Array.isArray(jobApplications)
+    ? jobApplications.map((app: any) => ({
+        id: app.id,
+        title: app.jobId?.title || "Unknown Job",
+        company: app.jobId?.company || "Unknown Company",
+        companyLogo: app.jobId?.companyLogo, // Assuming populated
+        location: app.jobId?.location || "N/A",
+        postedAt: app.jobId?.postedAt ? new Date(app.jobId.postedAt).toLocaleDateString() : "N/A",
+        appType: "Job",
+        status: app.status,
+      }))
+    : [];
 
-  const formattedResources = Array.isArray(resourceApplications) ? resourceApplications.map((app: any) => ({
-    id: app.id,
-    title: app.resourceId?.title || app.resourceId?.name || "Resource Application",
-    company: "Resource", // Resource doesn't always have company
-    companyLogo: null,
-    location: app.resourceId?.location || "N/A",
-    postedAt: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
-    appType: "Resource",
-    status: app.status
-  })) : [];
+  const formattedResources = Array.isArray(resourceApplications)
+    ? resourceApplications.map((app: any) => ({
+        id: app.id,
+        title: app.resourceId?.title || app.resourceId?.name || "Resource Application",
+        company: "Resource", // Resource doesn't always have company
+        companyLogo: null,
+        location: app.resourceId?.location || "N/A",
+        postedAt: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+        appType: "Resource",
+        status: app.status,
+      }))
+    : [];
 
-  const allApplications = [...formattedJobs, ...formattedResources]
-    .filter(app =>
+  const allApplications = [...formattedJobs, ...formattedResources].filter(
+    (app) =>
       app.title.toLowerCase().includes(search.toLowerCase()) ||
       app.company.toLowerCase().includes(search.toLowerCase())
-    );
+  );
 
   return (
     <div className="pb-32 min-h-screen">
@@ -85,58 +89,65 @@ const MyApplications = () => {
         <div className="space-y-4">
           {isLoading ? (
             <div className="text-center py-10">Loading applications...</div>
-          ) : allApplications.map((app) => (
-            <div
-              key={`${app.appType}-${app.id}`}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-5 shadow-sm active:scale-[0.98] transition-all duration-200"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex gap-4">
-                  <div className="size-14 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 flex items-center justify-center p-2">
-                    {app.companyLogo ? (
-                      <img
-                        src={app.companyLogo}
-                        alt={app.company}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : (
-                      <Building2 className="size-6 text-primary" />
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-black text-base tracking-tight leading-tight mb-1">
-                      {app.title}
-                    </h3>
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                        {app.company}
-                      </p>
-                      <span className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${app.appType === "Job" ? "bg-blue-500/10 text-blue-500" : "bg-purple-500/10 text-purple-500"
-                        }`}>
-                        {app.appType}
-                      </span>
+          ) : (
+            allApplications.map((app) => (
+              <div
+                key={`${app.appType}-${app.id}`}
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-5 shadow-sm active:scale-[0.98] transition-all duration-200"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex gap-4">
+                    <div className="size-14 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 flex items-center justify-center p-2">
+                      {app.companyLogo ? (
+                        <img
+                          src={app.companyLogo}
+                          alt={app.company}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <Building2 className="size-6 text-primary" />
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-black text-base tracking-tight leading-tight mb-1">
+                        {app.title}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                          {app.company}
+                        </p>
+                        <span
+                          className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${
+                            app.appType === "Job"
+                              ? "bg-blue-500/10 text-blue-500"
+                              : "bg-purple-500/10 text-purple-500"
+                          }`}
+                        >
+                          {app.appType}
+                        </span>
+                      </div>
                     </div>
                   </div>
+                  <div
+                    className={`px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-current/10`}
+                  >
+                    {app.status || "Applied"}
+                  </div>
                 </div>
-                <div
-                  className={`px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-current/10`}
-                >
-                  {app.status || "Applied"}
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 dark:border-white/5">
-                <div className="flex items-center gap-2 text-slate-400">
-                  <MapPin className="size-4" />
-                  <span className="text-xs font-bold">{app.location}</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-400 justify-end">
-                  <Calendar className="size-4" />
-                  <span className="text-xs font-bold">{app.postedAt}</span>
+                <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 dark:border-white/5">
+                  <div className="flex items-center gap-2 text-slate-400">
+                    <MapPin className="size-4" />
+                    <span className="text-xs font-bold">{app.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-400 justify-end">
+                    <Calendar className="size-4" />
+                    <span className="text-xs font-bold">{app.postedAt}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
 
           {!isLoading && allApplications.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
@@ -144,8 +155,12 @@ const MyApplications = () => {
                 <Building2 className="size-10 text-slate-300" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-slate-900 dark:text-white">No Applications</h3>
-                <p className="text-slate-500 text-sm font-medium mt-1">Start applying for jobs or resources to see them here.</p>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                  No Applications
+                </h3>
+                <p className="text-slate-500 text-sm font-medium mt-1">
+                  Start applying for jobs or resources to see them here.
+                </p>
               </div>
             </div>
           )}

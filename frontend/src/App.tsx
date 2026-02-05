@@ -220,10 +220,7 @@ function App() {
   return (
     <Routes>
       {/* Public Routes - Authentication */}
-      <Route
-        path="/"
-        element={<RoleSelection />}
-      />
+      <Route path="/" element={<RoleSelection />} />
       <Route path="/login/:role" element={<Login />} />
       <Route path="/signup/employee" element={<EmployeeSignup />} />
       <Route path="/signup/employer" element={<EmployerSignup />} />
@@ -544,11 +541,7 @@ function App() {
       </Route>
 
       {/* Protected Admin Routes */}
-      <Route
-        element={
-          <AdminLayout />
-        }
-      >
+      <Route element={<AdminLayout />}>
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/employers" element={<Employers />} />
         <Route path="/admin/employee-plans" element={<EmployeePlans />} />
@@ -576,4 +569,3 @@ function App() {
 }
 
 export default App;
-
