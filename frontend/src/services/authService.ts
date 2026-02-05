@@ -43,45 +43,30 @@ export const authService = {
    */
   async signup(data: SignupData, role: UserRole): Promise<SignupResponse> {
     try {
-      const hasFile = Object.values(data).some((value) => value instanceof File);
+      // Always use FormData to match backend 'uploadMultiple' middleware expectation
+      const formData = new FormData();
+      formData.append("role", role);
 
-      if (hasFile) {
-        const formData = new FormData();
-        formData.append("role", role);
-
-        Object.entries(data).forEach(([key, value]) => {
-          if (value instanceof File) {
-            formData.append(key, value);
-          } else if (value !== null && value !== undefined) {
-            formData.append(key, String(value));
-          }
-        });
-
-        const response = await apiClient.post<SignupResponse>("/auth/signup", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
-        if (response.data.token) {
-          tokenManager.setToken(response.data.token);
+      Object.entries(data).forEach(([key, value]) => {
+        if (value instanceof File) {
+          formData.append(key, value);
+        } else if (value !== null && value !== undefined) {
+          // Convert non-string values (like numbers) to string
+          formData.append(key, String(value));
         }
+      });
 
-        return response.data;
-      } else {
-        const payload = {
-          ...data,
-          role,
-        };
+      const response = await apiClient.post<SignupResponse>("/auth/signup", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-        const response = await apiClient.post<SignupResponse>("/auth/signup", payload);
-
-        if (response.data.token) {
-          tokenManager.setToken(response.data.token);
-        }
-
-        return response.data;
+      if (response.data.token) {
+        tokenManager.setToken(response.data.token);
       }
+
+      return response.data;
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }
