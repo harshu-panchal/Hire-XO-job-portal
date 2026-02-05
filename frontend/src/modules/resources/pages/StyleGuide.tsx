@@ -9,7 +9,7 @@ const StyleGuide = () => {
       <div className="space-y-4">
         <h1 className="text-4xl font-extrabold tracking-tight">Style Guide</h1>
         <p className="text-xl text-muted-foreground">
-          Design system and component patterns for Hire XO.
+          Design system and component patterns for HireXO.
         </p>
       </div>
 

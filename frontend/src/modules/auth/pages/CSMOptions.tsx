@@ -21,8 +21,8 @@ const CSMOptions = () => {
   const options = [
     {
       id: "offer-csm-services",
-      title: "Offer CSM Services",
-      description: "Provide construction supervision management services",
+      title: "Provide Service",
+      description: "Offer your CSM services",
       icon: HardHat,
       color: "from-rose-500 to-pink-600",
       bgColor: "bg-rose-50 dark:bg-rose-950/20",
@@ -31,8 +31,8 @@ const CSMOptions = () => {
     },
     {
       id: "hire-csm",
-      title: "Hire CSM",
-      description: "Find construction supervision managers for your project",
+      title: "Need Service",
+      description: "Find CSM service providers",
       icon: UserCheck,
       color: "from-pink-500 to-fuchsia-600",
       bgColor: "bg-pink-50 dark:bg-pink-950/20",

@@ -21,8 +21,8 @@ const TenderOptions = () => {
   const options = [
     {
       id: "provide-tenders",
-      title: "Provide Tenders",
-      description: "Post tender opportunities for contractors and vendors",
+      title: "Post Tender",
+      description: "Publish a new tender opportunity",
       icon: FileText,
       color: "from-violet-500 to-purple-600",
       bgColor: "bg-violet-50 dark:bg-violet-950/20",
@@ -31,8 +31,8 @@ const TenderOptions = () => {
     },
     {
       id: "apply-for-tenders",
-      title: "Apply for Tenders",
-      description: "Find and apply for tender opportunities",
+      title: "Find Tender",
+      description: "Browse and apply for tenders",
       icon: Search,
       color: "from-purple-500 to-indigo-600",
       bgColor: "bg-purple-50 dark:bg-purple-950/20",

@@ -21,8 +21,8 @@ const LogisticsOptions = () => {
   const options = [
     {
       id: "provide-logistics",
-      title: "Provide Logistics",
-      description: "Offer logistics and transportation services",
+      title: "Provide Service",
+      description: "Offer your logistics services",
       icon: Truck,
       color: "from-orange-500 to-red-600",
       bgColor: "bg-orange-50 dark:bg-orange-950/20",
@@ -31,8 +31,8 @@ const LogisticsOptions = () => {
     },
     {
       id: "need-logistics",
-      title: "Need Logistics",
-      description: "Find logistics services for your business",
+      title: "Need Service",
+      description: "Find logistics service providers",
       icon: MapPin,
       color: "from-red-500 to-rose-600",
       bgColor: "bg-red-50 dark:bg-red-950/20",

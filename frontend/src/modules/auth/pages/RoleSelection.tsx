@@ -115,8 +115,8 @@ const RoleSelection = () => {
             </div>
           </div>
           <div>
-            <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">
-              Hire <span className="text-primary">XO</span>
+            <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2 font-branding">
+              Hire<span className="text-primary">XO</span>
             </h1>
             <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">
               The future of hiring is here.

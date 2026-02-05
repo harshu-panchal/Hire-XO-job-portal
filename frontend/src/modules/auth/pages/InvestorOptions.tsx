@@ -21,8 +21,8 @@ const InvestorOptions = () => {
   const options = [
     {
       id: "want-to-invest",
-      title: "Want to Invest",
-      description: "I'm looking for investment opportunities",
+      title: "Ready to Invest",
+      description: "I have capital and looking for projects",
       icon: TrendingUp,
       color: "from-green-500 to-emerald-600",
       bgColor: "bg-green-50 dark:bg-green-950/20",
@@ -31,8 +31,8 @@ const InvestorOptions = () => {
     },
     {
       id: "want-investment",
-      title: "Want Investment",
-      description: "I'm seeking funding for my business",
+      title: "Need Investor",
+      description: "I have a project and need funding",
       icon: DollarSign,
       color: "from-blue-500 to-cyan-600",
       bgColor: "bg-blue-50 dark:bg-blue-950/20",

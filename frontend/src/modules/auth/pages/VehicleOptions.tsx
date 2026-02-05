@@ -21,8 +21,8 @@ const VehicleOptions = () => {
   const options = [
     {
       id: "rent-out-vehicles",
-      title: "Rent Out Vehicles",
-      description: "List your vehicles for rental",
+      title: "List Vehicle",
+      description: "List your vehicle for others",
       icon: Car,
       color: "from-blue-500 to-cyan-600",
       bgColor: "bg-blue-50 dark:bg-blue-950/20",
@@ -31,8 +31,8 @@ const VehicleOptions = () => {
     },
     {
       id: "rent-vehicles",
-      title: "Rent Vehicles",
-      description: "Find vehicles to rent for your needs",
+      title: "Need Vehicle",
+      description: "Find vehicles for rent or purchase",
       icon: Key,
       color: "from-cyan-500 to-teal-600",
       bgColor: "bg-cyan-50 dark:bg-cyan-950/20",

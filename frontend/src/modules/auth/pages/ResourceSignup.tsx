@@ -61,22 +61,22 @@ const ResourceSignup = () => {
 
   const categoryConfig: Record<string, { title: string; fields: string[] }> = {
     investor: {
-      title: subType === "want-to-invest" ? "Investor Signup" : "Seeking Investment",
+      title: subType === "want-to-invest" ? "Ready to Invest" : "Need Investor",
       fields: ["investmentAmount", "investmentSector"],
     },
     tenders: {
-      title: subType === "provide-tenders" ? "Post Tenders" : "Apply for Tenders",
+      title: subType === "provide-tenders" ? "Post Tender" : "Find Tender",
       fields:
         subType === "provide-tenders"
           ? ["tenderValue", "tenderCategory"]
           : ["certifications", "projectExperience"],
     },
     equipments: {
-      title: subType === "rent-out-equipment" ? "Rent Out Equipment" : "Rent Equipment",
+      title: subType === "rent-out-equipment" ? "List Equipment" : "Need Equipment",
       fields: ["equipmentTypes"],
     },
     machinery: {
-      title: subType === "provide-machinery" ? "Provide Machinery" : "Need Machinery",
+      title: subType === "provide-machinery" ? "List Machinery" : "Need Machinery",
       fields: subType === "provide-machinery" ? ["machineryTypes"] : ["machineryTypes"],
     },
     pmc: {
@@ -84,15 +84,15 @@ const ResourceSignup = () => {
       fields: ["projectExperience", "certifications"],
     },
     csm: {
-      title: subType === "offer-csm-services" ? "Offer CSM Services" : "Hire CSM",
+      title: subType === "offer-csm-services" ? "Provide Service" : "Need Service",
       fields: ["projectExperience", "certifications"],
     },
     logistics: {
-      title: subType === "provide-logistics" ? "Provide Logistics" : "Need Logistics",
+      title: subType === "provide-logistics" ? "Provide Service" : "Need Service",
       fields: ["serviceArea", "vehicleTypes"],
     },
     vehicles: {
-      title: subType === "rent-out-vehicles" ? "Rent Out Vehicles" : "Rent Vehicles",
+      title: subType === "rent-out-vehicles" ? "List Vehicle" : "Need Vehicle",
       fields: ["vehicleTypes"],
     },
   };
@@ -330,7 +330,7 @@ const ResourceSignup = () => {
             {config.fields.includes("investmentAmount") && (
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
-                  {subType === "want-to-invest" ? "Investment Budget" : "Funding Required"}
+                  {subType === "want-to-invest" ? "Investment Budget" : "Funding Requirement"}
                 </label>
                 <div className="relative group">
                   <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
@@ -348,7 +348,7 @@ const ResourceSignup = () => {
             {config.fields.includes("investmentSector") && (
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
-                  {subType === "want-to-invest" ? "Investment Sectors" : "Business Sectors"}
+                  {subType === "want-to-invest" ? "Target Sectors" : "Business Sectors"}
                 </label>
                 <div className="flex gap-2">
                   <div className="relative flex-1 group">

@@ -140,8 +140,8 @@ const RentSettings = () => {
         </button>
         <div className="flex items-center justify-center gap-2 mt-6 opacity-30 cursor-default">
           <div className="size-1 rounded-full bg-slate-400" />
-          <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 italic">
-            Hire XO Gear v1.0.2
+          <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 italic font-branding">
+            HireXO Gear v1.0.2
           </p>
           <div className="size-1 rounded-full bg-slate-400" />
         </div>

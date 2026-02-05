@@ -21,8 +21,8 @@ const MachineryOptions = () => {
   const options = [
     {
       id: "provide-machinery",
-      title: "Provide Machinery",
-      description: "Offer machinery services and rentals",
+      title: "List Machinery",
+      description: "List your machinery for others",
       icon: Cog,
       color: "from-slate-500 to-gray-600",
       bgColor: "bg-slate-50 dark:bg-slate-950/20",
@@ -32,7 +32,7 @@ const MachineryOptions = () => {
     {
       id: "need-machinery",
       title: "Need Machinery",
-      description: "Find machinery for your projects",
+      description: "Find machinery for your project",
       icon: Wrench,
       color: "from-gray-500 to-zinc-600",
       bgColor: "bg-gray-50 dark:bg-gray-950/20",

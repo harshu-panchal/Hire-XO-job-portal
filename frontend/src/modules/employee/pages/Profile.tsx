@@ -207,9 +207,8 @@ const Profile = () => {
             <button
               key={i}
               onClick={() => navigate(item.path)}
-              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${
-                i !== menuItems.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
-              }`}
+              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${i !== menuItems.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
+                }`}
             >
               <div className="flex items-center gap-4">
                 <div className={`size-12 rounded-2xl ${item.bg} flex items-center justify-center`}>
@@ -242,8 +241,8 @@ const Profile = () => {
         <span className="text-[10px] font-black uppercase tracking-widest">Sign Out</span>
       </button>
 
-      <p className="text-center text-[9px] font-black text-slate-300 uppercase tracking-[0.3em] pt-4">
-        Hire XO v1.0.4
+      <p className="text-center text-[9px] font-black text-slate-300 uppercase tracking-[0.3em] pt-4 font-branding">
+        HireXO v1.0.4
       </p>
     </div>
   );

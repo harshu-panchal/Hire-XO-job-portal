@@ -21,8 +21,8 @@ const EquipmentOptions = () => {
   const options = [
     {
       id: "rent-out-equipment",
-      title: "Rent Out Equipment",
-      description: "List your equipment for rental to businesses",
+      title: "List Equipment",
+      description: "List your equipment for others",
       icon: Package,
       color: "from-green-500 to-emerald-600",
       bgColor: "bg-green-50 dark:bg-green-950/20",
@@ -31,8 +31,8 @@ const EquipmentOptions = () => {
     },
     {
       id: "rent-equipment",
-      title: "Rent Equipment",
-      description: "Find and rent equipment for your projects",
+      title: "Need Equipment",
+      description: "Find equipment for rent or purchase",
       icon: ShoppingCart,
       color: "from-emerald-500 to-teal-600",
       bgColor: "bg-emerald-50 dark:bg-emerald-950/20",

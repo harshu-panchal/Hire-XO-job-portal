@@ -45,7 +45,7 @@ i18n
                 },
               },
               logout: "Sign Out",
-              footer: "Hire XO v1.0.4",
+              footer: "HireXO v1.0.4",
               modal: {
                 title: "Select Language",
                 subtitle: "Choose your preferred language",

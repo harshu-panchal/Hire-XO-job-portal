@@ -70,7 +70,7 @@ import AdminLogistics from "./modules/admin/pages/resources/Logistics";
 import AdminVehicles from "./modules/admin/pages/resources/Vehicles";
 import AdminEquipments from "./modules/admin/pages/resources/Equipments";
 
-// Investor Browse App (Want to Invest)
+// Investor Browse App (Ready to Invest)
 import BrowseLayout from "./modules/resources/investor/browse/layouts/BrowseLayout";
 import BrowseDashboard from "./modules/resources/investor/browse/pages/BrowseDashboard";
 import BrowseProfile from "./modules/resources/investor/browse/pages/BrowseProfile";
@@ -80,7 +80,7 @@ import MyInvestments from "./modules/resources/investor/browse/pages/MyInvestmen
 import InvestorBrowseNotifications from "./modules/resources/investor/browse/pages/InvestorBrowseNotifications";
 import BrowseSettings from "./modules/resources/investor/browse/pages/BrowseSettings";
 
-// Investor Seek App (Want Investment)
+// Investor Seek App (Need Investor)
 import SeekLayout from "./modules/resources/investor/seek/layouts/SeekLayout";
 import SeekDashboard from "./modules/resources/investor/seek/pages/SeekDashboard";
 import PostFundingNeed from "./modules/resources/investor/seek/pages/PostFundingNeed";
@@ -88,7 +88,7 @@ import MyFundingRequests from "./modules/resources/investor/seek/pages/MyFunding
 import InvestorInquiries from "./modules/resources/investor/seek/pages/InvestorInquiries";
 import SeekSettings from "./modules/resources/investor/seek/pages/SeekSettings";
 
-// Tender Apply App (Apply for Tenders)
+// Tender Apply App (Find Tender)
 import ApplyLayout from "./modules/resources/tenders/apply/layouts/ApplyLayout";
 import ApplyDashboard from "./modules/resources/tenders/apply/pages/ApplyDashboard";
 import TendersList from "./modules/resources/tenders/apply/pages/TendersList";
@@ -98,7 +98,7 @@ import ApplyProfile from "./modules/resources/tenders/apply/pages/ApplyProfile";
 import ApplySettings from "./modules/resources/tenders/apply/pages/ApplySettingsPage";
 import TenderApplyNotifications from "./modules/resources/tenders/apply/pages/TenderApplyNotifications";
 
-// Tender Provide App (Provide Tenders)
+// Tender Provide App (Post Tender)
 import ProvideLayout from "./modules/resources/tenders/provide/layouts/ProvideLayout";
 import ProvideDashboard from "./modules/resources/tenders/provide/pages/ProvideDashboard";
 import PostTender from "./modules/resources/tenders/provide/pages/PostTender";
@@ -108,7 +108,7 @@ import TenderProvideNotifications from "./modules/resources/tenders/provide/page
 import ProvideProfile from "./modules/resources/tenders/provide/pages/ProvideProfile";
 import ProvideSettings from "./modules/resources/tenders/provide/pages/ProvideSettings";
 
-// Equipment Rent App (Rent Gear)
+// Equipment App (Need Equipment)
 import RentLayout from "./modules/resources/equipments/rent/layouts/RentLayout";
 import RentDashboard from "./modules/resources/equipments/rent/pages/RentDashboard";
 import EquipmentList from "./modules/resources/equipments/rent/pages/EquipmentList";
@@ -117,7 +117,7 @@ import MyRentals from "./modules/resources/equipments/rent/pages/MyRentals";
 import RentProfile from "./modules/resources/equipments/rent/pages/RentProfile";
 import RentSettings from "./modules/resources/equipments/rent/pages/RentSettings";
 
-// Equipment Provide App (Lender Portal)
+// Equipment Provider App (List Equipment)
 import EquipmentProvideLayout from "./modules/resources/equipments/provide/layouts/ProvideLayout";
 import EquipmentProvideDashboard from "./modules/resources/equipments/provide/pages/ProvideDashboard";
 import PostEquipment from "./modules/resources/equipments/provide/pages/PostEquipment";
@@ -126,7 +126,7 @@ import RentalRequests from "./modules/resources/equipments/provide/pages/RentalR
 import EquipmentProvideProfile from "./modules/resources/equipments/provide/pages/ProvideProfile";
 import EquipmentProvideSettings from "./modules/resources/equipments/provide/pages/ProvideSettings";
 
-// Machinery Buy App (Marketplace)
+// Machinery App (Need Machinery)
 import BuyLayout from "./modules/resources/machinery/buy/layouts/BuyLayout";
 import BuyDashboard from "./modules/resources/machinery/buy/pages/BuyDashboard";
 import MachineryList from "./modules/resources/machinery/buy/pages/MachineryList";
@@ -135,7 +135,7 @@ import MyOrders from "./modules/resources/machinery/buy/pages/MyOrders";
 import BuyProfile from "./modules/resources/machinery/buy/pages/BuyProfile";
 import BuySettings from "./modules/resources/machinery/buy/pages/BuySettings";
 
-// Machinery Sell App (Seller Console)
+// Machinery Provider App (List Machinery)
 import SellLayout from "./modules/resources/machinery/sell/layouts/SellLayout";
 import SellDashboard from "./modules/resources/machinery/sell/pages/SellDashboard";
 import PostMachine from "./modules/resources/machinery/sell/pages/PostMachine";
@@ -162,7 +162,7 @@ import PMCInquiries from "./modules/resources/pmc/provide/pages/Inquiries";
 import PMCProvideProfile from "./modules/resources/pmc/provide/pages/ProvideProfile";
 import PMCProvideSettings from "./modules/resources/pmc/provide/pages/ProvideSettings";
 
-// CSM Browse App (Hire CSM)
+// CSM App (Need Service)
 import CSMBrowseLayout from "./modules/resources/csm/browse/layouts/BrowseLayout";
 import CSMBrowseDashboard from "./modules/resources/csm/browse/pages/BrowseDashboard";
 import CSMList from "./modules/resources/csm/browse/pages/CSMList";
@@ -171,7 +171,7 @@ import CSMMyHires from "./modules/resources/csm/browse/pages/MyHires";
 import CSMBrowseProfile from "./modules/resources/csm/browse/pages/BrowseProfile";
 import CSMBrowseSettings from "./modules/resources/csm/browse/pages/BrowseSettings";
 
-// CSM Provide App (Offer CSM)
+// CSM Provider App (Provide Service)
 import CSMProvideLayout from "./modules/resources/csm/provide/layouts/ProvideLayout";
 import CSMProvideDashboard from "./modules/resources/csm/provide/pages/ProvideDashboard";
 import CSMPostService from "./modules/resources/csm/provide/pages/PostService";
@@ -180,7 +180,7 @@ import CSMInquiries from "./modules/resources/csm/provide/pages/Inquiries";
 import CSMProvideProfile from "./modules/resources/csm/provide/pages/ProvideProfile";
 import CSMProvideSettings from "./modules/resources/csm/provide/pages/ProvideSettings";
 
-// Logistics Browse App (Hire Logistics)
+// Logistics App (Need Service)
 import LogisticsBrowseLayout from "./modules/resources/logistics/browse/layouts/BrowseLayout";
 import LogisticsBrowseDashboard from "./modules/resources/logistics/browse/pages/BrowseDashboard";
 import LogisticsList from "./modules/resources/logistics/browse/pages/LogisticsList";
@@ -189,7 +189,7 @@ import LogisticsMyHires from "./modules/resources/logistics/browse/pages/MyHires
 import LogisticsBrowseProfile from "./modules/resources/logistics/browse/pages/BrowseProfile";
 import LogisticsBrowseSettings from "./modules/resources/logistics/browse/pages/BrowseSettings";
 
-// Logistics Provide App (Offer Logistics)
+// Logistics Provider App (Provide Service)
 import LogisticsProvideLayout from "./modules/resources/logistics/provide/layouts/ProvideLayout";
 import LogisticsProvideDashboard from "./modules/resources/logistics/provide/pages/ProvideDashboard";
 import LogisticsPostService from "./modules/resources/logistics/provide/pages/PostLogisticsService";
@@ -281,7 +281,7 @@ function App() {
         <Route path="/employer/security" element={<EmployerSecurity />} />
       </Route>
 
-      {/* Protected Investor Browse Routes (Want to Invest) */}
+      {/* Protected Investor Browse Routes (Ready to Invest) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -298,7 +298,7 @@ function App() {
         <Route path="/investor/browse/notifications" element={<InvestorBrowseNotifications />} />
       </Route>
 
-      {/* Protected Investor Seek Routes (Want Investment) */}
+      {/* Protected Investor Seek Routes (Need Investor) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -313,7 +313,7 @@ function App() {
         <Route path="/investor/seek/settings" element={<SeekSettings />} />
       </Route>
 
-      {/* Protected Tender Apply Routes (Apply for Tenders) */}
+      {/* Protected Tender Apply Routes (Find Tender) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -330,7 +330,7 @@ function App() {
         <Route path="/tenders/apply/notifications" element={<TenderApplyNotifications />} />
       </Route>
 
-      {/* Protected Tender Provide Routes (Provide Tenders) */}
+      {/* Protected Tender Provide Routes (Post Tender) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -347,7 +347,7 @@ function App() {
         <Route path="/tenders/provide/notifications" element={<TenderProvideNotifications />} />
       </Route>
 
-      {/* Protected Equipment Rent Routes (Rent Gear) */}
+      {/* Protected Equipment Routes (Need Equipment) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -363,7 +363,7 @@ function App() {
         <Route path="/equipments/rent/settings" element={<RentSettings />} />
       </Route>
 
-      {/* Protected Equipment Provide Routes (Lender Portal) */}
+      {/* Protected Equipment Provider Routes (List Equipment) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -379,7 +379,7 @@ function App() {
         <Route path="/equipments/provide/settings" element={<EquipmentProvideSettings />} />
       </Route>
 
-      {/* Protected Machinery Buy Routes (Marketplace) */}
+      {/* Protected Machinery Routes (Need Machinery) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -395,7 +395,7 @@ function App() {
         <Route path="/machinery/buy/settings" element={<BuySettings />} />
       </Route>
 
-      {/* Protected Machinery Sell Routes (Seller Console) */}
+      {/* Protected Machinery Provider Routes (List Machinery) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -443,7 +443,7 @@ function App() {
         <Route path="/pmc/provide/settings" element={<PMCProvideSettings />} />
       </Route>
 
-      {/* Protected CSM Browse Routes (Hire CSM) */}
+      {/* Protected CSM Routes (Need Service) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -459,7 +459,7 @@ function App() {
         <Route path="/csm/browse/settings" element={<CSMBrowseSettings />} />
       </Route>
 
-      {/* Protected CSM Provide Routes (Offer CSM) */}
+      {/* Protected CSM Provider Routes (Provide Service) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -475,7 +475,7 @@ function App() {
         <Route path="/csm/provide/settings" element={<CSMProvideSettings />} />
       </Route>
 
-      {/* Protected Logistics Browse Routes (Hire Logistics) */}
+      {/* Protected Logistics Routes (Need Service) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -491,7 +491,7 @@ function App() {
         <Route path="/logistics/browse/settings" element={<LogisticsBrowseSettings />} />
       </Route>
 
-      {/* Protected Logistics Provide Routes (Offer Logistics) */}
+      {/* Protected Logistics Provider Routes (Provide Service) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -507,7 +507,7 @@ function App() {
         <Route path="/logistics/provide/settings" element={<LogisticsProvideSettings />} />
       </Route>
 
-      {/* Protected Vehicle Browse Routes (Hire Vehicle) */}
+      {/* Protected Vehicle Routes (Need Vehicle) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
@@ -523,7 +523,7 @@ function App() {
         <Route path="/vehicles/browse/settings" element={<VehicleBrowseSettings />} />
       </Route>
 
-      {/* Protected Vehicle Provide Routes (Offer Vehicle) */}
+      {/* Protected Vehicle Provider Routes (List Vehicle) */}
       <Route
         element={
           <ProtectedRoute allowedRoles={["resource"]}>
