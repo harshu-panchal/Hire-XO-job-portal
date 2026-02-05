@@ -25,26 +25,34 @@ const Notifications = () => {
 
   const getTypeStyles = (type: string) => {
     switch (type) {
-      case 'success': return 'bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400';
-      case 'warning': return 'bg-yellow-100 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400';
-      case 'error': return 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400';
-      default: return 'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400';
+      case "success":
+        return "bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400";
+      case "warning":
+        return "bg-yellow-100 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400";
+      case "error":
+        return "bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400";
+      default:
+        return "bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400";
     }
   };
 
   const getIcon = (type: string) => {
     switch (type) {
-      case 'success': return <CheckCircle2 className="size-5" />;
-      case 'warning': return <Clock className="size-5" />;
-      case 'error': return <Info className="size-5" />;
-      default: return <Bell className="size-5" />;
+      case "success":
+        return <CheckCircle2 className="size-5" />;
+      case "warning":
+        return <Clock className="size-5" />;
+      case "error":
+        return <Info className="size-5" />;
+      default:
+        return <Bell className="size-5" />;
     }
   };
 
   const markAllRead = async () => {
     try {
       await notificationService.markAllAsRead();
-      setNotifs(prev => prev.map(n => ({ ...n, read: true })));
+      setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch (error) {
       console.error(error);
     }
@@ -54,7 +62,7 @@ const Notifications = () => {
     if (currentStatus) return; // Already read
     try {
       await notificationService.markAsRead(id);
-      setNotifs(prev => prev.map(n => n._id === id ? { ...n, read: true } : n));
+      setNotifs((prev) => prev.map((n) => (n._id === id ? { ...n, read: true } : n)));
     } catch (error) {
       console.error(error);
     }
@@ -88,7 +96,7 @@ const Notifications = () => {
             </button>
             <h1 className="text-xl font-black tracking-tight">Notifications</h1>
           </div>
-          {notifs.some(n => !n.read) && (
+          {notifs.some((n) => !n.read) && (
             <button
               onClick={markAllRead}
               className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity"
@@ -107,18 +115,23 @@ const Notifications = () => {
             <div
               key={notif._id}
               onClick={() => toggleRead(notif._id, notif.read)}
-              className={`group relative p-5 rounded-[2rem] bg-white dark:bg-slate-900/50 border transition-all cursor-pointer ${!notif.read
-                ? "border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10"
-                : "border-slate-100 dark:border-white/5 opacity-80"
-                }`}
+              className={`group relative p-5 rounded-[2rem] bg-white dark:bg-slate-900/50 border transition-all cursor-pointer ${
+                !notif.read
+                  ? "border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10"
+                  : "border-slate-100 dark:border-white/5 opacity-80"
+              }`}
             >
               <div className="flex gap-4">
-                <div className={`size-12 shrink-0 rounded-2xl flex items-center justify-center ${getTypeStyles(notif.type)}`}>
+                <div
+                  className={`size-12 shrink-0 rounded-2xl flex items-center justify-center ${getTypeStyles(notif.type)}`}
+                >
                   {getIcon(notif.type)}
                 </div>
                 <div className="flex-1 min-w-0 pr-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className={`text-sm leading-tight truncate ${!notif.read ? "font-black" : "font-bold text-slate-700 dark:text-slate-300"}`}>
+                    <h3
+                      className={`text-sm leading-tight truncate ${!notif.read ? "font-black" : "font-bold text-slate-700 dark:text-slate-300"}`}
+                    >
                       {notif.title}
                     </h3>
                     {!notif.read && (
