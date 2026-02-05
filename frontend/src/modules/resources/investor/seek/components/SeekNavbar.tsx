@@ -24,8 +24,8 @@ export const SeekNavbar = () => {
         <div className="size-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
           <span className="text-white font-black text-xl tracking-tighter italic">H</span>
         </div>
-        <span className="text-xl font-black tracking-tighter">
-          Hire <span className="text-primary">XO</span>
+        <span className="text-xl font-black tracking-normal font-branding">
+          Hire<span className="text-primary">XO</span>
         </span>
       </Link>
       <div className="flex gap-2.5 relative">

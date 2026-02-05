@@ -27,7 +27,7 @@ const certificatesData: Certificate[] = [
   {
     id: "CERT001",
     name: "Verified Recruiter",
-    issuer: "Hire-XO",
+    issuer: "HireXO",
     issuedTo: "TechCorp India",
     issueDate: "Jan 15, 2024",
     expiryDate: "Jan 15, 2025",
@@ -36,7 +36,7 @@ const certificatesData: Certificate[] = [
   {
     id: "CERT002",
     name: "Premium Partner",
-    issuer: "Hire-XO",
+    issuer: "HireXO",
     issuedTo: "InnovateTech",
     issueDate: "Dec 10, 2023",
     expiryDate: "Dec 10, 2024",
@@ -45,7 +45,7 @@ const certificatesData: Certificate[] = [
   {
     id: "CERT003",
     name: "Trusted Employer",
-    issuer: "Hire-XO",
+    issuer: "HireXO",
     issuedTo: "GlobalHR Solutions",
     issueDate: "Jun 20, 2023",
     expiryDate: "Jun 20, 2024",
@@ -54,7 +54,7 @@ const certificatesData: Certificate[] = [
   {
     id: "CERT004",
     name: "Verified Recruiter",
-    issuer: "Hire-XO",
+    issuer: "HireXO",
     issuedTo: "StartupHub",
     issueDate: "Mar 05, 2024",
     expiryDate: "Mar 05, 2025",
@@ -113,7 +113,7 @@ export default function Certificates() {
     const newCertificate: Certificate = {
       id: `CERT${String(certificates.length + 1).padStart(3, "0")}`,
       name: formData.type,
-      issuer: "Hire-XO",
+      issuer: "HireXO",
       issuedTo: formData.issuedTo,
       issueDate: new Date(formData.issueDate).toLocaleDateString("en-US", {
         month: "short",
@@ -223,13 +223,12 @@ export default function Certificates() {
                 <Shield className="w-6 h-6 text-primary" />
               </div>
               <span
-                className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                  cert.status === "Active"
+                className={`px-2.5 py-1 rounded-full text-xs font-medium ${cert.status === "Active"
                     ? "bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400"
                     : cert.status === "Expired"
                       ? "bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400"
                       : "bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400"
-                }`}
+                  }`}
               >
                 {cert.status}
               </span>

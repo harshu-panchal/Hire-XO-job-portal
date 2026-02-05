@@ -51,8 +51,8 @@ const EmployerLayout = () => {
             <div className="size-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
               <span className="text-white font-black text-xl tracking-tighter italic">H</span>
             </div>
-            <span className="text-xl font-black tracking-tighter">
-              Hire <span className="text-primary">XO</span>
+            <span className="text-xl font-black tracking-normal font-branding">
+              Hire<span className="text-primary">XO</span>
             </span>
           </Link>
           <div className="flex gap-2.5 relative">
@@ -68,11 +68,10 @@ const EmployerLayout = () => {
               <>
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${
-                    showNotifications
-                      ? "bg-primary/10 border-primary text-primary"
-                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400"
-                  }`}
+                  className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${showNotifications
+                    ? "bg-primary/10 border-primary text-primary"
+                    : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400"
+                    }`}
                 >
                   <Bell className="size-5" />
                   {unreadCount > 0 && (
@@ -104,25 +103,22 @@ const EmployerLayout = () => {
         <div className="flex items-center justify-between">
           <Link
             to="/employer"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/employer") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${
-                isActive("/employer")
-                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
-                  : "bg-transparent"
-              }`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer")
+                ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                : "bg-transparent"
+                }`}
             >
               <LayoutDashboard
                 className={`h-6 w-6 ${isActive("/employer") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                isActive("/employer") ? "opacity-100" : "opacity-40"
-              }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Dash
             </span>
@@ -130,25 +126,22 @@ const EmployerLayout = () => {
 
           <Link
             to={isAuthenticated ? "/employer/post-job" : "/login/employer"}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/employer/post-job") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/post-job") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${
-                isActive("/employer/post-job")
-                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
-                  : "bg-transparent"
-              }`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/post-job")
+                ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                : "bg-transparent"
+                }`}
             >
               <PlusSquare
                 className={`h-6 w-6 ${isActive("/employer/post-job") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                isActive("/employer/post-job") ? "opacity-100" : "opacity-40"
-              }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/post-job") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Post
             </span>
@@ -156,25 +149,22 @@ const EmployerLayout = () => {
 
           <Link
             to={isAuthenticated ? "/employer/applications" : "/login/employer"}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/employer/applications") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/applications") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${
-                isActive("/employer/applications")
-                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
-                  : "bg-transparent"
-              }`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/applications")
+                ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                : "bg-transparent"
+                }`}
             >
               <Users
                 className={`h-6 w-6 ${isActive("/employer/applications") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                isActive("/employer/applications") ? "opacity-100" : "opacity-40"
-              }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/applications") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Apps
             </span>
@@ -182,25 +172,22 @@ const EmployerLayout = () => {
 
           <Link
             to={isAuthenticated ? "/employer/settings" : "/login/employer"}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/employer/settings") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/settings") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${
-                isActive("/employer/settings")
-                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
-                  : "bg-transparent"
-              }`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/settings")
+                ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                : "bg-transparent"
+                }`}
             >
               <Settings
                 className={`h-6 w-6 ${isActive("/employer/settings") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                isActive("/employer/settings") ? "opacity-100" : "opacity-40"
-              }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/settings") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Setup
             </span>

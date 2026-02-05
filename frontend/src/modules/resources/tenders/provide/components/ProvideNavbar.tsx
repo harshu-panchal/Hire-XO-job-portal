@@ -26,8 +26,8 @@ const ProvideNavbar = () => {
             <span className="text-white font-black text-xl tracking-tighter">H</span>
           </div>
           <div>
-            <h1 className="text-lg font-black tracking-tighter leading-none">
-              Hire <span className="text-primary">XO</span>
+            <h1 className="text-lg font-black tracking-normal leading-none font-branding">
+              Hire<span className="text-primary">XO</span>
             </h1>
             <p className="text-[8px] font-black uppercase tracking-[0.2em] text-indigo-600/60 leading-none mt-1">
               Tender Provide
@@ -41,11 +41,10 @@ const ProvideNavbar = () => {
           </button>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className={`size-10 rounded-xl flex items-center justify-center relative active:scale-95 transition-transform ${
-              showNotifications
-                ? "bg-primary/10 text-primary"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-            }`}
+            className={`size-10 rounded-xl flex items-center justify-center relative active:scale-95 transition-transform ${showNotifications
+              ? "bg-primary/10 text-primary"
+              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+              }`}
           >
             <Bell className="size-5" />
             {unreadCount > 0 && (

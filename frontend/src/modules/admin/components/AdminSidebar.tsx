@@ -80,7 +80,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
             <Shield className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-slate-900 dark:text-white">Hire-XO</h1>
+            <h1 className="text-lg font-bold text-slate-900 dark:text-white font-branding">HireXO</h1>
             <span className="text-xs text-primary font-medium">Admin Panel</span>
           </div>
         </div>

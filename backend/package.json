@@ -1,7 +1,7 @@
 {
   "name": "hire-xo-backend",
   "version": "1.0.0",
-  "description": "Backend for Hire XO Job Portal",
+  "description": "Backend for HireXO Job Portal",
   "main": "src/server.ts",
   "scripts": {
     "start": "node dist/server.js",
