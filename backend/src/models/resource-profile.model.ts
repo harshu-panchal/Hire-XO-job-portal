@@ -57,7 +57,6 @@ const ResourceProfileSchema: Schema = new Schema({
 // Indexes for performance optimization
 ResourceProfileSchema.index({ category: 1 });
 ResourceProfileSchema.index({ organizationName: 1 });
-ResourceProfileSchema.index({ userId: 1 });
 ResourceProfileSchema.index({ location: 1 });
 
 
