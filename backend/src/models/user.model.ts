@@ -42,6 +42,8 @@ export interface IUser extends Document {
     statusReason?: string;
     statusUpdatedAt?: Date;
     deletedAt?: Date;
+    resetPasswordToken?: string;
+    resetPasswordExpires?: Date;
     createdAt: Date;
 }
 
@@ -97,6 +99,8 @@ const UserSchema: Schema = new Schema({
     statusReason: { type: String },
     statusUpdatedAt: { type: Date },
     deletedAt: { type: Date },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
 }, { timestamps: true });
 
 export default mongoose.model<IUser>('User', UserSchema);
