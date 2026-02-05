@@ -1,27 +1,16 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Bell, Info, CheckCircle2, Clock, Trash2 } from "lucide-react";
-import { notificationService, type Notification } from "@/services/notificationService";
+import { ChevronLeft, Bell, Info, CheckCircle2, Clock, Trash2, XCircle } from "lucide-react";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const Notifications = () => {
   const navigate = useNavigate();
-  const [notifs, setNotifs] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadNotifications();
-  }, []);
-
-  const loadNotifications = async () => {
-    try {
-      const data = await notificationService.getNotifications();
-      setNotifs(data);
-    } catch (error) {
-      console.error("Failed to load notifications", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    notifications: notifs,
+    markAllRead,
+    deleteNotification,
+    handleNotificationClick,
+    loading
+  } = useNotifications();
 
   const getTypeStyles = (type: string) => {
     switch (type) {
@@ -43,43 +32,15 @@ const Notifications = () => {
       case "warning":
         return <Clock className="size-5" />;
       case "error":
-        return <Info className="size-5" />;
+        return <XCircle className="size-5" />;
       default:
         return <Bell className="size-5" />;
     }
   };
 
-  const markAllRead = async () => {
-    try {
-      await notificationService.markAllAsRead();
-      setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const toggleRead = async (id: string, currentStatus: boolean) => {
-    if (currentStatus) return; // Already read
-    try {
-      await notificationService.markAsRead(id);
-      setNotifs((prev) => prev.map((n) => (n._id === id ? { ...n, read: true } : n)));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const formatTime = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-
-    const minutes = Math.floor(diff / 60000);
-    if (minutes < 60) return `${minutes}m ago`;
-
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-
-    return date.toLocaleDateString();
+  const handleDelete = (id: string | number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteNotification(id);
   };
 
   return (
@@ -96,7 +57,7 @@ const Notifications = () => {
             </button>
             <h1 className="text-xl font-black tracking-tight">Notifications</h1>
           </div>
-          {notifs.some((n) => !n.read) && (
+          {notifs.some((n) => n.unread) && (
             <button
               onClick={markAllRead}
               className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity"
@@ -109,17 +70,19 @@ const Notifications = () => {
 
       <div className="px-5 space-y-4">
         {loading ? (
-          <div className="text-center py-20 text-slate-400 font-bold">Loading...</div>
+          <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+            <div className="animate-spin size-10 border-4 border-primary border-t-transparent rounded-full" />
+            <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Loading notifications...</p>
+          </div>
         ) : notifs.length > 0 ? (
           notifs.map((notif) => (
             <div
-              key={notif._id}
-              onClick={() => toggleRead(notif._id, notif.read)}
-              className={`group relative p-5 rounded-[2rem] bg-white dark:bg-slate-900/50 border transition-all cursor-pointer ${
-                !notif.read
+              key={notif.id}
+              onClick={() => handleNotificationClick(notif.id)}
+              className={`group relative p-5 rounded-[2rem] bg-white dark:bg-slate-900/50 border transition-all cursor-pointer ${notif.unread
                   ? "border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10"
                   : "border-slate-100 dark:border-white/5 opacity-80"
-              }`}
+                }`}
             >
               <div className="flex gap-4">
                 <div
@@ -127,25 +90,31 @@ const Notifications = () => {
                 >
                   {getIcon(notif.type)}
                 </div>
-                <div className="flex-1 min-w-0 pr-2">
+                <div className="flex-1 min-w-0 pr-8">
                   <div className="flex items-center gap-2 mb-1">
                     <h3
-                      className={`text-sm leading-tight truncate ${!notif.read ? "font-black" : "font-bold text-slate-700 dark:text-slate-300"}`}
+                      className={`text-sm leading-tight truncate ${notif.unread ? "font-black" : "font-bold text-slate-700 dark:text-slate-300"}`}
                     >
                       {notif.title}
                     </h3>
-                    {!notif.read && (
+                    {notif.unread && (
                       <span className="size-2 rounded-full bg-primary animate-pulse" />
                     )}
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-2">
-                    {notif.message}
+                    {notif.description}
                   </p>
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                    {formatTime(notif.createdAt)}
+                    {notif.time}
                   </p>
                 </div>
               </div>
+              <button
+                onClick={(e) => handleDelete(notif.id, e)}
+                className="absolute top-5 right-5 size-8 rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all active:scale-90 flex items-center justify-center"
+              >
+                <Trash2 className="size-4" />
+              </button>
             </div>
           ))
         ) : (

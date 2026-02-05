@@ -10,5 +10,6 @@ router.use(authenticateToken); // Protect all notification routes
 router.get('/', notificationController.getNotifications);
 router.put('/:notificationId/read', notificationController.markAsRead);
 router.put('/mark-all-read', notificationController.markAllAsRead);
+router.delete('/:notificationId', notificationController.deleteNotification);
 
 export default router;

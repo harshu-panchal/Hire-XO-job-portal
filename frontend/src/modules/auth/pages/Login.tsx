@@ -350,13 +350,12 @@ const Login = () => {
             )}
 
             <div className="text-right">
-              <button
-                type="button"
-                onClick={() => alert("Password reset functionality coming soon!")}
+              <Link
+                to="/forgot-password"
                 className="text-xs font-bold text-primary hover:text-primary/80 transition-colors cursor-pointer"
               >
                 Forgot Password?
-              </button>
+              </Link>
             </div>
 
             <Button

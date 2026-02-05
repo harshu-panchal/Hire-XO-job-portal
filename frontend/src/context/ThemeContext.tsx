@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-type Theme = "dark" | "light";
+type Theme = "dark" | "light" | "system";
 
 interface ThemeContextType {
   theme: Theme;
@@ -15,22 +15,25 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
-  // Initialize state from local storage or default to 'light'
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem("theme");
-    return (saved as Theme) || "light";
+    return (saved as Theme) || "system";
   });
 
   const [effectiveTheme, setEffectiveTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    // Only allow dark mode on admin routes
-    const isAdminRoute = location.pathname.startsWith("/admin");
-    const newEffectiveTheme = isAdminRoute ? theme : "light";
+    let newEffectiveTheme: "light" | "dark";
+
+    if (theme === "system") {
+      newEffectiveTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    } else {
+      newEffectiveTheme = theme;
+    }
 
     setEffectiveTheme(newEffectiveTheme);
-
-    // We still save the user's preference to localStorage even if we don't apply it on non-admin pages
     localStorage.setItem("theme", theme);
 
     const root = window.document.documentElement;
@@ -39,7 +42,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme, location.pathname]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    setTheme((prev) => {
+      if (prev === "system") return "light";
+      return prev === "light" ? "dark" : "light";
+    });
   };
 
   return (

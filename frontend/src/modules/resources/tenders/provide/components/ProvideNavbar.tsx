@@ -1,41 +1,21 @@
 import { useState } from "react";
 import { Bell, Search, CheckCircle, Info } from "lucide-react";
 import { NotificationDropdown } from "@/components/NotificationDropdown";
-import type { Notification } from "@/components/NotificationDropdown";
-
-const mockNotifications: Notification[] = [
-  {
-    id: 1,
-    title: "Bid Received",
-    description: "A new bid has been submitted for your Mumbai Flyover project.",
-    time: "30m ago",
-    type: "success",
-    icon: CheckCircle,
-    unread: true,
-  },
-  {
-    id: 2,
-    title: "Tender Published",
-    description: "Your tender for Road Maintenance has been successfully published.",
-    time: "2h ago",
-    type: "info",
-    icon: Info,
-    unread: false,
-  },
-];
+import { useNotifications } from "@/hooks/useNotifications";
+import { useNavigate } from "react-router-dom";
 
 const ProvideNavbar = () => {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState(mockNotifications);
-
-  const unreadCount = notifications.filter((n) => n.unread).length;
+  const { notifications, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
 
   const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
+    markAllRead();
   };
 
-  const handleMarkRead = (id: number) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)));
+  const handleNotifClick = (id: string | number) => {
+    handleNotificationClick(id);
+    setShowNotifications(false);
   };
 
   return (
@@ -61,11 +41,10 @@ const ProvideNavbar = () => {
           </button>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className={`size-10 rounded-xl flex items-center justify-center relative active:scale-95 transition-transform ${
-              showNotifications
-                ? "bg-primary/10 text-primary"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-            }`}
+            className={`size-10 rounded-xl flex items-center justify-center relative active:scale-95 transition-transform ${showNotifications
+              ? "bg-primary/10 text-primary"
+              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+              }`}
           >
             <Bell className="size-5" />
             {unreadCount > 0 && (
@@ -78,7 +57,7 @@ const ProvideNavbar = () => {
             onClose={() => setShowNotifications(false)}
             notifications={notifications}
             onMarkAllRead={handleMarkAllRead}
-            onNotificationClick={handleMarkRead}
+            onNotificationClick={handleNotifClick}
             viewAllPath="/tenders/provide/notifications"
           />
         </div>

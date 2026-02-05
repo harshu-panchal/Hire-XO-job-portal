@@ -269,4 +269,50 @@ export class AuthService {
 
         return { message: 'Password changed successfully' };
     }
+
+    public async forgotPassword(email: string) {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new Error('User with this email does not exist');
+        }
+
+        // Generate reset token
+        const crypto = require('crypto');
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+        // Save to user
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpires = new Date(resetPasswordExpires);
+        await user.save();
+
+        // Send email
+        const { EmailService } = require('./email.service');
+        const emailService = new EmailService();
+        await emailService.sendPasswordResetEmail(user.email, resetToken);
+
+        return { message: 'Password reset email sent' };
+    }
+
+    public async resetPassword(token: string, newPassword: string) {
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            throw new Error('Password reset token is invalid or has expired');
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update user
+        user.password = hashedPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        return { message: 'Password has been reset successfully' };
+    }
 }

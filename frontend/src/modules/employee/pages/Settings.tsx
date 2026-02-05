@@ -13,15 +13,21 @@ import {
   Moon,
   Sun,
   Monitor,
+  Loader2,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { userService } from "@/services/userService";
 import { toast } from "sonner";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { user: userProfile, updateProfile } = useAuthStore();
+  const { user: userProfile, updateProfile, updateUser } = useAuthStore();
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Local state for preferences
   const [pushEnabled, setPushEnabled] = useState(true);
   const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
 
@@ -36,6 +42,29 @@ const Settings = () => {
       : [],
   });
 
+  // Sync form when user profile loads
+  useEffect(() => {
+    if (userProfile) {
+      setForm({
+        name: userProfile.name || "",
+        email: userProfile.email || "",
+        linkedinUrl: userProfile.profile?.linkedinUrl || "",
+        bio: userProfile.profile?.bio || "",
+        skills: userProfile.profile?.skills?.join(", ") || "",
+        experience: Array.isArray(userProfile.profile?.experience)
+          ? userProfile.profile.experience
+          : [],
+      });
+
+      const prefs = userProfile.profile?.preferences;
+      if (prefs) {
+        setPushEnabled(prefs.notifications ?? true);
+        setTheme(prefs.theme || "system");
+      }
+    }
+  }, [userProfile]);
+
+  // Handle Theme Change
   useEffect(() => {
     const root = window.document.documentElement;
     if (theme === "dark") {
@@ -47,6 +76,32 @@ const Settings = () => {
       root.classList.toggle("dark", systemTheme);
     }
   }, [theme]);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const response: any = await userService.updateProfilePhoto(file);
+      const newPhotoUrl = response.url || response.photoUrl;
+
+      if (newPhotoUrl) {
+        updateUser({
+          profilePhoto: newPhotoUrl,
+          profile: {
+            ...userProfile?.profile,
+            profilePhoto: newPhotoUrl
+          }
+        });
+        toast.success("Profile photo updated!");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to upload photo");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -63,6 +118,10 @@ const Settings = () => {
             .map((s) => s.trim())
             .filter((s) => s !== ""),
           experience: form.experience,
+          preferences: {
+            theme,
+            notifications: pushEnabled
+          }
         },
       };
       await updateProfile(updatedProfile);
@@ -72,6 +131,32 @@ const Settings = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleAddExperience = () => {
+    setForm((f) => ({
+      ...f,
+      experience: [
+        ...f.experience,
+        { company: "", role: "", period: "" },
+      ],
+    }));
+  };
+
+  const handleRemoveExperience = (index: number) => {
+    setForm((f) => ({
+      ...f,
+      experience: f.experience.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleExperienceChange = (index: number, field: string, value: string) => {
+    setForm((f) => ({
+      ...f,
+      experience: f.experience.map((exp, i) =>
+        i === index ? { ...exp, [field]: value } : exp
+      ),
+    }));
   };
 
   return (
@@ -93,22 +178,35 @@ const Settings = () => {
         {/* Avatar Section */}
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="size-28 rounded-full border-4 border-white dark:border-slate-800 shadow-xl overflow-hidden">
+            <div className="size-28 rounded-full border-4 border-white dark:border-slate-800 shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
               <img
                 src={
                   userProfile?.profilePhoto ||
                   `https://api.dicebear.com/7.x/avataaars/svg?seed=${userProfile?.name}`
                 }
                 alt="Profile"
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover transition-opacity ${isUploading ? 'opacity-50' : 'opacity-100'}`}
               />
+              {isUploading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Loader2 className="size-8 text-primary animate-spin" />
+                </div>
+              )}
             </div>
             <button
-              onClick={() => toast.info("Photo upload coming soon!")}
-              className="absolute bottom-0 right-0 size-9 bg-primary text-white rounded-xl flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-lg active:scale-90 transition-all cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="absolute bottom-0 right-0 size-9 bg-primary text-white rounded-xl flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-lg active:scale-90 transition-all cursor-pointer disabled:opacity-50"
             >
               <Camera className="size-4" />
             </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+            />
           </div>
         </div>
 
@@ -137,13 +235,13 @@ const Settings = () => {
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Email Address
               </label>
-              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 focus-within:border-primary/50 transition-all">
+              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 opacity-60">
                 <Mail className="size-5 text-slate-400" />
                 <input
                   type="email"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="flex-1 bg-transparent text-sm font-bold focus:outline-none"
+                  disabled
+                  className="flex-1 bg-transparent text-sm font-bold focus:outline-none cursor-not-allowed"
                 />
               </div>
             </div>
@@ -204,15 +302,7 @@ const Settings = () => {
                 </label>
                 <button
                   type="button"
-                  onClick={() =>
-                    setForm((f) => ({
-                      ...f,
-                      experience: [
-                        ...(Array.isArray(f.experience) ? f.experience : []),
-                        { company: "", role: "", period: "" },
-                      ],
-                    }))
-                  }
+                  onClick={handleAddExperience}
                   className="flex items-center gap-1 text-[10px] font-black text-primary uppercase tracking-widest active:scale-95 transition-all"
                 >
                   <Plus className="size-3" />
@@ -227,12 +317,7 @@ const Settings = () => {
                   >
                     <button
                       type="button"
-                      onClick={() => {
-                        if (Array.isArray(form.experience)) {
-                          const newExp = form.experience.filter((_, i) => i !== index);
-                          setForm({ ...form, experience: newExp });
-                        }
-                      }}
+                      onClick={() => handleRemoveExperience(index)}
                       className="absolute -top-2 -right-2 size-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg active:scale-90"
                     >
                       <Trash2 className="size-3" />
@@ -241,13 +326,7 @@ const Settings = () => {
                       type="text"
                       value={exp.role}
                       placeholder="Job Role"
-                      onChange={(e) => {
-                        if (Array.isArray(form.experience)) {
-                          const newExp = [...form.experience];
-                          newExp[index].role = e.target.value;
-                          setForm({ ...form, experience: newExp });
-                        }
-                      }}
+                      onChange={(e) => handleExperienceChange(index, "role", e.target.value)}
                       className="w-full bg-transparent text-sm font-black focus:outline-none placeholder:text-slate-400"
                     />
                     <div className="flex gap-4">
@@ -255,26 +334,14 @@ const Settings = () => {
                         type="text"
                         value={exp.company}
                         placeholder="Company"
-                        onChange={(e) => {
-                          if (Array.isArray(form.experience)) {
-                            const newExp = [...form.experience];
-                            newExp[index].company = e.target.value;
-                            setForm({ ...form, experience: newExp });
-                          }
-                        }}
+                        onChange={(e) => handleExperienceChange(index, "company", e.target.value)}
                         className="flex-1 bg-transparent text-[11px] font-bold text-primary focus:outline-none uppercase tracking-widest placeholder:text-slate-400"
                       />
                       <input
                         type="text"
                         value={exp.period}
                         placeholder="Period"
-                        onChange={(e) => {
-                          if (Array.isArray(form.experience)) {
-                            const newExp = [...form.experience];
-                            newExp[index].period = e.target.value;
-                            setForm({ ...form, experience: newExp });
-                          }
-                        }}
+                        onChange={(e) => handleExperienceChange(index, "period", e.target.value)}
                         className="w-24 bg-transparent text-[11px] font-bold text-slate-400 focus:outline-none text-right uppercase tracking-widest placeholder:text-slate-400"
                       />
                     </div>
@@ -335,11 +402,10 @@ const Settings = () => {
                     key={t.id}
                     type="button"
                     onClick={() => setTheme(t.id as any)}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${
-                      theme === t.id
-                        ? "bg-primary/5 border-primary text-primary"
-                        : "bg-slate-50 dark:bg-white/5 border-transparent text-slate-400"
-                    }`}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${theme === t.id
+                      ? "bg-primary/5 border-primary text-primary"
+                      : "bg-slate-50 dark:bg-white/5 border-transparent text-slate-400"
+                      }`}
                   >
                     <t.icon className="size-5" />
                     <span className="text-[10px] font-black uppercase tracking-widest">

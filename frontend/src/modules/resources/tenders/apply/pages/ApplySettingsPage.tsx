@@ -58,12 +58,21 @@ const SettingItem = ({ icon: Icon, label, description, action, onClick }: any) =
 
 const ApplySettingsPage = () => {
   const navigate = useNavigate();
-  const { logout, user } = useAuthStore();
-  const { theme, toggleTheme } = useTheme();
+  const { logout, user, updateProfile } = useAuthStore();
+  const { theme: currentTheme, setTheme: setGlobalTheme } = useTheme();
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [tenderAlerts, setTenderAlerts] = useState(true);
+
+  // Local state for preferences synced with user profile
+  const [tenderAlerts, setTenderAlerts] = useState(user?.profile?.preferences?.notifications ?? true);
   const [wallet, setWallet] = useState<SettingsWallet | null>(null);
-  const darkMode = theme === "dark";
+  const darkMode = currentTheme === "dark";
+
+  // Sync state when user loads
+  useEffect(() => {
+    if (user?.profile?.preferences) {
+      setTenderAlerts(user.profile.preferences.notifications ?? true);
+    }
+  }, [user]);
 
   // Password state
   const [passwords, setPasswords] = useState({ old: "", new: "", confirm: "" });
@@ -84,11 +93,46 @@ const ApplySettingsPage = () => {
     }
   };
 
-  const handleTenderAlertsToggle = (e: React.MouseEvent) => {
+  const handleTenderAlertsToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const newState = !tenderAlerts;
     setTenderAlerts(newState);
-    toast.success(`Tender alerts ${newState ? "enabled" : "disabled"}`);
+
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...user?.profile?.preferences,
+            notifications: newState
+          }
+        }
+      });
+      toast.success(`Tender alerts ${newState ? "enabled" : "disabled"}`);
+    } catch (error: any) {
+      setTenderAlerts(!newState); // Rollback
+      toast.error(error.message || "Failed to update notification settings");
+    }
+  };
+
+  const handleThemeToggle = async () => {
+    const newTheme = darkMode ? "light" : "dark";
+    setGlobalTheme(newTheme);
+
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...user?.profile?.preferences,
+            theme: newTheme
+          }
+        }
+      });
+      toast.success(`Switched to ${newTheme} mode`);
+    } catch (error: any) {
+      console.error("Failed to persist theme preference", error);
+    }
   };
 
   const handleLogout = () => {
@@ -497,10 +541,7 @@ const ApplySettingsPage = () => {
                 description="Switch app appearance"
                 action={
                   <button
-                    onClick={() => {
-                      toggleTheme();
-                      toast.success(`Switched to ${darkMode ? "Light" : "Dark"} mode`);
-                    }}
+                    onClick={handleThemeToggle}
                     className={`w-12 h-6 rounded-full transition-colors relative ${darkMode ? "bg-violet-600" : "bg-slate-200"}`}
                   >
                     <div

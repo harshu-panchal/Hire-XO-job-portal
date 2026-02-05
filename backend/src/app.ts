@@ -47,6 +47,7 @@ const limiter = rateLimit({
     message: { message: 'Too many requests from this IP, please try again after 15 minutes' }
 });
 
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/', limiter);
 
 // Routes
@@ -68,7 +69,6 @@ app.use('/api/certificates', certificateRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/notifications', notificationRoutes);
 
 // Serve static files from uploads directory
 

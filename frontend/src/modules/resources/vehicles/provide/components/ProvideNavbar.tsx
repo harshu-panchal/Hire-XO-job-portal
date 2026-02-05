@@ -1,67 +1,30 @@
 import { useState } from "react";
 import { Bell, CheckCircle, MessageSquare, AlertCircle } from "lucide-react";
-import { Link } from "react-router-dom";
-import { NotificationDropdown, type Notification } from "@/components/NotificationDropdown";
+import { Link, useNavigate } from "react-router-dom";
+import { NotificationDropdown } from "@/components/NotificationDropdown";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export const ProvideNavbar = () => {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      title: "New Inquiry Received",
-      description: "Someone is interested in your Tesla Model 3",
-      time: "5 mins ago",
-      type: "info",
-      icon: MessageSquare,
-      unread: true,
-    },
-    {
-      id: 2,
-      title: "Booking Confirmed",
-      description: "Your Tata Ace has been booked for 3 days",
-      time: "1 hour ago",
-      type: "success",
-      icon: CheckCircle,
-      unread: true,
-    },
-    {
-      id: 3,
-      title: "Vehicle Listing Approved",
-      description: "Your new vehicle listing is now live",
-      time: "2 hours ago",
-      type: "success",
-      icon: CheckCircle,
-      unread: false,
-    },
-    {
-      id: 4,
-      title: "Payment Received",
-      description: "₹4,500 payment received for Tesla Model 3 rental",
-      time: "3 hours ago",
-      type: "success",
-      icon: CheckCircle,
-      unread: false,
-    },
-    {
-      id: 5,
-      title: "Maintenance Reminder",
-      description: "Tesla Model 3 is due for service next week",
-      time: "1 day ago",
-      type: "warning",
-      icon: AlertCircle,
-      unread: false,
-    },
-  ]);
+  const { notifications, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
 
   const handleMarkAllRead = () => {
-    setNotifications(notifications.map((n) => ({ ...n, unread: false })));
+    markAllRead();
   };
 
-  const handleNotificationClick = (id: number) => {
-    setNotifications(notifications.map((n) => (n.id === id ? { ...n, unread: false } : n)));
+  const handleNotifClick = (id: string | number) => {
+    handleNotificationClick(id);
+    const n = notifications.find(x => x.id === id);
+    if (n) {
+      // Navigate based on type if needed
+      // For now, standard click behavior (mark read) is done.
+      // We can add specific routes later.
+    }
+    setShowNotifications(false);
   };
 
-  const unreadCount = notifications.filter((n) => n.unread).length;
+
 
   return (
     <>
@@ -96,7 +59,7 @@ export const ProvideNavbar = () => {
         notifications={notifications}
         viewAllPath="/vehicles/provide/notifications"
         onMarkAllRead={handleMarkAllRead}
-        onNotificationClick={handleNotificationClick}
+        onNotificationClick={handleNotifClick}
       />
     </>
   );
