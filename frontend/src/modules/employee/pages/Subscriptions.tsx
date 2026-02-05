@@ -61,10 +61,11 @@ const Subscriptions = () => {
         {PLANS.map((plan) => (
           <div
             key={plan.id}
-            className={`relative rounded-[3rem] p-8 border-2 transition-all duration-300 active:scale-[0.98] ${plan.popular
-              ? "bg-slate-900 border-primary shadow-2xl shadow-primary/20 text-white"
-              : "bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white"
-              }`}
+            className={`relative rounded-[3rem] p-8 border-2 transition-all duration-300 active:scale-[0.98] ${
+              plan.popular
+                ? "bg-slate-900 border-primary shadow-2xl shadow-primary/20 text-white"
+                : "bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white"
+            }`}
           >
             {plan.popular && (
               <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] px-6 py-2 rounded-full shadow-xl">
@@ -111,12 +112,13 @@ const Subscriptions = () => {
                 // TODO: Implement subscription purchase API
                 alert(`Successfully upgraded to ${plan.name} plan!`);
               }}
-              className={`w-full py-5 rounded-[2rem] text-sm font-black uppercase tracking-[0.2em] transition-all active:scale-90 shadow-xl ${activePlanId === plan.id
-                ? "bg-green-500 text-white shadow-green-500/20"
-                : plan.popular
-                  ? "bg-white text-slate-900 shadow-white/10"
-                  : "bg-primary text-white shadow-primary/20"
-                }`}
+              className={`w-full py-5 rounded-[2rem] text-sm font-black uppercase tracking-[0.2em] transition-all active:scale-90 shadow-xl ${
+                activePlanId === plan.id
+                  ? "bg-green-500 text-white shadow-green-500/20"
+                  : plan.popular
+                    ? "bg-white text-slate-900 shadow-white/10"
+                    : "bg-primary text-white shadow-primary/20"
+              }`}
             >
               {activePlanId === plan.id ? "Current Plan" : "Upgrade Now"}
             </button>

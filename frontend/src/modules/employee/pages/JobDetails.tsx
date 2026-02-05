@@ -18,10 +18,12 @@ import type { Job } from "@/types";
 const JobDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { jobs, fetchJobs, applications, savedJobs, saveJob, unsaveJob, applyToJob } = useEmployeeStore();
+  const { jobs, fetchJobs, applications, savedJobs, saveJob, unsaveJob, applyToJob } =
+    useEmployeeStore();
   const [job, setJob] = useState<Job | null>(null);
 
-  const isApplied = Array.isArray(applications) && applications.some((app: any) => app.jobId === id);
+  const isApplied =
+    Array.isArray(applications) && applications.some((app: any) => app.jobId === id);
   const isBookmarked = Array.isArray(savedJobs) && savedJobs.includes(id || "");
 
   useEffect(() => {
@@ -151,10 +153,14 @@ const JobDetails = () => {
           <div className="size-24 rounded-[2rem] bg-white dark:bg-slate-900 shadow-xl border border-slate-100 dark:border-white/5 flex items-center justify-center overflow-hidden">
             {job.companyLogo ? (
               <img
-                src={job.companyLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(job.company)}&background=random`}
+                src={
+                  job.companyLogo ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(job.company)}&background=random`
+                }
                 alt={job.company}
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(job.company)}&background=random`;
+                  (e.target as HTMLImageElement).src =
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(job.company)}&background=random`;
                 }}
                 className="w-full h-full object-cover"
               />
@@ -290,10 +296,11 @@ const JobDetails = () => {
           <button
             onClick={handleApply}
             disabled={isApplied}
-            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${isApplied
-              ? "bg-green-500 text-white shadow-green-500/20"
-              : "bg-primary text-white shadow-xl shadow-primary/20"
-              }`}
+            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${
+              isApplied
+                ? "bg-green-500 text-white shadow-green-500/20"
+                : "bg-primary text-white shadow-xl shadow-primary/20"
+            }`}
           >
             {isApplied ? (
               <>

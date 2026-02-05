@@ -31,29 +31,26 @@ const notifications: Notification[] = [
     type: "warning",
     icon: Clock,
     unread: false,
-  }
+  },
 ];
 
 export const EmployeeNavbar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifs, setNotifs] = useState(notifications);
 
-  const unreadCount = notifs.filter(n => n.unread).length;
+  const unreadCount = notifs.filter((n) => n.unread).length;
 
   const handleMarkAllRead = () => {
-    setNotifs(prev => prev.map(n => ({ ...n, unread: false })));
+    setNotifs((prev) => prev.map((n) => ({ ...n, unread: false })));
   };
 
   const handleMarkRead = (id: number) => {
-    setNotifs(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
+    setNotifs((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)));
   };
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-background/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 px-5 py-4 flex items-center justify-between transition-all duration-300 select-none">
-      <Link
-        to="/jobs"
-        className="flex items-center gap-2 active:scale-95 transition-transform"
-      >
+      <Link to="/jobs" className="flex items-center gap-2 active:scale-95 transition-transform">
         <div className="size-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
           <span className="text-white font-black text-xl tracking-tighter italic">H</span>
         </div>
@@ -64,10 +61,11 @@ export const EmployeeNavbar = () => {
       <div className="flex gap-2.5 relative">
         <button
           onClick={() => setShowNotifications(!showNotifications)}
-          className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${showNotifications
-            ? "bg-primary/10 border-primary text-primary"
-            : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300"
-            }`}
+          className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${
+            showNotifications
+              ? "bg-primary/10 border-primary text-primary"
+              : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300"
+          }`}
         >
           <Bell className="h-6 w-6" />
           {unreadCount > 0 && (

@@ -1,9 +1,4 @@
-import {
-  Search,
-  Users,
-  CheckCircle2,
-  TrendingUp,
-} from "lucide-react";
+import { Search, Users, CheckCircle2, TrendingUp } from "lucide-react";
 import { useEmployeeStore } from "@/store/useEmployeeStore";
 import { useEffect } from "react";
 import JobCard from "@/modules/employee/components/JobCard";
@@ -24,13 +19,15 @@ const JobList = () => {
     { id: "Testing", label: "Testing" },
   ];
 
-  const filteredJobs = Array.isArray(jobs) ? jobs.filter((job) => {
-    const matchesSearch =
-      job.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-      job.company.toLowerCase().includes(filters.search.toLowerCase());
-    const matchesType = filters.type === "all" || job.category === filters.type;
-    return matchesSearch && matchesType;
-  }) : [];
+  const filteredJobs = Array.isArray(jobs)
+    ? jobs.filter((job) => {
+        const matchesSearch =
+          job.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+          job.company.toLowerCase().includes(filters.search.toLowerCase());
+        const matchesType = filters.type === "all" || job.category === filters.type;
+        return matchesSearch && matchesType;
+      })
+    : [];
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -117,23 +114,22 @@ const JobList = () => {
           />
         </div>
 
-
         {/* Categories */}
         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-5 px-5">
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setType(cat.id)}
-              className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${filters.type === cat.id
-                ? "bg-primary text-white shadow-lg shadow-primary/20"
-                : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
-                }`}
+              className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${
+                filters.type === cat.id
+                  ? "bg-primary text-white shadow-lg shadow-primary/20"
+                  : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
+              }`}
             >
               {cat.label}
             </button>
           ))}
         </div>
-
       </div>
 
       {/* Jobs List */}

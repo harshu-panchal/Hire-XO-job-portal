@@ -34,8 +34,6 @@ export interface Certificate {
   status: "Active" | "Expired";
 }
 
-
-
 export type ResourceCategory =
   | "Investor"
   | "Tenders"

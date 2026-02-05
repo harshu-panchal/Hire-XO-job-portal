@@ -1,0 +1,32 @@
+﻿
+  92:14  warning  'err' is defined but never used. 
+Allowed unused caught errors must match /^_/u  
+@typescript-eslint/no-unused-vars
+  204:14  warning  'err' is defined but never used. 
+Allowed unused caught errors must match /^_/u  
+@typescript-eslint/no-unused-vars
+  26:9  error  Use "@ts-expect-error" instead of 
+"@ts-ignore", as "@ts-ignore" will do nothing if the 
+following line is error-free  
+@typescript-eslint/ban-ts-comment
+  28:9  error  Use "@ts-expect-error" instead of 
+"@ts-ignore", as "@ts-ignore" will do nothing if the 
+following line is error-free  
+@typescript-eslint/ban-ts-comment
+  39:7   error    Use "@ts-expect-error" instead of 
+"@ts-ignore", as "@ts-ignore" will do nothing if the 
+following line is error-free  
+@typescript-eslint/ban-ts-comment
+  8:21  error  Unexpected empty object pattern  
+no-empty-pattern
+  94:5  error  Unnecessary try/catch wrapper  
+no-useless-catch
+   88:18  warning  'error' is defined but never used. 
+Allowed unused caught errors must match /^_/u  
+@typescript-eslint/no-unused-vars
+  115:18  warning  'error' is defined but never used. 
+Allowed unused caught errors must match /^_/u  
+@typescript-eslint/no-unused-vars
+Γ£û 283 problems (5 errors, 278 warnings)
+
+
