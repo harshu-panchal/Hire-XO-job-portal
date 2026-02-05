@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Bell } from "lucide-react";
+import { Bell, LogIn } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { NotificationDropdown } from "@/components/NotificationDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export const EmployeeNavbar = () => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const { notifications: notifs, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
+  const { isAuthenticated } = useAuthStore();
 
   const handleMarkAllRead = () => {
     markAllRead();
@@ -35,27 +37,39 @@ export const EmployeeNavbar = () => {
         </span>
       </Link>
       <div className="flex gap-2.5 relative">
-        <button
-          onClick={() => setShowNotifications(!showNotifications)}
-          className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${showNotifications
-            ? "bg-primary/10 border-primary text-primary"
-            : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300"
-            }`}
-        >
-          <Bell className="h-6 w-6" />
-          {unreadCount > 0 && (
-            <span className="absolute top-3.5 right-3.5 size-2.5 bg-primary rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
-          )}
-        </button>
+        {!isAuthenticated ? (
+          <Link
+            to="/login/employee"
+            className="h-12 px-6 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center gap-2 font-black text-sm uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all"
+          >
+            <LogIn className="size-4" />
+            <span>Login</span>
+          </Link>
+        ) : (
+          <>
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${showNotifications
+                  ? "bg-primary/10 border-primary text-primary"
+                  : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300"
+                }`}
+            >
+              <Bell className="h-6 w-6" />
+              {unreadCount > 0 && (
+                <span className="absolute top-3.5 right-3.5 size-2.5 bg-primary rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
+              )}
+            </button>
 
-        <NotificationDropdown
-          isOpen={showNotifications}
-          onClose={() => setShowNotifications(false)}
-          notifications={notifs}
-          onMarkAllRead={handleMarkAllRead}
-          onNotificationClick={handleNotifClick}
-          viewAllPath="/notifications"
-        />
+            <NotificationDropdown
+              isOpen={showNotifications}
+              onClose={() => setShowNotifications(false)}
+              notifications={notifs}
+              onMarkAllRead={handleMarkAllRead}
+              onNotificationClick={handleNotifClick}
+              viewAllPath="/notifications"
+            />
+          </>
+        )}
       </div>
     </header>
   );

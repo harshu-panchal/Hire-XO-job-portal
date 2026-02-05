@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { notificationService, type Notification as ApiNotification } from '@/services/notificationService';
 import { CheckCircle, Info, AlertTriangle, XCircle, Bell, Star, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export interface UINotification {
     id: string; // Changed to string to match _id
@@ -16,11 +17,16 @@ export interface UINotification {
 }
 
 export const useNotifications = () => {
+    const { isAuthenticated } = useAuthStore();
     const [notifications, setNotifications] = useState<UINotification[]>([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const fetchNotifications = useCallback(async () => {
+        if (!isAuthenticated) {
+            setLoading(false);
+            return;
+        }
         try {
             const data = await notificationService.getNotifications();
             const mapped: UINotification[] = data.map(n => ({

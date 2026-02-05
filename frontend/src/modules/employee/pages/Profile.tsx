@@ -50,11 +50,29 @@ const Profile = () => {
       count: Array.isArray(savedJobs) ? savedJobs.length : 0,
     },
     {
+      label: "Applied Jobs",
+      icon: Briefcase,
+      color: "text-indigo-500",
+      bg: "bg-indigo-500/10",
+      path: "/my-applications",
+      count: applications?.jobs?.length || 0,
+    },
+    {
       label: "Account Settings",
       icon: Settings,
       color: "text-slate-500",
       bg: "bg-slate-500/10",
       path: "/settings",
+    },
+  ];
+
+  const secondaryItems = [
+    {
+      label: "Switch Account Role",
+      icon: User,
+      color: "text-primary",
+      bg: "bg-primary/10",
+      path: "/",
     },
   ];
 
@@ -224,6 +242,26 @@ const Profile = () => {
                 )}
                 <ChevronRight className="size-4 text-slate-300" />
               </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Secondary Items */}
+        <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden">
+          {secondaryItems.map((item, i) => (
+            <button
+              key={i}
+              onClick={() => navigate(item.path)}
+              className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${i !== secondaryItems.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""
+                }`}
+            >
+              <div className="flex items-center gap-4">
+                <div className={`size-12 rounded-2xl ${item.bg} flex items-center justify-center`}>
+                  <item.icon className={`size-6 ${item.color}`} />
+                </div>
+                <span className="text-sm font-black tracking-tight">{item.label}</span>
+              </div>
+              <ChevronRight className="size-4 text-slate-300" />
             </button>
           ))}
         </div>

@@ -63,11 +63,10 @@ export default function Settings() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${
-                  activeTab === tab.id
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${activeTab === tab.id
                     ? "bg-primary text-white"
                     : "text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5"
-                }`}
+                  }`}
               >
                 <tab.icon className="w-5 h-5" />
                 <span className="text-sm font-medium">{tab.label}</span>
@@ -346,16 +345,14 @@ function NotificationSettings() {
             <button
               onClick={() => toggleSetting(item.key as keyof typeof settings)}
               disabled={isSaving}
-              className={`w-12 h-6 rounded-full p-1 transition-colors ${
-                settings[item.key as keyof typeof settings]
+              className={`w-12 h-6 rounded-full p-1 transition-colors ${settings[item.key as keyof typeof settings]
                   ? "bg-primary"
                   : "bg-slate-200 dark:bg-white/20"
-              }`}
+                }`}
             >
               <div
-                className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                  settings[item.key as keyof typeof settings] ? "translate-x-6" : "translate-x-0"
-                }`}
+                className={`w-4 h-4 bg-white rounded-full transition-transform ${settings[item.key as keyof typeof settings] ? "translate-x-6" : "translate-x-0"
+                  }`}
               />
             </button>
           </div>
@@ -522,6 +519,7 @@ function AppearanceSettings() {
   const themes = [
     { id: "light", label: "Light" },
     { id: "dark", label: "Dark" },
+    { id: "system", label: "System" },
   ] as const;
 
   return (
@@ -540,11 +538,10 @@ function AppearanceSettings() {
             <button
               key={t.id}
               onClick={() => setTheme(t.id)}
-              className={`p-4 rounded-xl border-2 text-center transition-all ${
-                theme === t.id
+              className={`p-4 rounded-xl border-2 text-center transition-all ${theme === t.id
                   ? "border-primary bg-primary/5 shadow-sm"
                   : "border-slate-100 dark:border-white/5 hover:border-primary/30"
-              }`}
+                }`}
             >
               <span
                 className={`font-semibold text-sm ${theme === t.id ? "text-primary" : "text-slate-600 dark:text-white/60"}`}

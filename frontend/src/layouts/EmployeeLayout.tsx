@@ -1,11 +1,21 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { Briefcase, CreditCard, User, Package } from "lucide-react";
 import { EmployeeNavbar } from "@/modules/employee/components/EmployeeNavbar";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const EmployeeLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleProtectedNavigation = (path: string, e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate("/login/employee");
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen w-full flex-col max-w-[430px] mx-auto overflow-x-hidden border-x border-gray-100 dark:border-white/5 shadow-2xl bg-slate-50 dark:bg-background transition-colors duration-300">
@@ -24,9 +34,8 @@ const EmployeeLayout = () => {
         <div className="flex justify-between items-center h-20">
           <Link
             to="/jobs"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/jobs") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/jobs") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/jobs") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -41,9 +50,8 @@ const EmployeeLayout = () => {
           </Link>
           <Link
             to="/resources"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/resources") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/resources") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/resources") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -58,9 +66,9 @@ const EmployeeLayout = () => {
           </Link>
           <Link
             to="/profile"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/profile") ? "text-primary" : "text-slate-400"
-            }`}
+            onClick={(e) => handleProtectedNavigation("/profile", e)}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/profile") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/profile") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -75,9 +83,9 @@ const EmployeeLayout = () => {
           </Link>
           <Link
             to="/subscriptions"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/subscriptions") ? "text-primary" : "text-slate-400"
-            }`}
+            onClick={(e) => handleProtectedNavigation("/subscriptions", e)}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/subscriptions") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/subscriptions") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
