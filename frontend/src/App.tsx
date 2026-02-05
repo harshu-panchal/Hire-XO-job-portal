@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Layouts
@@ -225,7 +225,6 @@ function App() {
       {/* Public Routes - Authentication */}
       <Route path="/" element={<RoleSelection />} />
       <Route path="/login/:role" element={<Login />} />
-      <Route path="/signup/:role" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/signup/employee" element={<EmployeeSignup />} />
@@ -242,55 +241,63 @@ function App() {
       <Route path="/resources/vehicles" element={<VehicleOptions />} />
       <Route path="/signup/resource/:category" element={<ResourceSignup />} />
 
-      {/* Protected Employee Routes */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["employee"]}>
-            <EmployeeLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Employee Routes - Mixed Public/Protected */}
+      <Route element={<EmployeeLayout />}>
         <Route path="/jobs" element={<JobList />} />
         <Route path="/jobs/:id" element={<JobDetails />} />
-        <Route path="/subscriptions" element={<Subscriptions />} />
-        <Route path="/certificates" element={<Certificates />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/my-applications" element={<MyApplications />} />
-        <Route path="/saved-jobs" element={<SavedJobs />} />
-        <Route path="/settings" element={<Settings />} />
         <Route path="/resources" element={<ResourcesList />} />
         <Route path="/resources/:id" element={<ResourceDetails />} />
-        <Route path="/notifications" element={<Notifications />} />
         <Route path="/style-guide" element={<StyleGuide />} />
+
+        {/* Protected Employee Sub-Routes */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["employee"]} loginPath="/login/employee">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/subscriptions" element={<Subscriptions />} />
+          <Route path="/certificates" element={<Certificates />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/my-applications" element={<MyApplications />} />
+          <Route path="/saved-jobs" element={<SavedJobs />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/notifications" element={<Notifications />} />
+        </Route>
       </Route>
 
-      {/* Protected Employer Routes */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["employer"]}>
-            <EmployerLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Employer Routes - Mixed Public/Protected */}
+      <Route element={<EmployerLayout />}>
         <Route path="/employer" element={<EmployerDashboard />} />
-        <Route path="/employer/jobs" element={<MyJobs />} />
-        <Route path="/employer/post-job" element={<PostJob />} />
-        <Route path="/employer/applications" element={<ManageApplications />} />
-        <Route path="/employer/settings" element={<EmployerSettings />} />
-        <Route path="/employer/subscription" element={<Subscription />} />
-        <Route path="/employer/profile" element={<EmployerProfile />} />
-        <Route path="/employer/company" element={<EmployerCompany />} />
-        <Route path="/employer/wallet" element={<EmployerWallet />} />
-        {/* Employer Activities and Settings */}
-        <Route path="/employer/notifications" element={<EmployerActivity />} />
-        <Route path="/employer/settings/notifications" element={<EmployerNotificationSettings />} />
-        <Route path="/employer/security" element={<EmployerSecurity />} />
+
+        {/* Protected Employer Sub-Routes */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["employer"]} loginPath="/login/employer">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/employer/jobs" element={<MyJobs />} />
+          <Route path="/employer/post-job" element={<PostJob />} />
+          <Route path="/employer/applications" element={<ManageApplications />} />
+          <Route path="/employer/settings" element={<EmployerSettings />} />
+          <Route path="/employer/subscription" element={<Subscription />} />
+          <Route path="/employer/profile" element={<EmployerProfile />} />
+          <Route path="/employer/company" element={<EmployerCompany />} />
+          <Route path="/employer/wallet" element={<EmployerWallet />} />
+          {/* Employer Activities and Settings */}
+          <Route path="/employer/notifications" element={<EmployerActivity />} />
+          <Route path="/employer/settings/notifications" element={<EmployerNotificationSettings />} />
+          <Route path="/employer/security" element={<EmployerSecurity />} />
+        </Route>
       </Route>
 
       {/* Protected Investor Browse Routes (Want to Invest) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <BrowseLayout />
           </ProtectedRoute>
         }
@@ -307,7 +314,7 @@ function App() {
       {/* Protected Investor Seek Routes (Want Investment) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <SeekLayout />
           </ProtectedRoute>
         }
@@ -322,7 +329,7 @@ function App() {
       {/* Protected Tender Apply Routes (Apply for Tenders) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <ApplyLayout />
           </ProtectedRoute>
         }
@@ -339,7 +346,7 @@ function App() {
       {/* Protected Tender Provide Routes (Provide Tenders) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <ProvideLayout />
           </ProtectedRoute>
         }
@@ -356,7 +363,7 @@ function App() {
       {/* Protected Equipment Rent Routes (Rent Gear) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <RentLayout />
           </ProtectedRoute>
         }
@@ -372,7 +379,7 @@ function App() {
       {/* Protected Equipment Provide Routes (Lender Portal) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <EquipmentProvideLayout />
           </ProtectedRoute>
         }
@@ -388,7 +395,7 @@ function App() {
       {/* Protected Machinery Buy Routes (Marketplace) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <BuyLayout />
           </ProtectedRoute>
         }
@@ -404,7 +411,7 @@ function App() {
       {/* Protected Machinery Sell Routes (Seller Console) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <SellLayout />
           </ProtectedRoute>
         }
@@ -420,7 +427,7 @@ function App() {
       {/* Protected PMC Browse Routes (Hire PMC) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <PMCBrowseLayout />
           </ProtectedRoute>
         }
@@ -436,7 +443,7 @@ function App() {
       {/* Protected PMC Provide Routes (Offer PMC) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <PMCProvideLayout />
           </ProtectedRoute>
         }
@@ -452,7 +459,7 @@ function App() {
       {/* Protected CSM Browse Routes (Hire CSM) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <CSMBrowseLayout />
           </ProtectedRoute>
         }
@@ -468,7 +475,7 @@ function App() {
       {/* Protected CSM Provide Routes (Offer CSM) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <CSMProvideLayout />
           </ProtectedRoute>
         }
@@ -484,7 +491,7 @@ function App() {
       {/* Protected Logistics Browse Routes (Hire Logistics) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <LogisticsBrowseLayout />
           </ProtectedRoute>
         }
@@ -500,7 +507,7 @@ function App() {
       {/* Protected Logistics Provide Routes (Offer Logistics) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <LogisticsProvideLayout />
           </ProtectedRoute>
         }
@@ -516,7 +523,7 @@ function App() {
       {/* Protected Vehicle Browse Routes (Hire Vehicle) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <VehicleBrowseLayout />
           </ProtectedRoute>
         }
@@ -532,7 +539,7 @@ function App() {
       {/* Protected Vehicle Provide Routes (Offer Vehicle) */}
       <Route
         element={
-          <ProtectedRoute allowedRoles={["resource"]}>
+          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
             <VehicleProvideLayout />
           </ProtectedRoute>
         }
@@ -547,7 +554,13 @@ function App() {
       </Route>
 
       {/* Protected Admin Routes */}
-      <Route element={<AdminLayout />}>
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={["admin"]} loginPath="/login/admin">
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/employers" element={<Employers />} />
         <Route path="/admin/employee-plans" element={<EmployeePlans />} />

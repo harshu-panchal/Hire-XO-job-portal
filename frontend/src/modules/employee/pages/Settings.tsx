@@ -86,11 +86,11 @@ const Settings = () => {
       const response: any = await userService.updateProfilePhoto(file);
       const newPhotoUrl = response.url || response.photoUrl;
 
-      if (newPhotoUrl) {
+      if (newPhotoUrl && userProfile?.profile) {
         updateUser({
           profilePhoto: newPhotoUrl,
           profile: {
-            ...userProfile?.profile,
+            ...userProfile.profile,
             profilePhoto: newPhotoUrl
           }
         });

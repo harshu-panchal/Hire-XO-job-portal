@@ -6,15 +6,18 @@ import {
   Users,
   Settings,
   Bell,
+  LogIn,
 } from "lucide-react";
 import { NotificationDropdown } from "../components/NotificationDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const EmployerLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const { notifications: notifs, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
+  const { isAuthenticated } = useAuthStore();
 
   const handleMarkAllRead = () => {
     markAllRead();
@@ -55,27 +58,39 @@ const EmployerLayout = () => {
             </span>
           </Link>
           <div className="flex gap-2.5 relative">
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${showNotifications
-                ? "bg-primary/10 border-primary text-primary"
-                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400"
-                }`}
-            >
-              <Bell className="size-5" />
-              {unreadCount > 0 && (
-                <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-4 ring-slate-50 dark:ring-background animate-pulse"></span>
-              )}
-            </button>
+            {!isAuthenticated ? (
+              <Link
+                to="/login/employer"
+                className="h-11 px-5 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center gap-2 font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all"
+              >
+                <LogIn className="size-4" />
+                <span>Login</span>
+              </Link>
+            ) : (
+              <>
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${showNotifications
+                      ? "bg-primary/10 border-primary text-primary"
+                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400"
+                    }`}
+                >
+                  <Bell className="size-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-4 ring-slate-50 dark:ring-background animate-pulse"></span>
+                  )}
+                </button>
 
-            <NotificationDropdown
-              isOpen={showNotifications}
-              onClose={() => setShowNotifications(false)}
-              notifications={notifs}
-              onMarkAllRead={handleMarkAllRead}
-              onNotificationClick={handleNotifClick}
-              viewAllPath="/employer/notifications"
-            />
+                <NotificationDropdown
+                  isOpen={showNotifications}
+                  onClose={() => setShowNotifications(false)}
+                  notifications={notifs}
+                  onMarkAllRead={handleMarkAllRead}
+                  onNotificationClick={handleNotifClick}
+                  viewAllPath="/employer/notifications"
+                />
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -94,71 +109,87 @@ const EmployerLayout = () => {
               }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer")
+                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                  : "bg-transparent"
+                }`}
             >
               <LayoutDashboard
                 className={`h-6 w-6 ${isActive("/employer") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer") ? "opacity-100" : "opacity-40"}`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Dash
             </span>
           </Link>
 
           <Link
-            to="/employer/post-job"
+            to={isAuthenticated ? "/employer/post-job" : "/login/employer"}
             className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/post-job") ? "text-primary" : "text-slate-400"
               }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/post-job") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/post-job")
+                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                  : "bg-transparent"
+                }`}
             >
               <PlusSquare
                 className={`h-6 w-6 ${isActive("/employer/post-job") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/post-job") ? "opacity-100" : "opacity-40"}`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/post-job") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Post
             </span>
           </Link>
 
           <Link
-            to="/employer/applications"
+            to={isAuthenticated ? "/employer/applications" : "/login/employer"}
             className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/applications") ? "text-primary" : "text-slate-400"
               }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/applications") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/applications")
+                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                  : "bg-transparent"
+                }`}
             >
               <Users
                 className={`h-6 w-6 ${isActive("/employer/applications") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/applications") ? "opacity-100" : "opacity-40"}`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/applications") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Apps
             </span>
           </Link>
 
           <Link
-            to="/employer/settings"
+            to={isAuthenticated ? "/employer/settings" : "/login/employer"}
             className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/settings") ? "text-primary" : "text-slate-400"
               }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/settings") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/settings")
+                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                  : "bg-transparent"
+                }`}
             >
               <Settings
                 className={`h-6 w-6 ${isActive("/employer/settings") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/settings") ? "opacity-100" : "opacity-40"}`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/settings") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Setup
             </span>

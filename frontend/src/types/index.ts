@@ -176,4 +176,12 @@ export interface UserProfile {
   website?: string;
   founded?: string;
   projectsWon?: number;
+
+  // Preferences & Settings
+  preferences?: {
+    notifications?: boolean;
+    theme?: "light" | "dark" | "system";
+    notificationSettings?: any;
+    [key: string]: any;
+  };
 }

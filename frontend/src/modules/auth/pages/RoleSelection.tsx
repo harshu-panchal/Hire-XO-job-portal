@@ -72,7 +72,7 @@ const RoleSelection = () => {
       gradient: "from-violet-500 to-purple-600",
       bgGradient: "from-violet-500/10 to-purple-600/10",
       iconColor: "text-violet-600 dark:text-violet-400",
-      path: "/login/employee",
+      path: "/jobs",
       delay: "0ms",
     },
     {
@@ -83,7 +83,7 @@ const RoleSelection = () => {
       gradient: "from-blue-500 to-cyan-600",
       bgGradient: "from-blue-500/10 to-cyan-600/10",
       iconColor: "text-blue-600 dark:text-blue-400",
-      path: "/login/employer",
+      path: "/employer",
       delay: "100ms",
     },
     {

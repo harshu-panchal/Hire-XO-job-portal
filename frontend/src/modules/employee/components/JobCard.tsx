@@ -13,6 +13,8 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useEmployeeStore } from "@/store/useEmployeeStore";
 import type { Job } from "@/types";
 
@@ -21,6 +23,7 @@ interface JobCardProps {
 }
 
 const JobCard = ({ job }: JobCardProps) => {
+  const navigate = useNavigate();
   const { savedJobs, saveJob, unsaveJob, applyToJob } = useEmployeeStore();
   const isSaved = Array.isArray(savedJobs) && savedJobs.includes(job.id);
 
@@ -35,8 +38,10 @@ const JobCard = ({ job }: JobCardProps) => {
     coverLetter: "",
   });
 
+  const { isAuthenticated } = useAuthStore();
+
   const handleCardClick = () => {
-    setShowApplicationModal(true);
+    navigate(`/jobs/${job.id}`);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -52,6 +57,10 @@ const JobCard = ({ job }: JobCardProps) => {
 
   const toggleSave = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!isAuthenticated) {
+      navigate("/login/employee");
+      return;
+    }
     try {
       if (isSaved) {
         await unsaveJob(job.id);

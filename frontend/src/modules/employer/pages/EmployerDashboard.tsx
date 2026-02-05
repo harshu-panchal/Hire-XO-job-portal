@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { Users, Briefcase, TrendingUp, Clock, Plus, Search, ArrowUpRight } from "lucide-react";
+import { Users, Briefcase, TrendingUp, Clock, Plus, Search, ArrowUpRight, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { userService } from "@/services/userService";
 import { applicationService } from "@/services/applicationService";
 import { jobService } from "@/services/jobService";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const EmployerDashboard = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
   const [stats, setStats] = useState({
     activeJobs: 0,
     totalApplications: 0,
@@ -17,6 +19,10 @@ const EmployerDashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
       try {
         const [statsData, appsData, myJobs] = await Promise.all([
           userService.getDashboardStats(),
@@ -48,7 +54,7 @@ const EmployerDashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [isAuthenticated]);
 
   const statCards = [
     {
@@ -86,6 +92,81 @@ const EmployerDashboard = () => {
     );
   }
 
+  // GUEST VIEW
+  if (!isAuthenticated) {
+    return (
+      <div className="py-6 space-y-8 select-none pb-24">
+        {/* Header */}
+        <div className="space-y-4 text-center">
+          <h1 className="text-4xl font-black tracking-tighter leading-tight">
+            Hire Top <br />
+            <span className="text-primary">Talent Today</span>
+          </h1>
+          <p className="text-slate-500 font-black text-xs uppercase tracking-widest max-w-[280px] mx-auto">
+            Post jobs, manage applications, and find the perfect candidate.
+          </p>
+        </div>
+
+        {/* CTA Card */}
+        <div className="bg-primary text-white rounded-[2.5rem] p-8 shadow-xl shadow-primary/20 text-center space-y-6">
+          <div className="size-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto backdrop-blur-sm">
+            <Plus className="size-8" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-black mb-2">Post a Job</h3>
+            <p className="text-white/80 text-sm font-medium">Reach thousands of qualified candidates.</p>
+          </div>
+          <Link
+            to="/login/employer"
+            className="block w-full py-4 rounded-xl bg-white text-primary font-black text-sm uppercase tracking-widest hover:bg-white/90 active:scale-95 transition-all"
+          >
+            Get Started
+          </Link>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white dark:bg-slate-900/50 p-5 rounded-[2rem] border border-slate-200 dark:border-white/10 space-y-3">
+            <div className="size-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
+              <Users className="size-5" />
+            </div>
+            <h4 className="font-black text-sm">Smart Matching</h4>
+            <p className="text-[10px] text-slate-500 font-bold leading-relaxed">
+              AI-powered candidate recommendations.
+            </p>
+          </div>
+          <div className="bg-white dark:bg-slate-900/50 p-5 rounded-[2rem] border border-slate-200 dark:border-white/10 space-y-3">
+            <div className="size-10 bg-green-500/10 rounded-xl flex items-center justify-center text-green-500">
+              <Zap className="size-5" />
+            </div>
+            <h4 className="font-black text-sm">Fast Hiring</h4>
+            <p className="text-[10px] text-slate-500 font-bold leading-relaxed">
+              Streamlined application process.
+            </p>
+          </div>
+          <div className="bg-white dark:bg-slate-900/50 p-5 rounded-[2rem] border border-slate-200 dark:border-white/10 space-y-3 col-span-2">
+            <div className="size-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-500">
+              <ShieldCheck className="size-5" />
+            </div>
+            <h4 className="font-black text-sm">Verified Profiles</h4>
+            <p className="text-[10px] text-slate-500 font-bold leading-relaxed">
+              We verify all candidates to ensure quality and trust.
+            </p>
+          </div>
+        </div>
+
+        {/* Login Prompt */}
+        <div className="text-center">
+          <p className="text-xs font-bold text-slate-400 mb-2">Already have an account?</p>
+          <Link to="/login/employer" className="text-primary font-black uppercase tracking-widest text-xs hover:underline">
+            Login to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // AUTHENTICATED DASHBOARD (Existing Code)
   return (
     <div className="py-6 space-y-8 select-none pb-24">
       {/* Header */}
@@ -205,13 +286,12 @@ const EmployerDashboard = () => {
               </div>
               <div className="flex flex-col items-end gap-1.5">
                 <div
-                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
-                    app.status === "Pending"
+                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${app.status === "Pending"
                       ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
                       : app.status === "Accepted"
                         ? "bg-green-500/10 text-green-600 border-green-500/20"
                         : "bg-red-500/10 text-red-600 border-red-500/20"
-                  }`}
+                    }`}
                 >
                   {app.status}
                 </div>
@@ -232,5 +312,6 @@ const EmployerDashboard = () => {
     </div>
   );
 };
+
 
 export default EmployerDashboard;

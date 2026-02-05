@@ -12,6 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useEmployeeStore } from "@/store/useEmployeeStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useState, useEffect } from "react";
 import type { Job } from "@/types";
 
@@ -20,6 +21,7 @@ const JobDetails = () => {
   const navigate = useNavigate();
   const { jobs, fetchJobs, applications, savedJobs, saveJob, unsaveJob, applyToJob } =
     useEmployeeStore();
+  const { isAuthenticated } = useAuthStore();
   const [job, setJob] = useState<Job | null>(null);
 
   const isApplied =
@@ -52,6 +54,10 @@ const JobDetails = () => {
 
   const toggleSave = async () => {
     if (!id) return;
+    if (!isAuthenticated) {
+      navigate("/login/employee");
+      return;
+    }
     try {
       if (isBookmarked) {
         await unsaveJob(id);
@@ -64,12 +70,15 @@ const JobDetails = () => {
   };
 
   const handleApply = async () => {
-    if (id) {
-      try {
-        await applyToJob(id, {}); // Pass empty object if no form is used
-      } catch (error: any) {
-        alert(error.message || "Failed to submit application");
-      }
+    if (!id) return;
+    if (!isAuthenticated) {
+      navigate("/login/employee");
+      return;
+    }
+    try {
+      await applyToJob(id, {}); // Pass empty object if no form is used
+    } catch (error: any) {
+      alert(error.message || "Failed to submit application");
     }
   };
 
@@ -296,11 +305,10 @@ const JobDetails = () => {
           <button
             onClick={handleApply}
             disabled={isApplied}
-            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${
-              isApplied
-                ? "bg-green-500 text-white shadow-green-500/20"
-                : "bg-primary text-white shadow-xl shadow-primary/20"
-            }`}
+            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${isApplied
+              ? "bg-green-500 text-white shadow-green-500/20"
+              : "bg-primary text-white shadow-xl shadow-primary/20"
+              }`}
           >
             {isApplied ? (
               <>
