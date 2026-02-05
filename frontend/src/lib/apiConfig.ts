@@ -51,7 +51,9 @@ apiClient.interceptors.response.use(
             switch (status) {
                 case 400:
                     // Bad Request
-                    console.error('Bad Request:', (error.response?.data as any)?.message || 'Invalid data');
+                    const errorMsg = (error.response?.data as any)?.message || 'Invalid data';
+                    const errorDetails = (error.response?.data as any)?.error;
+                    console.error('Bad Request:', errorMsg, errorDetails ? errorDetails : '');
                     break;
 
                 case 401:

@@ -29,7 +29,12 @@ const app = express();
 
 // Security Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173', 'https://hire-xo-job-portal.vercel.app', 'https://hire-xo-job-portal.onrender.com'], // Add your Vercel domain here
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Rate Limiting

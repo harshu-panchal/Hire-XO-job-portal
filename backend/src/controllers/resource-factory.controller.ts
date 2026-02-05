@@ -33,7 +33,8 @@ export class ResourceFactoryController<T extends Document> {
 
             res.status(201).json({ message: `${this.resourceName} created successfully`, data: newItem });
         } catch (error: any) {
-            res.status(400).json({ message: `Failed to create ${this.resourceName}`, error: error.message });
+            console.error(`Error creating ${this.resourceName}:`, error);
+            res.status(400).json({ message: `Failed to create ${this.resourceName}`, error: error.message || error });
         }
     };
 

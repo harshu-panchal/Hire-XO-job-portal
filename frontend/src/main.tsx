@@ -1,5 +1,6 @@
 import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import './i18n'
 import App from './App.tsx'
@@ -20,10 +21,12 @@ function AppWrapper() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider>
-      <AppWrapper />
-      <Toaster position="top-center" richColors />
-    </ThemeProvider>
+    <BrowserRouter>
+      <ThemeProvider>
+        <AppWrapper />
+        <Toaster position="top-center" richColors />
+      </ThemeProvider>
+    </BrowserRouter>
   </StrictMode>,
 )
 
