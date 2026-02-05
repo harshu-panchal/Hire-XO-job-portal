@@ -47,8 +47,6 @@ const limiter = rateLimit({
     message: { message: 'Too many requests from this IP, please try again after 15 minutes' }
 });
 
-app.get('/api/test', (req, res) => res.json({ message: 'API is working' }));
-app.get('/api/notifications-test', (req, res) => res.json({ message: 'Notifications test working' }));
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/', limiter);
 

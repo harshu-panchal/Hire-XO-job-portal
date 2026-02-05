@@ -1,54 +1,16 @@
-import { useState } from "react"; // Final Version
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Bell, Info, CheckCircle, Clock, Trash2, Settings } from "lucide-react";
-
-interface Notification {
-  id: number;
-  title: string;
-  description: string;
-  time: string;
-  type: "success" | "info" | "warning" | "error";
-  unread: boolean;
-}
-
-const initialNotifications: Notification[] = [
-  {
-    id: 1,
-    title: "New Application",
-    description: "Rahul Sharma applied for Full Stack Developer position.",
-    time: "10m ago",
-    type: "success",
-    unread: true,
-  },
-  {
-    id: 2,
-    title: "Interview Scheduled",
-    description: "Interview with Sarah J. confirmed for tomorrow at 2 PM.",
-    time: "2h ago",
-    type: "info",
-    unread: true,
-  },
-  {
-    id: 3,
-    title: "Job Post Expired",
-    description: "Your post for 'UI Designer' has expired. Would you like to renew?",
-    time: "5h ago",
-    type: "warning",
-    unread: false,
-  },
-  {
-    id: 4,
-    title: "Profile Viewed",
-    description: "Your company profile was viewed by 50 candidates today.",
-    time: "1d ago",
-    type: "info",
-    unread: false,
-  },
-];
+import { ChevronLeft, Bell, Info, CheckCircle, Clock, Trash2, Settings, XCircle } from "lucide-react";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const EmployerActivity = () => {
   const navigate = useNavigate();
-  const [notifs, setNotifs] = useState<Notification[]>(initialNotifications);
+  const {
+    notifications: notifs,
+    markAllRead,
+    deleteNotification,
+    handleNotificationClick,
+    loading
+  } = useNotifications();
 
   const getTypeStyles = (type: string) => {
     switch (type) {
@@ -70,19 +32,15 @@ const EmployerActivity = () => {
       case "warning":
         return <Clock className="size-5" />;
       case "error":
-        return <Info className="size-5" />;
+        return <XCircle className="size-5" />;
       default:
         return <Bell className="size-5" />;
     }
   };
 
-  const markAllRead = () => {
-    setNotifs((prev) => prev.map((n) => ({ ...n, unread: false })));
-  };
-
-  const deleteNotif = (id: number, e: React.MouseEvent) => {
+  const handleDelete = (id: string | number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setNotifs((prev) => prev.filter((n) => n.id !== id));
+    deleteNotification(id);
   };
 
   return (
@@ -119,15 +77,20 @@ const EmployerActivity = () => {
       </div>
 
       <div className="px-5 space-y-4">
-        {notifs.length > 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+            <div className="animate-spin size-10 border-4 border-primary border-t-transparent rounded-full" />
+            <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Loading activity...</p>
+          </div>
+        ) : notifs.length > 0 ? (
           notifs.map((notif) => (
             <div
               key={notif.id}
-              className={`group relative p-5 rounded-[2rem] bg-white dark:bg-slate-900/50 border transition-all ${
-                notif.unread
+              onClick={() => handleNotificationClick(notif.id)}
+              className={`group relative p-5 rounded-[2rem] bg-white dark:bg-slate-900/50 border transition-all cursor-pointer ${notif.unread
                   ? "border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10"
                   : "border-slate-100 dark:border-white/5 opacity-80"
-              }`}
+                }`}
             >
               <div className="flex gap-4">
                 <div
@@ -153,7 +116,7 @@ const EmployerActivity = () => {
               </div>
 
               <button
-                onClick={(e) => deleteNotif(notif.id, e)}
+                onClick={(e) => handleDelete(notif.id, e)}
                 className="absolute top-5 right-5 size-8 rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all active:scale-90 flex items-center justify-center"
               >
                 <Trash2 className="size-4" />

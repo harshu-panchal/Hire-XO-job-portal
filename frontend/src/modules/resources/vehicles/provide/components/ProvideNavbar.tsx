@@ -7,7 +7,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 export const ProvideNavbar = () => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const { notifications, markAllRead, handleNotificationClick } = useNotifications();
+  const { notifications, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
 
   const handleMarkAllRead = () => {
     markAllRead();
@@ -24,7 +24,7 @@ export const ProvideNavbar = () => {
     setShowNotifications(false);
   };
 
-  const unreadCount = notifications.filter((n) => n.unread).length;
+
 
   return (
     <>

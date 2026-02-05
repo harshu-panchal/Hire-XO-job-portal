@@ -4,7 +4,6 @@ import Notification from '../models/notification.model';
 
 export class NotificationController {
     public getNotifications = async (req: AuthRequest, res: Response): Promise<void> => {
-        console.log('GET /api/notifications called for user:', req.user?.id);
         try {
             const userId = req.user?.id;
             if (!userId) {
@@ -59,6 +58,28 @@ export class NotificationController {
             res.status(200).json({ message: 'All notifications marked as read' });
         } catch (error: any) {
             res.status(500).json({ message: error.message || 'Failed to update notifications' });
+        }
+    };
+    public deleteNotification = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const { notificationId } = req.params;
+
+            const notification = await Notification.findOneAndDelete({ _id: notificationId, userId });
+
+            if (!notification) {
+                res.status(404).json({ message: 'Notification not found' });
+                return;
+            }
+
+            res.status(200).json({ message: 'Notification deleted successfully' });
+        } catch (error: any) {
+            res.status(500).json({ message: error.message || 'Failed to delete notification' });
         }
     };
 }

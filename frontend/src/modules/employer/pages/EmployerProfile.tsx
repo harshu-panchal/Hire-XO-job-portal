@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { userService } from "@/services/userService";
 import { ChevronLeft, User, Camera, Mail, Phone, Briefcase, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const EmployerProfile = () => {
   const navigate = useNavigate();
@@ -69,8 +70,10 @@ const EmployerProfile = () => {
           jobTitle: formData.role,
         },
       });
+      toast.success("Profile updated successfully!");
       navigate(-1);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile");
       console.error("Failed to update profile", error);
     } finally {
       setIsLoading(false);

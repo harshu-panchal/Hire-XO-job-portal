@@ -45,8 +45,8 @@ export const useNotifications = () => {
     useEffect(() => {
         fetchNotifications();
 
-        // Poll every 30 seconds
-        const interval = setInterval(fetchNotifications, 30000);
+        // Poll every 10 seconds
+        const interval = setInterval(fetchNotifications, 10000);
         return () => clearInterval(interval);
     }, [fetchNotifications]);
 
@@ -103,11 +103,23 @@ export const useNotifications = () => {
         }
     };
 
+    const deleteNotification = async (id: string | number) => {
+        const idStr = id.toString();
+        try {
+            await notificationService.deleteNotification(idStr);
+            setNotifications(prev => prev.filter(n => n.id !== idStr));
+        } catch (error) {
+            console.error('Failed to delete notification', error);
+        }
+    };
+
     return {
         notifications,
+        unreadCount: notifications.filter(n => n.unread).length,
         loading,
         markAllRead,
         markRead,
+        deleteNotification,
         handleNotificationClick,
         refresh: fetchNotifications
     };

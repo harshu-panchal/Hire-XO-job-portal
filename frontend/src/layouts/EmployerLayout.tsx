@@ -14,9 +14,7 @@ const EmployerLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const { notifications: notifs, markAllRead, handleNotificationClick } = useNotifications();
-
-  const unreadCount = notifs.filter((n) => n.unread).length;
+  const { notifications: notifs, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
 
   const handleMarkAllRead = () => {
     markAllRead();
@@ -60,8 +58,8 @@ const EmployerLayout = () => {
             <button
               onClick={() => setShowNotifications(!showNotifications)}
               className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${showNotifications
-                  ? "bg-primary/10 border-primary text-primary"
-                  : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400"
+                ? "bg-primary/10 border-primary text-primary"
+                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400"
                 }`}
             >
               <Bell className="size-5" />

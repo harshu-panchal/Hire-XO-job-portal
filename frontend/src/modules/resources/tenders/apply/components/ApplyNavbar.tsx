@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const ApplyNavbar = () => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const { notifications, markAllRead, handleNotificationClick } = useNotifications();
+  const { notifications, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
 
   const handleMarkAllRead = () => {
     markAllRead();
@@ -15,12 +15,8 @@ const ApplyNavbar = () => {
 
   const handleNotifClick = (id: string | number) => {
     handleNotificationClick(id);
-    const n = notifications.find(x => x.id === id);
-    // Custom navigation
     setShowNotifications(false);
   };
-
-  const unreadCount = notifications.filter((n) => n.unread).length;
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 px-4 py-3">

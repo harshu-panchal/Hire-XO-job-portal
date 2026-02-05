@@ -7,7 +7,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 export const BrowseNavbar = () => {
   const navigate = useNavigate();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const { notifications, markAllRead, handleNotificationClick } = useNotifications();
+  const { notifications, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
 
   const handleMarkAllRead = () => {
     markAllRead();
@@ -15,12 +15,8 @@ export const BrowseNavbar = () => {
 
   const handleNotifClick = (id: string | number) => {
     handleNotificationClick(id);
-    const n = notifications.find(x => x.id === id);
-    // Custom logic
     setIsNotifOpen(false);
   };
-
-  const unreadCount = notifications.filter((n) => n.unread).length;
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-background/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 px-5 py-4 flex items-center justify-between transition-all duration-300 select-none">

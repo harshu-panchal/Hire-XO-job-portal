@@ -4,12 +4,6 @@ export interface Notification {
   _id: string;
   title: string;
   message: string;
-  type: "success" | "info" | "warning" | "error";
-  read: boolean;
-  createdAt: string;
-  _id: string;
-  title: string;
-  message: string;
   type: 'success' | 'info' | 'warning' | 'error';
   read: boolean;
   relatedId?: string;
@@ -38,6 +32,14 @@ export const notificationService = {
   async markAllAsRead(): Promise<void> {
     try {
       await apiClient.put("/notifications/mark-all-read");
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  async deleteNotification(notificationId: string): Promise<void> {
+    try {
+      await apiClient.delete(`/notifications/${notificationId}`);
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }

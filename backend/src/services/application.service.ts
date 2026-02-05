@@ -50,7 +50,7 @@ export class ApplicationService {
                 title: 'New Job Application',
                 message: `${applicantName} has applied for ${job.title}`,
                 type: 'info',
-                relatedId: application._id,
+                relatedId: application._id.toString(),
                 relatedType: 'job_application'
             });
         } catch (error) {
@@ -130,7 +130,7 @@ export class ApplicationService {
                 title: 'New Resource Application',
                 message: `${applicantName} has applied for your ${resourceType}`,
                 type: 'info',
-                relatedId: application._id,
+                relatedId: application._id.toString(),
                 relatedType: 'resource_application'
             });
         } catch (error) {
@@ -318,7 +318,7 @@ export class ApplicationService {
                 title,
                 message,
                 type: status === 'Accepted' ? 'success' : 'info',
-                relatedId: application._id,
+                relatedId: application._id.toString(),
                 relatedType: 'job_application'
             });
 
@@ -362,7 +362,7 @@ export class ApplicationService {
                 title,
                 message,
                 type: status === 'Accepted' ? 'success' : 'info',
-                relatedId: application._id,
+                relatedId: application._id.toString(),
                 relatedType: 'resource_application'
             });
 

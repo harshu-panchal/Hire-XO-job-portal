@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Bell,
   Lock,
@@ -9,15 +10,26 @@ import {
   Shield,
   CreditCard,
   ArrowLeft,
+  Sun,
+  Monitor,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
+import { toast } from "sonner";
 
 const BrowseSettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
+  const { theme, setTheme: setGlobalTheme } = useTheme();
   const [language, setLanguage] = useState("English (India)");
+
+  // Sync notifications from profile
+  const [notifications, setNotifications] = useState({
+    opportunities: user?.profile?.preferences?.notifications ?? true,
+    updates: true,
+    email: false,
+  });
 
   const languages = [
     "English (India)",
@@ -31,6 +43,48 @@ const BrowseSettings = () => {
     const currentIndex = languages.indexOf(language);
     const nextIndex = (currentIndex + 1) % languages.length;
     setLanguage(languages[nextIndex]);
+  };
+
+  const handleNotificationToggle = async (key: keyof typeof notifications) => {
+    const newVal = !notifications[key];
+    const updated = { ...notifications, [key]: newVal };
+    setNotifications(updated);
+
+    if (key === "opportunities") {
+      try {
+        await updateProfile({
+          profile: {
+            ...user?.profile,
+            preferences: {
+              ...user?.profile?.preferences,
+              notifications: newVal,
+            },
+          },
+        });
+        toast.success(`Notifications ${newVal ? "enabled" : "disabled"}`);
+      } catch (error) {
+        setNotifications(notifications); // Rollback
+        toast.error("Failed to save settings");
+      }
+    }
+  };
+
+  const handleThemeChange = async (newTheme: "light" | "dark" | "system") => {
+    setGlobalTheme(newTheme);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...user?.profile?.preferences,
+            theme: newTheme,
+          },
+        },
+      });
+      toast.success(`Theme updated to ${newTheme}`);
+    } catch (error) {
+      console.error("Failed to save theme preference", error);
+    }
   };
   return (
     <div className="py-6 space-y-6 select-none animate-in fade-in duration-500">
@@ -70,7 +124,12 @@ const BrowseSettings = () => {
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={notifications.opportunities}
+                onChange={() => handleNotificationToggle("opportunities")}
+              />
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
           </div>
@@ -85,7 +144,12 @@ const BrowseSettings = () => {
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={notifications.updates}
+                onChange={() => handleNotificationToggle("updates")}
+              />
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
           </div>
@@ -100,7 +164,12 @@ const BrowseSettings = () => {
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" />
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={notifications.email}
+                onChange={() => handleNotificationToggle("email")}
+              />
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
           </div>
@@ -109,19 +178,28 @@ const BrowseSettings = () => {
 
       {/* Appearance */}
       <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
-        <h2 className="text-xl font-black tracking-tight mb-4">Appearance</h2>
-        <button className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 active:scale-95 transition-all">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
-              <Moon className="size-5 text-slate-600 dark:text-slate-300" />
-            </div>
-            <div className="text-left">
-              <p className="text-sm font-black">Dark Mode</p>
-              <p className="text-xs text-slate-500">Toggle dark/light theme</p>
-            </div>
-          </div>
-          <ChevronRight className="size-5 text-slate-400" />
-        </button>
+        <h2 className="text-xl font-black tracking-tight mb-4 text-primary">Appearance</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { id: "light", icon: Sun, label: "Light" },
+            { id: "dark", icon: Moon, label: "Dark" },
+            { id: "system", icon: Monitor, label: "System" },
+          ].map((t) => (
+            <button
+              key={t.id}
+              onClick={() => handleThemeChange(t.id as any)}
+              className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${theme === t.id
+                  ? "bg-primary/5 border-primary text-primary"
+                  : "bg-slate-50 dark:bg-slate-800 border-transparent text-slate-400"
+                }`}
+            >
+              <t.icon className="size-5" />
+              <span className="text-[10px] font-black uppercase tracking-widest">
+                {t.label}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Account & Security */}

@@ -7,9 +7,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 export const EmployeeNavbar = () => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const { notifications: notifs, markAllRead, handleNotificationClick } = useNotifications();
-
-  const unreadCount = notifs.filter((n) => n.unread).length;
+  const { notifications: notifs, unreadCount, markAllRead, handleNotificationClick } = useNotifications();
 
   const handleMarkAllRead = () => {
     markAllRead();

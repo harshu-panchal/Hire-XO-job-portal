@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Bell, Mail, Smartphone, MessageSquare } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 const EmployerNotificationSettings = () => {
   const navigate = useNavigate();
+  const { user, updateProfile } = useAuthStore();
 
   const [settings, setSettings] = useState({
     push: {
@@ -19,14 +22,42 @@ const EmployerNotificationSettings = () => {
     },
   });
 
-  const toggleSetting = (category: "push" | "email", setting: string) => {
-    setSettings((prev) => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [setting]: !(prev[category] as Record<string, boolean>)[setting],
-      },
-    }));
+  // Load settings from user profile on mount
+  useEffect(() => {
+    if (user?.profile?.preferences?.notificationSettings) {
+      setSettings(user.profile.preferences.notificationSettings);
+    }
+  }, [user]);
+
+  const toggleSetting = async (category: "push" | "email", setting: string) => {
+    const newCategorySettings = {
+      ...(settings[category] as Record<string, boolean>),
+      [setting]: !(settings[category] as Record<string, boolean>)[setting],
+    };
+
+    const newSettings = {
+      ...settings,
+      [category]: newCategorySettings,
+    };
+
+    setSettings(newSettings);
+
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...user?.profile?.preferences,
+            notificationSettings: newSettings,
+          },
+        },
+      });
+      toast.success("Notification settings updated");
+    } catch (error) {
+      // Rollback
+      setSettings(settings);
+      toast.error("Failed to update notification settings");
+    }
   };
 
   return (
