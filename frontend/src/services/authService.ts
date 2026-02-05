@@ -127,4 +127,31 @@ export const authService = {
   isAuthenticated(): boolean {
     return tokenManager.isTokenValid();
   },
+
+  /**
+   * Request password reset
+   */
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    try {
+      const response = await apiClient.post("/auth/forgot-password", { email });
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  /**
+   * Reset password with token
+   */
+  async resetPassword(token: string, password: string): Promise<{ message: string }> {
+    try {
+      const response = await apiClient.post("/auth/reset-password", {
+        token,
+        newPassword: password,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
 };

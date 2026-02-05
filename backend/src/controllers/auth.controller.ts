@@ -107,5 +107,35 @@ export class AuthController {
         // Here we just confirm the action
         res.status(200).json({ message: 'Logout successful' });
     };
+
+    public forgotPassword = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { email } = req.body;
+            if (!email) {
+                res.status(400).json({ message: 'Email is required' });
+                return;
+            }
+
+            const result = await this.authService.forgotPassword(email);
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message || 'Forgot password request failed' });
+        }
+    };
+
+    public resetPassword = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { token, newPassword } = req.body;
+            if (!token || !newPassword) {
+                res.status(400).json({ message: 'Token and new password are required' });
+                return;
+            }
+
+            const result = await this.authService.resetPassword(token, newPassword);
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message || 'Reset password failed' });
+        }
+    };
 }
 

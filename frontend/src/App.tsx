@@ -7,8 +7,11 @@ import EmployerLayout from "./layouts/EmployerLayout";
 import AdminLayout from "./layouts/AdminLayout";
 
 // Auth Pages
+// Auth Pages
 import RoleSelection from "./modules/auth/pages/RoleSelection";
 import Login from "./modules/auth/pages/Login";
+import ForgotPassword from "./modules/auth/pages/ForgotPassword";
+import ResetPassword from "./modules/auth/pages/ResetPassword";
 import EmployeeSignup from "./modules/auth/pages/EmployeeSignup";
 import EmployerSignup from "./modules/auth/pages/EmployerSignup";
 import ResourceCategories from "./modules/auth/pages/ResourceCategories";
@@ -222,6 +225,9 @@ function App() {
       {/* Public Routes - Authentication */}
       <Route path="/" element={<RoleSelection />} />
       <Route path="/login/:role" element={<Login />} />
+      <Route path="/signup/:role" element={<Signup />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/signup/employee" element={<EmployeeSignup />} />
       <Route path="/signup/employer" element={<EmployerSignup />} />
       <Route path="/resources/categories" element={<ResourceCategories />} />
