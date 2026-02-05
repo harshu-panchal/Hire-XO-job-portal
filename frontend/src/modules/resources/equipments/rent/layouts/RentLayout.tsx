@@ -2,7 +2,23 @@ import { Outlet } from "react-router-dom";
 import RentNavbar from "../components/RentNavbar";
 import { Bell } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { NotificationDropdown } from "@/components/NotificationDropdown";
+import { useNotifications } from "@/hooks/useNotifications";
+
 const RentLayout = () => {
+  const navigate = useNavigate();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const { notifications, markAllRead, handleNotificationClick } = useNotifications();
+
+  const unreadCount = notifications.filter((n) => n.unread).length;
+
+  const handleNotifClick = (id: string | number) => {
+    handleNotificationClick(id);
+    setShowNotifications(false);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white pb-24">
       <div className="max-w-[430px] mx-auto min-h-screen bg-white dark:bg-slate-950 shadow-2xl relative border-x border-slate-100 dark:border-white/5">
@@ -21,10 +37,24 @@ const RentLayout = () => {
               </h2>
             </div>
           </div>
-          <button className="size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 relative">
-            <Bell className="size-5" />
-            <span className="absolute top-2.5 right-2.5 size-2 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-950"></span>
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500 relative">
+              <Bell className="size-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-2.5 right-2.5 size-2 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-950"></span>
+              )}
+            </button>
+            <NotificationDropdown
+              isOpen={showNotifications}
+              onClose={() => setShowNotifications(false)}
+              notifications={notifications}
+              onMarkAllRead={markAllRead}
+              onNotificationClick={handleNotifClick}
+              viewAllPath="/equipments/rent/notifications"
+            />
+          </div>
         </header>
 
         {/* Content Area */}

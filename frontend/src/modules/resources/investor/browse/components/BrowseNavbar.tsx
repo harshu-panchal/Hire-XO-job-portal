@@ -1,50 +1,26 @@
 import { Bell, CheckCircle, TrendingUp, Info } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { NotificationDropdown } from "@/components/NotificationDropdown";
-import type { Notification } from "@/components/NotificationDropdown";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export const BrowseNavbar = () => {
+  const navigate = useNavigate();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      title: "ROI Update: TechVenture",
-      description: "TechVenture Solutions reported a 5% increase in quarterly revenue.",
-      time: "2 HOURS AGO",
-      type: "success",
-      icon: TrendingUp,
-      unread: true,
-    },
-    {
-      id: 2,
-      title: "New Opportunity Alert",
-      description: "A new High-Tech Manufacturing project just went live in Pune.",
-      time: "5 HOURS AGO",
-      type: "info",
-      icon: Info,
-      unread: true,
-    },
-    {
-      id: 3,
-      title: "Funding Milestone Reached",
-      description: "GreenEnergy Innovations has secured 80% of their target funding.",
-      time: "1 DAY AGO",
-      type: "success",
-      icon: CheckCircle,
-      unread: false,
-    },
-  ]);
-
-  const unreadCount = notifications.filter((n) => n.unread).length;
+  const { notifications, markAllRead, handleNotificationClick } = useNotifications();
 
   const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
+    markAllRead();
   };
 
-  const handleNotificationClick = (id: number) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)));
+  const handleNotifClick = (id: string | number) => {
+    handleNotificationClick(id);
+    const n = notifications.find(x => x.id === id);
+    // Custom logic
+    setIsNotifOpen(false);
   };
+
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-background/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 px-5 py-4 flex items-center justify-between transition-all duration-300 select-none">
@@ -75,7 +51,7 @@ export const BrowseNavbar = () => {
           onClose={() => setIsNotifOpen(false)}
           notifications={notifications}
           onMarkAllRead={handleMarkAllRead}
-          onNotificationClick={handleNotificationClick}
+          onNotificationClick={handleNotifClick}
           viewAllPath="/investor/browse/notifications"
         />
       </div>

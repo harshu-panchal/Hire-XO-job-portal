@@ -1,51 +1,29 @@
 import { useState } from "react";
-import { Bell, CheckCircle, Clock, Info, Star } from "lucide-react";
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { NotificationDropdown, type Notification } from "@/components/NotificationDropdown";
-
-const notifications: Notification[] = [
-  {
-    id: 1,
-    title: "Application Viewed",
-    description: "Google viewed your application for Senior Frontend Developer.",
-    time: "5m ago",
-    type: "info",
-    icon: Info,
-    unread: true,
-  },
-  {
-    id: 2,
-    title: "New Job Match",
-    description: "A new job matching your profile was posted by Microsoft.",
-    time: "1h ago",
-    type: "success",
-    icon: CheckCircle,
-    unread: true,
-  },
-  {
-    id: 3,
-    title: "Interview Reminder",
-    description: "Upcoming interview with Amazon tomorrow at 10 AM.",
-    time: "4h ago",
-    type: "warning",
-    icon: Clock,
-    unread: false,
-  },
-];
+import { Bell } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { NotificationDropdown } from "@/components/NotificationDropdown";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export const EmployeeNavbar = () => {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifs, setNotifs] = useState(notifications);
+  const { notifications: notifs, markAllRead, handleNotificationClick } = useNotifications();
 
   const unreadCount = notifs.filter((n) => n.unread).length;
 
   const handleMarkAllRead = () => {
-    setNotifs((prev) => prev.map((n) => ({ ...n, unread: false })));
+    markAllRead();
   };
 
-  const handleMarkRead = (id: number) => {
-    setNotifs((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)));
+  const handleNotifClick = (id: string | number) => {
+    handleNotificationClick(id);
+    const notification = notifs.find((n) => n.id === id);
+    if (notification) {
+      if (notification.relatedType === 'job_application' || notification.relatedType === 'resource_application') {
+        navigate('/my-applications');
+      }
+    }
+    setShowNotifications(false);
   };
 
   return (
@@ -61,11 +39,10 @@ export const EmployeeNavbar = () => {
       <div className="flex gap-2.5 relative">
         <button
           onClick={() => setShowNotifications(!showNotifications)}
-          className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${
-            showNotifications
-              ? "bg-primary/10 border-primary text-primary"
-              : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300"
-          }`}
+          className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${showNotifications
+            ? "bg-primary/10 border-primary text-primary"
+            : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300"
+            }`}
         >
           <Bell className="h-6 w-6" />
           {unreadCount > 0 && (
@@ -78,7 +55,7 @@ export const EmployeeNavbar = () => {
           onClose={() => setShowNotifications(false)}
           notifications={notifs}
           onMarkAllRead={handleMarkAllRead}
-          onNotificationClick={handleMarkRead}
+          onNotificationClick={handleNotifClick}
           viewAllPath="/notifications"
         />
       </div>

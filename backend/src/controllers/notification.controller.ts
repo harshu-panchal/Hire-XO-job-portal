@@ -4,6 +4,7 @@ import Notification from '../models/notification.model';
 
 export class NotificationController {
     public getNotifications = async (req: AuthRequest, res: Response): Promise<void> => {
+        console.log('GET /api/notifications called for user:', req.user?.id);
         try {
             const userId = req.user?.id;
             if (!userId) {

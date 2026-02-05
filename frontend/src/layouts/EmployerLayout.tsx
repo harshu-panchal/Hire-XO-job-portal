@@ -1,61 +1,41 @@
 import { useState } from "react";
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   PlusSquare,
   Users,
   Settings,
   Bell,
-  CheckCircle,
-  Clock,
-  Star,
-  Info,
 } from "lucide-react";
-import { NotificationDropdown, type Notification } from "../components/NotificationDropdown";
-
-const notifications: Notification[] = [
-  {
-    id: 1,
-    title: "New Application",
-    description: "A new candidate applied for the Senior Front-end Developer position.",
-    time: "10m ago",
-    type: "success",
-    icon: CheckCircle,
-    unread: true,
-  },
-  {
-    id: 2,
-    title: "Subscription Renewal",
-    description: "Your Business Plan will expire in 3 days. Renew now to avoid interruption.",
-    time: "2h ago",
-    type: "warning",
-    icon: Info,
-    unread: true,
-  },
-  {
-    id: 3,
-    title: "Profile Viewed",
-    description: "50 employees viewed your company profile today.",
-    time: "5h ago",
-    type: "info",
-    icon: Star,
-    unread: false,
-  },
-];
+import { NotificationDropdown } from "../components/NotificationDropdown";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const EmployerLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifs, setNotifs] = useState(notifications);
+  const { notifications: notifs, markAllRead, handleNotificationClick } = useNotifications();
 
   const unreadCount = notifs.filter((n) => n.unread).length;
 
   const handleMarkAllRead = () => {
-    setNotifs((prev) => prev.map((n) => ({ ...n, unread: false })));
+    markAllRead();
   };
 
-  const handleMarkRead = (id: number) => {
-    setNotifs((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)));
+  const handleNotifClick = (id: string | number) => {
+    handleNotificationClick(id);
+    const notification = notifs.find((n) => n.id === id);
+    if (notification) {
+      // Navigate based on type
+      if (notification.relatedType === 'job_application') {
+        // Ideally navigate to specific application, but for now lists
+        navigate('/employer/applications');
+      } else if (notification.relatedType === 'resource_application') {
+        // Navigate to resource applications (if page exists) or generic applications
+        navigate('/employer/applications');
+      }
+    }
+    setShowNotifications(false);
   };
 
   const isActive = (path: string) => location.pathname === path;
@@ -79,11 +59,10 @@ const EmployerLayout = () => {
           <div className="flex gap-2.5 relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${
-                showNotifications
+              className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${showNotifications
                   ? "bg-primary/10 border-primary text-primary"
                   : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-400"
-              }`}
+                }`}
             >
               <Bell className="size-5" />
               {unreadCount > 0 && (
@@ -96,7 +75,7 @@ const EmployerLayout = () => {
               onClose={() => setShowNotifications(false)}
               notifications={notifs}
               onMarkAllRead={handleMarkAllRead}
-              onNotificationClick={handleMarkRead}
+              onNotificationClick={handleNotifClick}
               viewAllPath="/employer/notifications"
             />
           </div>
@@ -113,9 +92,8 @@ const EmployerLayout = () => {
         <div className="flex items-center justify-between">
           <Link
             to="/employer"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/employer") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -133,9 +111,8 @@ const EmployerLayout = () => {
 
           <Link
             to="/employer/post-job"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/employer/post-job") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/post-job") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/post-job") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -153,9 +130,8 @@ const EmployerLayout = () => {
 
           <Link
             to="/employer/applications"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/employer/applications") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/applications") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/applications") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -173,9 +149,8 @@ const EmployerLayout = () => {
 
           <Link
             to="/employer/settings"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/employer/settings") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/settings") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/settings") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}

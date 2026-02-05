@@ -10,6 +10,7 @@ import PMC from '../models/pmc.model';
 import CSM from '../models/csm.model';
 import Logistics from '../models/logistics.model';
 import Vehicle from '../models/vehicle.model';
+import User from '../models/user.model';
 
 export class ApplicationService {
     // Apply to a job
@@ -38,6 +39,23 @@ export class ApplicationService {
             message,
             status: 'Pending'
         });
+
+        // Notify Job Owner (Employer)
+        try {
+            const applicant = await User.findById(applicantId);
+            const applicantName = applicant ? applicant.name : 'A candidate';
+
+            await Notification.create({
+                userId: job.userId,
+                title: 'New Job Application',
+                message: `${applicantName} has applied for ${job.title}`,
+                type: 'info',
+                relatedId: application._id,
+                relatedType: 'job_application'
+            });
+        } catch (error) {
+            console.error('Failed to create notification for job owner', error);
+        }
 
         return application;
     }
@@ -101,6 +119,23 @@ export class ApplicationService {
             coverLetter: data.coverLetter,
             status: 'Pending'
         });
+
+        // Notify Resource Owner
+        try {
+            const applicant = await User.findById(applicantId);
+            const applicantName = applicant ? applicant.name : 'A candidate';
+
+            await Notification.create({
+                userId: resource.userId,
+                title: 'New Resource Application',
+                message: `${applicantName} has applied for your ${resourceType}`,
+                type: 'info',
+                relatedId: application._id,
+                relatedType: 'resource_application'
+            });
+        } catch (error) {
+            console.error('Failed to create notification for resource owner', error);
+        }
 
         return application;
     }
@@ -282,7 +317,9 @@ export class ApplicationService {
                 userId: application.applicantId,
                 title,
                 message,
-                type: status === 'Accepted' ? 'success' : 'info'
+                type: status === 'Accepted' ? 'success' : 'info',
+                relatedId: application._id,
+                relatedType: 'job_application'
             });
 
             return application;
@@ -315,11 +352,6 @@ export class ApplicationService {
             await application.save();
 
             // Create Notification
-            // Need to get resource title/name? Most resources might not have "title" field but "name" or similar.
-            // Let's try to find a name-like field or just use generic text.
-            // Jobs have 'title'. Resources vary.
-            // Assuming we can say "for your application to [Resource Type]".
-
             const title = status === 'Accepted' ? 'Application Shortlisted' : 'Application Update';
             const message = status === 'Accepted'
                 ? `You are shortlisted for the ${application.resourceType} position. Our team will contact you soon.`
@@ -329,10 +361,13 @@ export class ApplicationService {
                 userId: application.applicantId,
                 title,
                 message,
-                type: status === 'Accepted' ? 'success' : 'info'
+                type: status === 'Accepted' ? 'success' : 'info',
+                relatedId: application._id,
+                relatedType: 'resource_application'
             });
 
             return application;
         }
     }
 }
+

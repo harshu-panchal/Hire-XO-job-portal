@@ -6,6 +6,8 @@ export interface Notification {
     message: string;
     type: 'success' | 'info' | 'warning' | 'error';
     read: boolean;
+    relatedId?: string;
+    relatedType?: 'job_application' | 'resource_application';
     createdAt: string;
 }
 
