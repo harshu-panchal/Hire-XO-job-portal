@@ -43,24 +43,6 @@ const EmployerSettings = () => {
     setShowLanguageModal(false);
   };
 
-  const handleThemeChange = async (newTheme: "light" | "dark" | "system") => {
-    setGlobalTheme(newTheme);
-    try {
-      await updateProfile({
-        profile: {
-          ...user?.profile,
-          preferences: {
-            ...user?.profile?.preferences,
-            theme: newTheme,
-          },
-        },
-      });
-      toast.success(t("settings.theme_updated") || `Theme updated to ${newTheme}`);
-    } catch (error) {
-      console.error("Failed to save theme preference", error);
-    }
-  };
-
   const sections = [
     {
       title: t("employer.settings.sections.account.title"),
@@ -191,11 +173,10 @@ const EmployerSettings = () => {
                       navigate(routes[key]);
                     }
                   }}
-                  className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${
-                    i !== section.items.length - 1
-                      ? "border-b border-slate-100 dark:border-white/5"
-                      : ""
-                  }`}
+                  className={`w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all ${i !== section.items.length - 1
+                    ? "border-b border-slate-100 dark:border-white/5"
+                    : ""
+                    }`}
                 >
                   <div className="flex items-center gap-4">
                     <div
@@ -219,47 +200,6 @@ const EmployerSettings = () => {
           </div>
         ))}
 
-        {/* Appearance Section */}
-        <div className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">
-            {t("settings.appearance") || "Appearance"}
-          </h3>
-          <div className="bg-white dark:bg-slate-900/50 p-5 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500">
-                <Monitor className="size-6" />
-              </div>
-              <div className="flex-1">
-                <span className="text-sm font-black tracking-tight">Theme Mode</span>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                  Choose app look
-                </p>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { id: "light", icon: Sun, label: "Light" },
-                { id: "dark", icon: Moon, label: "Dark" },
-                { id: "system", icon: Monitor, label: "System" },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => handleThemeChange(t.id as any)}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
-                    theme === t.id
-                      ? "bg-primary/5 border-primary text-primary shadow-lg shadow-primary/10 scale-[1.02]"
-                      : "bg-slate-50 dark:bg-white/5 border-transparent text-slate-400 opacity-60 hover:opacity-100"
-                  }`}
-                >
-                  <t.icon className={`size-5 ${theme === t.id ? "stroke-[2.5px]" : ""}`} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">
-                    {t.label}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Logout */}
@@ -304,18 +244,16 @@ const EmployerSettings = () => {
                 <button
                   key={lang.name}
                   onClick={() => handleLanguageSelect(lang.name, lang.code)}
-                  className={`w-full p-4 rounded-2xl flex items-center justify-between transition-all ${
-                    language === lang.name
-                      ? "bg-primary text-white shadow-lg shadow-primary/25"
-                      : "bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10"
-                  }`}
+                  className={`w-full p-4 rounded-2xl flex items-center justify-between transition-all ${language === lang.name
+                    ? "bg-primary text-white shadow-lg shadow-primary/25"
+                    : "bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10"
+                    }`}
                 >
                   <div className="flex flex-col items-start">
                     <span className="text-sm font-black">{lang.name}</span>
                     <span
-                      className={`text-[10px] font-black uppercase tracking-widest ${
-                        language === lang.name ? "text-white/70" : "text-slate-400"
-                      }`}
+                      className={`text-[10px] font-black uppercase tracking-widest ${language === lang.name ? "text-white/70" : "text-slate-400"
+                        }`}
                     >
                       {lang.native}
                     </span>

@@ -65,7 +65,6 @@ const ApplySettingsPage = () => {
     user?.profile?.preferences?.notifications ?? true
   );
   const [wallet, setWallet] = useState<SettingsWallet | null>(null);
-  const darkMode = currentTheme === "dark";
 
   // Sync state when user loads
   useEffect(() => {
@@ -115,25 +114,7 @@ const ApplySettingsPage = () => {
     }
   };
 
-  const handleThemeToggle = async () => {
-    const newTheme = darkMode ? "light" : "dark";
-    setGlobalTheme(newTheme);
 
-    try {
-      await updateProfile({
-        profile: {
-          ...user?.profile,
-          preferences: {
-            ...user?.profile?.preferences,
-            theme: newTheme,
-          },
-        },
-      });
-      toast.success(`Switched to ${newTheme} mode`);
-    } catch (error: any) {
-      console.error("Failed to persist theme preference", error);
-    }
-  };
 
   const handleLogout = () => {
     toast.promise(
@@ -535,21 +516,7 @@ const ApplySettingsPage = () => {
                   </button>
                 }
               />
-              <SettingItem
-                icon={darkMode ? Moon : Sun}
-                label="Dark Mode"
-                description="Switch app appearance"
-                action={
-                  <button
-                    onClick={handleThemeToggle}
-                    className={`w-12 h-6 rounded-full transition-colors relative ${darkMode ? "bg-violet-600" : "bg-slate-200"}`}
-                  >
-                    <div
-                      className={`absolute top-1 size-4 bg-white rounded-full transition-all ${darkMode ? "left-7" : "left-1"}`}
-                    />
-                  </button>
-                }
-              />
+
             </div>
           </div>
 

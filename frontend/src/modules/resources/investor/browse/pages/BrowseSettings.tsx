@@ -66,24 +66,6 @@ const BrowseSettings = () => {
       }
     }
   };
-
-  const handleThemeChange = async (newTheme: "light" | "dark" | "system") => {
-    setGlobalTheme(newTheme);
-    try {
-      await updateProfile({
-        profile: {
-          ...user?.profile,
-          preferences: {
-            ...user?.profile?.preferences,
-            theme: newTheme,
-          },
-        },
-      });
-      toast.success(`Theme updated to ${newTheme}`);
-    } catch (error) {
-      console.error("Failed to save theme preference", error);
-    }
-  };
   return (
     <div className="py-6 space-y-6 select-none animate-in fade-in duration-500">
       {/* Back Button */}
@@ -171,31 +153,6 @@ const BrowseSettings = () => {
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
           </div>
-        </div>
-      </div>
-
-      {/* Appearance */}
-      <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
-        <h2 className="text-xl font-black tracking-tight mb-4 text-primary">Appearance</h2>
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { id: "light", icon: Sun, label: "Light" },
-            { id: "dark", icon: Moon, label: "Dark" },
-            { id: "system", icon: Monitor, label: "System" },
-          ].map((t) => (
-            <button
-              key={t.id}
-              onClick={() => handleThemeChange(t.id as any)}
-              className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
-                theme === t.id
-                  ? "bg-primary/5 border-primary text-primary"
-                  : "bg-slate-50 dark:bg-slate-800 border-transparent text-slate-400"
-              }`}
-            >
-              <t.icon className="size-5" />
-              <span className="text-[10px] font-black uppercase tracking-widest">{t.label}</span>
-            </button>
-          ))}
         </div>
       </div>
 
@@ -302,7 +259,7 @@ const BrowseSettings = () => {
       <div className="text-center">
         <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Version 1.0.0</p>
       </div>
-    </div>
+    </div >
   );
 };
 
