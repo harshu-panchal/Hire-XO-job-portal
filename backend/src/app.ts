@@ -21,6 +21,7 @@ import certificateRoutes from './routes/certificate.routes';
 import userRoutes from './routes/user.routes';
 import resourceRoutes from './routes/resource.routes';
 import adminRoutes from './routes/admin.routes';
+import notificationRoutes from './routes/notification.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 
@@ -32,7 +33,7 @@ app.use(helmet());
 app.use(cors({
     origin: ['http://localhost:5173', 'https://hire-xo-job-portal.vercel.app', 'https://hire-xo-job-portal.onrender.com'], // Add your Vercel domain here
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
@@ -67,6 +68,7 @@ app.use('/api/certificates', certificateRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Serve static files from uploads directory
 

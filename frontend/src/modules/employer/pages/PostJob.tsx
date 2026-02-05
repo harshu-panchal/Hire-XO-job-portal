@@ -291,7 +291,18 @@ const PostJob = () => {
           )}
           <button
             type={step === 2 ? "submit" : "button"}
-            onClick={() => step === 1 && setStep(2)}
+            onClick={(e) => {
+              if (step === 1) {
+                const form = e.currentTarget.closest('form');
+                if (form) {
+                  if (form.checkValidity()) {
+                    setStep(2);
+                  } else {
+                    form.reportValidity();
+                  }
+                }
+              }
+            }}
             disabled={loading}
             className="mt-8 h-16 w-full rounded-3xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100"
           >

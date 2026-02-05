@@ -1,54 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Bell, Info, CheckCircle, Clock, Trash2 } from "lucide-react";
-
-interface Notification {
-    id: number;
-    title: string;
-    description: string;
-    time: string;
-    type: 'success' | 'info' | 'warning' | 'error';
-    unread: boolean;
-}
-
-const initialNotifications: Notification[] = [
-    {
-        id: 1,
-        title: "Application Viewed",
-        description: "Google viewed your application for Senior Frontend Developer.",
-        time: "5m ago",
-        type: "info",
-        unread: true,
-    },
-    {
-        id: 2,
-        title: "New Job Match",
-        description: "A new job matching your profile was posted by Microsoft.",
-        time: "1h ago",
-        type: "success",
-        unread: true,
-    },
-    {
-        id: 3,
-        title: "Interview Reminder",
-        description: "Upcoming interview with Amazon tomorrow at 10 AM.",
-        time: "4h ago",
-        type: "warning",
-        unread: false,
-    },
-    {
-        id: 4,
-        title: "System Update",
-        description: "WorkX profile completion is now at 85%. Add your certificates to reach 100%.",
-        time: "1d ago",
-        type: "info",
-        unread: false,
-    }
-];
+import { ChevronLeft, Bell, Info, CheckCircle2, Clock, Trash2 } from "lucide-react";
+import { notificationService, type Notification } from "@/services/notificationService";
 
 const Notifications = () => {
     const navigate = useNavigate();
-    const [notifs, setNotifs] = useState<Notification[]>(initialNotifications);
+    const [notifs, setNotifs] = useState<Notification[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadNotifications();
+    }, []);
+
+    const loadNotifications = async () => {
+        try {
+            const data = await notificationService.getNotifications();
+            setNotifs(data);
+        } catch (error) {
+            console.error("Failed to load notifications", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const getTypeStyles = (type: string) => {
         switch (type) {
@@ -61,24 +34,44 @@ const Notifications = () => {
 
     const getIcon = (type: string) => {
         switch (type) {
-            case 'success': return <CheckCircle className="size-5" />;
+            case 'success': return <CheckCircle2 className="size-5" />;
             case 'warning': return <Clock className="size-5" />;
             case 'error': return <Info className="size-5" />;
             default: return <Bell className="size-5" />;
         }
     };
 
-    const markAllRead = () => {
-        setNotifs(prev => prev.map(n => ({ ...n, unread: false })));
+    const markAllRead = async () => {
+        try {
+            await notificationService.markAllAsRead();
+            setNotifs(prev => prev.map(n => ({ ...n, read: true })));
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    const deleteNotif = (id: number, e: React.MouseEvent) => {
-        e.stopPropagation();
-        setNotifs(prev => prev.filter(n => n.id !== id));
+    const toggleRead = async (id: string, currentStatus: boolean) => {
+        if (currentStatus) return; // Already read
+        try {
+            await notificationService.markAsRead(id);
+            setNotifs(prev => prev.map(n => n._id === id ? { ...n, read: true } : n));
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    const toggleRead = (id: number) => {
-        setNotifs(prev => prev.map(n => n.id === id ? { ...n, unread: !n.unread } : n));
+    const formatTime = (dateStr: string) => {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = now.getTime() - date.getTime();
+
+        const minutes = Math.floor(diff / 60000);
+        if (minutes < 60) return `${minutes}m ago`;
+
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+
+        return date.toLocaleDateString();
     };
 
     return (
@@ -95,7 +88,7 @@ const Notifications = () => {
                         </button>
                         <h1 className="text-xl font-black tracking-tight">Notifications</h1>
                     </div>
-                    {notifs.some(n => n.unread) && (
+                    {notifs.some(n => !n.read) && (
                         <button
                             onClick={markAllRead}
                             className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity"
@@ -107,44 +100,39 @@ const Notifications = () => {
             </div>
 
             <div className="px-5 space-y-4">
-                {notifs.length > 0 ? (
+                {loading ? (
+                    <div className="text-center py-20 text-slate-400 font-bold">Loading...</div>
+                ) : notifs.length > 0 ? (
                     notifs.map((notif) => (
                         <div
-                            key={notif.id}
-                            onClick={() => toggleRead(notif.id)}
-                            className={`group relative p-5 rounded-[2rem] bg-white dark:bg-slate-900/50 border transition-all cursor-pointer ${notif.unread
-                                    ? "border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10"
-                                    : "border-slate-100 dark:border-white/5 opacity-80"
+                            key={notif._id}
+                            onClick={() => toggleRead(notif._id, notif.read)}
+                            className={`group relative p-5 rounded-[2rem] bg-white dark:bg-slate-900/50 border transition-all cursor-pointer ${!notif.read
+                                ? "border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10"
+                                : "border-slate-100 dark:border-white/5 opacity-80"
                                 }`}
                         >
                             <div className="flex gap-4">
                                 <div className={`size-12 shrink-0 rounded-2xl flex items-center justify-center ${getTypeStyles(notif.type)}`}>
                                     {getIcon(notif.type)}
                                 </div>
-                                <div className="flex-1 min-w-0 pr-8">
+                                <div className="flex-1 min-w-0 pr-2">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <h3 className={`text-sm leading-tight truncate ${notif.unread ? "font-black" : "font-bold text-slate-700 dark:text-slate-300"}`}>
+                                        <h3 className={`text-sm leading-tight truncate ${!notif.read ? "font-black" : "font-bold text-slate-700 dark:text-slate-300"}`}>
                                             {notif.title}
                                         </h3>
-                                        {notif.unread && (
+                                        {!notif.read && (
                                             <span className="size-2 rounded-full bg-primary animate-pulse" />
                                         )}
                                     </div>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-2 line-clamp-2">
-                                        {notif.description}
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-2">
+                                        {notif.message}
                                     </p>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                        {notif.time}
+                                        {formatTime(notif.createdAt)}
                                     </p>
                                 </div>
                             </div>
-
-                            <button
-                                onClick={(e) => deleteNotif(notif.id, e)}
-                                className="absolute top-5 right-5 size-8 rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all active:scale-90 flex items-center justify-center"
-                            >
-                                <Trash2 className="size-4" />
-                            </button>
                         </div>
                     ))
                 ) : (

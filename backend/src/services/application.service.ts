@@ -1,4 +1,5 @@
 import JobApplication from '../models/job-application.model';
+import Notification from '../models/notification.model';
 import ResourceApplication from '../models/resource-application.model';
 import Job from '../models/job.model';
 import Investor from '../models/investor.model';
@@ -270,6 +271,20 @@ export class ApplicationService {
 
             application.status = status;
             await application.save();
+
+            // Create Notification
+            const title = status === 'Accepted' ? 'Application Shortlisted' : 'Application Update';
+            const message = status === 'Accepted'
+                ? `You are shortlisted for ${job.title}. Our team will contact you soon.`
+                : `Thank you for your interest in ${job.title}. Unfortunately, your application was not selected at this time.`;
+
+            await Notification.create({
+                userId: application.applicantId,
+                title,
+                message,
+                type: status === 'Accepted' ? 'success' : 'info'
+            });
+
             return application;
         } else {
             const application = await ResourceApplication.findById(applicationId);
@@ -298,6 +313,25 @@ export class ApplicationService {
 
             application.status = status;
             await application.save();
+
+            // Create Notification
+            // Need to get resource title/name? Most resources might not have "title" field but "name" or similar.
+            // Let's try to find a name-like field or just use generic text.
+            // Jobs have 'title'. Resources vary.
+            // Assuming we can say "for your application to [Resource Type]".
+
+            const title = status === 'Accepted' ? 'Application Shortlisted' : 'Application Update';
+            const message = status === 'Accepted'
+                ? `You are shortlisted for the ${application.resourceType} position. Our team will contact you soon.`
+                : `Thank you for your interest in the ${application.resourceType} position. Unfortunately, your application was not selected at this time.`;
+
+            await Notification.create({
+                userId: application.applicantId,
+                title,
+                message,
+                type: status === 'Accepted' ? 'success' : 'info'
+            });
+
             return application;
         }
     }

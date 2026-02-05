@@ -422,21 +422,36 @@ const ManageApplications = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 sm:p-8 bg-slate-50 dark:bg-white/5 flex gap-4">
+            <div className="p-6 sm:p-8 bg-slate-50 dark:bg-white/5 flex flex-col sm:flex-row gap-4">
               <button
                 type="button"
-                onClick={() => handleRestrictedAction("Contact Candidate", selectedApp)}
+                onClick={() => {
+                  handleUpdateStatus(selectedApp.id, "Accepted");
+                  setSelectedApp(null);
+                }}
                 className="flex-1 h-14 rounded-2xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-3"
               >
                 Hire Candidate
-                <ExternalLink className="size-4" />
+                <CheckCircle2 className="size-4" />
               </button>
               <button
                 type="button"
-                className="h-14 px-8 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-white/5 font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
+                onClick={() => {
+                  handleUpdateStatus(selectedApp.id, "Rejected");
+                  setSelectedApp(null);
+                }}
+                className="flex-1 h-14 rounded-2xl bg-red-500/10 text-red-600 font-black text-sm uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-3"
+              >
+                Reject
+                <XCircle className="size-4" />
+              </button>
+              <button
+                type="button"
+                className="h-14 px-8 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-white/5 font-black text-sm uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2"
                 onClick={() => handleRestrictedAction("Download Resume", selectedApp)}
               >
                 Resume
+                <Download className="size-4" />
               </button>
             </div>
           </div>
