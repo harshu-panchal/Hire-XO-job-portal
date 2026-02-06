@@ -134,7 +134,6 @@ const BuyDashboard = () => {
         <div className="space-y-5">
           {featuredMachines.length === 0 ? <div className="text-center p-4 text-slate-400 text-xs font-bold uppercase">No machinery listed</div> : featuredMachines.map((item) => (
             <Link
-<<<<<<< HEAD
               key={item._id}
               to={`/machinery/buy/item/${item._id}`}
               className="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative"
@@ -148,19 +147,6 @@ const BuyDashboard = () => {
                       className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   ) : <div className="size-full flex items-center justify-center"><Package className="text-slate-300" /></div>}
-=======
-              key={item.id}
-              to={`/machinery/buy/item/${item.id}`}
-              className="block bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative"
-            >
-              <div className="flex gap-4">
-                <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 shrink-0">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
->>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
                 </div>
                 <div className="flex-1 space-y-2 py-1">
                   <div className="flex items-center justify-between">
@@ -168,13 +154,8 @@ const BuyDashboard = () => {
                       <Star className="size-3 text-amber-500 fill-amber-500" />
                       <span className="text-[10px] font-black">4.8</span>
                     </div>
-<<<<<<< HEAD
                     <span className="px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 text-[8px] font-black uppercase tracking-widest">
                       {item.condition || "Used"}
-=======
-                    <span className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase tracking-widest">
-                      {item.condition}
->>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
                     </span>
                   </div>
                   <h3 className="text-base font-black tracking-tight group-hover:text-amber-600 transition-colors leading-tight line-clamp-2">
@@ -189,7 +170,7 @@ const BuyDashboard = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
                 <div className="flex items-center gap-1.5 text-slate-400">
                   <MapPin className="size-3" />
                   <span className="text-[10px] font-black uppercase tracking-widest">

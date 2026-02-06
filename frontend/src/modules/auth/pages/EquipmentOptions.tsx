@@ -8,15 +8,7 @@ const EquipmentOptions = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
 
-  useEffect(() => {
-    if (isAuthenticated && user?.role === "resource" && user.profile.equipmentType) {
-      if (user.profile.equipmentType === "rent-out-equipment") {
-        navigate("/equipments/provide/dashboard");
-      } else if (user.profile.equipmentType === "rent-equipment") {
-        navigate("/equipments/browse/dashboard");
-      }
-    }
-  }, [isAuthenticated, user, navigate]);
+  // Removed auto-redirect useEffect
 
   const options = [
     {
@@ -37,7 +29,7 @@ const EquipmentOptions = () => {
       color: "from-emerald-500 to-teal-600",
       bgColor: "bg-emerald-50",
       iconColor: "text-emerald-600",
-      dashboardPath: "/equipments/browse/dashboard",
+      dashboardPath: "/equipments/rent/dashboard",
     },
   ];
 

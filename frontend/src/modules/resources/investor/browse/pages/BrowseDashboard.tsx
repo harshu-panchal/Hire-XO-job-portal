@@ -133,15 +133,9 @@ const BrowseDashboard = () => {
           ) : (
             featured.map((opp) => (
               <Link
-<<<<<<< HEAD
                 key={opp._id || opp.id}
                 to={`/investor/browse/opportunities/${opp._id || opp.id}`}
                 className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all shadow-sm hover:shadow-md"
-=======
-                key={opp._id}
-                to={`/investor/browse/opportunities/${opp._id}`}
-                className="block bg-white rounded-[2rem] p-5 border border-slate-200 active:scale-[0.98] transition-all shadow-sm hover:shadow-md"
->>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -204,7 +198,6 @@ const BrowseDashboard = () => {
               Opportunities
             </p>
           </Link>
-<<<<<<< HEAD
           <button
             onClick={() => {
               // Check if authenticated (using simple localStorage check or we needs to import store)
@@ -220,11 +213,6 @@ const BrowseDashboard = () => {
               }
             }}
             className="bg-slate-900 dark:bg-white rounded-[2rem] p-5 text-white dark:text-slate-900 active:scale-95 transition-transform shadow-lg shadow-slate-900/10 w-full text-left"
-=======
-          <Link
-            to="/investor/browse/my-investments"
-            className="bg-slate-900 rounded-[2rem] p-5 text-white active:scale-95 transition-transform shadow-lg shadow-slate-900/10"
->>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
           >
             <div className="size-10 rounded-xl bg-white/10 flex items-center justify-center mb-3">
               <Briefcase className="size-5" />

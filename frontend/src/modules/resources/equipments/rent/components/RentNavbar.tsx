@@ -35,20 +35,11 @@ const RentNavbar = ({ category: _category }: EquipmentNavbarProps) => {
         {navItems.map((item) => (
           <button
             key={item.label}
-<<<<<<< HEAD
             onClick={() => handleNavigation(item.path, item.protected)}
             className={`flex flex-col items-center gap-1 transition-all ${isActive(item.path)
               ? "text-emerald-600 scale-110"
               : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               }`}
-=======
-            onClick={() => navigate(item.path)}
-            className={`flex flex-col items-center gap-1 transition-all ${
-              isActive(item.path)
-                ? "text-emerald-600 scale-110"
-                : "text-slate-400 hover:text-slate-600"
-            }`}
->>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
           >
             <item.icon className="size-5" strokeWidth={isActive(item.path) ? 2.5 : 2} />
             <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>

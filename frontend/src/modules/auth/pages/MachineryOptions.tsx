@@ -17,15 +17,9 @@ const MachineryOptions = () => {
       description: "List your machinery for others",
       icon: Cog,
       color: "from-slate-500 to-gray-600",
-<<<<<<< HEAD
       bgColor: "bg-slate-50 dark:bg-slate-950/20",
       iconColor: "text-slate-600 dark:text-slate-400",
       dashboardPath: "/machinery/sell/dashboard",
-=======
-      bgColor: "bg-slate-50",
-      iconColor: "text-slate-600",
-      dashboardPath: "/machinery/provide/dashboard",
->>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
     },
     {
       id: "need-machinery",
@@ -33,15 +27,9 @@ const MachineryOptions = () => {
       description: "Find machinery for your project",
       icon: Wrench,
       color: "from-gray-500 to-zinc-600",
-<<<<<<< HEAD
       bgColor: "bg-gray-50 dark:bg-gray-950/20",
       iconColor: "text-gray-600 dark:text-gray-400",
       dashboardPath: "/machinery/buy/dashboard",
-=======
-      bgColor: "bg-gray-50",
-      iconColor: "text-gray-600",
-      dashboardPath: "/machinery/need/dashboard",
->>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
     },
   ];
 

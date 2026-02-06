@@ -93,13 +93,8 @@ const RoleSelection = () => {
       icon: Package,
       gradient: "from-emerald-500 to-teal-600",
       bgGradient: "from-emerald-500/10 to-teal-600/10",
-<<<<<<< HEAD
       iconColor: "text-emerald-600 dark:text-emerald-400",
       path: "/resources/categories",
-=======
-      iconColor: "text-emerald-600",
-      path: "/login/resource",
->>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
       delay: "200ms",
     },
   ];

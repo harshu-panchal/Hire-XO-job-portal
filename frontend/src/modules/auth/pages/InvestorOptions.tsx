@@ -8,15 +8,7 @@ const InvestorOptions = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
 
-  useEffect(() => {
-    if (isAuthenticated && user?.role === "resource" && user.profile.investorType) {
-      if (user.profile.investorType === "want-to-invest") {
-        navigate("/investor/browse/dashboard");
-      } else if (user.profile.investorType === "want-investment") {
-        navigate("/investor/seek/dashboard");
-      }
-    }
-  }, [isAuthenticated, user, navigate]);
+  // Removed auto-redirect useEffect
 
   const options = [
     {
