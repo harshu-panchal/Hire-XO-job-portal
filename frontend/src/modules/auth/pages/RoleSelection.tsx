@@ -3,6 +3,7 @@ import { Briefcase, Building2, Package, ArrowRight, User, LogOut } from "lucide-
 import { Card } from "@/components/ui/card";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect } from "react";
+import logo from "@/assets/logo.png";
 
 const RoleSelection = () => {
   const navigate = useNavigate();
@@ -108,20 +109,12 @@ const RoleSelection = () => {
 
       <div className="w-full max-w-[400px] mx-auto space-y-8">
         {/* Header */}
-        <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <div className="inline-flex items-center justify-center p-1 rounded-3xl bg-gradient-to-br from-slate-200 to-white shadow-xl mb-4">
-            <div className="size-20 bg-gradient-to-br from-primary to-purple-600 rounded-[1.4rem] flex items-center justify-center shadow-inner">
-              <span className="text-white font-black text-4xl tracking-tighter italic">H</span>
-            </div>
-          </div>
-          <div>
-            <h1 className="text-4xl font-black tracking-normal text-slate-900 mb-2 font-branding">
-              Hire<span className="text-primary">XO</span>
-            </h1>
-            <p className="text-slate-500 font-medium text-lg">
-              The future of hiring is here.
-            </p>
-          </div>
+        <div className="flex flex-col items-center justify-center mb-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <img
+            src={logo}
+            alt="HireXO"
+            className="w-48 h-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-300"
+          />
         </div>
 
         {/* Status indicator / Logout if logged in */}

@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { NotificationDropdown } from "@/components/NotificationDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/useAuthStore";
+import logo from "@/assets/logo.png";
 
 export const EmployeeNavbar = () => {
   const navigate = useNavigate();
@@ -36,13 +37,8 @@ export const EmployeeNavbar = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 px-5 py-4 flex items-center justify-between transition-all duration-300 select-none">
-      <Link to="/jobs" className="flex items-center gap-2 active:scale-95 transition-transform">
-        <div className="size-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-          <span className="text-white font-black text-xl tracking-tighter italic">H</span>
-        </div>
-        <span className="text-xl font-black tracking-normal font-branding">
-          Hire<span className="text-primary">XO</span>
-        </span>
+      <Link to="/jobs" className="active:scale-95 transition-transform">
+        <img src={logo} alt="HireXO" className="h-10 w-auto object-contain" />
       </Link>
       <div className="flex gap-2.5 relative">
         {!isAuthenticated ? (

@@ -4,6 +4,7 @@ import { LayoutDashboard, PlusSquare, Users, Settings, Bell, LogIn } from "lucid
 import { NotificationDropdown } from "../components/NotificationDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/useAuthStore";
+import logo from "@/assets/logo.png";
 
 const EmployerLayout = () => {
   const location = useLocation();
@@ -46,14 +47,9 @@ const EmployerLayout = () => {
         <div className="max-w-[430px] mx-auto px-5 h-20 flex items-center justify-between">
           <Link
             to="/employer"
-            className="flex items-center gap-2 active:scale-95 transition-transform"
+            className="active:scale-95 transition-transform"
           >
-            <div className="size-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-              <span className="text-white font-black text-xl tracking-tighter italic">H</span>
-            </div>
-            <span className="text-xl font-black tracking-normal font-branding">
-              Hire<span className="text-primary">XO</span>
-            </span>
+            <img src={logo} alt="HireXO" className="h-10 w-auto object-contain" />
           </Link>
           <div className="flex gap-2.5 relative">
             {!isAuthenticated ? (
