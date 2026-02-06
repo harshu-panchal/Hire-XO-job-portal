@@ -34,7 +34,12 @@ const InvestorOptions = () => {
   ];
 
   const handleOptionClick = (option: (typeof options)[0]) => {
-    navigate(option.dashboardPath);
+    if (isAuthenticated) {
+      navigate(option.dashboardPath);
+    } else {
+      // If not authenticated, take them to signup for this specific type
+      navigate(`/signup/resource/investor?type=${option.id}`);
+    }
   };
 
   return (

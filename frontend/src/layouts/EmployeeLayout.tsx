@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { Briefcase, CreditCard, User, Package } from "lucide-react";
+import { Home, PlusSquare, Video, CreditCard, HelpCircle } from "lucide-react";
 import { EmployeeNavbar } from "@/modules/employee/components/EmployeeNavbar";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -30,78 +30,96 @@ const EmployeeLayout = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 backdrop-blur-xl border-t border-slate-200/50 z-50 px-8 pb-safe shadow-[0_-8px_30px_rgb(0,0,0,0.04)] select-none">
-        <div className="flex justify-between items-center h-20">
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 backdrop-blur-xl border-t border-slate-200/50 z-50 px-2 pb-safe shadow-[0_-8px_30px_rgb(0,0,0,0.04)] select-none">
+        <div className="flex justify-between items-center h-20 w-full px-2">
           <Link
             to="/jobs"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/jobs") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1 min-w-[3.5rem] transition-all duration-200 active:scale-90 ${isActive("/jobs") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/jobs") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+              className={`p-2 rounded-2xl transition-all duration-200 ${isActive("/jobs") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
             >
-              <Briefcase className={`h-6 w-6 ${isActive("/jobs") ? "fill-primary/20" : ""}`} />
+              <Home className={`h-5 w-5 ${isActive("/jobs") ? "fill-primary/20" : ""}`} />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/jobs") ? "opacity-100" : "opacity-40"}`}
+              className={`text-[9px] font-black uppercase tracking-wider ${isActive("/jobs") ? "opacity-100" : "opacity-40"}`}
             >
-              Jobs
+              Home
             </span>
           </Link>
+
           <Link
-            to="/resources"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/resources") ? "text-primary" : "text-slate-400"
-            }`}
+            to="/post"
+            className={`flex flex-col items-center gap-1 min-w-[3.5rem] transition-all duration-200 active:scale-90 ${isActive("/post") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/resources") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+              className={`p-2 rounded-2xl transition-all duration-200 ${isActive("/post") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
             >
-              <Package className={`h-6 w-6 ${isActive("/resources") ? "fill-primary/20" : ""}`} />
+              <PlusSquare className={`h-5 w-5 ${isActive("/post") ? "fill-primary/20" : ""}`} />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/resources") ? "opacity-100" : "opacity-40"}`}
+              className={`text-[9px] font-black uppercase tracking-wider ${isActive("/post") ? "opacity-100" : "opacity-40"}`}
             >
-              Resources
+              Post
             </span>
           </Link>
+
           <Link
-            to="/profile"
-            onClick={(e) => handleProtectedNavigation("/profile", e)}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/profile") ? "text-primary" : "text-slate-400"
-            }`}
+            to="/interviews"
+            onClick={(e) => handleProtectedNavigation("/interviews", e)}
+            className={`flex flex-col items-center gap-1 min-w-[3.5rem] transition-all duration-200 active:scale-90 ${isActive("/interviews") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/profile") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+              className={`p-2 rounded-2xl transition-all duration-200 ${isActive("/interviews") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
             >
-              <User className={`h-6 w-6 ${isActive("/profile") ? "fill-primary/20" : ""}`} />
+              <Video className={`h-5 w-5 ${isActive("/interviews") ? "fill-primary/20" : ""}`} />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/profile") ? "opacity-100" : "opacity-40"}`}
+              className={`text-[9px] font-black uppercase tracking-wider ${isActive("/interviews") ? "opacity-100" : "opacity-40"}`}
             >
-              Me
+              Interview
             </span>
           </Link>
+
           <Link
-            to="/subscriptions"
-            onClick={(e) => handleProtectedNavigation("/subscriptions", e)}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/subscriptions") ? "text-primary" : "text-slate-400"
-            }`}
+            to="/payments"
+            onClick={(e) => handleProtectedNavigation("/payments", e)}
+            className={`flex flex-col items-center gap-1 min-w-[3.5rem] transition-all duration-200 active:scale-90 ${isActive("/payments") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/subscriptions") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+              className={`p-2 rounded-2xl transition-all duration-200 ${isActive("/payments") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
             >
               <CreditCard
-                className={`h-6 w-6 ${isActive("/subscriptions") ? "fill-primary/20" : ""}`}
+                className={`h-5 w-5 ${isActive("/payments") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/subscriptions") ? "opacity-100" : "opacity-40"}`}
+              className={`text-[9px] font-black uppercase tracking-wider ${isActive("/payments") ? "opacity-100" : "opacity-40"}`}
             >
-              Plans
+              Payment
+            </span>
+          </Link>
+
+          <Link
+            to="/faq"
+            className={`flex flex-col items-center gap-1 min-w-[3.5rem] transition-all duration-200 active:scale-90 ${isActive("/faq") ? "text-primary" : "text-slate-400"
+              }`}
+          >
+            <div
+              className={`p-2 rounded-2xl transition-all duration-200 ${isActive("/faq") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+            >
+              <HelpCircle
+                className={`h-5 w-5 ${isActive("/faq") ? "fill-primary/20" : ""}`}
+              />
+            </div>
+            <span
+              className={`text-[9px] font-black uppercase tracking-wider ${isActive("/faq") ? "opacity-100" : "opacity-40"}`}
+            >
+              FAQ
             </span>
           </Link>
         </div>

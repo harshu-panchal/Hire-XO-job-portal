@@ -34,7 +34,11 @@ const MachineryOptions = () => {
   ];
 
   const handleOptionClick = (option: (typeof options)[0]) => {
-    navigate(option.dashboardPath);
+    if (isAuthenticated) {
+      navigate(option.dashboardPath);
+    } else {
+      navigate(`/signup/resource/machinery?type=${option.id}`);
+    }
   };
 
   return (

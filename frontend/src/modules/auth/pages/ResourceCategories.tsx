@@ -18,16 +18,23 @@ import type { ResourceCategory } from "@/types";
 
 const ResourceCategories = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, logout, user } = useAuthStore();
 
-  // FORCE LOGOUT: This page is the entry point for NEW Resource Signups.
-  // We must clear any existing session (Job Seeker, Recruiter, or existing Resource)
-  // to prevent confusion and ensure a fresh account creation process.
+  // Handle session management
   useEffect(() => {
-    if (isAuthenticated) {
-      logout();
+    if (isAuthenticated && user) {
+      if (user.role === "resource") {
+        // If already a resource, redirect to their specific dashboard
+        const category = (user.profile?.category || user.profile?.resourceCategory)?.toLowerCase();
+        if (category) {
+          navigate(`/resources/${category}`);
+        }
+      } else {
+        // If logged in as Employee or Employer, logout to allow Resource signup
+        logout();
+      }
     }
-  }, [isAuthenticated, logout]);
+  }, [isAuthenticated, user, logout, navigate]);
 
   const categories: Array<{
     id: ResourceCategory;
@@ -38,79 +45,79 @@ const ResourceCategories = () => {
     bgColor: string;
     iconColor: string;
   }> = [
-    {
-      id: "Investor",
-      title: "Investor",
-      description: "Investment opportunities and funding",
-      icon: TrendingUp,
-      color: "from-amber-500 to-orange-600",
-      bgColor: "bg-amber-50",
-      iconColor: "text-amber-600",
-    },
-    {
-      id: "Tenders",
-      title: "Tenders",
-      description: "Government and private tenders",
-      icon: FileText,
-      color: "from-violet-500 to-purple-600",
-      bgColor: "bg-violet-50",
-      iconColor: "text-violet-600",
-    },
-    {
-      id: "Equipments",
-      title: "Equipments",
-      description: "Construction and industrial equipment",
-      icon: Package,
-      color: "from-green-500 to-emerald-600",
-      bgColor: "bg-green-50",
-      iconColor: "text-green-600",
-    },
-    {
-      id: "Machinery",
-      title: "Machinery",
-      description: "Heavy machinery and tools",
-      icon: Cog,
-      color: "from-slate-500 to-gray-600",
-      bgColor: "bg-slate-50",
-      iconColor: "text-slate-600",
-    },
-    {
-      id: "PMC",
-      title: "PMC",
-      description: "Project Management Consultancy",
-      icon: Building,
-      color: "from-indigo-500 to-blue-600",
-      bgColor: "bg-indigo-50",
-      iconColor: "text-indigo-600",
-    },
-    {
-      id: "CSM",
-      title: "CSM",
-      description: "Construction Supervision Management",
-      icon: HardHat,
-      color: "from-rose-500 to-pink-600",
-      bgColor: "bg-rose-50",
-      iconColor: "text-rose-600",
-    },
-    {
-      id: "Logistics",
-      title: "Logistics",
-      description: "Transportation and supply chain",
-      icon: Truck,
-      color: "from-orange-500 to-red-600",
-      bgColor: "bg-orange-50",
-      iconColor: "text-orange-600",
-    },
-    {
-      id: "Vehicles",
-      title: "Vehicles",
-      description: "Vehicle rental and services",
-      icon: Car,
-      color: "from-blue-500 to-cyan-600",
-      bgColor: "bg-blue-50",
-      iconColor: "text-blue-600",
-    },
-  ];
+      {
+        id: "Investor",
+        title: "Investor",
+        description: "Investment opportunities and funding",
+        icon: TrendingUp,
+        color: "from-amber-500 to-orange-600",
+        bgColor: "bg-amber-50",
+        iconColor: "text-amber-600",
+      },
+      {
+        id: "Tenders",
+        title: "Tenders",
+        description: "Government and private tenders",
+        icon: FileText,
+        color: "from-violet-500 to-purple-600",
+        bgColor: "bg-violet-50",
+        iconColor: "text-violet-600",
+      },
+      {
+        id: "Equipments",
+        title: "Equipments",
+        description: "Construction and industrial equipment",
+        icon: Package,
+        color: "from-green-500 to-emerald-600",
+        bgColor: "bg-green-50",
+        iconColor: "text-green-600",
+      },
+      {
+        id: "Machinery",
+        title: "Machinery",
+        description: "Heavy machinery and tools",
+        icon: Cog,
+        color: "from-slate-500 to-gray-600",
+        bgColor: "bg-slate-50",
+        iconColor: "text-slate-600",
+      },
+      {
+        id: "PMC",
+        title: "PMC",
+        description: "Project Management Consultancy",
+        icon: Building,
+        color: "from-indigo-500 to-blue-600",
+        bgColor: "bg-indigo-50",
+        iconColor: "text-indigo-600",
+      },
+      {
+        id: "CSM",
+        title: "CSM",
+        description: "Construction Supervision Management",
+        icon: HardHat,
+        color: "from-rose-500 to-pink-600",
+        bgColor: "bg-rose-50",
+        iconColor: "text-rose-600",
+      },
+      {
+        id: "Logistics",
+        title: "Logistics",
+        description: "Transportation and supply chain",
+        icon: Truck,
+        color: "from-orange-500 to-red-600",
+        bgColor: "bg-orange-50",
+        iconColor: "text-orange-600",
+      },
+      {
+        id: "Vehicles",
+        title: "Vehicles",
+        description: "Vehicle rental and services",
+        icon: Car,
+        color: "from-blue-500 to-cyan-600",
+        bgColor: "bg-blue-50",
+        iconColor: "text-blue-600",
+      },
+    ];
 
   const handleCategoryClick = (category: ResourceCategory) => {
     // All categories now have sub-options, route to category-specific options page

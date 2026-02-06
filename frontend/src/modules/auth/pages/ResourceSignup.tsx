@@ -200,7 +200,7 @@ const ResourceSignup = () => {
       };
 
       await signup(signupData, "resource");
-      navigate("/resources");
+      navigate("/resources/categories");
     } catch (err) {
       setError("Failed to create account. Please try again.");
     }

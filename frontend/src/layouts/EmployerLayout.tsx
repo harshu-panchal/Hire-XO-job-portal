@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, PlusSquare, Users, Settings, Bell, LogIn } from "lucide-react";
 import { NotificationDropdown } from "../components/NotificationDropdown";
+import { ProfileDropdown } from "@/components/ProfileDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/useAuthStore";
 import logo from "@/assets/logo.png";
@@ -51,40 +52,30 @@ const EmployerLayout = () => {
           >
             <img src={logo} alt="HireXO" className="h-10 w-auto object-contain" />
           </Link>
-          <div className="flex gap-2.5 relative">
-            {!isAuthenticated ? (
-              <Link
-                to="/login/employer"
-                className="h-11 px-5 rounded-2xl bg-slate-900 text-white flex items-center gap-2 font-black text-xs uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all"
-              >
-                <LogIn className="size-4" />
-                <span>Login</span>
-              </Link>
-            ) : (
-              <>
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${showNotifications
-                    ? "bg-primary/10 border-primary text-primary"
-                    : "bg-white border-slate-200 text-slate-400"
-                    }`}
-                >
-                  <Bell className="size-5" />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-4 ring-slate-50 animate-pulse"></span>
-                  )}
-                </button>
+          <div className="flex gap-2.5 relative items-center">
+            <button
+              onClick={() => isAuthenticated ? setShowNotifications(!showNotifications) : navigate("/login/employer")}
+              className={`relative size-11 rounded-2xl border flex items-center justify-center active:scale-90 transition-all ${showNotifications
+                ? "bg-primary/10 border-primary text-primary"
+                : "bg-white border-slate-200 text-slate-400 hover:border-slate-300"
+                }`}
+            >
+              <Bell className="size-5" />
+              {isAuthenticated && unreadCount > 0 && (
+                <span className="absolute top-2.5 right-2.5 size-2 bg-primary rounded-full ring-4 ring-slate-50 animate-pulse"></span>
+              )}
+            </button>
 
-                <NotificationDropdown
-                  isOpen={showNotifications}
-                  onClose={() => setShowNotifications(false)}
-                  notifications={notifs}
-                  onMarkAllRead={handleMarkAllRead}
-                  onNotificationClick={handleNotifClick}
-                  viewAllPath="/employer/notifications"
-                />
-              </>
-            )}
+            <ProfileDropdown loginPath="/login/employer" />
+
+            <NotificationDropdown
+              isOpen={showNotifications}
+              onClose={() => setShowNotifications(false)}
+              notifications={notifs}
+              onMarkAllRead={handleMarkAllRead}
+              onNotificationClick={handleNotifClick}
+              viewAllPath="/employer/notifications"
+            />
           </div>
         </div>
       </header>

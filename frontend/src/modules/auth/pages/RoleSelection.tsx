@@ -101,11 +101,9 @@ const RoleSelection = () => {
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-50 flex flex-col justify-center p-6">
-      {/* Animated Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/10 to-transparent rounded-b-[4rem] -z-10" />
-      <div className="absolute top-20 -right-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-20 -left-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+    <div className="min-h-screen relative overflow-hidden bg-white flex flex-col justify-center p-6">
+      {/* Background Elements Removed for simple white look */}
+
 
       <div className="w-full max-w-[400px] mx-auto space-y-8">
         {/* Header */}

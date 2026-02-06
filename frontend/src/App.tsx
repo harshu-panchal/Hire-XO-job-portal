@@ -36,6 +36,9 @@ import Settings from "./modules/employee/pages/Settings";
 import ResourcesList from "./modules/employee/pages/ResourcesList";
 import ResourceDetails from "./modules/employee/pages/ResourceDetails";
 import Notifications from "./modules/employee/pages/Notifications";
+import Post from "./modules/employee/pages/Post";
+import Interviews from "./modules/employee/pages/Interviews";
+import FAQ from "./modules/employee/pages/FAQ";
 
 // Employer Pages
 import EmployerDashboard from "./modules/employer/pages/EmployerDashboard";
@@ -257,12 +260,19 @@ function App() {
           }
         >
           <Route path="/subscriptions" element={<Subscriptions />} />
+          <Route path="/payments" element={<Subscriptions />} />
           <Route path="/certificates" element={<Certificates />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/my-applications" element={<MyApplications />} />
           <Route path="/saved-jobs" element={<SavedJobs />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/notifications" element={<Notifications />} />
+
+
+          {/* New Navigation Routes */}
+          <Route path="/post" element={<Post />} />
+          <Route path="/interviews" element={<Interviews />} />
+          <Route path="/faq" element={<FAQ />} />
         </Route>
       </Route>
 

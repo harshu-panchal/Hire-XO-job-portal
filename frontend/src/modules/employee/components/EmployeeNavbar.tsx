@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Bell, LogIn } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { NotificationDropdown } from "@/components/NotificationDropdown";
+import { ProfileDropdown } from "@/components/ProfileDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/useAuthStore";
 import logo from "@/assets/logo.png";
@@ -40,40 +41,30 @@ export const EmployeeNavbar = () => {
       <Link to="/jobs" className="active:scale-95 transition-transform">
         <img src={logo} alt="HireXO" className="h-10 w-auto object-contain" />
       </Link>
-      <div className="flex gap-2.5 relative">
-        {!isAuthenticated ? (
-          <Link
-            to="/login/employee"
-            className="h-12 px-6 rounded-2xl bg-slate-900 text-white flex items-center gap-2 font-black text-sm uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all"
-          >
-            <LogIn className="size-4" />
-            <span>Login</span>
-          </Link>
-        ) : (
-          <>
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${showNotifications
-                ? "bg-primary/10 border-primary text-primary"
-                : "bg-slate-50 border-slate-200 text-slate-600"
-                }`}
-            >
-              <Bell className="h-6 w-6" />
-              {unreadCount > 0 && (
-                <span className="absolute top-3.5 right-3.5 size-2.5 bg-primary rounded-full border-2 border-white animate-pulse"></span>
-              )}
-            </button>
+      <div className="flex gap-2.5 relative items-center">
+        <button
+          onClick={() => isAuthenticated ? setShowNotifications(!showNotifications) : navigate("/login/employee")}
+          className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${showNotifications
+            ? "bg-primary/10 border-primary text-primary"
+            : "bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300"
+            }`}
+        >
+          <Bell className="h-6 w-6" />
+          {isAuthenticated && unreadCount > 0 && (
+            <span className="absolute top-3.5 right-3.5 size-2.5 bg-primary rounded-full border-2 border-white animate-pulse"></span>
+          )}
+        </button>
 
-            <NotificationDropdown
-              isOpen={showNotifications}
-              onClose={() => setShowNotifications(false)}
-              notifications={notifs}
-              onMarkAllRead={handleMarkAllRead}
-              onNotificationClick={handleNotifClick}
-              viewAllPath="/notifications"
-            />
-          </>
-        )}
+        <ProfileDropdown />
+
+        <NotificationDropdown
+          isOpen={showNotifications}
+          onClose={() => setShowNotifications(false)}
+          notifications={notifs}
+          onMarkAllRead={handleMarkAllRead}
+          onNotificationClick={handleNotifClick}
+          viewAllPath="/notifications"
+        />
       </div>
     </header>
   );
