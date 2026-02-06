@@ -8,15 +8,7 @@ const MachineryOptions = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
 
-  useEffect(() => {
-    if (isAuthenticated && user?.role === "resource" && user.profile.machineryType) {
-      if (user.profile.machineryType === "provide-machinery") {
-        navigate("/machinery/provide/dashboard");
-      } else if (user.profile.machineryType === "need-machinery") {
-        navigate("/machinery/need/dashboard");
-      }
-    }
-  }, [isAuthenticated, user, navigate]);
+  // Removed auto-redirect useEffect
 
   const options = [
     {
@@ -27,7 +19,7 @@ const MachineryOptions = () => {
       color: "from-slate-500 to-gray-600",
       bgColor: "bg-slate-50 dark:bg-slate-950/20",
       iconColor: "text-slate-600 dark:text-slate-400",
-      dashboardPath: "/machinery/provide/dashboard",
+      dashboardPath: "/machinery/sell/dashboard",
     },
     {
       id: "need-machinery",
@@ -37,16 +29,12 @@ const MachineryOptions = () => {
       color: "from-gray-500 to-zinc-600",
       bgColor: "bg-gray-50 dark:bg-gray-950/20",
       iconColor: "text-gray-600 dark:text-gray-400",
-      dashboardPath: "/machinery/need/dashboard",
+      dashboardPath: "/machinery/buy/dashboard",
     },
   ];
 
   const handleOptionClick = (option: (typeof options)[0]) => {
-    if (isAuthenticated && user?.role === "resource") {
-      navigate(option.dashboardPath);
-    } else {
-      navigate(`/signup/resource/machinery?type=${option.id}`);
-    }
+    navigate(option.dashboardPath);
   };
 
   return (

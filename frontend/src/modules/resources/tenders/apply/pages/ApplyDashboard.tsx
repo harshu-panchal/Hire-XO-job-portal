@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { resourceService } from "@/services/resourceService";
 import { applicationService } from "@/services/applicationService"; // Use existing service
+import { useAuthStore } from "@/store/useAuthStore";
 
 const ApplyDashboard = () => {
   const [tenders, setTenders] = useState<any[]>([]);
@@ -22,17 +23,26 @@ const ApplyDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  const { isAuthenticated } = useAuthStore();
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         // Fetch all tenders to show recommended and calculate stats
         const tendersData = await resourceService.getAll("tenders");
 
-        // Get my applications to count active bids
-        const myApps: any = await applicationService.getMyApplications();
-        const myTenderBids = (myApps.resources || []).filter(
-          (app: any) => app.resourceType === "Tender"
-        );
+        let myTenderBids = [];
+        if (isAuthenticated) {
+          try {
+            // Get my applications to count active bids
+            const myApps: any = await applicationService.getMyApplications();
+            myTenderBids = (myApps.resources || []).filter(
+              (app: any) => app.resourceType === "Tender"
+            );
+          } catch (e) {
+            console.log("Error fetching my apps", e);
+          }
+        }
 
         // Process tenders for "Closing Soon" (e.g., deadline within 7 days)
         const now = new Date();
@@ -59,7 +69,7 @@ const ApplyDashboard = () => {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [isAuthenticated]);
 
   const dashboardStats = [
     {

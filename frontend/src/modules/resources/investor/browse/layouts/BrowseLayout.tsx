@@ -1,9 +1,19 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Search, Briefcase, User, Settings } from "lucide-react";
 import { BrowseNavbar } from "../components/BrowseNavbar";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const BrowseLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
+
+  const handleProtectedNavigation = (path: string, e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate("/login/resource");
+    }
+  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -24,125 +34,112 @@ const BrowseLayout = () => {
         <div className="flex justify-between items-center h-20">
           <Link
             to="/investor/browse/dashboard"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/investor/browse/dashboard") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/investor/browse/dashboard") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${
-                isActive("/investor/browse/dashboard")
-                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
-                  : "bg-transparent"
-              }`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/investor/browse/dashboard")
+                ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                : "bg-transparent"
+                }`}
             >
               <LayoutDashboard
                 className={`h-6 w-6 ${isActive("/investor/browse/dashboard") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                isActive("/investor/browse/dashboard") ? "opacity-100" : "opacity-40"
-              }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/investor/browse/dashboard") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Dash
             </span>
           </Link>
           <Link
             to="/investor/browse/opportunities"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/investor/browse/opportunities") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/investor/browse/opportunities") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${
-                isActive("/investor/browse/opportunities")
-                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
-                  : "bg-transparent"
-              }`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/investor/browse/opportunities")
+                ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                : "bg-transparent"
+                }`}
             >
               <Search
                 className={`h-6 w-6 ${isActive("/investor/browse/opportunities") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                isActive("/investor/browse/opportunities") ? "opacity-100" : "opacity-40"
-              }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/investor/browse/opportunities") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Browse
             </span>
           </Link>
           <Link
             to="/investor/browse/my-investments"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/investor/browse/my-investments") ? "text-primary" : "text-slate-400"
-            }`}
+            onClick={(e) => handleProtectedNavigation("/investor/browse/my-investments", e)}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/investor/browse/my-investments") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${
-                isActive("/investor/browse/my-investments")
-                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
-                  : "bg-transparent"
-              }`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/investor/browse/my-investments")
+                ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                : "bg-transparent"
+                }`}
             >
               <Briefcase
                 className={`h-6 w-6 ${isActive("/investor/browse/my-investments") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                isActive("/investor/browse/my-investments") ? "opacity-100" : "opacity-40"
-              }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/investor/browse/my-investments") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Invest
             </span>
           </Link>
           <Link
             to="/investor/browse/profile"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/investor/browse/profile") ? "text-primary" : "text-slate-400"
-            }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/investor/browse/profile") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${
-                isActive("/investor/browse/profile")
-                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
-                  : "bg-transparent"
-              }`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/investor/browse/profile")
+                ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                : "bg-transparent"
+                }`}
             >
               <User
                 className={`h-6 w-6 ${isActive("/investor/browse/profile") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                isActive("/investor/browse/profile") ? "opacity-100" : "opacity-40"
-              }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/investor/browse/profile") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Me
             </span>
           </Link>
           <Link
             to="/investor/browse/settings"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/investor/browse/settings") ? "text-primary" : "text-slate-400"
-            }`}
+            onClick={(e) => handleProtectedNavigation("/investor/browse/settings", e)}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/investor/browse/settings") ? "text-primary" : "text-slate-400"
+              }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${
-                isActive("/investor/browse/settings")
-                  ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
-                  : "bg-transparent"
-              }`}
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/investor/browse/settings")
+                ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                : "bg-transparent"
+                }`}
             >
               <Settings
                 className={`h-6 w-6 ${isActive("/investor/browse/settings") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                isActive("/investor/browse/settings") ? "opacity-100" : "opacity-40"
-              }`}
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/investor/browse/settings") ? "opacity-100" : "opacity-40"
+                }`}
             >
               Setup
             </span>

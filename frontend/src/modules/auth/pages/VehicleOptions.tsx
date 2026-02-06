@@ -8,15 +8,7 @@ const VehicleOptions = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
 
-  useEffect(() => {
-    if (isAuthenticated && user?.role === "resource" && user.profile.vehicleType) {
-      if (user.profile.vehicleType === "rent-out-vehicles") {
-        navigate("/vehicles/provide/dashboard");
-      } else if (user.profile.vehicleType === "rent-vehicles") {
-        navigate("/vehicles/browse/dashboard");
-      }
-    }
-  }, [isAuthenticated, user, navigate]);
+  // Removed auto-redirect useEffect
 
   const options = [
     {
@@ -42,11 +34,7 @@ const VehicleOptions = () => {
   ];
 
   const handleOptionClick = (option: (typeof options)[0]) => {
-    if (isAuthenticated && user?.role === "resource") {
-      navigate(option.dashboardPath);
-    } else {
-      navigate(`/signup/resource/vehicles?type=${option.id}`);
-    }
+    navigate(option.dashboardPath);
   };
 
   return (

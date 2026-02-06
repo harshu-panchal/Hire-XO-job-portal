@@ -9,8 +9,28 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { resourceService } from "@/services/resourceService";
 
 const BuyDashboard = () => {
+  const [featuredMachines, setFeaturedMachines] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMachines = async () => {
+      // Fetches public data
+      try {
+        const data = await resourceService.getAll("machinery");
+        setFeaturedMachines(data.slice(0, 5));
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchMachines();
+  }, []);
+
   const stats = [
     {
       label: "New Listings",
@@ -42,32 +62,7 @@ const BuyDashboard = () => {
     { name: "Drills", count: 15, icon: "🔨" },
   ];
 
-  const featuredMachines = [
-    {
-      id: 1,
-      name: "Schwing Stetter CP30 Mixer",
-      brand: "Schwing Stetter",
-      location: "Chenai, TN",
-      price: "₹12,45,000",
-      year: "2021",
-      rating: 4.8,
-      condition: "Certified",
-      image:
-        "https://images.unsplash.com/photo-1579412691525-4c07da01ee7b?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-      id: 2,
-      name: "Kirloskar 500kVA DG Set",
-      brand: "Kirloskar",
-      location: "Bangalore, KA",
-      price: "₹8,00,000",
-      year: "2019",
-      rating: 4.9,
-      condition: "Like New",
-      image:
-        "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=400",
-    },
-  ];
+  if (loading) return <div className="p-10 text-center animate-pulse">Loading Marketplace...</div>;
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -137,37 +132,39 @@ const BuyDashboard = () => {
         </div>
 
         <div className="space-y-5">
-          {featuredMachines.map((item) => (
+          {featuredMachines.length === 0 ? <div className="text-center p-4 text-slate-400 text-xs font-bold uppercase">No machinery listed</div> : featuredMachines.map((item) => (
             <Link
-              key={item.id}
-              to={`/machinery/buy/item/${item.id}`}
+              key={item._id}
+              to={`/machinery/buy/item/${item._id}`}
               className="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative"
             >
               <div className="flex gap-4">
                 <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
+                  {item.images?.[0] ? (
+                    <img
+                      src={item.images[0]}
+                      alt={item.title}
+                      className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  ) : <div className="size-full flex items-center justify-center"><Package className="text-slate-300" /></div>}
                 </div>
                 <div className="flex-1 space-y-2 py-1">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1">
                       <Star className="size-3 text-amber-500 fill-amber-500" />
-                      <span className="text-[10px] font-black">{item.rating}</span>
+                      <span className="text-[10px] font-black">4.8</span>
                     </div>
                     <span className="px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 text-[8px] font-black uppercase tracking-widest">
-                      {item.condition}
+                      {item.condition || "Used"}
                     </span>
                   </div>
-                  <h3 className="text-base font-black tracking-tight group-hover:text-amber-600 transition-colors leading-tight">
-                    {item.name}
+                  <h3 className="text-base font-black tracking-tight group-hover:text-amber-600 transition-colors leading-tight line-clamp-2">
+                    {item.title}
                   </h3>
                   <div className="flex items-center gap-1.5 opacity-60">
                     <Building2 className="size-3" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">
-                      {item.brand} • {item.year}
+                    <span className="text-[10px] font-black uppercase tracking-widest truncate">
+                      {item.brand || "Generic"} • {item.year || "202x"}
                     </span>
                   </div>
                 </div>

@@ -8,26 +8,84 @@ import {
   DollarSign,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { resourceService } from "@/services/resourceService";
+import { applicationService } from "@/services/applicationService";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const SellDashboard = () => {
-  const stats = [
+  const { isAuthenticated } = useAuthStore();
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    assetValue: "₹0",
+    activeListings: 0,
+    buyerInterest: 0
+  });
+  const [liveInventory, setLiveInventory] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // If not authenticated, we can't fetch private data, so use defaults or return
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const listings = await resourceService.getMyListings("machinery");
+        const bids = await applicationService.getReceivedResourceApplications("machinery");
+
+        // Calculate Stats
+        const totalValue = listings.reduce((acc: number, curr: any) => {
+          const val = parseFloat((curr.price || "0").replace(/[^0-9.]/g, ""));
+          return acc + (isNaN(val) ? 0 : val);
+        }, 0);
+
+        setStats({
+          assetValue: `₹${(totalValue / 100000).toFixed(1)}L`,
+          activeListings: listings.length,
+          buyerInterest: bids.length
+        });
+
+        const inventory = listings.slice(0, 3).map((item: any) => ({
+          id: item._id,
+          name: item.title,
+          status: item.status || "Live",
+          views: (item.views || 0).toString(),
+          inquiries: bids.filter((b: any) => (b.resourceId?._id || b.resourceId) === item._id).length,
+          price: item.price
+        }));
+
+        setLiveInventory(inventory);
+
+      } catch (error) {
+        console.error("Failed to fetch sell dashboard data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [isAuthenticated]);
+
+  const statCards = [
     {
       label: "Asset Value",
-      value: "₹45L",
+      value: stats.assetValue,
       icon: DollarSign,
       color: "text-indigo-400",
       bgColor: "bg-indigo-500/10",
     },
     {
       label: "Active Listings",
-      value: "08",
+      value: stats.activeListings.toString().padStart(2, '0'),
       icon: Package,
       color: "text-emerald-400",
       bgColor: "bg-emerald-500/10",
     },
     {
       label: "Buyer Interest",
-      value: "24",
+      value: stats.buyerInterest.toString(),
       icon: UserCheck,
       color: "text-amber-400",
       bgColor: "bg-amber-500/10",
@@ -38,44 +96,15 @@ const SellDashboard = () => {
     {
       id: 1,
       type: "Offer",
-      message: "New inquiry for Schwing Mixer CP30",
+      message: "New inquiry for listed Item",
       time: "5m ago",
       urgent: true,
     },
-    {
-      id: 2,
-      type: "System",
-      message: "Listing for DG Set is about to expire",
-      time: "2h ago",
-      urgent: false,
-    },
-    {
-      id: 3,
-      type: "Verification",
-      message: "Identity verification approved",
-      time: "1d ago",
-      urgent: false,
-    },
   ];
 
-  const liveInventory = [
-    {
-      id: 1,
-      name: "Schwing Stetter CP30",
-      status: "Live",
-      views: "1.2k",
-      inquiries: 5,
-      price: "₹12.45L",
-    },
-    {
-      id: 2,
-      name: "Kirloskar 500kVA DG",
-      status: "Sold",
-      views: "850",
-      inquiries: 12,
-      price: "₹8.00L",
-    },
-  ];
+  if (loading && isAuthenticated) {
+    return <div className="p-10 text-center animate-pulse">Loading Seller Console...</div>;
+  }
 
   return (
     <div className="py-6 space-y-8 select-none bg-slate-50 min-h-screen text-slate-900">
@@ -99,7 +128,7 @@ const SellDashboard = () => {
 
       {/* Performance Stats */}
       <div className="grid grid-cols-3 gap-3">
-        {stats.map((stat, index) => (
+        {statCards.map((stat, index) => (
           <div
             key={index}
             className="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 relative overflow-hidden group shadow-sm"
@@ -163,53 +192,57 @@ const SellDashboard = () => {
         </div>
 
         <div className="space-y-4">
-          {liveInventory.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm relative overflow-hidden group"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="space-y-1">
-                  <h3 className="text-base font-black tracking-tighter uppercase italic group-hover:text-indigo-600 transition-colors leading-none">
-                    {item.name}
-                  </h3>
-                  <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
-                    Listed Price: {item.price}
-                  </p>
+          {liveInventory.length > 0 ? (
+            liveInventory.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm relative overflow-hidden group"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="space-y-1">
+                    <h3 className="text-base font-black tracking-tighter uppercase italic group-hover:text-indigo-600 transition-colors leading-none">
+                      {item.name}
+                    </h3>
+                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
+                      Listed Price: {item.price}
+                    </p>
+                  </div>
+                  <div
+                    className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${item.status === "Live"
+                        ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                        : "bg-slate-100 text-slate-500 border-slate-200"
+                      }`}
+                  >
+                    {item.status}
+                  </div>
                 </div>
-                <div
-                  className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${
-                    item.status === "Live"
-                      ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                      : "bg-slate-100 text-slate-500 border-slate-200"
-                  }`}
-                >
-                  {item.status}
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
-                <div className="space-y-1">
-                  <p className="text-[7px] font-black uppercase tracking-widest text-slate-400">
-                    Total Views
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <BarChart3 className="size-3 text-indigo-600" />
-                    <p className="text-[10px] font-black">{item.views}</p>
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                  <div className="space-y-1">
+                    <p className="text-[7px] font-black uppercase tracking-widest text-slate-400">
+                      Total Views
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <BarChart3 className="size-3 text-indigo-600" />
+                      <p className="text-[10px] font-black">{item.views}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-1 text-right">
-                  <p className="text-[7px] font-black uppercase tracking-widest text-slate-400">
-                    Hot Leads
-                  </p>
-                  <div className="flex items-center justify-end gap-2">
-                    <p className="text-[10px] font-black text-amber-600">{item.inquiries}</p>
-                    <MessageSquare className="size-3 text-amber-500" />
+                  <div className="space-y-1 text-right">
+                    <p className="text-[7px] font-black uppercase tracking-widest text-slate-400">
+                      Hot Leads
+                    </p>
+                    <div className="flex items-center justify-end gap-2">
+                      <p className="text-[10px] font-black text-amber-600">{item.inquiries}</p>
+                      <MessageSquare className="size-3 text-amber-500" />
+                    </div>
                   </div>
                 </div>
               </div>
+            ))) : (
+            <div className="text-center p-4 text-slate-400 text-xs font-bold uppercase">
+              No active inventory
             </div>
-          ))}
+          )}
         </div>
       </div>
 

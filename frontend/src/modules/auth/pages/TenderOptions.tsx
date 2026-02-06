@@ -8,15 +8,7 @@ const TenderOptions = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
 
-  useEffect(() => {
-    if (isAuthenticated && user?.role === "resource" && user.profile.tenderType) {
-      if (user.profile.tenderType === "provide-tenders") {
-        navigate("/tenders/provide/dashboard");
-      } else if (user.profile.tenderType === "apply-for-tenders") {
-        navigate("/tenders/apply/dashboard");
-      }
-    }
-  }, [isAuthenticated, user, navigate]);
+  // Removed auto-redirect to allow users to change selection if needed
 
   const options = [
     {
@@ -42,11 +34,7 @@ const TenderOptions = () => {
   ];
 
   const handleOptionClick = (option: (typeof options)[0]) => {
-    if (isAuthenticated && user?.role === "resource") {
-      navigate(option.dashboardPath);
-    } else {
-      navigate(`/signup/resource/tenders?type=${option.id}`);
-    }
+    navigate(option.dashboardPath);
   };
 
   return (

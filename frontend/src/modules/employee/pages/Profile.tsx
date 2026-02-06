@@ -12,6 +12,7 @@ import {
   Linkedin,
   Twitter,
   Bookmark,
+  User as UserIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEmployeeStore } from "@/store/useEmployeeStore";
@@ -69,7 +70,7 @@ const Profile = () => {
   const secondaryItems = [
     {
       label: "Switch Account Role",
-      icon: User,
+      icon: UserIcon,
       color: "text-primary",
       bg: "bg-primary/10",
       path: "/",

@@ -12,6 +12,7 @@ import {
 import { Link } from "react-router-dom";
 import { resourceService } from "@/services/resourceService";
 import { applicationService } from "@/services/applicationService";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const ProvideDashboard = () => {
   const [stats, setStats] = useState({
@@ -24,8 +25,15 @@ const ProvideDashboard = () => {
   const [recentBids, setRecentBids] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { isAuthenticated } = useAuthStore();
+
   useEffect(() => {
     const fetchData = async () => {
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
+
       try {
         // Fetch listings (Tenders)
         const listings = await resourceService.getMyListings("tenders");
@@ -68,7 +76,7 @@ const ProvideDashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [isAuthenticated]);
 
   const statCards = [
     {
@@ -190,13 +198,12 @@ const ProvideDashboard = () => {
                   </div>
                 </div>
                 <div
-                  className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-current opacity-70 shrink-0 ${
-                    tender.status === "Active"
-                      ? "text-emerald-600"
-                      : tender.status === "Evaluation"
-                        ? "text-blue-600"
-                        : "text-rose-600"
-                  }`}
+                  className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-current opacity-70 shrink-0 ${tender.status === "Active"
+                    ? "text-emerald-600"
+                    : tender.status === "Evaluation"
+                      ? "text-blue-600"
+                      : "text-rose-600"
+                    }`}
                 >
                   {tender.status}
                 </div>

@@ -27,9 +27,18 @@ const ApplyLayout = () => {
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={(e) => {
+                const protectedPaths = ["/tenders/apply/my-bids", "/tenders/apply/settings"];
+                const authStorage = localStorage.getItem("auth-storage");
+                const isAuthenticated = authStorage ? JSON.parse(authStorage).state.isAuthenticated : false;
+
+                if (protectedPaths.includes(item.path) && !isAuthenticated) {
+                  e.preventDefault();
+                  window.location.href = "/login/resource";
+                }
+              }}
               className={({ isActive }) =>
-                `relative flex flex-col items-center gap-1 transition-all duration-300 min-w-[60px] ${
-                  isActive ? "text-violet-600 scale-110" : "text-slate-400 hover:text-slate-600"
+                `relative flex flex-col items-center gap-1 transition-all duration-300 min-w-[60px] ${isActive ? "text-violet-600 scale-110" : "text-slate-400 hover:text-slate-600"
                 }`
               }
             >

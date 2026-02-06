@@ -245,8 +245,8 @@ function App() {
       <Route element={<EmployeeLayout />}>
         <Route path="/jobs" element={<JobList />} />
         <Route path="/jobs/:id" element={<JobDetails />} />
-        <Route path="/resources" element={<ResourcesList />} />
-        <Route path="/resources/:id" element={<ResourceDetails />} />
+        <Route path="/employee/resources" element={<ResourcesList />} />
+        <Route path="/employee/resources/:id" element={<ResourceDetails />} />
         <Route path="/style-guide" element={<StyleGuide />} />
 
         {/* Protected Employee Sub-Routes */}
@@ -294,263 +294,311 @@ function App() {
         </Route>
       </Route>
 
-      {/* Protected Investor Browse Routes (Want to Invest) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <BrowseLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Investor Browse Routes (Want to Invest) */}
+      <Route element={<BrowseLayout />}>
         <Route path="/investor/browse/dashboard" element={<BrowseDashboard />} />
-        <Route path="/investor/browse/profile" element={<BrowseProfile />} />
         <Route path="/investor/browse/opportunities" element={<OpportunitiesList />} />
         <Route path="/investor/browse/opportunities/:id" element={<OpportunityDetails />} />
-        <Route path="/investor/browse/my-investments" element={<MyInvestments />} />
-        <Route path="/investor/browse/settings" element={<BrowseSettings />} />
-        <Route path="/investor/browse/notifications" element={<InvestorBrowseNotifications />} />
+        <Route path="/investor/browse/profile" element={<BrowseProfile />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/investor/browse/my-investments" element={<MyInvestments />} />
+          <Route path="/investor/browse/settings" element={<BrowseSettings />} />
+          <Route path="/investor/browse/notifications" element={<InvestorBrowseNotifications />} />
+        </Route>
       </Route>
 
-      {/* Protected Investor Seek Routes (Want Investment) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <SeekLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Investor Seek Routes (Want Investment) */}
+      <Route element={<SeekLayout />}>
         <Route path="/investor/seek/dashboard" element={<SeekDashboard />} />
-        <Route path="/investor/seek/post" element={<PostFundingNeed />} />
-        <Route path="/investor/seek/my-requests" element={<MyFundingRequests />} />
-        <Route path="/investor/seek/inquiries" element={<InvestorInquiries />} />
-        <Route path="/investor/seek/settings" element={<SeekSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/investor/seek/post" element={<PostFundingNeed />} />
+          <Route path="/investor/seek/my-requests" element={<MyFundingRequests />} />
+          <Route path="/investor/seek/inquiries" element={<InvestorInquiries />} />
+          <Route path="/investor/seek/settings" element={<SeekSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected Tender Apply Routes (Apply for Tenders) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <ApplyLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Tender Apply Routes (Apply for Tenders) */}
+      <Route element={<ApplyLayout />}>
         <Route path="/tenders/apply/dashboard" element={<ApplyDashboard />} />
         <Route path="/tenders/apply/tenders" element={<TendersList />} />
         <Route path="/tenders/apply/tenders/:id" element={<TenderDetails />} />
-        <Route path="/tenders/apply/my-bids" element={<ApplyMyApplications />} />
-        <Route path="/tenders/apply/profile" element={<ApplyProfile />} />
-        <Route path="/tenders/apply/settings" element={<ApplySettings />} />
-        <Route path="/tenders/apply/notifications" element={<TenderApplyNotifications />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/tenders/apply/my-bids" element={<ApplyMyApplications />} />
+          <Route path="/tenders/apply/profile" element={<ApplyProfile />} />
+          <Route path="/tenders/apply/settings" element={<ApplySettings />} />
+          <Route path="/tenders/apply/notifications" element={<TenderApplyNotifications />} />
+        </Route>
       </Route>
 
-      {/* Protected Tender Provide Routes (Provide Tenders) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <ProvideLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Tender Provide Routes (Provide Tenders) */}
+      <Route element={<ProvideLayout />}>
         <Route path="/tenders/provide/dashboard" element={<ProvideDashboard />} />
-        <Route path="/tenders/provide/post" element={<PostTender />} />
-        <Route path="/tenders/provide/my-tenders" element={<MyTenders />} />
-        <Route path="/tenders/provide/bids" element={<ReceivedBids />} />
-        <Route path="/tenders/provide/profile" element={<ProvideProfile />} />
-        <Route path="/tenders/provide/settings" element={<ProvideSettings />} />
-        <Route path="/tenders/provide/notifications" element={<TenderProvideNotifications />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/tenders/provide/post" element={<PostTender />} />
+          <Route path="/tenders/provide/my-tenders" element={<MyTenders />} />
+          <Route path="/tenders/provide/bids" element={<ReceivedBids />} />
+          <Route path="/tenders/provide/profile" element={<ProvideProfile />} />
+          <Route path="/tenders/provide/settings" element={<ProvideSettings />} />
+          <Route path="/tenders/provide/notifications" element={<TenderProvideNotifications />} />
+        </Route>
       </Route>
 
-      {/* Protected Equipment Rent Routes (Rent Gear) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <RentLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Equipment Rent Routes (Rent Gear) */}
+      <Route element={<RentLayout />}>
         <Route path="/equipments/rent/dashboard" element={<RentDashboard />} />
         <Route path="/equipments/rent/list" element={<EquipmentList />} />
         <Route path="/equipments/rent/equipment/:id" element={<EquipmentDetails />} />
-        <Route path="/equipments/rent/my-rentals" element={<MyRentals />} />
-        <Route path="/equipments/rent/profile" element={<RentProfile />} />
-        <Route path="/equipments/rent/settings" element={<RentSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/equipments/rent/my-rentals" element={<MyRentals />} />
+          <Route path="/equipments/rent/profile" element={<RentProfile />} />
+          <Route path="/equipments/rent/settings" element={<RentSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected Equipment Provide Routes (Lender Portal) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <EquipmentProvideLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Equipment Provide Routes (Lender Portal) */}
+      <Route element={<EquipmentProvideLayout />}>
         <Route path="/equipments/provide/dashboard" element={<EquipmentProvideDashboard />} />
-        <Route path="/equipments/provide/post" element={<PostEquipment />} />
-        <Route path="/equipments/provide/my-equipments" element={<MyEquipments />} />
-        <Route path="/equipments/provide/requests" element={<RentalRequests />} />
-        <Route path="/equipments/provide/profile" element={<EquipmentProvideProfile />} />
-        <Route path="/equipments/provide/settings" element={<EquipmentProvideSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/equipments/provide/post" element={<PostEquipment />} />
+          <Route path="/equipments/provide/my-equipments" element={<MyEquipments />} />
+          <Route path="/equipments/provide/requests" element={<RentalRequests />} />
+          <Route path="/equipments/provide/profile" element={<EquipmentProvideProfile />} />
+          <Route path="/equipments/provide/settings" element={<EquipmentProvideSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected Machinery Buy Routes (Marketplace) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <BuyLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Machinery Buy Routes (Marketplace) */}
+      <Route element={<BuyLayout />}>
         <Route path="/machinery/buy/dashboard" element={<BuyDashboard />} />
         <Route path="/machinery/buy/list" element={<MachineryList />} />
         <Route path="/machinery/buy/item/:id" element={<MachineDetails />} />
-        <Route path="/machinery/buy/my-orders" element={<MyOrders />} />
-        <Route path="/machinery/buy/profile" element={<BuyProfile />} />
-        <Route path="/machinery/buy/settings" element={<BuySettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/machinery/buy/my-orders" element={<MyOrders />} />
+          <Route path="/machinery/buy/profile" element={<BuyProfile />} />
+          <Route path="/machinery/buy/settings" element={<BuySettings />} />
+        </Route>
       </Route>
 
-      {/* Protected Machinery Sell Routes (Seller Console) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <SellLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Machinery Sell Routes (Seller Console) */}
+      <Route element={<SellLayout />}>
         <Route path="/machinery/sell/dashboard" element={<SellDashboard />} />
-        <Route path="/machinery/sell/post" element={<PostMachine />} />
-        <Route path="/machinery/sell/inventory" element={<MyMachinery />} />
-        <Route path="/machinery/sell/inquiries" element={<MachineryInquiries />} />
-        <Route path="/machinery/sell/profile" element={<SellProfile />} />
-        <Route path="/machinery/sell/settings" element={<SellSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/machinery/sell/post" element={<PostMachine />} />
+          <Route path="/machinery/sell/inventory" element={<MyMachinery />} />
+          <Route path="/machinery/sell/inquiries" element={<MachineryInquiries />} />
+          <Route path="/machinery/sell/profile" element={<SellProfile />} />
+          <Route path="/machinery/sell/settings" element={<SellSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected PMC Browse Routes (Hire PMC) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <PMCBrowseLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* PMC Browse Routes (Hire PMC) */}
+      <Route element={<PMCBrowseLayout />}>
         <Route path="/pmc/browse/dashboard" element={<PMCBrowseDashboard />} />
         <Route path="/pmc/browse/consultants" element={<PMCConsultantList />} />
         <Route path="/pmc/browse/consultants/:id" element={<PMCConsultantDetails />} />
-        <Route path="/pmc/browse/my-hires" element={<PMCMyHires />} />
-        <Route path="/pmc/browse/profile" element={<PMCBrowseProfile />} />
-        <Route path="/pmc/browse/settings" element={<PMCBrowseSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/pmc/browse/my-hires" element={<PMCMyHires />} />
+          <Route path="/pmc/browse/profile" element={<PMCBrowseProfile />} />
+          <Route path="/pmc/browse/settings" element={<PMCBrowseSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected PMC Provide Routes (Offer PMC) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <PMCProvideLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* PMC Provide Routes (Offer PMC) */}
+      <Route element={<PMCProvideLayout />}>
         <Route path="/pmc/provide/dashboard" element={<PMCProvideDashboard />} />
-        <Route path="/pmc/provide/post" element={<PMCPostService />} />
-        <Route path="/pmc/provide/my-services" element={<PMCMyServices />} />
-        <Route path="/pmc/provide/inquiries" element={<PMCInquiries />} />
-        <Route path="/pmc/provide/profile" element={<PMCProvideProfile />} />
-        <Route path="/pmc/provide/settings" element={<PMCProvideSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/pmc/provide/post" element={<PMCPostService />} />
+          <Route path="/pmc/provide/my-services" element={<PMCMyServices />} />
+          <Route path="/pmc/provide/inquiries" element={<PMCInquiries />} />
+          <Route path="/pmc/provide/profile" element={<PMCProvideProfile />} />
+          <Route path="/pmc/provide/settings" element={<PMCProvideSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected CSM Browse Routes (Hire CSM) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <CSMBrowseLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* CSM Browse Routes (Hire CSM) */}
+      <Route element={<CSMBrowseLayout />}>
         <Route path="/csm/browse/dashboard" element={<CSMBrowseDashboard />} />
         <Route path="/csm/browse/list" element={<CSMList />} />
         <Route path="/csm/browse/list/:id" element={<CSMDetails />} />
-        <Route path="/csm/browse/my-hires" element={<CSMMyHires />} />
-        <Route path="/csm/browse/profile" element={<CSMBrowseProfile />} />
-        <Route path="/csm/browse/settings" element={<CSMBrowseSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/csm/browse/my-hires" element={<CSMMyHires />} />
+          <Route path="/csm/browse/profile" element={<CSMBrowseProfile />} />
+          <Route path="/csm/browse/settings" element={<CSMBrowseSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected CSM Provide Routes (Offer CSM) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <CSMProvideLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* CSM Provide Routes (Offer CSM) */}
+      <Route element={<CSMProvideLayout />}>
         <Route path="/csm/provide/dashboard" element={<CSMProvideDashboard />} />
-        <Route path="/csm/provide/post" element={<CSMPostService />} />
-        <Route path="/csm/provide/my-services" element={<CSMMyServices />} />
-        <Route path="/csm/provide/inquiries" element={<CSMInquiries />} />
-        <Route path="/csm/provide/profile" element={<CSMProvideProfile />} />
-        <Route path="/csm/provide/settings" element={<CSMProvideSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/csm/provide/post" element={<CSMPostService />} />
+          <Route path="/csm/provide/my-services" element={<CSMMyServices />} />
+          <Route path="/csm/provide/inquiries" element={<CSMInquiries />} />
+          <Route path="/csm/provide/profile" element={<CSMProvideProfile />} />
+          <Route path="/csm/provide/settings" element={<CSMProvideSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected Logistics Browse Routes (Hire Logistics) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <LogisticsBrowseLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Logistics Browse Routes (Hire Logistics) */}
+      <Route element={<LogisticsBrowseLayout />}>
         <Route path="/logistics/browse/dashboard" element={<LogisticsBrowseDashboard />} />
         <Route path="/logistics/browse/list" element={<LogisticsList />} />
         <Route path="/logistics/browse/list/:id" element={<LogisticsDetails />} />
-        <Route path="/logistics/browse/my-hires" element={<LogisticsMyHires />} />
-        <Route path="/logistics/browse/profile" element={<LogisticsBrowseProfile />} />
-        <Route path="/logistics/browse/settings" element={<LogisticsBrowseSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/logistics/browse/my-hires" element={<LogisticsMyHires />} />
+          <Route path="/logistics/browse/profile" element={<LogisticsBrowseProfile />} />
+          <Route path="/logistics/browse/settings" element={<LogisticsBrowseSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected Logistics Provide Routes (Offer Logistics) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <LogisticsProvideLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Logistics Provide Routes (Offer Logistics) */}
+      <Route element={<LogisticsProvideLayout />}>
         <Route path="/logistics/provide/dashboard" element={<LogisticsProvideDashboard />} />
-        <Route path="/logistics/provide/post" element={<LogisticsPostService />} />
-        <Route path="/logistics/provide/my-services" element={<LogisticsMyServices />} />
-        <Route path="/logistics/provide/inquiries" element={<LogisticsInquiries />} />
-        <Route path="/logistics/provide/profile" element={<LogisticsProvideProfile />} />
-        <Route path="/logistics/provide/settings" element={<LogisticsProvideSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/logistics/provide/post" element={<LogisticsPostService />} />
+          <Route path="/logistics/provide/my-services" element={<LogisticsMyServices />} />
+          <Route path="/logistics/provide/inquiries" element={<LogisticsInquiries />} />
+          <Route path="/logistics/provide/profile" element={<LogisticsProvideProfile />} />
+          <Route path="/logistics/provide/settings" element={<LogisticsProvideSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected Vehicle Browse Routes (Hire Vehicle) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <VehicleBrowseLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Vehicle Browse Routes (Hire Vehicle) */}
+      <Route element={<VehicleBrowseLayout />}>
         <Route path="/vehicles/browse/dashboard" element={<VehicleBrowseDashboard />} />
         <Route path="/vehicles/browse/list" element={<VehiclesList />} />
         <Route path="/vehicles/browse/list/:id" element={<VehicleDetails />} />
-        <Route path="/vehicles/browse/my-rentals" element={<VehicleMyRentals />} />
-        <Route path="/vehicles/browse/profile" element={<VehicleBrowseProfile />} />
-        <Route path="/vehicles/browse/settings" element={<VehicleBrowseSettings />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/vehicles/browse/my-rentals" element={<VehicleMyRentals />} />
+          <Route path="/vehicles/browse/profile" element={<VehicleBrowseProfile />} />
+          <Route path="/vehicles/browse/settings" element={<VehicleBrowseSettings />} />
+        </Route>
       </Route>
 
-      {/* Protected Vehicle Provide Routes (Offer Vehicle) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["resource"]} loginPath="/resources/categories">
-            <VehicleProvideLayout />
-          </ProtectedRoute>
-        }
-      >
+      {/* Vehicle Provide Routes (Offer Vehicle) */}
+      <Route element={<VehicleProvideLayout />}>
         <Route path="/vehicles/provide/dashboard" element={<VehicleProvideDashboard />} />
-        <Route path="/vehicles/provide/post" element={<VehiclePostService />} />
-        <Route path="/vehicles/provide/my-vehicles" element={<MyVehicles />} />
-        <Route path="/vehicles/provide/inquiries" element={<VehicleInquiries />} />
-        <Route path="/vehicles/provide/profile" element={<VehicleProvideProfile />} />
-        <Route path="/vehicles/provide/settings" element={<VehicleProvideSettings />} />
-        <Route path="/vehicles/provide/notifications" element={<VehicleProvideNotifications />} />
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/vehicles/provide/post" element={<VehiclePostService />} />
+          <Route path="/vehicles/provide/my-vehicles" element={<MyVehicles />} />
+          <Route path="/vehicles/provide/inquiries" element={<VehicleInquiries />} />
+          <Route path="/vehicles/provide/profile" element={<VehicleProvideProfile />} />
+          <Route path="/vehicles/provide/settings" element={<VehicleProvideSettings />} />
+          <Route path="/vehicles/provide/notifications" element={<VehicleProvideNotifications />} />
+        </Route>
       </Route>
 
       {/* Protected Admin Routes */}

@@ -8,15 +8,7 @@ const LogisticsOptions = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
 
-  useEffect(() => {
-    if (isAuthenticated && user?.role === "resource" && user.profile.logisticsType) {
-      if (user.profile.logisticsType === "provide-logistics") {
-        navigate("/logistics/provide/dashboard");
-      } else if (user.profile.logisticsType === "need-logistics") {
-        navigate("/logistics/browse/dashboard");
-      }
-    }
-  }, [isAuthenticated, user, navigate]);
+  // Removed auto-redirect useEffect
 
   const options = [
     {

@@ -42,11 +42,7 @@ const EquipmentOptions = () => {
   ];
 
   const handleOptionClick = (option: (typeof options)[0]) => {
-    if (isAuthenticated && user?.role === "resource") {
-      navigate(option.dashboardPath);
-    } else {
-      navigate(`/signup/resource/equipments?type=${option.id}`);
-    }
+    navigate(option.dashboardPath);
   };
 
   return (

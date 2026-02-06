@@ -27,9 +27,18 @@ const ProvideLayout = () => {
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={(e) => {
+                const protectedPaths = ["/tenders/provide/post", "/tenders/provide/my-tenders", "/tenders/provide/bids", "/tenders/provide/settings"];
+                const authStorage = localStorage.getItem("auth-storage");
+                const isAuthenticated = authStorage ? JSON.parse(authStorage).state.isAuthenticated : false;
+
+                if (protectedPaths.includes(item.path) && !isAuthenticated) {
+                  e.preventDefault();
+                  window.location.href = "/login/resource";
+                }
+              }}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 transition-all duration-300 ${
-                  isActive ? "text-indigo-600 scale-110" : "text-slate-400 hover:text-slate-600"
+                `flex flex-col items-center gap-1 transition-all duration-300 ${isActive ? "text-indigo-600 scale-110" : "text-slate-400 hover:text-slate-600"
                 }`
               }
             >

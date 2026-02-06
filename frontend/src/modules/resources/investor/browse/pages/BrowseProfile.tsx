@@ -86,6 +86,38 @@ const BrowseProfile = () => {
     }
   };
 
+  if (!user || user.role !== "resource") {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center text-center p-6 space-y-6 animate-in fade-in zoom-in-95 duration-500">
+        <div className="size-24 rounded-3xl bg-primary/10 flex items-center justify-center rotate-3">
+          <Camera className="size-10 text-primary" />
+        </div>
+        <div className="space-y-2 max-w-sm">
+          <h2 className="text-3xl font-black tracking-tighter">
+            Profile <span className="text-primary">Access</span>
+          </h2>
+          <p className="text-slate-500 font-medium">
+            Login to manage your investor profile, track investments, and connect with opportunities.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 w-full max-w-xs">
+          <button
+            onClick={() => navigate("/login/resource")}
+            className="w-full py-4 rounded-xl bg-primary text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all"
+          >
+            Login Now
+          </button>
+          <button
+            onClick={() => navigate("/resources/categories")}
+            className="w-full py-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black uppercase tracking-widest active:scale-95 transition-all"
+          >
+            Create Account
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="py-6 space-y-6 select-none animate-in fade-in duration-500">
       {/* Back Button */}

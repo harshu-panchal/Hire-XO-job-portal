@@ -8,15 +8,7 @@ const PMCOptions = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
 
-  useEffect(() => {
-    if (isAuthenticated && user?.role === "resource" && user.profile.pmcType) {
-      if (user.profile.pmcType === "offer-pmc-services") {
-        navigate("/pmc/provide/dashboard");
-      } else if (user.profile.pmcType === "hire-pmc") {
-        navigate("/pmc/browse/dashboard");
-      }
-    }
-  }, [isAuthenticated, user, navigate]);
+  // Removed auto-redirect useEffect
 
   const options = [
     {
@@ -42,11 +34,7 @@ const PMCOptions = () => {
   ];
 
   const handleOptionClick = (option: (typeof options)[0]) => {
-    if (isAuthenticated && user?.role === "resource") {
-      navigate(option.dashboardPath);
-    } else {
-      navigate(`/signup/resource/pmc?type=${option.id}`);
-    }
+    navigate(option.dashboardPath);
   };
 
   return (

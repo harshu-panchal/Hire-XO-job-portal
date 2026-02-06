@@ -8,15 +8,7 @@ const CSMOptions = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
 
-  useEffect(() => {
-    if (isAuthenticated && user?.role === "resource" && user.profile.csmType) {
-      if (user.profile.csmType === "offer-csm-services") {
-        navigate("/csm/provide/dashboard");
-      } else if (user.profile.csmType === "hire-csm") {
-        navigate("/csm/browse/dashboard");
-      }
-    }
-  }, [isAuthenticated, user, navigate]);
+  // Removed auto-redirect useEffect
 
   const options = [
     {
@@ -42,11 +34,7 @@ const CSMOptions = () => {
   ];
 
   const handleOptionClick = (option: (typeof options)[0]) => {
-    if (isAuthenticated && user?.role === "resource") {
-      navigate(option.dashboardPath);
-    } else {
-      navigate(`/signup/resource/csm?type=${option.id}`);
-    }
+    navigate(option.dashboardPath);
   };
 
   return (

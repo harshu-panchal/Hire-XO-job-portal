@@ -20,7 +20,9 @@ const BrowseDashboard = () => {
 
         // Calculate total value (mocking for now as we don't have a sum API)
         const total = data.reduce((acc, curr: any) => {
-          const val = parseFloat(curr.seekingAmount || curr.amount || "0");
+          // Extract numeric value from strings like "₹10L - ₹50L" or "50000"
+          const amountStr = curr.investmentAmount || curr.compensation || "0";
+          const val = parseFloat(amountStr.replace(/[^0-9.]/g, ""));
           return acc + (isNaN(val) ? 0 : val);
         }, 0);
 
@@ -131,8 +133,8 @@ const BrowseDashboard = () => {
           ) : (
             featured.map((opp) => (
               <Link
-                key={opp._id}
-                to={`/investor/browse/opportunities/${opp._id}`}
+                key={opp._id || opp.id}
+                to={`/investor/browse/opportunities/${opp._id || opp.id}`}
                 className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all shadow-sm hover:shadow-md"
               >
                 <div className="flex items-start justify-between mb-3">
@@ -146,7 +148,7 @@ const BrowseDashboard = () => {
                       </p>
                       <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-violet-500/10 border border-violet-500/10 mt-0.5">
                         <span className="text-[8px] font-black uppercase tracking-widest text-violet-600">
-                          {opp.industry || opp.category || "Investment"}
+                          {opp.investmentSector?.[0] || opp.category || "Investment"}
                         </span>
                       </div>
                     </div>
@@ -156,7 +158,7 @@ const BrowseDashboard = () => {
                       Seeking
                     </p>
                     <p className="text-lg font-black text-emerald-600">
-                      ₹{opp.amount || opp.seekingAmount || "Negotiable"}
+                      {opp.investmentAmount || opp.compensation || "Negotiable"}
                     </p>
                   </div>
                 </div>
@@ -170,7 +172,7 @@ const BrowseDashboard = () => {
                     <span>{(opp.views || 0) + 10} views</span>
                   </div>
                   <div className="size-1 rounded-full bg-slate-200" />
-                  <span>{opp.equity || "Equity"} Offered</span>
+                  <span>{opp.type || "Equity"} Offered</span>
                   <div className="size-1 rounded-full bg-slate-200" />
                   <span>{opp.location || "Online"}</span>
                 </div>
@@ -196,9 +198,21 @@ const BrowseDashboard = () => {
               Opportunities
             </p>
           </Link>
-          <Link
-            to="/investor/browse/my-investments"
-            className="bg-slate-900 dark:bg-white rounded-[2rem] p-5 text-white dark:text-slate-900 active:scale-95 transition-transform shadow-lg shadow-slate-900/10"
+          <button
+            onClick={() => {
+              // Check if authenticated (using simple localStorage check or we needs to import store)
+              // For simplicity, we just link to it, but we know it's protected.
+              // Better user experience: go to login if not authenticated
+              const storage = localStorage.getItem("auth-storage");
+              const isAuthenticated = storage ? JSON.parse(storage).state.isAuthenticated : false;
+
+              if (isAuthenticated) {
+                window.location.href = "/investor/browse/my-investments";
+              } else {
+                window.location.href = "/login/resource";
+              }
+            }}
+            className="bg-slate-900 dark:bg-white rounded-[2rem] p-5 text-white dark:text-slate-900 active:scale-95 transition-transform shadow-lg shadow-slate-900/10 w-full text-left"
           >
             <div className="size-10 rounded-xl bg-white/10 dark:bg-slate-900/10 flex items-center justify-center mb-3">
               <Briefcase className="size-5" />
@@ -207,7 +221,7 @@ const BrowseDashboard = () => {
             <p className="text-[9px] font-black uppercase tracking-widest opacity-80">
               Track Interests
             </p>
-          </Link>
+          </button>
         </div>
       </div>
     </div>
