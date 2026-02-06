@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Bell,
   Lock,
-  Moon,
   Globe,
   HelpCircle,
   LogOut,
@@ -10,8 +9,6 @@ import {
   Shield,
   CreditCard,
   ArrowLeft,
-  Sun,
-  Monitor,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";

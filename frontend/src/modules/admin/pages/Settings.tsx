@@ -4,7 +4,6 @@ import {
   User,
   Bell,
   Shield,
-  Palette,
   Globe,
   Save,
   ChevronRight,
@@ -40,7 +39,6 @@ export default function Settings() {
     { id: "profile", label: "Profile", icon: User },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "security", label: "Security", icon: Shield },
-    { id: "appearance", label: "Appearance", icon: Palette },
     { id: "general", label: "General", icon: Globe },
   ];
 
@@ -63,8 +61,8 @@ export default function Settings() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${activeTab === tab.id
-                    ? "bg-primary text-white"
-                    : "text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5"
+                  ? "bg-primary text-white"
+                  : "text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5"
                   }`}
               >
                 <tab.icon className="w-5 h-5" />
@@ -80,7 +78,7 @@ export default function Settings() {
             {activeTab === "profile" && <ProfileSettings />}
             {activeTab === "notifications" && <NotificationSettings />}
             {activeTab === "security" && <SecuritySettings />}
-            {activeTab === "appearance" && <AppearanceSettings />}
+
             {activeTab === "general" && <GeneralSettings />}
           </div>
         </motion.div>
@@ -345,8 +343,8 @@ function NotificationSettings() {
               onClick={() => toggleSetting(item.key as keyof typeof settings)}
               disabled={isSaving}
               className={`w-12 h-6 rounded-full p-1 transition-colors ${settings[item.key as keyof typeof settings]
-                  ? "bg-primary"
-                  : "bg-slate-200 dark:bg-white/20"
+                ? "bg-primary"
+                : "bg-slate-200 dark:bg-white/20"
                 }`}
             >
               <div
@@ -512,16 +510,7 @@ function SecuritySettings() {
   );
 }
 
-function AppearanceSettings() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-slate-900 mb-1">Appearance</h3>
-        <p className="text-sm text-slate-500">Appearance settings have been simplified</p>
-      </div>
-    </div>
-  );
-}
+
 
 function GeneralSettings() {
   const [preferences, setPreferences] = useState({

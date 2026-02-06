@@ -1,14 +1,19 @@
 import { Search, Users, CheckCircle2, TrendingUp } from "lucide-react";
 import { useEmployeeStore } from "@/store/useEmployeeStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect } from "react";
 import JobCard from "@/modules/employee/components/JobCard";
 
 const JobList = () => {
-  const { jobs, filters, setSearch, setType, fetchJobs } = useEmployeeStore();
+  const { jobs, filters, setSearch, setType, fetchJobs, fetchMyApplications } = useEmployeeStore();
+  const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     fetchJobs();
-  }, [fetchJobs]);
+    if (isAuthenticated) {
+      fetchMyApplications();
+    }
+  }, [fetchJobs, fetchMyApplications, isAuthenticated]);
 
   const categories = [
     { id: "all", label: "All Jobs" },
@@ -21,12 +26,12 @@ const JobList = () => {
 
   const filteredJobs = Array.isArray(jobs)
     ? jobs.filter((job) => {
-        const matchesSearch =
-          job.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-          job.company.toLowerCase().includes(filters.search.toLowerCase());
-        const matchesType = filters.type === "all" || job.category === filters.type;
-        return matchesSearch && matchesType;
-      })
+      const matchesSearch =
+        job.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+        job.company.toLowerCase().includes(filters.search.toLowerCase());
+      const matchesType = filters.type === "all" || job.category === filters.type;
+      return matchesSearch && matchesType;
+    })
     : [];
 
   return (
@@ -120,11 +125,10 @@ const JobList = () => {
             <button
               key={cat.id}
               onClick={() => setType(cat.id)}
-              className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${
-                filters.type === cat.id
-                  ? "bg-primary text-white shadow-lg shadow-primary/20"
-                  : "bg-white border border-slate-200 text-slate-400"
-              }`}
+              className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${filters.type === cat.id
+                ? "bg-primary text-white shadow-lg shadow-primary/20"
+                : "bg-white border border-slate-200 text-slate-400"
+                }`}
             >
               {cat.label}
             </button>

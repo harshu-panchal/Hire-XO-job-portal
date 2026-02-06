@@ -11,9 +11,6 @@ import {
   Wallet,
   Check,
   X,
-  Monitor,
-  Sun,
-  Moon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";

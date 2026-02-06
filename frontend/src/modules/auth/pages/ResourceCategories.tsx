@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   TrendingUp,
@@ -11,6 +11,10 @@ import {
   HardHat,
   Building,
   LogOut,
+  Home,
+  User,
+  CreditCard,
+  HelpCircle,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -18,7 +22,9 @@ import type { ResourceCategory } from "@/types";
 
 const ResourceCategories = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, logout, user } = useAuthStore();
+  const [activeTab, setActiveTab] = useState("categories");
 
   // Handle session management
   useEffect(() => {
@@ -124,8 +130,15 @@ const ResourceCategories = () => {
     navigate(`/resources/${category.toLowerCase()}`);
   };
 
+  const navItems = [
+    { id: "home", label: "Home", icon: Home, path: "/" },
+    { id: "profile", label: "Profile", icon: User, path: "/profile" },
+    { id: "payment", label: "Payment", icon: CreditCard, path: "/subscriptions" },
+    { id: "faq", label: "FAQ", icon: HelpCircle, path: "/faq" },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8 px-5">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8 px-5 pb-32">
       <div className="w-full max-w-[430px] mx-auto">
         <div className="flex items-center justify-between mb-6">
           {/* Back Button */}
@@ -209,10 +222,34 @@ const ResourceCategories = () => {
         </div>
 
         {/* Info */}
-        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl mb-8">
           <p className="text-sm text-blue-900 text-center">
             <strong>Note:</strong> Select the category that best matches your business needs
           </p>
+        </div>
+      </div>
+
+      {/* Modern Bottom Navigation */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[400px] z-50">
+        <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-[2rem] p-2 flex items-center justify-between">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <button
+                key={item.id}
+                onClick={() => navigate(item.path)}
+                className={`relative flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all duration-300 ${isActive ? "text-primary bg-primary/10 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                  }`}
+              >
+                <Icon className={`size-5 ${isActive ? "animate-bounce-short" : ""}`} />
+                <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
+                {isActive && (
+                  <div className="absolute -bottom-1 w-1 h-1 bg-primary rounded-full" />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

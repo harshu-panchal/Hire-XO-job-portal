@@ -19,20 +19,24 @@ import type { Job } from "@/types";
 const JobDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { jobs, fetchJobs, applications, savedJobs, saveJob, unsaveJob, applyToJob } =
+  const { jobs, fetchJobs, applications, savedJobs, saveJob, unsaveJob, applyToJob, fetchMyApplications } =
     useEmployeeStore();
   const { isAuthenticated } = useAuthStore();
   const [job, setJob] = useState<Job | null>(null);
 
   const isApplied =
-    Array.isArray(applications) && applications.some((app: any) => app.jobId === id);
+    Array.isArray(applications?.jobs) &&
+    applications.jobs.some((app: any) => (app.jobId?._id || app.jobId) === id);
   const isBookmarked = Array.isArray(savedJobs) && savedJobs.includes(id || "");
 
   useEffect(() => {
     if (jobs.length === 0) {
       fetchJobs();
     }
-  }, [jobs.length, fetchJobs]);
+    if (isAuthenticated) {
+      fetchMyApplications();
+    }
+  }, [jobs.length, fetchJobs, fetchMyApplications, isAuthenticated]);
 
   useEffect(() => {
     const foundJob = jobs.find((j) => j.id === id);
@@ -305,11 +309,10 @@ const JobDetails = () => {
           <button
             onClick={handleApply}
             disabled={isApplied}
-            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${
-              isApplied
-                ? "bg-green-500 text-white shadow-green-500/20"
-                : "bg-primary text-white shadow-xl shadow-primary/20"
-            }`}
+            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${isApplied
+              ? "bg-green-500 text-white shadow-green-500/20"
+              : "bg-primary text-white shadow-xl shadow-primary/20"
+              }`}
           >
             {isApplied ? (
               <>

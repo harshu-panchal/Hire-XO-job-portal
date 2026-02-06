@@ -24,8 +24,10 @@ interface JobCardProps {
 
 const JobCard = ({ job }: JobCardProps) => {
   const navigate = useNavigate();
-  const { savedJobs, saveJob, unsaveJob, applyToJob } = useEmployeeStore();
+  const { savedJobs, saveJob, unsaveJob, applyToJob, applications } = useEmployeeStore();
   const isSaved = Array.isArray(savedJobs) && savedJobs.includes(job.id);
+  const isApplied = Array.isArray(applications?.jobs) &&
+    applications.jobs.some((app: any) => (app.jobId?._id || app.jobId) === job.id);
 
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);

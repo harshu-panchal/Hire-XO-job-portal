@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ProfileRedirect from "./components/ProfileRedirect";
+import PaymentRedirect from "./components/PaymentRedirect";
 
 // Layouts
 import EmployeeLayout from "./layouts/EmployeeLayout";
@@ -242,6 +244,8 @@ function App() {
       <Route path="/resources/logistics" element={<LogisticsOptions />} />
       <Route path="/resources/vehicles" element={<VehicleOptions />} />
       <Route path="/signup/resource/:category" element={<ResourceSignup />} />
+      <Route path="/profile" element={<ProfileRedirect />} />
+      <Route path="/subscriptions" element={<PaymentRedirect />} />
 
       {/* Employee Routes - Mixed Public/Protected */}
       <Route element={<EmployeeLayout />}>
@@ -272,8 +276,8 @@ function App() {
           {/* New Navigation Routes */}
           <Route path="/post" element={<Post />} />
           <Route path="/interviews" element={<Interviews />} />
-          <Route path="/faq" element={<FAQ />} />
         </Route>
+        <Route path="/faq" element={<FAQ />} />
       </Route>
 
       {/* Employer Routes - Mixed Public/Protected */}

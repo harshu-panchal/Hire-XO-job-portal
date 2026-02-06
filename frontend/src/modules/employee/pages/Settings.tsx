@@ -10,9 +10,6 @@ import {
   HelpCircle,
   Plus,
   Trash2,
-  Moon,
-  Sun,
-  Monitor,
   Loader2,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -29,7 +26,7 @@ const Settings = () => {
 
   // Local state for preferences
   const [pushEnabled, setPushEnabled] = useState(true);
-  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
+
 
   const [form, setForm] = useState({
     name: userProfile?.name || "",
@@ -59,23 +56,12 @@ const Settings = () => {
       const prefs = userProfile.profile?.preferences;
       if (prefs) {
         setPushEnabled(prefs.notifications ?? true);
-        setTheme(prefs.theme || "system");
+
       }
     }
   }, [userProfile]);
 
-  // Handle Theme Change
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else if (theme === "light") {
-      root.classList.remove("dark");
-    } else {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      root.classList.toggle("dark", systemTheme);
-    }
-  }, [theme]);
+
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -119,7 +105,6 @@ const Settings = () => {
             .filter((s) => s !== ""),
           experience: form.experience,
           preferences: {
-            theme,
             notifications: pushEnabled,
           },
         },
@@ -376,41 +361,7 @@ const Settings = () => {
               </div>
             </button>
 
-            {/* Theme Selection */}
-            <div className="p-5 border-b border-slate-100 space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
-                  <Monitor className="size-5" />
-                </div>
-                <div className="text-left">
-                  <p className="text-sm font-black">Appearance</p>
-                  <p className="text-[10px] font-bold text-slate-400">Choose your theme</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { id: "light", icon: Sun, label: "Light" },
-                  { id: "dark", icon: Moon, label: "Dark" },
-                  { id: "system", icon: Monitor, label: "System" },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setTheme(t.id as any)}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${
-                      theme === t.id
-                        ? "bg-primary/5 border-primary text-primary"
-                        : "bg-slate-50 border-transparent text-slate-400"
-                    }`}
-                  >
-                    <t.icon className="size-5" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">
-                      {t.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
+
 
             <button
               type="button"

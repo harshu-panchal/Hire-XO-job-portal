@@ -116,13 +116,15 @@ export class UserController {
             if (profile) {
                 // Merge profile data
                 const user = await User.findById(userId);
-                updateData.profile = { ...(user?.profile || {}), ...profile };
+                const userObj = user?.toObject();
+                const existingProfile = userObj?.profile || {};
+                updateData.profile = { ...existingProfile, ...profile };
             }
 
             const updatedUser = await User.findByIdAndUpdate(
                 userId,
                 { $set: updateData },
-                { new: true }
+                { new: true, runValidators: true }
             );
 
             res.status(200).json({
@@ -131,7 +133,12 @@ export class UserController {
                 user: updatedUser
             });
         } catch (error: any) {
-            res.status(500).json({ success: false, message: error.message || 'Profile update failed' });
+            console.error('[UserController] updateProfile error:', error);
+            const statusCode = error.name === 'ValidationError' ? 400 : 500;
+            res.status(statusCode).json({
+                success: false,
+                message: error.message || 'Profile update failed'
+            });
         }
     };
 

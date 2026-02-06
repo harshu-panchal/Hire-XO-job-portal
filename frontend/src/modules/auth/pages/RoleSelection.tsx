@@ -102,9 +102,6 @@ const RoleSelection = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-white flex flex-col justify-center p-6">
-      {/* Background Elements Removed for simple white look */}
-
-
       <div className="w-full max-w-[400px] mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col items-center justify-center mb-8 animate-in fade-in slide-in-from-bottom-8 duration-700">

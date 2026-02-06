@@ -41,7 +41,7 @@ const OpportunityDetails = () => {
         // Check if already applied
         const myApps: any = await applicationService.getMyApplications();
         const alreadyApplied = (myApps.resources || []).some(
-          (app: any) => app.resourceId === id && app.resourceType === "Investor"
+          (app: any) => (app.resourceId?._id || app.resourceId) === id && app.resourceType === "Investor"
         );
         setHasExpressed(alreadyApplied);
       } catch (error) {
@@ -253,11 +253,10 @@ const OpportunityDetails = () => {
             <button
               onClick={handleExpressInterest}
               disabled={isExpressing || hasExpressed}
-              className={`w-full py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg ${
-                hasExpressed
+              className={`w-full py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg ${hasExpressed
                   ? "bg-emerald-600 text-white shadow-emerald-500/20"
                   : "bg-violet-600 text-white shadow-violet-500/20"
-              } disabled:opacity-80`}
+                } disabled:opacity-80`}
             >
               {isExpressing
                 ? "Sending Message..."
@@ -281,9 +280,9 @@ const OpportunityDetails = () => {
                 <span className="text-[11px] font-black truncate">
                   {user
                     ? opportunity.email ||
-                      "info@" +
-                        (opportunity.company?.replace(/\s/g, "").toLowerCase() || "company") +
-                        ".com"
+                    "info@" +
+                    (opportunity.company?.replace(/\s/g, "").toLowerCase() || "company") +
+                    ".com"
                     : "••••••••••••••"}
                 </span>
               </div>
