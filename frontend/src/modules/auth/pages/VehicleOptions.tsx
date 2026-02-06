@@ -13,22 +13,22 @@ const VehicleOptions = () => {
   const options = [
     {
       id: "rent-out-vehicles",
-      title: "Rent Out Vehicles",
-      description: "List your vehicles for rental",
+      title: "List Vehicle",
+      description: "List your vehicle for others",
       icon: Car,
       color: "from-blue-500 to-cyan-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950/20",
-      iconColor: "text-blue-600 dark:text-blue-400",
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-600",
       dashboardPath: "/vehicles/provide/dashboard",
     },
     {
       id: "rent-vehicles",
-      title: "Rent Vehicles",
-      description: "Find vehicles to rent for your needs",
+      title: "Need Vehicle",
+      description: "Find vehicles for rent or purchase",
       icon: Key,
       color: "from-cyan-500 to-teal-600",
-      bgColor: "bg-cyan-50 dark:bg-cyan-950/20",
-      iconColor: "text-cyan-600 dark:text-cyan-400",
+      bgColor: "bg-cyan-50",
+      iconColor: "text-cyan-600",
       dashboardPath: "/vehicles/browse/dashboard",
     },
   ];
@@ -38,11 +38,11 @@ const VehicleOptions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-background dark:via-slate-950 dark:to-background flex items-center justify-center p-5">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-5">
       <div className="w-full max-w-[430px]">
         <button
           onClick={() => navigate("/resources/categories")}
-          className="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+          className="mb-6 flex items-center gap-2 text-slate-600 hover:text-primary transition-colors"
         >
           <ArrowLeft className="size-5" />
           <span className="font-semibold">Back</span>
@@ -53,7 +53,7 @@ const VehicleOptions = () => {
             <Car className="size-8 text-white" />
           </div>
           <h1 className="text-3xl font-black tracking-tighter mb-2">Vehicle Options</h1>
-          <p className="text-slate-600 dark:text-slate-400">Choose your vehicle preference</p>
+          <p className="text-slate-600">Choose your vehicle preference</p>
         </div>
 
         <div className="space-y-4">
@@ -78,7 +78,7 @@ const VehicleOptions = () => {
 
                   <div className="flex-1">
                     <h3 className="text-xl font-black tracking-tight mb-1">{option.title}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                    <p className="text-sm text-slate-600">
                       {option.description}
                     </p>
                   </div>
@@ -108,8 +108,8 @@ const VehicleOptions = () => {
           })}
         </div>
 
-        <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-xl">
-          <p className="text-sm text-blue-900 dark:text-indigo-100 text-center">
+        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <p className="text-sm text-blue-900 text-center">
             {isAuthenticated && user?.role === "resource" ? (
               <span>
                 <strong>Note:</strong> Select the module you want to access

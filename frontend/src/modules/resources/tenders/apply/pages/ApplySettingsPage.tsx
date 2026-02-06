@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "@/context/ThemeContext";
 import { subscriptionService } from "@/services/subscriptionService";
 import { authService } from "@/services/authService";
 import { toast } from "sonner";
@@ -59,13 +58,13 @@ const SettingItem = ({ icon: Icon, label, description, action, onClick }: any) =
 const ApplySettingsPage = () => {
   const navigate = useNavigate();
   const { logout, user, updateProfile } = useAuthStore();
-  const { theme: currentTheme, setTheme: setGlobalTheme } = useTheme();
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   // Local state for preferences synced with user profile
-  const [tenderAlerts, setTenderAlerts] = useState(user?.profile?.preferences?.notifications ?? true);
+  const [tenderAlerts, setTenderAlerts] = useState(
+    user?.profile?.preferences?.notifications ?? true
+  );
   const [wallet, setWallet] = useState<SettingsWallet | null>(null);
-  const darkMode = currentTheme === "dark";
 
   // Sync state when user loads
   useEffect(() => {
@@ -104,9 +103,9 @@ const ApplySettingsPage = () => {
           ...user?.profile,
           preferences: {
             ...user?.profile?.preferences,
-            notifications: newState
-          }
-        }
+            notifications: newState,
+          },
+        },
       });
       toast.success(`Tender alerts ${newState ? "enabled" : "disabled"}`);
     } catch (error: any) {
@@ -115,25 +114,7 @@ const ApplySettingsPage = () => {
     }
   };
 
-  const handleThemeToggle = async () => {
-    const newTheme = darkMode ? "light" : "dark";
-    setGlobalTheme(newTheme);
 
-    try {
-      await updateProfile({
-        profile: {
-          ...user?.profile,
-          preferences: {
-            ...user?.profile?.preferences,
-            theme: newTheme
-          }
-        }
-      });
-      toast.success(`Switched to ${newTheme} mode`);
-    } catch (error: any) {
-      console.error("Failed to persist theme preference", error);
-    }
-  };
 
   const handleLogout = () => {
     toast.promise(
@@ -535,21 +516,7 @@ const ApplySettingsPage = () => {
                   </button>
                 }
               />
-              <SettingItem
-                icon={darkMode ? Moon : Sun}
-                label="Dark Mode"
-                description="Switch app appearance"
-                action={
-                  <button
-                    onClick={handleThemeToggle}
-                    className={`w-12 h-6 rounded-full transition-colors relative ${darkMode ? "bg-violet-600" : "bg-slate-200"}`}
-                  >
-                    <div
-                      className={`absolute top-1 size-4 bg-white rounded-full transition-all ${darkMode ? "left-7" : "left-1"}`}
-                    />
-                  </button>
-                }
-              />
+
             </div>
           </div>
 

@@ -56,8 +56,8 @@ const RentProfile = () => {
 
       {/* Stats Summary */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 space-y-3 shadow-sm text-center">
-          <div className="size-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center mx-auto text-emerald-600">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 space-y-3 shadow-sm text-center">
+          <div className="size-12 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto text-emerald-600">
             <Star className="size-6 fill-emerald-600" />
           </div>
           <div>
@@ -69,8 +69,8 @@ const RentProfile = () => {
             </p>
           </div>
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 space-y-3 shadow-sm text-center">
-          <div className="size-12 rounded-2xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center mx-auto text-amber-600">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 space-y-3 shadow-sm text-center">
+          <div className="size-12 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto text-amber-600">
             <Package className="size-6" />
           </div>
           <div>
@@ -89,7 +89,7 @@ const RentProfile = () => {
         <h2 className="px-1 text-xs font-black uppercase tracking-[0.2em] text-emerald-600">
           Organization Details
         </h2>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm space-y-6">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-1">
               <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
@@ -105,12 +105,12 @@ const RentProfile = () => {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 dark:border-white/5">
+          <div className="pt-4 border-t border-slate-100">
             <div className="flex flex-wrap gap-2">
               {userData.verifications.map((v) => (
                 <span
                   key={v}
-                  className="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                  className="px-4 py-2 rounded-full bg-slate-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors hover:bg-emerald-50"
                 >
                   <ShieldCheck className="size-3 text-emerald-600" /> {v}
                 </span>
@@ -121,13 +121,13 @@ const RentProfile = () => {
       </div>
 
       {/* Contact Channels */}
-      <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2.5rem] p-7 shadow-xl space-y-6">
+      <div className="bg-slate-900 text-white rounded-[2.5rem] p-7 shadow-xl space-y-6">
         <h2 className="text-lg font-black tracking-tight flex items-center gap-2 opacity-80">
           <Globe className="size-5" /> Online Presence
         </h2>
         <div className="space-y-4">
           <div className="flex items-center gap-4 group cursor-pointer">
-            <div className="size-11 rounded-xl bg-white/10 dark:bg-black/5 flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
+            <div className="size-11 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
               <Mail className="size-5" />
             </div>
             <div>
@@ -138,7 +138,7 @@ const RentProfile = () => {
             </div>
           </div>
           <div className="flex items-center gap-4 group cursor-pointer">
-            <div className="size-11 rounded-xl bg-white/10 dark:bg-black/5 flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
+            <div className="size-11 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
               <Phone className="size-5" />
             </div>
             <div>
@@ -149,7 +149,7 @@ const RentProfile = () => {
             </div>
           </div>
           <div className="flex items-center gap-4 group cursor-pointer">
-            <div className="size-11 rounded-xl bg-white/10 dark:bg-black/5 flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
+            <div className="size-11 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
               <Globe className="size-5" />
             </div>
             <div>

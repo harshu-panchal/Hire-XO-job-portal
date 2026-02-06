@@ -11,7 +11,7 @@ const ProvideDashboard = () => {
             Logistics <br />
             <span className="text-orange-600">Admin</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-xs uppercase tracking-widest">
             Manage your transport fleet
           </p>
         </div>
@@ -36,7 +36,7 @@ const ProvideDashboard = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
+            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
               <div className="size-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
                 <Eye className="size-6 text-blue-500" />
               </div>
@@ -49,7 +49,7 @@ const ProvideDashboard = () => {
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
+            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
               <div className="size-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4">
                 <Star className="size-6 text-amber-500 fill-amber-500" />
               </div>
@@ -81,7 +81,7 @@ const ProvideDashboard = () => {
           {/* Inquiry 1 */}
           <Link
             to="/logistics/provide/inquiries"
-            className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
+            className="block bg-white rounded-[2rem] p-4 border border-slate-200 active:scale-[0.98] transition-all"
           >
             <div className="flex items-start gap-3">
               <div className="size-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white font-black text-sm shrink-0">
@@ -94,7 +94,7 @@ const ProvideDashboard = () => {
                     1h ago
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                <p className="text-xs text-slate-600 mb-2">
                   Looking for 20-ton open truck for metal bars from Pune to Surat.
                 </p>
                 <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ const ProvideDashboard = () => {
           {/* Inquiry 2 */}
           <Link
             to="/logistics/provide/inquiries"
-            className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
+            className="block bg-white rounded-[2rem] p-4 border border-slate-200 active:scale-[0.98] transition-all"
           >
             <div className="flex items-start gap-3">
               <div className="size-10 rounded-xl bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center text-white font-black text-sm shrink-0">
@@ -125,7 +125,7 @@ const ProvideDashboard = () => {
                     4h ago
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mb-2">
+                <p className="text-xs text-slate-600 mb-2">
                   Need quote for 10 shipments of cement bags within Maharashtra.
                 </p>
                 <div className="flex items-center gap-2">
@@ -183,7 +183,7 @@ const ProvideDashboard = () => {
         <div className="grid grid-cols-2 gap-4">
           <Link
             to="/logistics/provide/post"
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] p-5 active:scale-95 transition-transform"
+            className="bg-white border border-slate-200 rounded-[2rem] p-5 active:scale-95 transition-transform"
           >
             <div className="size-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3">
               <PlusSquare className="size-5" />
@@ -195,7 +195,7 @@ const ProvideDashboard = () => {
           </Link>
           <Link
             to="/logistics/provide/my-services"
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] p-5 active:scale-95 transition-transform"
+            className="bg-white border border-slate-200 rounded-[2rem] p-5 active:scale-95 transition-transform"
           >
             <div className="size-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center mb-3">
               <FileText className="size-5" />

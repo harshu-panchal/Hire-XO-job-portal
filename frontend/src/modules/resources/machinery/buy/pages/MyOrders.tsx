@@ -27,11 +27,11 @@ const MyOrders = () => {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "Processing":
-        return "text-amber-600 bg-amber-100 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50";
+        return "text-amber-600 bg-amber-100 border-amber-200";
       case "Delivered":
-        return "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800";
+        return "text-emerald-600 bg-emerald-100 border-emerald-200";
       case "Transit":
-        return "text-blue-600 bg-blue-100 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800";
+        return "text-blue-600 bg-blue-100 border-blue-200";
       default:
         return "text-slate-500 bg-slate-100";
     }
@@ -42,20 +42,20 @@ const MyOrders = () => {
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-black tracking-tighter uppercase italic">Asset History</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest leading-none">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest leading-none">
           Track your machinery purchases and orders
         </p>
       </div>
 
       {/* Stats Cards */}
       <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
-        <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2.5rem] p-6 shrink-0 w-48 shadow-xl">
+        <div className="bg-slate-900 text-white rounded-[2.5rem] p-6 shrink-0 w-48 shadow-xl">
           <p className="text-[10px] font-black uppercase tracking-widest opacity-40">
             Portfolio Value
           </p>
           <p className="text-3xl font-black tracking-tighter italic mt-1">₹20.4L</p>
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shrink-0 w-48 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shrink-0 w-48 shadow-sm">
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
             Total Assets
           </p>
@@ -71,10 +71,10 @@ const MyOrders = () => {
         {orders.map((order) => (
           <div
             key={order.id}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-sm relative group"
+            className="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-sm relative group"
           >
             <div className="p-5 flex gap-5">
-              <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
+              <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 shrink-0">
                 <img
                   src={order.image}
                   alt={order.name}
@@ -99,13 +99,13 @@ const MyOrders = () => {
             </div>
 
             <div className="px-5 pb-5 grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 space-y-0.5">
+              <div className="p-4 rounded-2xl bg-slate-50 space-y-0.5">
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                   Net Amount
                 </p>
                 <p className="text-[10px] font-black">{order.amount}</p>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 space-y-0.5">
+              <div className="p-4 rounded-2xl bg-slate-50 space-y-0.5">
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                   Order Ref
                 </p>
@@ -113,7 +113,7 @@ const MyOrders = () => {
               </div>
             </div>
 
-            <div className="bg-slate-950 text-white dark:bg-white dark:text-slate-950 py-4 px-6 flex items-center justify-between">
+            <div className="bg-slate-950 text-white py-4 px-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Calendar className="size-4 opacity-40" />
                 <span className="text-[10px] font-black uppercase tracking-widest opacity-80">

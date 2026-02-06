@@ -52,9 +52,9 @@ const ConsultantList = () => {
           <input
             type="text"
             placeholder="Search by name or specialty..."
-            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl py-4 pl-14 pr-6 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-indigo-600/10 focus:border-indigo-600 transition-all shadow-sm"
+            className="w-full bg-white border border-slate-200 rounded-3xl py-4 pl-14 pr-6 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-indigo-600/10 focus:border-indigo-600 transition-all shadow-sm"
           />
-          <button className="absolute inset-y-2 right-2 px-4 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-2xl flex items-center gap-2 text-slate-600 dark:text-slate-300 transition-colors">
+          <button className="absolute inset-y-2 right-2 px-4 bg-slate-100 hover:bg-slate-200 rounded-2xl flex items-center gap-2 text-slate-600 transition-colors">
             <Filter className="size-4" />
             <span className="text-[10px] font-black uppercase tracking-widest">Filter</span>
           </button>
@@ -67,7 +67,7 @@ const ConsultantList = () => {
           <Link
             key={firm.id}
             to={`/pmc/browse/consultants/${firm.id}`}
-            className="block bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-6 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all hover:shadow-xl hover:shadow-indigo-600/5 group"
+            className="block bg-white rounded-[2.5rem] p-6 border border-slate-200 active:scale-[0.98] transition-all hover:shadow-xl hover:shadow-indigo-600/5 group"
           >
             <div className="flex items-center gap-5">
               <div
@@ -95,7 +95,7 @@ const ConsultantList = () => {
                   </div>
                 </div>
               </div>
-              <div className="size-10 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 group-hover:text-indigo-600 group-hover:bg-indigo-600/10 transition-colors">
+              <div className="size-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-indigo-600 group-hover:bg-indigo-600/10 transition-colors">
                 <ChevronRight className="size-6" />
               </div>
             </div>

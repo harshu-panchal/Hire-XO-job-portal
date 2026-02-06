@@ -241,10 +241,10 @@ export default function Investors() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Investment</h1>
-          <p className="text-slate-500 dark:text-white/60 mt-1">Manage investment opportunities</p>
+          <h1 className="text-2xl font-semibold text-slate-900">Investment</h1>
+          <p className="text-slate-500 mt-1">Manage investment opportunities</p>
         </div>
-        <div className="flex bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-white/10">
+        <div className="flex bg-white p-1 rounded-lg border border-slate-200">
           <button
             onClick={() => {
               setActiveTab("invest");
@@ -253,7 +253,7 @@ export default function Investors() {
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               activeTab === "invest"
                 ? "bg-primary text-white shadow-sm"
-                : "text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5"
+                : "text-slate-600 hover:bg-slate-50"
             }`}
           >
             Ready to Invest
@@ -266,7 +266,7 @@ export default function Investors() {
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
               activeTab === "seek"
                 ? "bg-primary text-white shadow-sm"
-                : "text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5"
+                : "text-slate-600 hover:bg-slate-50"
             }`}
           >
             Need Investment
@@ -288,7 +288,7 @@ export default function Investors() {
             }
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>
         <button
@@ -302,7 +302,7 @@ export default function Investors() {
 
       {/* Stats */}
       <motion.div variants={itemVariants} className="grid grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2 rounded-lg bg-primary/10">
               {activeTab === "invest" ? (
@@ -312,18 +312,18 @@ export default function Investors() {
               )}
             </div>
           </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalCount}</p>
-          <p className="text-sm text-slate-500 dark:text-white/50 mt-1">
+          <p className="text-2xl font-bold text-slate-900">{totalCount}</p>
+          <p className="text-sm text-slate-500 mt-1">
             Total {activeTab === "invest" ? "Investment" : "Requests"}
           </p>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
-          <p className="text-2xl font-bold text-green-600 dark:text-green-400">{activeCount}</p>
-          <p className="text-sm text-slate-500 dark:text-white/50 mt-1">Active</p>
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <p className="text-2xl font-bold text-green-600">{activeCount}</p>
+          <p className="text-sm text-slate-500 mt-1">Active</p>
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
           <p className="text-2xl font-bold text-slate-400">{totalCount - activeCount}</p>
-          <p className="text-sm text-slate-500 dark:text-white/50 mt-1">
+          <p className="text-sm text-slate-500 mt-1">
             {activeTab === "invest" ? "Inactive" : "Closed/Pending"}
           </p>
         </div>
@@ -337,7 +337,7 @@ export default function Investors() {
         {(activeTab === "invest" ? filteredInvestors : filteredSeekers).map((item: any) => (
           <div
             key={item.id}
-            className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-6 flex flex-col h-full"
+            className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col h-full"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="p-3 rounded-lg bg-primary/10">
@@ -346,52 +346,52 @@ export default function Investors() {
               <span
                 className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                   item.status === "Active" || item.status === "Funded"
-                    ? "bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400"
-                    : "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/50"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-slate-100 text-slate-600"
                 }`}
               >
                 {item.status}
               </span>
             </div>
 
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
               {activeTab === "invest" ? item.name : item.title}
             </h3>
             {activeTab === "seek" && (
               <p className="text-xs font-medium text-primary mb-2">{item.name}</p>
             )}
-            <p className="text-sm text-slate-500 dark:text-white/50 mb-4 line-clamp-2">
+            <p className="text-sm text-slate-500 mb-4 line-clamp-2">
               {item.description}
             </p>
 
             <div className="space-y-2 text-sm mb-4 flex-grow">
-              <div className="flex items-center gap-2 text-slate-600 dark:text-white/60">
+              <div className="flex items-center gap-2 text-slate-600">
                 <DollarSign className="w-4 h-4 text-slate-400" />
                 <span className="font-semibold">
                   {activeTab === "invest" ? item.budget : item.amountNeeded}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-slate-600 dark:text-white/60">
+              <div className="flex items-center gap-2 text-slate-600">
                 <MapPin className="w-4 h-4 text-slate-400" />
                 {item.location}
               </div>
-              <div className="flex items-center gap-2 text-slate-600 dark:text-white/60">
+              <div className="flex items-center gap-2 text-slate-600">
                 <Phone className="w-4 h-4 text-slate-400" />
                 {item.contact}
               </div>
             </div>
 
-            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-white/5 mt-auto">
+            <div className="flex gap-2 pt-4 border-t border-slate-100 mt-auto">
               <button
                 onClick={() => handleOpenModal(item)}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-slate-200 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
               >
                 <Edit2 className="w-4 h-4" />
                 Edit
               </button>
               <button
                 onClick={() => handleDelete(item.id)}
-                className="px-3 py-2 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                className="px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -402,9 +402,9 @@ export default function Investors() {
 
       {/* Empty State */}
       {(activeTab === "invest" ? filteredInvestors : filteredSeekers).length === 0 && (
-        <div className="py-12 text-center bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10">
-          <DollarSign className="w-12 h-12 text-slate-300 dark:text-white/20 mx-auto mb-4" />
-          <p className="text-slate-500 dark:text-white/50">No results found</p>
+        <div className="py-12 text-center bg-white rounded-xl border border-slate-200">
+          <DollarSign className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+          <p className="text-slate-500">No results found</p>
         </div>
       )}
 
@@ -423,10 +423,10 @@ export default function Investors() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 shadow-xl z-50 p-6 max-h-[90vh] overflow-y-auto"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-xl border border-slate-200 shadow-xl z-50 p-6 max-h-[90vh] overflow-y-auto"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-slate-900">
                   {editingItem
                     ? activeTab === "invest"
                       ? "Edit Investment"
@@ -437,7 +437,7 @@ export default function Investors() {
                 </h3>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg"
+                  className="p-2 hover:bg-slate-100 rounded-lg"
                 >
                   <X className="w-5 h-5 text-slate-500" />
                 </button>
@@ -446,69 +446,69 @@ export default function Investors() {
               {activeTab === "invest" ? (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Investor Name
                     </label>
                     <input
                       type="text"
                       value={investForm.name || ""}
                       onChange={(e) => setInvestForm({ ...investForm, name: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                       placeholder="e.g. Venture Capital Ltd."
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
                         Budget Range
                       </label>
                       <input
                         type="text"
                         value={investForm.budget || ""}
                         onChange={(e) => setInvestForm({ ...investForm, budget: e.target.value })}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                         placeholder="e.g. ₹5 Cr - ₹10 Cr"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
                         Location
                       </label>
                       <input
                         type="text"
                         value={investForm.location || ""}
                         onChange={(e) => setInvestForm({ ...investForm, location: e.target.value })}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                         placeholder="City, State"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
                         Contact
                       </label>
                       <input
                         type="tel"
                         value={investForm.contact || ""}
                         onChange={(e) => setInvestForm({ ...investForm, contact: e.target.value })}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
                         Email
                       </label>
                       <input
                         type="email"
                         value={investForm.email || ""}
                         onChange={(e) => setInvestForm({ ...investForm, email: e.target.value })}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Description / Interests
                     </label>
                     <textarea
@@ -517,12 +517,12 @@ export default function Investors() {
                       onChange={(e) =>
                         setInvestForm({ ...investForm, description: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                       placeholder="Describe investment focus..."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Status
                     </label>
                     <select
@@ -533,7 +533,7 @@ export default function Investors() {
                           status: e.target.value as "Active" | "Inactive",
                         })
                       }
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     >
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
@@ -543,86 +543,86 @@ export default function Investors() {
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Project Title
                     </label>
                     <input
                       type="text"
                       value={seekForm.title || ""}
                       onChange={(e) => setSeekForm({ ...seekForm, title: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                       placeholder="e.g. AI Powered recruitment"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
                         Startup Name
                       </label>
                       <input
                         type="text"
                         value={seekForm.name || ""}
                         onChange={(e) => setSeekForm({ ...seekForm, name: e.target.value })}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
                         Amount Needed
                       </label>
                       <input
                         type="text"
                         value={seekForm.amountNeeded || ""}
                         onChange={(e) => setSeekForm({ ...seekForm, amountNeeded: e.target.value })}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                         placeholder="e.g. ₹50 Lakhs"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
                         Location
                       </label>
                       <input
                         type="text"
                         value={seekForm.location || ""}
                         onChange={(e) => setSeekForm({ ...seekForm, location: e.target.value })}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-700 mb-1.5">
                         Contact
                       </label>
                       <input
                         type="tel"
                         value={seekForm.contact || ""}
                         onChange={(e) => setSeekForm({ ...seekForm, contact: e.target.value })}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Description / Pitch
                     </label>
                     <textarea
                       rows={3}
                       value={seekForm.description || ""}
                       onChange={(e) => setSeekForm({ ...seekForm, description: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                       placeholder="Detail your funding requirements..."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
                       Status
                     </label>
                     <select
                       value={seekForm.status || "Pending"}
                       onChange={(e) => setSeekForm({ ...seekForm, status: e.target.value as any })}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     >
                       <option value="Pending">Pending</option>
                       <option value="Active">Active</option>
@@ -635,7 +635,7 @@ export default function Investors() {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                  className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>

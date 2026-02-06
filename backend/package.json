@@ -1,7 +1,7 @@
 {
   "name": "hire-xo-backend",
   "version": "1.0.0",
-  "description": "Backend for Hire XO Job Portal",
+  "description": "Backend for HireXO Job Portal",
   "main": "src/server.ts",
   "scripts": {
     "start": "node dist/server.js",
@@ -25,7 +25,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.5",
     "morgan": "^1.10.1",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "nodemailer": "^8.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -36,6 +37,7 @@
     "mongodb-memory-server": "^11.0.1",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "@types/nodemailer": "^6.4.17"
   }
 }

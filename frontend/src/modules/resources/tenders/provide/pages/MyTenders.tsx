@@ -85,15 +85,15 @@ const MyTenders = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Active":
-        return { color: "text-emerald-600", bg: "bg-emerald-100 dark:bg-emerald-950/30" };
+        return { color: "text-emerald-600", bg: "bg-emerald-100" };
       case "Published":
-        return { color: "text-blue-600", bg: "bg-blue-100 dark:bg-blue-950/30" };
+        return { color: "text-blue-600", bg: "bg-blue-100" };
       case "Evaluation":
-        return { color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-950/30" };
+        return { color: "text-amber-600", bg: "bg-amber-100" };
       case "Draft":
-        return { color: "text-slate-600", bg: "bg-slate-100 dark:bg-slate-800" };
+        return { color: "text-slate-600", bg: "bg-slate-100" };
       default:
-        return { color: "text-slate-600", bg: "bg-slate-100 dark:bg-slate-800" };
+        return { color: "text-slate-600", bg: "bg-slate-100" };
     }
   };
 
@@ -105,14 +105,14 @@ const MyTenders = () => {
         .length.toString(),
       icon: FileText,
       color: "text-indigo-600",
-      bgColor: "bg-indigo-100 dark:bg-indigo-950/30",
+      bgColor: "bg-indigo-100",
     },
     {
       label: "Total Tenders",
       value: tenders.length.toString(),
       icon: Users,
       color: "text-violet-600",
-      bgColor: "bg-violet-100 dark:bg-violet-950/30",
+      bgColor: "bg-violet-100",
     },
     // Mocking 'Awarded' count for now as it depends on application statuses
     {
@@ -120,7 +120,7 @@ const MyTenders = () => {
       value: tenders.filter((t) => t.status === "Closed").length.toString(),
       icon: CheckCircle2,
       color: "text-emerald-600",
-      bgColor: "bg-emerald-100 dark:bg-emerald-950/30",
+      bgColor: "bg-emerald-100",
     },
   ];
 
@@ -191,7 +191,7 @@ const MyTenders = () => {
       <div className="flex items-center justify-between px-1">
         <div className="space-y-1">
           <h1 className="text-2xl font-black tracking-tight">Tender Portfolio</h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
             Manage your published opportunities
           </p>
         </div>
@@ -208,7 +208,7 @@ const MyTenders = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 group shadow-sm"
+            className="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 group shadow-sm"
           >
             <div className={`size-10 rounded-2xl ${stat.bgColor} flex items-center justify-center`}>
               <stat.icon className={`size-5 ${stat.color}`} />
@@ -232,7 +232,7 @@ const MyTenders = () => {
             className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
               activeTab === tab
                 ? "bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-500/20"
-                : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-white/10 hover:border-indigo-400"
+                : "bg-white text-slate-500 border-slate-200 hover:border-indigo-400"
             }`}
           >
             {tab}
@@ -245,7 +245,7 @@ const MyTenders = () => {
         {filteredTenders.map((tender) => (
           <div
             key={tender._id}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
+            className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="space-y-1.5 flex-1 pr-12">
@@ -258,7 +258,7 @@ const MyTenders = () => {
               </div>
               <button
                 onClick={() => handleMenu(tender)}
-                className="size-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400 active:scale-95 transition-all"
+                className="size-10 rounded-xl hover:bg-slate-100 flex items-center justify-center text-slate-400 active:scale-95 transition-all"
               >
                 <MoreVertical className="size-5" />
               </button>
@@ -267,7 +267,7 @@ const MyTenders = () => {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <Link
                 to="/tenders/provide/bids"
-                className="bg-indigo-50 dark:bg-indigo-950/20 rounded-2xl p-3 flex items-center justify-between group/bid"
+                className="bg-indigo-50 rounded-2xl p-3 flex items-center justify-between group/bid"
               >
                 <div className="space-y-0.5">
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
@@ -277,11 +277,11 @@ const MyTenders = () => {
                     {tender.bids}
                   </p>
                 </div>
-                <div className="size-8 rounded-lg bg-white dark:bg-slate-900 flex items-center justify-center group-hover/bid:scale-110 transition-transform">
+                <div className="size-8 rounded-lg bg-white flex items-center justify-center group-hover/bid:scale-110 transition-transform">
                   <Users className="size-4 text-indigo-600" />
                 </div>
               </Link>
-              <div className="bg-slate-50 dark:bg-white/5 rounded-2xl p-3 flex items-center justify-between">
+              <div className="bg-slate-50 rounded-2xl p-3 flex items-center justify-between">
                 <div className="space-y-0.5">
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Ends On
@@ -292,7 +292,7 @@ const MyTenders = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/5">
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <div
                 className={`px-4 py-1.5 rounded-full ${tender.statusBg} ${tender.statusColor} text-[8px] font-black uppercase tracking-widest border border-current opacity-80`}
               >
@@ -301,19 +301,19 @@ const MyTenders = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleEdit(tender)}
-                  className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 active:scale-95 transition-all"
+                  className="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 active:scale-95 transition-all"
                 >
                   <Edit2 className="size-4" />
                 </button>
                 <button
                   onClick={() => handleView(tender)}
-                  className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 active:scale-95 transition-all"
+                  className="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 active:scale-95 transition-all"
                 >
                   <Eye className="size-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(tender._id)}
-                  className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 active:scale-95 transition-all"
+                  className="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:text-rose-600 hover:bg-rose-50 active:scale-95 transition-all"
                 >
                   <Archive className="size-4" />
                 </button>
@@ -339,7 +339,7 @@ const MyTenders = () => {
       {/* View Tender Modal */}
       {showViewModal && selectedTender && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-2xl w-full border border-slate-200 dark:border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <div className="bg-white rounded-3xl p-6 max-w-2xl w-full border border-slate-200 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-xl font-black">Tender Details</h3>
@@ -347,7 +347,7 @@ const MyTenders = () => {
               </div>
               <button
                 onClick={() => setShowViewModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-4" />
               </button>
@@ -365,14 +365,14 @@ const MyTenders = () => {
             {/* Title */}
             <div className="mb-6">
               <h4 className="text-2xl font-black mb-2">{selectedTender.title}</h4>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p className="text-sm text-slate-600 leading-relaxed">
                 {selectedTender.description}
               </p>
             </div>
 
             {/* Key Info Grid */}
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="p-4 bg-indigo-50 dark:bg-indigo-950/20 rounded-2xl border border-indigo-100 dark:border-indigo-900">
+              <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
                 <div className="flex items-center gap-2 mb-2">
                   <DollarSign className="size-4 text-indigo-600" />
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-500">
@@ -383,7 +383,7 @@ const MyTenders = () => {
                   {selectedTender.budget || selectedTender.tenderValue || "N/A"}
                 </p>
               </div>
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+              <div className="p-4 bg-slate-50 rounded-2xl">
                 <div className="flex items-center gap-2 mb-2">
                   <Users className="size-4 text-slate-500" />
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-500">
@@ -392,7 +392,7 @@ const MyTenders = () => {
                 </div>
                 <p className="text-xl font-black">{selectedTender.bids}</p>
               </div>
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+              <div className="p-4 bg-slate-50 rounded-2xl">
                 <div className="flex items-center gap-2 mb-2">
                   <Calendar className="size-4 text-slate-500" />
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-500">
@@ -401,7 +401,7 @@ const MyTenders = () => {
                 </div>
                 <p className="text-sm font-black">{selectedTender.closingDate}</p>
               </div>
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+              <div className="p-4 bg-slate-50 rounded-2xl">
                 <div className="flex items-center gap-2 mb-2">
                   <MapPin className="size-4 text-slate-500" />
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-500">
@@ -414,13 +414,13 @@ const MyTenders = () => {
 
             {/* Additional Info */}
             <div className="space-y-3 mb-6">
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+              <div className="p-4 bg-slate-50 rounded-2xl">
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-1">
                   Category
                 </p>
                 <p className="text-sm font-bold">{selectedTender.category}</p>
               </div>
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+              <div className="p-4 bg-slate-50 rounded-2xl">
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-500 mb-1">
                   Published Date
                 </p>
@@ -442,7 +442,7 @@ const MyTenders = () => {
               </button>
               <button
                 onClick={() => copyRefNo(selectedTender.refNo)}
-                className="px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-sm uppercase tracking-widest hover:bg-slate-200 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 <Copy className="size-4" />
                 Copy Ref
@@ -455,7 +455,7 @@ const MyTenders = () => {
       {/* Menu Modal */}
       {showMenuModal && selectedTender && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-xl font-black">Tender Actions</h3>
@@ -463,7 +463,7 @@ const MyTenders = () => {
               </div>
               <button
                 onClick={() => setShowMenuModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-4" />
               </button>
@@ -475,10 +475,10 @@ const MyTenders = () => {
                   handleView(selectedTender);
                   setShowMenuModal(false);
                 }}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 transition-all group"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 transition-all group"
               >
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-950/30 transition-all">
-                  <Eye className="size-5 text-slate-600 dark:text-slate-400 group-hover:text-indigo-600" />
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-indigo-100 transition-all">
+                  <Eye className="size-5 text-slate-600 group-hover:text-indigo-600" />
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-sm font-black">View Details</p>
@@ -491,10 +491,10 @@ const MyTenders = () => {
                   handleEdit(selectedTender);
                   setShowMenuModal(false);
                 }}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 transition-all group"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 transition-all group"
               >
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-950/30 transition-all">
-                  <Edit2 className="size-5 text-slate-600 dark:text-slate-400 group-hover:text-indigo-600" />
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-indigo-100 transition-all">
+                  <Edit2 className="size-5 text-slate-600 group-hover:text-indigo-600" />
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-sm font-black">Edit Tender</p>
@@ -504,10 +504,10 @@ const MyTenders = () => {
 
               <button
                 onClick={() => copyRefNo(selectedTender.refNo)}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all group"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 hover:bg-blue-50 transition-all group"
               >
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-950/30 transition-all">
-                  <Copy className="size-5 text-slate-600 dark:text-slate-400 group-hover:text-blue-600" />
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-blue-100 transition-all">
+                  <Copy className="size-5 text-slate-600 group-hover:text-blue-600" />
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-sm font-black">Copy Reference</p>
@@ -520,10 +520,10 @@ const MyTenders = () => {
                   handleArchive(selectedTender._id);
                   setShowMenuModal(false);
                 }}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-all group"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 hover:bg-amber-50 transition-all group"
               >
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-amber-100 dark:group-hover:bg-amber-950/30 transition-all">
-                  <Archive className="size-5 text-slate-600 dark:text-slate-400 group-hover:text-amber-600" />
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-amber-100 transition-all">
+                  <Archive className="size-5 text-slate-600 group-hover:text-amber-600" />
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-sm font-black">Archive</p>
@@ -533,9 +533,9 @@ const MyTenders = () => {
 
               <button
                 onClick={() => handleDelete(selectedTender._id)}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/30 transition-all group border border-rose-200 dark:border-rose-900"
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-rose-50 hover:bg-rose-100 transition-all group border border-rose-200"
               >
-                <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center group-hover:bg-rose-100 dark:group-hover:bg-rose-950/40 transition-all">
+                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-rose-100 transition-all">
                   <Trash2 className="size-5 text-rose-600" />
                 </div>
                 <div className="flex-1 text-left">

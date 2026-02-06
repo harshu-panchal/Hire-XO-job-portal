@@ -101,7 +101,7 @@ const TenderDetails = () => {
           <ArrowLeft className="size-4" /> Back to List
         </button>
         <div className="flex gap-2">
-          <button className="size-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-600 active:scale-95 transition-transform">
+          <button className="size-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 active:scale-95 transition-transform">
             <Download className="size-5" />
           </button>
         </div>
@@ -130,13 +130,13 @@ const TenderDetails = () => {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/5 text-[8px] font-black uppercase tracking-widest text-slate-500">
+          <span className="px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-[8px] font-black uppercase tracking-widest text-slate-500">
             REF: {tender._id?.slice(-8).toUpperCase()}
           </span>
-          <span className="px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-900 text-[8px] font-black uppercase tracking-widest text-violet-600">
+          <span className="px-3 py-1 rounded-full bg-violet-100 border border-violet-200 text-[8px] font-black uppercase tracking-widest text-violet-600">
             {tender.type || "Open Tender"}
           </span>
-          <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-[8px] font-black uppercase tracking-widest text-emerald-600">
+          <span className="px-3 py-1 rounded-full bg-emerald-100 border border-emerald-200 text-[8px] font-black uppercase tracking-widest text-emerald-600">
             {tender.category || "General"}
           </span>
         </div>
@@ -144,7 +144,7 @@ const TenderDetails = () => {
 
       {/* Main Info Grid */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2rem] p-5 space-y-1 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[2rem] p-5 space-y-1 shadow-sm">
           <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
             Total Tender Value
           </p>
@@ -155,11 +155,11 @@ const TenderDetails = () => {
             Estimated Budget
           </p>
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2rem] p-5 space-y-1 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[2rem] p-5 space-y-1 shadow-sm">
           <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
             Duration / Urgency
           </p>
-          <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+          <p className="text-2xl font-black text-slate-900 tracking-tight">
             {tender.duration || "Flexible"}
           </p>
           <div className="flex items-center gap-1 pt-1">
@@ -174,18 +174,18 @@ const TenderDetails = () => {
       {/* Content Tabs-like Sections */}
       <div className="space-y-6">
         {/* Description */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm">
           <h2 className="text-lg font-black tracking-tight mb-3 flex items-center gap-2">
             <FileText className="size-5 text-violet-600" /> Tender Description
           </h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-bold">
+          <p className="text-sm text-slate-600 leading-relaxed font-bold">
             {tender.description}
           </p>
         </div>
 
         {/* Requirements / Eligibility */}
         {tender.requirements && tender.requirements.length > 0 && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm">
             <h2 className="text-lg font-black tracking-tight mb-4 flex items-center gap-2">
               <ShieldCheck className="size-5 text-violet-600" /> Requirements & Eligibility
             </h2>
@@ -195,7 +195,7 @@ const TenderDetails = () => {
                   <div className="mt-1">
                     <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
                   </div>
-                  <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{item}</p>
+                  <p className="text-sm font-bold text-slate-700">{item}</p>
                 </div>
               ))}
             </div>
@@ -203,13 +203,13 @@ const TenderDetails = () => {
         )}
 
         {/* Key Schedule */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm">
           <h2 className="text-lg font-black tracking-tight mb-6 flex items-center gap-2">
             <Calendar className="size-5 text-violet-600" /> Key Schedule
           </h2>
           <div className="relative space-y-8 before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-violet-500 before:via-slate-200 before:to-transparent">
             <div className="relative flex items-center gap-6 group">
-              <div className="absolute left-0 size-8 rounded-full bg-white dark:bg-slate-900 border-2 border-violet-500 flex items-center justify-center shrink-0 z-10">
+              <div className="absolute left-0 size-8 rounded-full bg-white border-2 border-violet-500 flex items-center justify-center shrink-0 z-10">
                 <div className="size-2 rounded-full bg-violet-600" />
               </div>
               <div className="ml-10 space-y-0.5">
@@ -225,13 +225,13 @@ const TenderDetails = () => {
         </div>
 
         {/* Authority Contact */}
-        <div className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2.5rem] p-6 shadow-xl">
+        <div className="bg-slate-900 text-white rounded-[2.5rem] p-6 shadow-xl">
           <h2 className="text-lg font-black tracking-tight mb-4 uppercase tracking-widest opacity-80 font-black">
             Authority Contact
           </h2>
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="size-12 rounded-2xl bg-white/10 dark:bg-slate-950/10 flex items-center justify-center">
+              <div className="size-12 rounded-2xl bg-white/10 flex items-center justify-center">
                 <Briefcase className="size-6 opacity-60" />
               </div>
               <div>
@@ -242,7 +242,7 @@ const TenderDetails = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 gap-3">
-              <div className="p-3 rounded-2xl bg-white/5 dark:bg-slate-950/5 flex items-center justify-center">
+              <div className="p-3 rounded-2xl bg-white/5 flex items-center justify-center">
                 <span className="text-[10px] font-black uppercase tracking-widest opacity-60 italic">
                   Contact details available upon application
                 </span>
@@ -269,7 +269,7 @@ const TenderDetails = () => {
       {/* Bid Modal Overlay */}
       {showBidModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-end justify-center">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-xl rounded-t-[3rem] p-8 space-y-8 animate-in slide-in-from-bottom-full duration-500 overflow-y-auto max-h-[90vh]">
+          <div className="bg-white w-full max-w-xl rounded-t-[3rem] p-8 space-y-8 animate-in slide-in-from-bottom-full duration-500 overflow-y-auto max-h-[90vh]">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <h3 className="text-2xl font-black tracking-tight">Post Your Bid</h3>
@@ -279,7 +279,7 @@ const TenderDetails = () => {
               </div>
               <button
                 onClick={() => setShowBidModal(false)}
-                className="size-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors"
+                className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500 hover:text-rose-600 transition-colors"
               >
                 <X className="size-6" />
               </button>
@@ -298,7 +298,7 @@ const TenderDetails = () => {
                       value={bidData.bidAmount}
                       onChange={(e) => setBidData({ ...bidData, bidAmount: e.target.value })}
                       placeholder="e.g. 50,00,000"
-                      className="w-full pl-14 pr-5 py-5 rounded-3xl bg-slate-50 dark:bg-slate-950 border-none font-black text-xl text-slate-900 dark:text-white focus:ring-4 focus:ring-violet-500/10 transition-all"
+                      className="w-full pl-14 pr-5 py-5 rounded-3xl bg-slate-50 border-none font-black text-xl text-slate-900 focus:ring-4 focus:ring-violet-500/10 transition-all"
                       required
                     />
                   </div>
@@ -316,19 +316,19 @@ const TenderDetails = () => {
                     onChange={(e) => setBidData({ ...bidData, coverLetter: e.target.value })}
                     placeholder="Explain why your firm is best suited for this tender..."
                     rows={6}
-                    className="w-full px-6 py-5 rounded-[2.5rem] bg-slate-50 dark:bg-slate-950 border-none font-bold text-sm focus:ring-4 focus:ring-violet-500/10 transition-all resize-none"
+                    className="w-full px-6 py-5 rounded-[2.5rem] bg-slate-50 border-none font-bold text-sm focus:ring-4 focus:ring-violet-500/10 transition-all resize-none"
                     required
                   ></textarea>
                 </div>
               </div>
 
-              <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 p-5 rounded-[2rem] flex gap-4">
+              <div className="bg-amber-50 border border-amber-100 p-5 rounded-[2rem] flex gap-4">
                 <AlertCircle className="size-6 text-amber-600 shrink-0" />
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-amber-900 dark:text-amber-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-black text-amber-900 uppercase tracking-widest">
                     Important Disclaimer
                   </p>
-                  <p className="text-[9px] font-bold text-amber-800 dark:text-amber-500 leading-relaxed opacity-80">
+                  <p className="text-[9px] font-bold text-amber-800 leading-relaxed opacity-80">
                     Once submitted, your bid cannot be edited. Ensure your amount and proposal are
                     final. The authority will review your profile and company documents attached to
                     your account.
@@ -339,7 +339,7 @@ const TenderDetails = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50 shadow-2xl shadow-indigo-500/20"
+                className="w-full bg-slate-900 text-white py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50 shadow-2xl shadow-indigo-500/20"
               >
                 {submitting ? (
                   <>Submitting Bid...</>

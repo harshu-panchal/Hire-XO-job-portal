@@ -46,7 +46,7 @@ const ResourcesList = () => {
             Quick <br />
             <span className="text-primary">Resources</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-xs uppercase tracking-widest">
             {filteredResources.length} opportunities available
           </p>
         </div>
@@ -78,7 +78,7 @@ const ResourcesList = () => {
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => setType("all")}
-              className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
+              className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
             >
               <div className="size-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4">
                 <Package className="size-6 text-purple-500" />
@@ -94,7 +94,7 @@ const ResourcesList = () => {
 
             <button
               onClick={() => setSearch("Tech")}
-              className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
+              className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200 text-left"
             >
               <div className="size-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4">
                 <TrendingUp className="size-6 text-emerald-500" />
@@ -120,7 +120,7 @@ const ResourcesList = () => {
             placeholder="Search resources or companies..."
             value={filters.search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-16 pl-14 pr-6 rounded-[2rem] bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black placeholder:text-slate-400 placeholder:font-black"
+            className="w-full h-16 pl-14 pr-6 rounded-[2rem] bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black placeholder:text-slate-400 placeholder:font-black"
           />
         </div>
 
@@ -136,7 +136,7 @@ const ResourcesList = () => {
           ))
         ) : (
           <div className="flex flex-col items-center justify-center py-16 space-y-4">
-            <div className="size-20 rounded-[2rem] bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+            <div className="size-20 rounded-[2rem] bg-slate-100 flex items-center justify-center">
               <Package className="size-10 text-slate-300" />
             </div>
             <div className="text-center space-y-1">

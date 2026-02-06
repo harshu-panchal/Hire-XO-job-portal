@@ -61,8 +61,8 @@ const ProvideProfile = () => {
 
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 flex flex-col items-center text-center space-y-2 shadow-sm">
-          <div className="size-12 rounded-2xl bg-indigo-100 dark:bg-indigo-950/30 flex items-center justify-center">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 flex flex-col items-center text-center space-y-2 shadow-sm">
+          <div className="size-12 rounded-2xl bg-indigo-100 flex items-center justify-center">
             <FileCheck className="size-6 text-indigo-600" />
           </div>
           <div>
@@ -72,8 +72,8 @@ const ProvideProfile = () => {
             </p>
           </div>
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 flex flex-col items-center text-center space-y-2 shadow-sm">
-          <div className="size-12 rounded-2xl bg-violet-100 dark:bg-violet-950/30 flex items-center justify-center">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 flex flex-col items-center text-center space-y-2 shadow-sm">
+          <div className="size-12 rounded-2xl bg-violet-100 flex items-center justify-center">
             <BarChart3 className="size-6 text-violet-600" />
           </div>
           <div>
@@ -94,7 +94,7 @@ const ProvideProfile = () => {
           {orgData.departments.map((dept) => (
             <span
               key={dept}
-              className="px-5 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest flex items-center gap-2"
+              className="px-5 py-2.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-black uppercase tracking-widest flex items-center gap-2"
             >
               <div className="size-1.5 rounded-full bg-indigo-500" /> {dept}
             </span>
@@ -103,7 +103,7 @@ const ProvideProfile = () => {
       </div>
 
       {/* Basic Info */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm space-y-6">
+      <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm space-y-6">
         <h2 className="text-lg font-black tracking-tight flex items-center gap-2">
           <ShieldCheck className="size-5 text-indigo-600" /> Authority Verifications
         </h2>
@@ -111,7 +111,7 @@ const ProvideProfile = () => {
           {orgData.regDetails.map((reg) => (
             <div
               key={reg.label}
-              className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-4 last:border-0 last:pb-0"
+              className="flex items-center justify-between border-b border-slate-100 pb-4 last:border-0 last:pb-0"
             >
               <div>
                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
@@ -126,13 +126,13 @@ const ProvideProfile = () => {
       </div>
 
       {/* Contact Details */}
-      <div className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-[2.5rem] p-6 shadow-xl space-y-6">
+      <div className="bg-slate-900 text-white rounded-[2.5rem] p-6 shadow-xl space-y-6">
         <h2 className="text-lg font-black tracking-tight uppercase tracking-widest opacity-80">
           Official Channels
         </h2>
         <div className="space-y-4">
           <div className="flex items-center gap-4">
-            <div className="size-12 rounded-2xl bg-white/10 dark:bg-slate-900/10 flex items-center justify-center">
+            <div className="size-12 rounded-2xl bg-white/10 flex items-center justify-center">
               <Globe className="size-6 opacity-60" />
             </div>
             <div className="flex-1 min-w-0">
@@ -143,12 +143,12 @@ const ProvideProfile = () => {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 rounded-2xl bg-white/5 dark:bg-slate-900/5 space-y-1">
+            <div className="p-4 rounded-2xl bg-white/5 space-y-1">
               <Mail className="size-4 opacity-40" />
               <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Gov Mail</p>
               <p className="text-[10px] font-black">tender@gov.in</p>
             </div>
-            <div className="p-4 rounded-2xl bg-white/5 dark:bg-slate-900/5 space-y-1">
+            <div className="p-4 rounded-2xl bg-white/5 space-y-1">
               <Phone className="size-4 opacity-40" />
               <p className="text-[8px] font-black uppercase tracking-widest opacity-40">Helpline</p>
               <p className="text-[10px] font-black">1800 234 567</p>

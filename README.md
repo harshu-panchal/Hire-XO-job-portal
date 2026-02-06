@@ -1,4 +1,4 @@
-# Hire XO Job Portal
+# HireXO Job Portal
 
 A modern, mobile-first job portal application built with React, TypeScript, and Tailwind CSS. Features separate interfaces for job seekers and recruiters with a comprehensive resources section.
 
@@ -65,7 +65,7 @@ vercel
 ## 📁 Project Structure
 
 ```
-Hire XO Job portal/
+HireXO Job portal/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # Shared UI components

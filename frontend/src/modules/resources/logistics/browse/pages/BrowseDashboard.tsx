@@ -11,7 +11,7 @@ const BrowseDashboard = () => {
             Hire Best <br />
             <span className="text-red-600">Logistics Partners</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-xs uppercase tracking-widest">
             Transportation & Supply Chain Solutions
           </p>
         </div>
@@ -36,7 +36,7 @@ const BrowseDashboard = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
+            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
               <div className="size-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4">
                 <TrendingUp className="size-6 text-emerald-500" />
               </div>
@@ -49,7 +49,7 @@ const BrowseDashboard = () => {
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
+            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
               <div className="size-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4">
                 <Truck className="size-6 text-amber-500" />
               </div>
@@ -81,7 +81,7 @@ const BrowseDashboard = () => {
           {/* Logistics Card 1 */}
           <Link
             to="/logistics/browse/list/1"
-            className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
+            className="block bg-white rounded-[2rem] p-5 border border-slate-200 active:scale-[0.98] transition-all"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
@@ -107,7 +107,7 @@ const BrowseDashboard = () => {
               </div>
             </div>
             <h3 className="font-black text-lg tracking-tight mb-2">Pan-India Express Freight</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">
+            <p className="text-xs text-slate-600 mb-3 line-clamp-2">
               Expertise in long-haul containerized transport with real-time tracking and temperature
               control.
             </p>
@@ -126,7 +126,7 @@ const BrowseDashboard = () => {
           {/* Logistics Card 2 */}
           <Link
             to="/logistics/browse/list/2"
-            className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
+            className="block bg-white rounded-[2rem] p-5 border border-slate-200 active:scale-[0.98] transition-all"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
@@ -152,7 +152,7 @@ const BrowseDashboard = () => {
               </div>
             </div>
             <h3 className="font-black text-lg tracking-tight mb-2">Urban Supply Chain Experts</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">
+            <p className="text-xs text-slate-600 mb-3 line-clamp-2">
               Comprehensive last-mile delivery solutions for e-commerce and retail businesses.
             </p>
             <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
@@ -187,9 +187,9 @@ const BrowseDashboard = () => {
           </Link>
           <Link
             to="/logistics/browse/my-hires"
-            className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-white dark:to-slate-100 rounded-[2rem] p-5 text-white dark:text-slate-900 active:scale-95 transition-transform"
+            className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2rem] p-5 text-white active:scale-95 transition-transform"
           >
-            <div className="size-10 rounded-xl bg-white/20 dark:bg-slate-900/20 flex items-center justify-center mb-3">
+            <div className="size-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
               <Briefcase className="size-5" />
             </div>
             <p className="font-black text-sm">Active Orders</p>

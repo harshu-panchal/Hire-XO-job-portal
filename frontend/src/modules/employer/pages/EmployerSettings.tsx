@@ -18,14 +18,12 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "@/context/ThemeContext";
 import { toast } from "sonner";
 
 const EmployerSettings = () => {
   const navigate = useNavigate();
   const { logout, user, updateProfile } = useAuthStore();
   const { t, i18n } = useTranslation();
-  const { theme, setTheme: setGlobalTheme } = useTheme();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [language, setLanguage] = useState(localStorage.getItem("app-language") || "English");
 
@@ -43,24 +41,6 @@ const EmployerSettings = () => {
     localStorage.setItem("app-language", langName);
     i18n.changeLanguage(langCode);
     setShowLanguageModal(false);
-  };
-
-  const handleThemeChange = async (newTheme: "light" | "dark" | "system") => {
-    setGlobalTheme(newTheme);
-    try {
-      await updateProfile({
-        profile: {
-          ...user?.profile,
-          preferences: {
-            ...user?.profile?.preferences,
-            theme: newTheme,
-          },
-        },
-      });
-      toast.success(t("settings.theme_updated") || `Theme updated to ${newTheme}`);
-    } catch (error) {
-      console.error("Failed to save theme preference", error);
-    }
   };
 
   const sections = [
@@ -220,44 +200,6 @@ const EmployerSettings = () => {
           </div>
         ))}
 
-        {/* Appearance Section */}
-        <div className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">
-            {t("settings.appearance") || "Appearance"}
-          </h3>
-          <div className="bg-white dark:bg-slate-900/50 p-5 rounded-[2.5rem] border border-slate-200 dark:border-white/10 space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="size-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500">
-                <Monitor className="size-6" />
-              </div>
-              <div className="flex-1">
-                <span className="text-sm font-black tracking-tight">Theme Mode</span>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Choose app look</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { id: "light", icon: Sun, label: "Light" },
-                { id: "dark", icon: Moon, label: "Dark" },
-                { id: "system", icon: Monitor, label: "System" },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => handleThemeChange(t.id as any)}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${theme === t.id
-                      ? "bg-primary/5 border-primary text-primary shadow-lg shadow-primary/10 scale-[1.02]"
-                      : "bg-slate-50 dark:bg-white/5 border-transparent text-slate-400 opacity-60 hover:opacity-100"
-                    }`}
-                >
-                  <t.icon className={`size-5 ${theme === t.id ? 'stroke-[2.5px]' : ''}`} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">
-                    {t.label}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Logout */}

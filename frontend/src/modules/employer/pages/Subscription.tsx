@@ -20,10 +20,10 @@ const Subscription = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] px-5 text-center select-none">
         {/* Header */}
-        <div className="fixed top-0 left-0 right-0 flex items-center justify-between py-6 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 px-5">
+        <div className="fixed top-0 left-0 right-0 flex items-center justify-between py-6 bg-slate-50/80 backdrop-blur-md z-20 px-5">
           <button
             onClick={() => navigate(-1)}
-            className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+            className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
           >
             <ChevronLeft className="size-6" />
           </button>
@@ -43,7 +43,7 @@ const Subscription = () => {
         </p>
         <button
           onClick={() => navigate("/employer")}
-          className="h-16 w-full rounded-3xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
+          className="h-16 w-full rounded-3xl bg-slate-900 text-white font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
         >
           Back to Dashboard
         </button>
@@ -54,10 +54,10 @@ const Subscription = () => {
   return (
     <div className="pb-32 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 -mx-5 px-5">
+      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
         >
           <ChevronLeft className="size-6" />
         </button>
@@ -76,7 +76,7 @@ const Subscription = () => {
         </div>
 
         {/* Pricing Card */}
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border-2 border-primary/20 p-8 relative overflow-hidden">
+        <div className="bg-white rounded-[2.5rem] border-2 border-primary/20 p-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-bl-2xl">
             Best Value
           </div>
@@ -91,12 +91,12 @@ const Subscription = () => {
                 Pro Employer
               </h3>
               <div className="flex items-baseline justify-center gap-1">
-                <span className="text-4xl font-black text-slate-900 dark:text-white">₹999</span>
+                <span className="text-4xl font-black text-slate-900">₹999</span>
                 <span className="text-sm font-bold text-slate-400">/ 6 months</span>
               </div>
             </div>
 
-            <div className="w-full h-px bg-slate-100 dark:bg-white/5" />
+            <div className="w-full h-px bg-slate-100" />
 
             <ul className="space-y-4 text-left w-full">
               {[
@@ -109,7 +109,7 @@ const Subscription = () => {
                   <div className="size-5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
                     <CheckCircle2 className="size-3 text-green-500" />
                   </div>
-                  <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
+                  <span className="text-sm font-bold text-slate-600">
                     {feature}
                   </span>
                 </li>

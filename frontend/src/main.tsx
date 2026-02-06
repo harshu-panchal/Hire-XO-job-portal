@@ -4,7 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import "./i18n";
 import App from "./App.tsx";
-import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { useAuthStore } from "./store/useAuthStore.ts";
 import { Toaster } from "sonner";
 
@@ -22,10 +21,8 @@ function AppWrapper() {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <ThemeProvider>
-        <AppWrapper />
-        <Toaster position="top-center" richColors />
-      </ThemeProvider>
+      <AppWrapper />
+      <Toaster position="top-center" richColors />
     </BrowserRouter>
   </StrictMode>
 );

@@ -52,16 +52,16 @@ const ReceivedBids = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Pending":
-        return { statusColor: "text-blue-600", statusBg: "bg-blue-100 dark:bg-blue-950/30" };
+        return { statusColor: "text-blue-600", statusBg: "bg-blue-100" };
       case "Accepted":
         return {
           statusColor: "text-emerald-600",
-          statusBg: "bg-emerald-100 dark:bg-emerald-950/30",
+          statusBg: "bg-emerald-100",
         };
       case "Rejected":
-        return { statusColor: "text-rose-600", statusBg: "bg-rose-100 dark:bg-rose-950/30" };
+        return { statusColor: "text-rose-600", statusBg: "bg-rose-100" };
       default:
-        return { statusColor: "text-slate-600", statusBg: "bg-slate-100 dark:bg-slate-800" };
+        return { statusColor: "text-slate-600", statusBg: "bg-slate-100" };
     }
   };
 
@@ -157,7 +157,7 @@ const ReceivedBids = () => {
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-black tracking-tight">Received Bids</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
           Manage incoming proposals from vendors
         </p>
       </div>
@@ -171,7 +171,7 @@ const ReceivedBids = () => {
             placeholder="Search bids, vendors or tenders..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-sm font-bold focus:outline-none shadow-sm"
+            className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white border border-slate-200 text-sm font-bold focus:outline-none shadow-sm"
           />
           <button
             onClick={() => setShowFilterModal(true)}
@@ -189,7 +189,7 @@ const ReceivedBids = () => {
               className={`px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
                 selectedStatus === status
                   ? "bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-500/20"
-                  : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-white/10 hover:border-indigo-300"
+                  : "bg-white text-slate-500 border-slate-200 hover:border-indigo-300"
               }`}
             >
               {status}
@@ -203,7 +203,7 @@ const ReceivedBids = () => {
         {filteredBids.map((bid) => (
           <div
             key={bid.id}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
+            className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 pt-6 pr-6">
               <div
@@ -214,7 +214,7 @@ const ReceivedBids = () => {
             </div>
 
             <div className="flex items-start gap-4 mb-4 pr-32">
-              <div className="size-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900 flex items-center justify-center shrink-0">
+              <div className="size-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
                 <Building2 className="size-7 text-indigo-600" />
               </div>
               <div className="space-y-1">
@@ -223,7 +223,7 @@ const ReceivedBids = () => {
                 </h3>
                 <div className="flex items-center gap-2">
                   <span className="text-amber-500 font-black text-xs">★ {bid.rating}</span>
-                  <span className="size-1 rounded-full bg-slate-200 dark:bg-slate-800" />
+                  <span className="size-1 rounded-full bg-slate-200" />
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 truncate">
                     {bid.tenderTitle}
                   </p>
@@ -249,22 +249,22 @@ const ReceivedBids = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-white/5">
+            <div className="flex items-center gap-2 pt-4 border-t border-slate-100">
               <button
                 onClick={() => handleViewProposal(bid)}
-                className="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-slate-100 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="flex-1 bg-slate-900 text-white py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 View Proposal <ChevronRight className="size-4" />
               </button>
               <button
                 onClick={() => handleMessage(bid)}
-                className="size-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-950/40 active:scale-95 transition-all"
+                className="size-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 active:scale-95 transition-all"
               >
                 <MessageSquare className="size-5" />
               </button>
               <button
                 onClick={() => handleDownload(bid)}
-                className="size-12 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 transition-all"
+                className="size-12 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-slate-100 active:scale-95 transition-all"
               >
                 <Download className="size-5" />
               </button>
@@ -283,7 +283,7 @@ const ReceivedBids = () => {
       {/* Proposal Modal */}
       {showProposalModal && selectedBid && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-2xl w-full border border-slate-200 dark:border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <div className="bg-white rounded-3xl p-6 max-w-2xl w-full border border-slate-200 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-xl font-black">Bid Proposal</h3>
@@ -291,15 +291,15 @@ const ReceivedBids = () => {
               </div>
               <button
                 onClick={() => setShowProposalModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+            <div className="mb-6 p-4 bg-slate-50 rounded-2xl">
               <div className="flex items-start gap-4 mb-4">
-                <div className="size-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900 flex items-center justify-center">
+                <div className="size-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
                   <Building2 className="size-8 text-indigo-600" />
                 </div>
                 <div className="flex-1">
@@ -311,19 +311,19 @@ const ReceivedBids = () => {
                     <span className="size-1 rounded-full bg-slate-300" />
                     <span className="text-xs text-slate-500">{selectedBid.location}</span>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400">
+                  <p className="text-xs text-slate-600">
                     {selectedBid.experience}
                   </p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-white dark:bg-slate-900 rounded-xl">
+                <div className="p-3 bg-white rounded-xl">
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">
                     Email
                   </p>
                   <p className="text-xs font-bold">{selectedBid.email}</p>
                 </div>
-                <div className="p-3 bg-white dark:bg-slate-900 rounded-xl">
+                <div className="p-3 bg-white rounded-xl">
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">
                     Phone
                   </p>
@@ -336,7 +336,7 @@ const ReceivedBids = () => {
               <h5 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-3">
                 Tender Details
               </h5>
-              <div className="p-4 bg-indigo-50 dark:bg-indigo-950/20 rounded-2xl border border-indigo-100 dark:border-indigo-900">
+              <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
                 <p className="text-xs font-black uppercase tracking-widest text-indigo-600 mb-1">
                   Project
                 </p>
@@ -362,8 +362,8 @@ const ReceivedBids = () => {
               <h5 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-3">
                 Proposal Summary
               </h5>
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
-                <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+              <div className="p-4 bg-slate-50 rounded-2xl">
+                <p className="text-sm leading-relaxed text-slate-700">
                   {selectedBid.proposal}
                 </p>
               </div>
@@ -392,7 +392,7 @@ const ReceivedBids = () => {
       {/* Message Modal */}
       {showMessageModal && selectedBid && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-xl font-black">Send Message</h3>
@@ -400,7 +400,7 @@ const ReceivedBids = () => {
               </div>
               <button
                 onClick={() => setShowMessageModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-4" />
               </button>
@@ -414,13 +414,13 @@ const ReceivedBids = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 rows={6}
                 placeholder="Type your message here..."
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-600/20 transition-all resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-600/20 transition-all resize-none"
               />
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowMessageModal(false)}
-                className="flex-1 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all"
+                className="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-sm uppercase tracking-widest hover:bg-slate-200 active:scale-95 transition-all"
               >
                 Cancel
               </button>
@@ -439,23 +439,23 @@ const ReceivedBids = () => {
       {/* Filter Modal */}
       {showFilterModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-black">Advanced Filters</h3>
               <button
                 onClick={() => setShowFilterModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-4" />
               </button>
             </div>
             <div className="space-y-4">
-              <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-2xl border border-blue-200 dark:border-blue-900">
+              <div className="p-4 bg-blue-50 rounded-2xl border border-blue-200">
                 <AlertCircle className="size-5 text-blue-600 mb-2" />
-                <p className="text-sm font-bold text-blue-900 dark:text-blue-100">
+                <p className="text-sm font-bold text-blue-900">
                   Filter Options Coming Soon
                 </p>
-                <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                <p className="text-xs text-blue-700 mt-1">
                   Advanced filtering by amount range, rating, location, and submission date will be
                   available soon.
                 </p>

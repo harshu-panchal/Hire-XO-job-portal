@@ -91,8 +91,8 @@ const Settings = () => {
           profilePhoto: newPhotoUrl,
           profile: {
             ...userProfile.profile,
-            profilePhoto: newPhotoUrl
-          }
+            profilePhoto: newPhotoUrl,
+          },
         });
         toast.success("Profile photo updated!");
       }
@@ -120,8 +120,8 @@ const Settings = () => {
           experience: form.experience,
           preferences: {
             theme,
-            notifications: pushEnabled
-          }
+            notifications: pushEnabled,
+          },
         },
       };
       await updateProfile(updatedProfile);
@@ -136,10 +136,7 @@ const Settings = () => {
   const handleAddExperience = () => {
     setForm((f) => ({
       ...f,
-      experience: [
-        ...f.experience,
-        { company: "", role: "", period: "" },
-      ],
+      experience: [...f.experience, { company: "", role: "", period: "" }],
     }));
   };
 
@@ -153,20 +150,18 @@ const Settings = () => {
   const handleExperienceChange = (index: number, field: string, value: string) => {
     setForm((f) => ({
       ...f,
-      experience: f.experience.map((exp, i) =>
-        i === index ? { ...exp, [field]: value } : exp
-      ),
+      experience: f.experience.map((exp, i) => (i === index ? { ...exp, [field]: value } : exp)),
     }));
   };
 
   return (
     <div className="pb-32 min-h-screen">
       {/* Header */}
-      <div className="sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 px-5 py-6">
+      <div className="sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 px-5 py-6">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all shadow-sm"
+            className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all shadow-sm"
           >
             <ChevronLeft className="size-6" />
           </button>
@@ -178,14 +173,14 @@ const Settings = () => {
         {/* Avatar Section */}
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="size-28 rounded-full border-4 border-white dark:border-slate-800 shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+            <div className="size-28 rounded-full border-4 border-white shadow-xl overflow-hidden bg-slate-100 flex items-center justify-center">
               <img
                 src={
                   userProfile?.profilePhoto ||
                   `https://api.dicebear.com/7.x/avataaars/svg?seed=${userProfile?.name}`
                 }
                 alt="Profile"
-                className={`w-full h-full object-cover transition-opacity ${isUploading ? 'opacity-50' : 'opacity-100'}`}
+                className={`w-full h-full object-cover transition-opacity ${isUploading ? "opacity-50" : "opacity-100"}`}
               />
               {isUploading && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -196,7 +191,7 @@ const Settings = () => {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="absolute bottom-0 right-0 size-9 bg-primary text-white rounded-xl flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-lg active:scale-90 transition-all cursor-pointer disabled:opacity-50"
+              className="absolute bottom-0 right-0 size-9 bg-primary text-white rounded-xl flex items-center justify-center border-4 border-white shadow-lg active:scale-90 transition-all cursor-pointer disabled:opacity-50"
             >
               <Camera className="size-4" />
             </button>
@@ -215,12 +210,12 @@ const Settings = () => {
           <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 pl-1">
             Personal Information
           </h2>
-          <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] border border-slate-200 dark:border-white/10 p-5 space-y-4">
+          <div className="bg-white rounded-[2rem] border border-slate-200 p-5 space-y-4">
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Full Name
               </label>
-              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 focus-within:border-primary/50 transition-all">
+              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 border border-slate-100 focus-within:border-primary/50 transition-all">
                 <User className="size-5 text-slate-400" />
                 <input
                   type="text"
@@ -235,7 +230,7 @@ const Settings = () => {
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Email Address
               </label>
-              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 opacity-60">
+              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 border border-slate-100 opacity-60">
                 <Mail className="size-5 text-slate-400" />
                 <input
                   type="email"
@@ -250,7 +245,7 @@ const Settings = () => {
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 LinkedIn URL
               </label>
-              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 focus-within:border-primary/50 transition-all">
+              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 border border-slate-100 focus-within:border-primary/50 transition-all">
                 <LinkIcon className="size-5 text-slate-400" />
                 <input
                   type="url"
@@ -268,7 +263,7 @@ const Settings = () => {
           <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 pl-1">
             Professional Background
           </h2>
-          <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] border border-slate-200 dark:border-white/10 p-5 space-y-6">
+          <div className="bg-white rounded-[2rem] border border-slate-200 p-5 space-y-6">
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Professional Bio
@@ -277,7 +272,7 @@ const Settings = () => {
                 value={form.bio}
                 onChange={(e) => setForm({ ...form, bio: e.target.value })}
                 placeholder="Describe your experience and goals..."
-                className="w-full min-h-[120px] p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 focus:border-primary/50 focus:outline-none transition-all text-sm font-bold resize-none shadow-inner"
+                className="w-full min-h-[120px] p-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary/50 focus:outline-none transition-all text-sm font-bold resize-none shadow-inner"
               />
             </div>
 
@@ -290,7 +285,7 @@ const Settings = () => {
                 value={form.skills}
                 onChange={(e) => setForm({ ...form, skills: e.target.value })}
                 placeholder="React, TypeScript, UI/UX..."
-                className="w-full h-14 px-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 focus:border-primary/50 focus:outline-none transition-all text-sm font-bold shadow-inner"
+                className="w-full h-14 px-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary/50 focus:outline-none transition-all text-sm font-bold shadow-inner"
               />
             </div>
 
@@ -313,7 +308,7 @@ const Settings = () => {
                 form.experience.map((exp: any, index: number) => (
                   <div
                     key={index}
-                    className="relative group p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 space-y-3"
+                    className="relative group p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-3"
                   >
                     <button
                       type="button"
@@ -356,12 +351,12 @@ const Settings = () => {
           <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 pl-1">
             Preferences
           </h2>
-          <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] border border-slate-200 dark:border-white/10 overflow-hidden">
+          <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden">
             {/* Notification Toggle */}
             <button
               type="button"
               onClick={() => setPushEnabled(!pushEnabled)}
-              className="w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all border-b border-slate-100 dark:border-white/5"
+              className="w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all border-b border-slate-100"
             >
               <div className="flex items-center gap-4">
                 <div className="size-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
@@ -373,7 +368,7 @@ const Settings = () => {
                 </div>
               </div>
               <div
-                className={`w-12 h-7 rounded-full transition-all relative ${pushEnabled ? "bg-primary" : "bg-slate-200 dark:bg-white/10"}`}
+                className={`w-12 h-7 rounded-full transition-all relative ${pushEnabled ? "bg-primary" : "bg-slate-200"}`}
               >
                 <div
                   className={`absolute top-1 size-5 rounded-full bg-white shadow-sm transition-all ${pushEnabled ? "left-6" : "left-1"}`}
@@ -382,7 +377,7 @@ const Settings = () => {
             </button>
 
             {/* Theme Selection */}
-            <div className="p-5 border-b border-slate-100 dark:border-white/5 space-y-4">
+            <div className="p-5 border-b border-slate-100 space-y-4">
               <div className="flex items-center gap-4">
                 <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
                   <Monitor className="size-5" />
@@ -402,10 +397,11 @@ const Settings = () => {
                     key={t.id}
                     type="button"
                     onClick={() => setTheme(t.id as any)}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${theme === t.id
-                      ? "bg-primary/5 border-primary text-primary"
-                      : "bg-slate-50 dark:bg-white/5 border-transparent text-slate-400"
-                      }`}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${
+                      theme === t.id
+                        ? "bg-primary/5 border-primary text-primary"
+                        : "bg-slate-50 border-transparent text-slate-400"
+                    }`}
                   >
                     <t.icon className="size-5" />
                     <span className="text-[10px] font-black uppercase tracking-widest">
@@ -419,7 +415,7 @@ const Settings = () => {
             <button
               type="button"
               onClick={() => toast.info("Security settings coming soon!")}
-              className="w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all border-b border-slate-100 dark:border-white/5 cursor-pointer"
+              className="w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all border-b border-slate-100 cursor-pointer"
             >
               <div className="flex items-center gap-4">
                 <div className="size-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
@@ -434,7 +430,7 @@ const Settings = () => {
             <button
               type="button"
               onClick={() => toast.info("Support ticket system coming soon!")}
-              className="w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all cursor-pointer"
+              className="w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all cursor-pointer"
             >
               <div className="flex items-center gap-4">
                 <div className="size-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">

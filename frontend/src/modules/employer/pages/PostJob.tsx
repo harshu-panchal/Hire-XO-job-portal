@@ -105,10 +105,10 @@ const PostJob = () => {
   return (
     <div className="pb-40 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 -mx-5 px-5">
+      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
         <button
           onClick={() => (step > 1 ? setStep(step - 1) : navigate(-1))}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
         >
           <ChevronLeft className="size-6" />
         </button>
@@ -139,7 +139,7 @@ const PostJob = () => {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                  className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
 
@@ -148,7 +148,7 @@ const PostJob = () => {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full h-16 px-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
+                    className="w-full h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
                   >
                     <option>Development</option>
                     <option>Design</option>
@@ -160,7 +160,7 @@ const PostJob = () => {
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full h-16 px-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
+                    className="w-full h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
                   >
                     <option>Full-time</option>
                     <option>Part-time</option>
@@ -180,7 +180,7 @@ const PostJob = () => {
                   required
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                  className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
 
@@ -194,7 +194,7 @@ const PostJob = () => {
                   required
                   value={formData.salary}
                   onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                  className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                  className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
             </div>
@@ -209,7 +209,7 @@ const PostJob = () => {
                 rows={5}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black resize-none"
+                className="w-full p-6 rounded-3xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black resize-none"
               />
             </div>
           </div>
@@ -237,7 +237,7 @@ const PostJob = () => {
                       required
                       value={req}
                       onChange={(e) => handleInputChange("requirements", i, e.target.value)}
-                      className="flex-1 h-14 px-5 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
+                      className="flex-1 h-14 px-5 rounded-xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
                     />
                     {formData.requirements.length > 1 && (
                       <button
@@ -275,7 +275,7 @@ const PostJob = () => {
                       required
                       value={resp}
                       onChange={(e) => handleInputChange("responsibilities", i, e.target.value)}
-                      className="flex-1 h-14 px-5 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
+                      className="flex-1 h-14 px-5 rounded-xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
                     />
                     {formData.responsibilities.length > 1 && (
                       <button

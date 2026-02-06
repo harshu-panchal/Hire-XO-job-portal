@@ -131,7 +131,7 @@ const MyFundingRequests = () => {
         <h1 className="text-3xl font-black tracking-tight">
           My Funding <span className="text-primary">Requests</span>
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest mt-1">
+        <p className="text-slate-500 font-black text-xs uppercase tracking-widest mt-1">
           Manage your posted funding needs
         </p>
       </div>
@@ -150,7 +150,7 @@ const MyFundingRequests = () => {
           <p className="text-3xl font-black">{stats.total}</p>
           <p className="text-[8px] font-bold text-emerald-600 mt-1">{stats.active} Active</p>
         </div>
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10">
+        <div className="bg-white rounded-[2rem] p-5 border border-slate-200">
           <div className="flex items-center justify-between mb-2">
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
               Total Views
@@ -161,7 +161,7 @@ const MyFundingRequests = () => {
           </div>
           <p className="text-3xl font-black">{stats.totalViews}</p>
         </div>
-        <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10 col-span-2">
+        <div className="bg-white rounded-[2rem] p-5 border border-slate-200 col-span-2">
           <div className="flex items-center justify-between mb-2">
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
               Investor Inquiries
@@ -183,14 +183,14 @@ const MyFundingRequests = () => {
           placeholder="Search by title or sector..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+          className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white border border-slate-200 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
         />
         {searchQuery && (
           <button
             onClick={() => setSearchQuery("")}
-            className="absolute right-4 top-1/2 -translate-y-1/2 size-6 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+            className="absolute right-4 top-1/2 -translate-y-1/2 size-6 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
           >
-            <X className="size-4 text-slate-600 dark:text-slate-400" />
+            <X className="size-4 text-slate-600" />
           </button>
         )}
       </div>
@@ -204,7 +204,7 @@ const MyFundingRequests = () => {
             className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${
               filter === activeFilter
                 ? "bg-primary text-white shadow-lg shadow-primary/20"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
           >
             {filter}
@@ -220,7 +220,7 @@ const MyFundingRequests = () => {
           filteredRequests.map((request) => (
             <div
               key={request.id}
-              className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10"
+              className="bg-white rounded-[2rem] p-5 border border-slate-200"
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
@@ -246,48 +246,48 @@ const MyFundingRequests = () => {
                     </div>
                   </div>
                   <h3 className="font-black text-lg tracking-tight mb-1">{request.title}</h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
+                  <p className="text-xs text-slate-600 line-clamp-2">
                     {request.description}
                   </p>
                 </div>
                 <button
                   onClick={() => handleView(request)}
-                  className="size-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all shrink-0 ml-3 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  className="size-10 rounded-xl bg-slate-50 flex items-center justify-center active:scale-90 transition-all shrink-0 ml-3 hover:bg-slate-100"
                 >
-                  <Eye className="size-5 text-slate-600 dark:text-slate-400" />
+                  <Eye className="size-5 text-slate-600" />
                 </button>
               </div>
 
               {/* Funding Details */}
               <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-xl p-3 border border-emerald-200 dark:border-emerald-900">
+                <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-200">
                   <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600 mb-0.5">
                     Seeking
                   </p>
-                  <p className="text-base font-black text-emerald-700 dark:text-emerald-500">
+                  <p className="text-base font-black text-emerald-700">
                     {request.amount}
                   </p>
                 </div>
-                <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-3 border border-blue-200 dark:border-blue-900">
+                <div className="bg-blue-50 rounded-xl p-3 border border-blue-200">
                   <p className="text-[9px] font-black uppercase tracking-widest text-blue-600 mb-0.5">
                     Equity
                   </p>
-                  <p className="text-base font-black text-blue-700 dark:text-blue-500">
+                  <p className="text-base font-black text-blue-700">
                     {request.equity}
                   </p>
                 </div>
-                <div className="bg-purple-50 dark:bg-purple-950/20 rounded-xl p-3 border border-purple-200 dark:border-purple-900">
+                <div className="bg-purple-50 rounded-xl p-3 border border-purple-200">
                   <p className="text-[9px] font-black uppercase tracking-widest text-purple-600 mb-0.5">
                     Duration
                   </p>
-                  <p className="text-xs font-black text-purple-700 dark:text-purple-500">
+                  <p className="text-xs font-black text-purple-700">
                     {request.duration}
                   </p>
                 </div>
               </div>
 
               {/* Meta & Actions */}
-              <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-white/10">
+              <div className="flex items-center justify-between pt-3 border-t border-slate-200">
                 <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
                   <div className="flex items-center gap-1">
                     <Calendar className="size-3" />
@@ -307,13 +307,13 @@ const MyFundingRequests = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleEdit(request)}
-                    className="size-9 rounded-xl bg-blue-50 dark:bg-blue-950/20 flex items-center justify-center active:scale-90 transition-all hover:bg-blue-100 dark:hover:bg-blue-950/30"
+                    className="size-9 rounded-xl bg-blue-50 flex items-center justify-center active:scale-90 transition-all hover:bg-blue-100"
                   >
                     <Edit2 className="size-4 text-blue-600" />
                   </button>
                   <button
                     onClick={() => handleDelete(request)}
-                    className="size-9 rounded-xl bg-red-50 dark:bg-red-950/20 flex items-center justify-center active:scale-90 transition-all hover:bg-red-100 dark:hover:bg-red-950/30"
+                    className="size-9 rounded-xl bg-red-50 flex items-center justify-center active:scale-90 transition-all hover:bg-red-100"
                   >
                     <Trash2 className="size-4 text-red-600" />
                   </button>
@@ -327,7 +327,7 @@ const MyFundingRequests = () => {
       {/* Empty State for filtered results */}
       {!loading && filteredRequests.length === 0 && (
         <div className="text-center py-12">
-          <div className="size-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+          <div className="size-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
             <FileText className="size-8 text-slate-400" />
           </div>
           <p className="text-lg font-black text-slate-400">No requests found</p>
@@ -340,19 +340,19 @@ const MyFundingRequests = () => {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl">
-            <div className="size-14 rounded-2xl bg-red-50 dark:bg-red-950/20 flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl">
+            <div className="size-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
               <Trash2 className="size-7 text-red-600" />
             </div>
             <h3 className="text-xl font-black text-center mb-2">Delete Request?</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 text-center mb-6">
+            <p className="text-sm text-slate-600 text-center mb-6">
               Are you sure you want to delete "{requestToDelete?.title}"? This action cannot be
               undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="flex-1 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all"
+                className="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-sm uppercase tracking-widest hover:bg-slate-200 active:scale-95 transition-all"
               >
                 Cancel
               </button>
@@ -370,7 +370,7 @@ const MyFundingRequests = () => {
       {/* View Details Modal */}
       {showViewModal && selectedRequest && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-2xl w-full border border-slate-200 dark:border-white/10 shadow-2xl my-8">
+          <div className="bg-white rounded-3xl p-6 max-w-2xl w-full border border-slate-200 shadow-2xl my-8">
             {/* Modal Header */}
             <div className="flex items-start justify-between mb-6">
               <div className="flex-1">
@@ -398,35 +398,35 @@ const MyFundingRequests = () => {
               </div>
               <button
                 onClick={() => setShowViewModal(false)}
-                className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-90 transition-all shrink-0 ml-4"
+                className="size-10 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 active:scale-90 transition-all shrink-0 ml-4"
               >
-                <X className="size-5 text-slate-600 dark:text-slate-400" />
+                <X className="size-5 text-slate-600" />
               </button>
             </div>
 
             {/* Funding Details */}
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl p-4 border border-emerald-200 dark:border-emerald-900">
+              <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-200">
                 <p className="text-xs font-black uppercase tracking-widest text-emerald-600 mb-1">
                   Seeking
                 </p>
-                <p className="text-2xl font-black text-emerald-700 dark:text-emerald-500">
+                <p className="text-2xl font-black text-emerald-700">
                   {selectedRequest.amount}
                 </p>
               </div>
-              <div className="bg-blue-50 dark:bg-blue-950/20 rounded-2xl p-4 border border-blue-200 dark:border-blue-900">
+              <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
                 <p className="text-xs font-black uppercase tracking-widest text-blue-600 mb-1">
                   Equity
                 </p>
-                <p className="text-2xl font-black text-blue-700 dark:text-blue-500">
+                <p className="text-2xl font-black text-blue-700">
                   {selectedRequest.equity}
                 </p>
               </div>
-              <div className="bg-purple-50 dark:bg-purple-950/20 rounded-2xl p-4 border border-purple-200 dark:border-purple-900">
+              <div className="bg-purple-50 rounded-2xl p-4 border border-purple-200">
                 <p className="text-xs font-black uppercase tracking-widest text-purple-600 mb-1">
                   Duration
                 </p>
-                <p className="text-lg font-black text-purple-700 dark:text-purple-500">
+                <p className="text-lg font-black text-purple-700">
                   {selectedRequest.duration}
                 </p>
               </div>
@@ -437,13 +437,13 @@ const MyFundingRequests = () => {
               <h3 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-3">
                 Full Description
               </h3>
-              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              <p className="text-sm text-slate-700 leading-relaxed">
                 {selectedRequest.fullDescription}
               </p>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
+            <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-slate-50 rounded-2xl">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-1">
                   <Calendar className="size-4 text-slate-400" />
@@ -451,7 +451,7 @@ const MyFundingRequests = () => {
                     Posted
                   </p>
                 </div>
-                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                <p className="text-sm font-bold text-slate-700">
                   {selectedRequest.postedDate}
                 </p>
               </div>
@@ -462,7 +462,7 @@ const MyFundingRequests = () => {
                     Views
                   </p>
                 </div>
-                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                <p className="text-sm font-bold text-slate-700">
                   {selectedRequest.views}
                 </p>
               </div>
@@ -494,7 +494,7 @@ const MyFundingRequests = () => {
                   setShowViewModal(false);
                   handleDelete(selectedRequest);
                 }}
-                className="px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/20 text-red-600 font-black text-sm uppercase tracking-widest hover:bg-red-100 dark:hover:bg-red-950/30 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="px-4 py-3 rounded-xl bg-red-50 text-red-600 font-black text-sm uppercase tracking-widest hover:bg-red-100 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 <Trash2 className="size-4" />
                 Delete

@@ -78,7 +78,7 @@ const SeekDashboard = () => {
             Funding <br />
             <span className="text-primary">Dashboard</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-xs uppercase tracking-widest">
             Manage your funding requests
           </p>
         </div>
@@ -103,7 +103,7 @@ const SeekDashboard = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
+            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
               <div className="size-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
                 <Eye className="size-6 text-blue-500" />
               </div>
@@ -116,7 +116,7 @@ const SeekDashboard = () => {
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
+            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-95 transition-transform duration-200">
               <div className="size-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4">
                 <MessageSquare className="size-6 text-emerald-500" />
               </div>
@@ -150,7 +150,7 @@ const SeekDashboard = () => {
               <Link
                 key={inq.id}
                 to="/investor/seek/inquiries"
-                className="block bg-white dark:bg-slate-900/50 rounded-[2rem] p-4 border border-slate-200 dark:border-white/10 active:scale-[0.98] transition-all"
+                className="block bg-white rounded-[2rem] p-4 border border-slate-200 active:scale-[0.98] transition-all"
               >
                 <div className="flex items-start gap-3">
                   <div className="size-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-black text-sm shrink-0">
@@ -163,7 +163,7 @@ const SeekDashboard = () => {
                         {inq.time}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-2 truncate">
+                    <p className="text-xs text-slate-600 mb-2 truncate">
                       {inq.message}
                     </p>
                     <div className="flex items-center gap-2">
@@ -200,7 +200,7 @@ const SeekDashboard = () => {
             activeRequests.map((req: any) => (
               <div
                 key={req._id}
-                className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10"
+                className="bg-white rounded-[2rem] p-5 border border-slate-200"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -261,9 +261,9 @@ const SeekDashboard = () => {
           </Link>
           <Link
             to="/investor/seek/inquiries"
-            className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-white dark:to-slate-100 rounded-[2rem] p-5 text-white dark:text-slate-900 active:scale-95 transition-transform"
+            className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2rem] p-5 text-white active:scale-95 transition-transform"
           >
-            <div className="size-10 rounded-xl bg-white/20 dark:bg-slate-900/20 flex items-center justify-center mb-3">
+            <div className="size-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
               <MessageSquare className="size-5" />
             </div>
             <p className="font-black text-sm">View Inbox</p>
@@ -275,12 +275,12 @@ const SeekDashboard = () => {
       </div>
 
       {/* Tips Section */}
-      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 border border-blue-200 dark:border-blue-900 rounded-[2rem] p-5">
+      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-[2rem] p-5">
         <h3 className="font-black text-sm mb-2 flex items-center gap-2">
           <TrendingUp className="size-4 text-blue-600" />
           Tips for Attracting Investors
         </h3>
-        <ul className="space-y-2 text-xs text-slate-700 dark:text-slate-300">
+        <ul className="space-y-2 text-xs text-slate-700">
           <li className="flex items-start gap-2">
             <span className="text-blue-600 font-black">•</span>
             <span>Provide detailed business plan and financial projections</span>

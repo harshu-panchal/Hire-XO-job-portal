@@ -170,7 +170,7 @@ const PostTender = () => {
         <h1 className="text-2xl font-black tracking-tight">
           {isEditMode ? "Update Tender" : "Post New Tender"}
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
           Step {step} of 3:{" "}
           {step === 1
             ? "Basic Information"
@@ -195,7 +195,7 @@ const PostTender = () => {
                   onChange={handleChange}
                   type="text"
                   placeholder="e.g. Smart City Infrastructure Phase 2"
-                  className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -207,7 +207,7 @@ const PostTender = () => {
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 font-bold focus:outline-none appearance-none"
+                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none appearance-none"
                   >
                     <option>Civil Works</option>
                     <option>IT Services</option>
@@ -224,7 +224,7 @@ const PostTender = () => {
                     name="type"
                     value={formData.type}
                     onChange={handleChange}
-                    className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 font-bold focus:outline-none appearance-none"
+                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none appearance-none"
                   >
                     <option>Open Tender</option>
                     <option>Limited Tender</option>
@@ -235,7 +235,7 @@ const PostTender = () => {
             </div>
 
             {/* Value & Dates */}
-            <div className="bg-indigo-50 dark:bg-indigo-950/20 rounded-[2.5rem] p-6 space-y-6 border border-indigo-100 dark:border-indigo-900/30">
+            <div className="bg-indigo-50 rounded-[2.5rem] p-6 space-y-6 border border-indigo-100">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-indigo-600/60 ml-1">
                   Estimated Tender Value (₹)
@@ -246,7 +246,7 @@ const PostTender = () => {
                   onChange={handleChange}
                   type="text"
                   placeholder="e.g. 25,00,00,000"
-                  className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border-none font-black text-indigo-600 text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full px-5 py-4 rounded-3xl bg-white border-none font-black text-indigo-600 text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -259,7 +259,7 @@ const PostTender = () => {
                     value={formData.releaseDate}
                     onChange={handleChange}
                     type="date"
-                    className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border-none font-bold text-sm shadow-sm focus:outline-none"
+                    className="w-full px-5 py-4 rounded-3xl bg-white border-none font-bold text-sm shadow-sm focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -271,7 +271,7 @@ const PostTender = () => {
                     value={formData.deadline}
                     onChange={handleChange}
                     type="date"
-                    className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border-none font-bold text-sm shadow-sm focus:outline-none"
+                    className="w-full px-5 py-4 rounded-3xl bg-white border-none font-bold text-sm shadow-sm focus:outline-none"
                   />
                 </div>
               </div>
@@ -292,7 +292,7 @@ const PostTender = () => {
                 onChange={handleChange}
                 rows={4}
                 placeholder="Provide detailed information about the tender scope..."
-                className="w-full px-5 py-4 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none"
+                className="w-full px-5 py-4 rounded-[2rem] bg-white border border-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none"
               ></textarea>
             </div>
 
@@ -317,11 +317,11 @@ const PostTender = () => {
                       value={req}
                       onChange={(e) => handleRequirementChange(index, e.target.value)}
                       placeholder="Requirement details..."
-                      className="flex-1 px-5 py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 font-bold text-sm"
+                      className="flex-1 px-5 py-3.5 rounded-2xl bg-white border border-slate-100 font-bold text-sm"
                     />
                     <button
                       onClick={() => removeRequirement(index)}
-                      className="size-11 rounded-xl bg-rose-50 dark:bg-rose-950/20 text-rose-600 flex items-center justify-center shrink-0 active:scale-90 transition-transform"
+                      className="size-11 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 active:scale-90 transition-transform"
                     >
                       <Trash2 className="size-4" />
                     </button>
@@ -344,9 +344,9 @@ const PostTender = () => {
             />
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="p-8 border-2 border-dashed border-indigo-200 dark:border-indigo-900/40 rounded-[2.5rem] flex flex-col items-center text-center space-y-4 bg-indigo-50/30 dark:bg-indigo-950/5 cursor-pointer hover:bg-indigo-50/50 transition-colors"
+              className="p-8 border-2 border-dashed border-indigo-200 rounded-[2.5rem] flex flex-col items-center text-center space-y-4 bg-indigo-50/30 cursor-pointer hover:bg-indigo-50/50 transition-colors"
             >
-              <div className="size-16 rounded-[2rem] bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center">
+              <div className="size-16 rounded-[2rem] bg-white shadow-xl flex items-center justify-center">
                 <Upload className="size-8 text-indigo-600" />
               </div>
               <div className="space-y-1">
@@ -368,7 +368,7 @@ const PostTender = () => {
                 {documentUrls.map((url, index) => (
                   <div
                     key={`url-${index}`}
-                    className="flex items-center gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 rounded-2xl"
+                    className="flex items-center gap-3 p-4 bg-white border border-slate-100 rounded-2xl"
                   >
                     <FileText className="size-5 text-emerald-600" />
                     <div className="flex-1 min-w-0">
@@ -379,7 +379,7 @@ const PostTender = () => {
                     </div>
                     <button
                       onClick={() => removeExistingUrl(index)}
-                      className="size-8 rounded-lg bg-rose-50 dark:bg-rose-950/20 text-rose-600 flex items-center justify-center active:scale-90 transition-transform"
+                      className="size-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center active:scale-90 transition-transform"
                     >
                       <X className="size-4" />
                     </button>
@@ -388,7 +388,7 @@ const PostTender = () => {
                 {files.map((file, index) => (
                   <div
                     key={`file-${index}`}
-                    className="flex items-center gap-3 p-4 bg-white dark:bg-slate-900 border border-indigo-200/50 dark:border-indigo-900/20 rounded-2xl"
+                    className="flex items-center gap-3 p-4 bg-white border border-indigo-200/50 rounded-2xl"
                   >
                     <FileText className="size-5 text-indigo-600" />
                     <div className="flex-1 min-w-0">
@@ -399,7 +399,7 @@ const PostTender = () => {
                     </div>
                     <button
                       onClick={() => removeFile(index)}
-                      className="size-8 rounded-lg bg-rose-50 dark:bg-rose-950/20 text-rose-600 flex items-center justify-center active:scale-90 transition-transform"
+                      className="size-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center active:scale-90 transition-transform"
                     >
                       <X className="size-4" />
                     </button>
@@ -409,7 +409,7 @@ const PostTender = () => {
             )}
 
             {/* Confirmation Checkbox */}
-            <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-[2rem] flex gap-4">
+            <div className="p-6 bg-slate-50 rounded-[2rem] flex gap-4">
               <div className="mt-1">
                 <input type="checkbox" required className="size-5 accent-indigo-600 rounded-lg" />
               </div>
@@ -428,7 +428,7 @@ const PostTender = () => {
           {step > 1 && (
             <button
               onClick={() => setStep(step - 1)}
-              className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/5 px-8 font-black text-sm uppercase tracking-widest py-5 rounded-[2rem] active:scale-95 transition-all shadow-xl"
+              className="bg-white text-slate-900 border border-slate-200 px-8 font-black text-sm uppercase tracking-widest py-5 rounded-[2rem] active:scale-95 transition-all shadow-xl"
             >
               Back
             </button>

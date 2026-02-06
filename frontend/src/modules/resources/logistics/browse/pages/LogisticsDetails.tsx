@@ -10,7 +10,7 @@ const LogisticsDetails = () => {
       <div className="flex items-center justify-between px-1">
         <button
           onClick={() => navigate(-1)}
-          className="size-12 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center active:scale-90 transition-transform"
+          className="size-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center active:scale-90 transition-transform"
         >
           <ArrowLeft className="size-6" />
         </button>
@@ -47,19 +47,19 @@ const LogisticsDetails = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-slate-900/50 p-4 rounded-3xl border border-slate-200 dark:border-white/10 text-center">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 text-center">
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">
               Fleet
             </p>
             <p className="text-base font-black">120+</p>
           </div>
-          <div className="bg-white dark:bg-slate-900/50 p-4 rounded-3xl border border-slate-200 dark:border-white/10 text-center">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 text-center">
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">
               Cities
             </p>
             <p className="text-base font-black">20+</p>
           </div>
-          <div className="bg-white dark:bg-slate-900/50 p-4 rounded-3xl border border-slate-200 dark:border-white/10 text-center">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 text-center">
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">
               On-Time
             </p>
@@ -70,7 +70,7 @@ const LogisticsDetails = () => {
         {/* About */}
         <div className="space-y-3 px-1">
           <h2 className="text-xl font-black tracking-tight">About Provider</h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+          <p className="text-sm text-slate-600 leading-relaxed font-medium">
             SwiftLoad Carriers provides reliable, high-capacity transportation solutions across
             India. Specializing in heavy haulage and containerized freight, we ensure your cargo
             reaches its destination safely and on schedule with our modern fleet and experienced
@@ -92,7 +92,7 @@ const LogisticsDetails = () => {
             ].map((service) => (
               <div
                 key={service}
-                className="px-4 py-2 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300"
+                className="px-4 py-2 rounded-2xl bg-slate-100 border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-600"
               >
                 {service}
               </div>
@@ -102,9 +102,9 @@ const LogisticsDetails = () => {
       </div>
 
       {/* Sticky Action Footer */}
-      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 py-4 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 z-40">
+      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 py-4 bg-white/80 backdrop-blur-xl border-t border-slate-200 z-40">
         <div className="flex gap-3">
-          <button className="flex-1 h-16 rounded-[2rem] bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform">
+          <button className="flex-1 h-16 rounded-[2rem] bg-slate-900 text-white font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform">
             <MessageCircle className="size-5" />
             Get Quote
           </button>

@@ -1,6 +1,6 @@
-# Hire XO Job Portal - Frontend
+# HireXO Job Portal - Frontend
 
-A professional mobile-first frontend for the Hire XO job portal, built with Vite React, Tailwind CSS, and shadcn UI.
+A professional mobile-first frontend for the HireXO job portal, built with Vite React, Tailwind CSS, and shadcn UI.
 
 ## 🚀 Tech Stack
 

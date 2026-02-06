@@ -73,13 +73,13 @@ const MachineryList = () => {
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-black tracking-tight italic">Find Machine</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
           {filteredMachines.length} verified listings available
         </p>
       </div>
 
       {/* Sticky Search & Filter */}
-      <div className="space-y-4 sticky top-[72px] z-30 bg-slate-50 dark:bg-slate-950 py-2 -mx-2 px-2">
+      <div className="space-y-4 sticky top-[72px] z-30 bg-slate-50 py-2 -mx-2 px-2">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
           <input
@@ -87,7 +87,7 @@ const MachineryList = () => {
             placeholder="Search model, brand or type..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-12 py-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 font-bold text-sm focus:ring-2 focus:ring-amber-500/20 outline-none shadow-sm"
+            className="w-full pl-12 pr-12 py-4 rounded-3xl bg-white border border-slate-200 font-bold text-sm focus:ring-2 focus:ring-amber-500/20 outline-none shadow-sm"
           />
           {searchQuery && (
             <button
@@ -111,7 +111,7 @@ const MachineryList = () => {
               className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
                 activeFilter === filter
                   ? "bg-amber-600 text-white border-amber-600 shadow-lg shadow-amber-500/20"
-                  : "bg-white dark:bg-slate-900 text-slate-500 border-slate-200 dark:border-white/10"
+                  : "bg-white text-slate-500 border-slate-200"
               }`}
             >
               {filter}
@@ -126,16 +126,16 @@ const MachineryList = () => {
           <Link
             key={item.id}
             to={`/machinery/buy/item/${item.id}`}
-            className="group block bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all relative overflow-hidden shadow-sm"
+            className="group block bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all relative overflow-hidden shadow-sm"
           >
             <div className="flex gap-4">
-              <div className="size-28 rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0 relative">
+              <div className="size-28 rounded-3xl overflow-hidden bg-slate-100 shrink-0 relative">
                 <img
                   src={item.image}
                   alt={item.name}
                   className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <button className="absolute top-2 right-2 size-8 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
+                <button className="absolute top-2 right-2 size-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
                   <Heart className="size-4" />
                 </button>
               </div>
@@ -146,7 +146,7 @@ const MachineryList = () => {
                     <span className="text-[10px] font-black">{item.rating}</span>
                   </div>
                   {item.certified && (
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/30 text-blue-600 text-[8px] font-black uppercase tracking-widest border border-blue-100 dark:border-blue-900/50">
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-50 text-blue-600 text-[8px] font-black uppercase tracking-widest border border-blue-100">
                       <ShieldCheck className="size-2.5" /> Certified
                     </div>
                   )}
@@ -160,7 +160,7 @@ const MachineryList = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
+            <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
               <div className="flex items-center gap-1.5 text-slate-400">
                 <MapPin className="size-3" />
                 <span className="text-[10px] font-black uppercase tracking-widest">
@@ -169,7 +169,7 @@ const MachineryList = () => {
               </div>
               <div className="flex items-center gap-3">
                 <p className="text-xl font-black tracking-tight text-amber-600">{item.price}</p>
-                <div className="size-10 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center group-hover:scale-110 transition-all">
+                <div className="size-10 rounded-xl bg-slate-900 text-white flex items-center justify-center group-hover:scale-110 transition-all">
                   <ChevronRight className="size-5" />
                 </div>
               </div>

@@ -35,10 +35,10 @@ const EmployerSecurity = () => {
   return (
     <div className="pb-32 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 -mx-5 px-5">
+      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
         >
           <ChevronLeft className="size-6" />
         </button>
@@ -58,7 +58,7 @@ const EmployerSecurity = () => {
             </h3>
           </div>
 
-          <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 p-6 space-y-6">
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 p-6 space-y-6">
             <div className="space-y-4">
               <div className="relative group">
                 <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
@@ -67,7 +67,7 @@ const EmployerSecurity = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Current Password"
-                  className="w-full h-16 pl-14 pr-14 rounded-2xl bg-slate-50 dark:bg-white/5 border-2 border-transparent focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                  className="w-full h-16 pl-14 pr-14 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
                 <button
                   onClick={() => setShowPassword(!showPassword)}
@@ -82,7 +82,7 @@ const EmployerSecurity = () => {
               </button>
             </div>
 
-            <div className="h-px bg-slate-100 dark:bg-white/5" />
+            <div className="h-px bg-slate-100" />
 
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -93,7 +93,7 @@ const EmployerSecurity = () => {
               </div>
               <button
                 onClick={() => setTwoFactor(!twoFactor)}
-                className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${twoFactor ? "bg-primary" : "bg-slate-200 dark:bg-white/10"}`}
+                className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${twoFactor ? "bg-primary" : "bg-slate-200"}`}
               >
                 <div
                   className={`size-4 bg-white rounded-full transition-all duration-300 ${twoFactor ? "translate-x-6" : "translate-x-0"}`}
@@ -114,14 +114,14 @@ const EmployerSecurity = () => {
             </h3>
           </div>
 
-          <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden">
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
             {devices.map((device, i, arr) => (
               <div
                 key={device.id}
-                className={`p-5 flex items-center justify-between ${i !== arr.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""}`}
+                className={`p-5 flex items-center justify-between ${i !== arr.length - 1 ? "border-b border-slate-100" : ""}`}
               >
                 <div className="flex items-center gap-4">
-                  <div className="size-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+                  <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center">
                     <Smartphone className="size-6 text-slate-400" />
                   </div>
                   <div>
@@ -154,13 +154,13 @@ const EmployerSecurity = () => {
             </h3>
           </div>
 
-          <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden">
-            <button className="w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all">
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
+            <button className="w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all">
               <span className="text-sm font-black tracking-tight">Privacy Policy</span>
               <ChevronRight className="size-4 text-slate-300" />
             </button>
-            <div className="h-px bg-slate-100 dark:bg-white/5" />
-            <button className="w-full p-5 flex items-center justify-between active:bg-slate-50 dark:active:bg-white/5 transition-all text-red-500">
+            <div className="h-px bg-slate-100" />
+            <button className="w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all text-red-500">
               <span className="text-sm font-black tracking-tight">Delete Account</span>
               <ChevronRight className="size-4 text-slate-300" />
             </button>

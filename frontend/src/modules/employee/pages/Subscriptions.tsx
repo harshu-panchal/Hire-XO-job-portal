@@ -43,7 +43,7 @@ const Subscriptions = () => {
       <div className="flex items-center gap-4 px-4">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all shadow-sm"
+          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all shadow-sm"
         >
           <ChevronLeft className="size-6" />
         </button>
@@ -51,7 +51,7 @@ const Subscriptions = () => {
           <h1 className="text-2xl font-black tracking-tight leading-tight">
             Choose Your <span className="text-primary">Growth</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
             Premium features to accelerate your career
           </p>
         </div>
@@ -64,7 +64,7 @@ const Subscriptions = () => {
             className={`relative rounded-[3rem] p-8 border-2 transition-all duration-300 active:scale-[0.98] ${
               plan.popular
                 ? "bg-slate-900 border-primary shadow-2xl shadow-primary/20 text-white"
-                : "bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white"
+                : "bg-white border-slate-200 text-slate-900"
             }`}
           >
             {plan.popular && (
@@ -76,7 +76,7 @@ const Subscriptions = () => {
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h3
-                  className={`text-2xl font-black tracking-tight ${plan.popular ? "text-white" : "text-slate-900 dark:text-white"}`}
+                  className={`text-2xl font-black tracking-tight ${plan.popular ? "text-white" : "text-slate-900"}`}
                 >
                   {plan.name}
                 </h3>
@@ -127,12 +127,12 @@ const Subscriptions = () => {
       </div>
 
       {/* Trust Badge */}
-      <div className="flex flex-col items-center gap-4 py-6 px-8 rounded-[2rem] bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-center">
+      <div className="flex flex-col items-center gap-4 py-6 px-8 rounded-[2rem] bg-slate-100 border border-slate-200 text-center">
         <div className="flex -space-x-3">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="size-10 rounded-full border-4 border-slate-100 dark:border-slate-900 overflow-hidden bg-slate-200"
+              className="size-10 rounded-full border-4 border-slate-100 overflow-hidden bg-slate-200"
             >
               <img
                 src={`https://i.pravatar.cc/150?u=${i}`}
@@ -141,12 +141,12 @@ const Subscriptions = () => {
               />
             </div>
           ))}
-          <div className="size-10 rounded-full border-4 border-slate-100 dark:border-slate-900 bg-primary flex items-center justify-center text-[10px] font-black text-white">
+          <div className="size-10 rounded-full border-4 border-slate-100 bg-primary flex items-center justify-center text-[10px] font-black text-white">
             +2k
           </div>
         </div>
         <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-          Joined by <span className="text-slate-900 dark:text-white font-black">2,400+</span>{" "}
+          Joined by <span className="text-slate-900 font-black">2,400+</span>{" "}
           professionals this month
         </p>
       </div>

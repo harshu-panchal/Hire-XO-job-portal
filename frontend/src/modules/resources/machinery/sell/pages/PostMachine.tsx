@@ -181,7 +181,7 @@ const PostMachine = () => {
                   />
                 </div>
                 <p className="text-[10px] font-bold text-slate-500 leading-tight">
-                  I agree to the Hire XO Marketplace Seller terms and will provide accurate
+                  I agree to the HireXO Marketplace Seller terms and will provide accurate
                   documentation upon inquiry.
                 </p>
               </div>

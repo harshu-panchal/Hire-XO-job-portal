@@ -166,7 +166,7 @@ const LogisticsInquiries = () => {
             placeholder="Search leads by name, role, or message..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] py-4 pl-14 pr-6 text-sm font-medium focus:outline-none focus:border-orange-600 transition-all font-sans"
+            className="w-full bg-white border border-slate-200 rounded-[2rem] py-4 pl-14 pr-6 text-sm font-medium focus:outline-none focus:border-orange-600 transition-all font-sans"
           />
         </div>
 
@@ -179,7 +179,7 @@ const LogisticsInquiries = () => {
               className={`whitespace-nowrap px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${
                 statusFilter === status
                   ? "bg-orange-600 text-white shadow-lg shadow-orange-600/20"
-                  : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-400"
+                  : "bg-white border border-slate-200 text-slate-400"
               }`}
             >
               {status} ({statusCounts[status]})
@@ -191,7 +191,7 @@ const LogisticsInquiries = () => {
       {/* List */}
       <div className="space-y-3">
         {filteredInquiries.length === 0 ? (
-          <div className="text-center py-12 bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-dashed border-slate-200 dark:border-white/10">
+          <div className="text-center py-12 bg-white rounded-[2.5rem] border border-dashed border-slate-200">
             <Search className="size-12 text-slate-300 mx-auto mb-3" />
             <p className="text-sm font-black text-slate-400 uppercase tracking-widest">
               No inquiries found
@@ -202,7 +202,7 @@ const LogisticsInquiries = () => {
             <div
               key={inquiry.id}
               onClick={() => setSelectedInquiry(inquiry)}
-              className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-5 border border-slate-200 dark:border-white/10 hover:border-orange-600/20 transition-all cursor-pointer active:scale-[0.98]"
+              className="bg-white rounded-[2.5rem] p-5 border border-slate-200 hover:border-orange-600/20 transition-all cursor-pointer active:scale-[0.98]"
             >
               <div className="flex items-start gap-4">
                 <div
@@ -222,7 +222,7 @@ const LogisticsInquiries = () => {
                       {inquiry.time}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-4 font-medium leading-relaxed">
+                  <p className="text-xs text-slate-600 mb-4 font-medium leading-relaxed">
                     "{inquiry.message}"
                   </p>
 
@@ -230,14 +230,14 @@ const LogisticsInquiries = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleCall(inquiry)}
-                        className="size-9 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20 transition-all border border-slate-100 dark:border-white/5 active:scale-90"
+                        className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-all border border-slate-100 active:scale-90"
                         title="Call"
                       >
                         <Phone className="size-4" />
                       </button>
                       <button
                         onClick={() => handleEmail(inquiry)}
-                        className="size-9 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20 transition-all border border-slate-100 dark:border-white/5 active:scale-90"
+                        className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-all border border-slate-100 active:scale-90"
                         title="Email"
                       >
                         <Mail className="size-4" />
@@ -245,7 +245,7 @@ const LogisticsInquiries = () => {
                       {inquiry.status === "New" && (
                         <button
                           onClick={() => handleMarkAsReplied(inquiry.id)}
-                          className="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 flex items-center gap-1.5 text-emerald-600 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 transition-all border border-emerald-100 dark:border-emerald-900/20 active:scale-95"
+                          className="px-3 py-1.5 rounded-xl bg-emerald-50 flex items-center gap-1.5 text-emerald-600 hover:bg-emerald-100 transition-all border border-emerald-100 active:scale-95"
                           title="Mark as Replied"
                         >
                           <CheckCircle2 className="size-3.5" />
@@ -257,7 +257,7 @@ const LogisticsInquiries = () => {
                       {inquiry.status === "Replied" && (
                         <button
                           onClick={() => handleMarkAsClosed(inquiry.id)}
-                          className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-all border border-slate-100 dark:border-white/5 active:scale-95"
+                          className="px-3 py-1.5 rounded-xl bg-slate-50 flex items-center gap-1.5 text-slate-600 hover:bg-slate-100 transition-all border border-slate-100 active:scale-95"
                           title="Mark as Closed"
                         >
                           <Clock className="size-3.5" />
@@ -272,8 +272,8 @@ const LogisticsInquiries = () => {
                         inquiry.status === "New"
                           ? "bg-orange-600 text-white"
                           : inquiry.status === "Replied"
-                            ? "bg-blue-100 text-blue-600 dark:bg-blue-950/20"
-                            : "bg-slate-100 text-slate-400 dark:bg-white/5"
+                            ? "bg-blue-100 text-blue-600"
+                            : "bg-slate-100 text-slate-400"
                       }`}
                     >
                       {inquiry.status}
@@ -295,11 +295,11 @@ const LogisticsInquiries = () => {
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
             <div
-              className="bg-white dark:bg-slate-900 rounded-[2.5rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto shadow-2xl border border-slate-200 dark:border-white/10"
+              className="bg-white rounded-[2.5rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto shadow-2xl border border-slate-200"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/10 p-6 flex items-start justify-between z-10">
+              <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-start justify-between z-10">
                 <div className="flex items-start gap-4">
                   <div
                     className={`size-16 rounded-2xl bg-gradient-to-br ${selectedInquiry.color} flex items-center justify-center text-white text-2xl font-black shadow-lg shrink-0`}
@@ -310,7 +310,7 @@ const LogisticsInquiries = () => {
                     <h2 className="text-2xl font-black tracking-tight mb-1">
                       {selectedInquiry.name}
                     </h2>
-                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
+                    <p className="text-sm font-bold text-slate-500">
                       {selectedInquiry.role}
                     </p>
                     {selectedInquiry.company && (
@@ -322,7 +322,7 @@ const LogisticsInquiries = () => {
                 </div>
                 <button
                   onClick={() => setSelectedInquiry(null)}
-                  className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-90"
+                  className="size-10 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors active:scale-90"
                 >
                   <X className="size-5" />
                 </button>
@@ -337,8 +337,8 @@ const LogisticsInquiries = () => {
                       selectedInquiry.status === "New"
                         ? "bg-orange-600 text-white"
                         : selectedInquiry.status === "Replied"
-                          ? "bg-blue-100 text-blue-600 dark:bg-blue-950/20"
-                          : "bg-slate-100 text-slate-400 dark:bg-white/5"
+                          ? "bg-blue-100 text-blue-600"
+                          : "bg-slate-100 text-slate-400"
                     }`}
                   >
                     {selectedInquiry.status}
@@ -349,11 +349,11 @@ const LogisticsInquiries = () => {
                 </div>
 
                 {/* Message */}
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5">
+                <div className="bg-slate-50 rounded-2xl p-5">
                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
                     Inquiry Message
                   </h3>
-                  <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                  <p className="text-sm text-slate-700 leading-relaxed">
                     "{selectedInquiry.message}"
                   </p>
                 </div>
@@ -361,7 +361,7 @@ const LogisticsInquiries = () => {
                 {/* Shipment Details Grid */}
                 <div className="grid grid-cols-2 gap-4">
                   {selectedInquiry.route && (
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-white/10">
+                    <div className="bg-white rounded-2xl p-4 border border-slate-200">
                       <div className="flex items-center gap-2 mb-2">
                         <MapPin className="size-4 text-orange-600" />
                         <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
@@ -372,7 +372,7 @@ const LogisticsInquiries = () => {
                     </div>
                   )}
                   {selectedInquiry.cargo && (
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-white/10">
+                    <div className="bg-white rounded-2xl p-4 border border-slate-200">
                       <div className="flex items-center gap-2 mb-2">
                         <Package className="size-4 text-orange-600" />
                         <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
@@ -383,7 +383,7 @@ const LogisticsInquiries = () => {
                     </div>
                   )}
                   {selectedInquiry.weight && (
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-white/10">
+                    <div className="bg-white rounded-2xl p-4 border border-slate-200">
                       <div className="flex items-center gap-2 mb-2">
                         <Package className="size-4 text-orange-600" />
                         <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
@@ -394,7 +394,7 @@ const LogisticsInquiries = () => {
                     </div>
                   )}
                   {selectedInquiry.date && (
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-white/10">
+                    <div className="bg-white rounded-2xl p-4 border border-slate-200">
                       <div className="flex items-center gap-2 mb-2">
                         <Calendar className="size-4 text-orange-600" />
                         <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
@@ -408,7 +408,7 @@ const LogisticsInquiries = () => {
 
                 {/* Budget */}
                 {selectedInquiry.budget && (
-                  <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 rounded-2xl p-5 border border-orange-200 dark:border-orange-900/20">
+                  <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-5 border border-orange-200">
                     <div className="flex items-center gap-2 mb-2">
                       <DollarSign className="size-5 text-orange-600" />
                       <span className="text-xs font-black uppercase tracking-widest text-orange-600">
@@ -420,7 +420,7 @@ const LogisticsInquiries = () => {
                 )}
 
                 {/* Contact Information */}
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5">
+                <div className="bg-slate-50 rounded-2xl p-5">
                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">
                     Contact Information
                   </h3>
@@ -428,7 +428,7 @@ const LogisticsInquiries = () => {
                     {selectedInquiry.phone && (
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center">
+                          <div className="size-10 rounded-xl bg-white flex items-center justify-center">
                             <Phone className="size-4 text-orange-600" />
                           </div>
                           <div>
@@ -452,7 +452,7 @@ const LogisticsInquiries = () => {
                     {selectedInquiry.email && (
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center">
+                          <div className="size-10 rounded-xl bg-white flex items-center justify-center">
                             <Mail className="size-4 text-orange-600" />
                           </div>
                           <div>
@@ -506,7 +506,7 @@ const LogisticsInquiries = () => {
                   )}
                   <button
                     onClick={() => setSelectedInquiry(null)}
-                    className="px-6 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95"
+                    className="px-6 py-4 rounded-2xl bg-slate-100 text-slate-600 font-black text-sm uppercase tracking-widest hover:bg-slate-200 transition-colors active:scale-95"
                   >
                     Close
                   </button>

@@ -61,38 +61,38 @@ const ResourceSignup = () => {
 
   const categoryConfig: Record<string, { title: string; fields: string[] }> = {
     investor: {
-      title: subType === "want-to-invest" ? "Investor Signup" : "Seeking Investment",
+      title: subType === "want-to-invest" ? "Ready to Invest" : "Need Investor",
       fields: ["investmentAmount", "investmentSector"],
     },
     tenders: {
-      title: subType === "provide-tenders" ? "Post Tenders" : "Apply for Tenders",
+      title: subType === "provide-tenders" ? "Post Tender" : "Find Tender",
       fields:
         subType === "provide-tenders"
           ? ["tenderValue", "tenderCategory"]
           : ["certifications", "projectExperience"],
     },
     equipments: {
-      title: subType === "rent-out-equipment" ? "Rent Out Equipment" : "Rent Equipment",
+      title: subType === "rent-out-equipment" ? "List Equipment" : "Need Equipment",
       fields: ["equipmentTypes"],
     },
     machinery: {
-      title: subType === "provide-machinery" ? "Provide Machinery" : "Need Machinery",
+      title: subType === "provide-machinery" ? "List Machinery" : "Need Machinery",
       fields: subType === "provide-machinery" ? ["machineryTypes"] : ["machineryTypes"],
     },
     pmc: {
-      title: subType === "offer-pmc-services" ? "Offer PMC Services" : "Hire PMC",
+      title: subType === "offer-pmc-services" ? "Provide Service" : "Need Service",
       fields: ["projectExperience", "certifications"],
     },
     csm: {
-      title: subType === "offer-csm-services" ? "Offer CSM Services" : "Hire CSM",
+      title: subType === "offer-csm-services" ? "Provide Service" : "Need Service",
       fields: ["projectExperience", "certifications"],
     },
     logistics: {
-      title: subType === "provide-logistics" ? "Provide Logistics" : "Need Logistics",
+      title: subType === "provide-logistics" ? "Provide Service" : "Need Service",
       fields: ["serviceArea", "vehicleTypes"],
     },
     vehicles: {
-      title: subType === "rent-out-vehicles" ? "Rent Out Vehicles" : "Rent Vehicles",
+      title: subType === "rent-out-vehicles" ? "List Vehicle" : "Need Vehicle",
       fields: ["vehicleTypes"],
     },
   };
@@ -207,7 +207,7 @@ const ResourceSignup = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-background flex flex-col justify-center p-6">
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 flex flex-col justify-center p-6">
       {/* Animated Background Elements */}
       <div className="absolute top-0 right-0 w-full h-[400px] bg-gradient-to-b from-blue-500/10 to-transparent rounded-bl-[4rem] -z-10" />
       <div className="absolute bottom-20 -left-20 w-64 h-64 bg-cyan-400/20 rounded-full blur-3xl animate-pulse" />
@@ -216,9 +216,9 @@ const ResourceSignup = () => {
         {/* Back Button */}
         <button
           onClick={() => navigate(`/resources/${category}`)}
-          className="group flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+          className="group flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors"
         >
-          <div className="size-8 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center group-hover:bg-slate-100 dark:group-hover:bg-slate-800 transition-colors">
+          <div className="size-8 rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:bg-slate-100 transition-colors">
             <ArrowLeft className="size-4" />
           </div>
           <span className="text-sm font-semibold">Back</span>
@@ -229,16 +229,16 @@ const ResourceSignup = () => {
           <div className="inline-flex items-center justify-center size-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl shadow-xl shadow-blue-500/20 mb-4 transform hover:scale-105 transition-transform duration-300">
             <Building2 className="size-8 text-white" />
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-3xl font-black tracking-tight text-slate-900">
             {config.title}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-medium max-w-xs mx-auto">
+          <p className="text-slate-500 font-medium max-w-xs mx-auto">
             Create your account to access resources
           </p>
         </div>
 
         {/* Form Card */}
-        <Card className="border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-xl shadow-slate-200/50 dark:shadow-none p-6 animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-backwards delay-100">
+        <Card className="border-0 bg-white/80 backdrop-blur-xl shadow-xl shadow-slate-200/50 p-6 animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-backwards delay-100">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Basic Fields */}
             <div className="space-y-1.5">
@@ -252,7 +252,7 @@ const ResourceSignup = () => {
                   placeholder="John Doe"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                  className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                   required
                 />
               </div>
@@ -269,7 +269,7 @@ const ResourceSignup = () => {
                   placeholder="your_username"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                  className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                   required
                 />
               </div>
@@ -286,7 +286,7 @@ const ResourceSignup = () => {
                   placeholder="Your Company/Organization"
                   value={formData.organizationName}
                   onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-                  className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                  className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                   required
                 />
               </div>
@@ -303,7 +303,7 @@ const ResourceSignup = () => {
                   placeholder="+91 987..."
                   value={formData.phoneNumber}
                   onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                  className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                  className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                   required
                 />
               </div>
@@ -320,7 +320,7 @@ const ResourceSignup = () => {
                   placeholder="contact@organization.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                  className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                   required
                 />
               </div>
@@ -330,7 +330,7 @@ const ResourceSignup = () => {
             {config.fields.includes("investmentAmount") && (
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
-                  {subType === "want-to-invest" ? "Investment Budget" : "Funding Required"}
+                  {subType === "want-to-invest" ? "Investment Budget" : "Funding Requirement"}
                 </label>
                 <div className="relative group">
                   <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
@@ -339,7 +339,7 @@ const ResourceSignup = () => {
                     placeholder="₹10L - ₹50L"
                     value={formData.investmentAmount}
                     onChange={(e) => setFormData({ ...formData, investmentAmount: e.target.value })}
-                    className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                    className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                   />
                 </div>
               </div>
@@ -348,7 +348,7 @@ const ResourceSignup = () => {
             {config.fields.includes("investmentSector") && (
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
-                  {subType === "want-to-invest" ? "Investment Sectors" : "Business Sectors"}
+                  {subType === "want-to-invest" ? "Target Sectors" : "Business Sectors"}
                 </label>
                 <div className="flex gap-2">
                   <div className="relative flex-1 group">
@@ -361,13 +361,13 @@ const ResourceSignup = () => {
                       onKeyPress={(e) =>
                         e.key === "Enter" && (e.preventDefault(), handleAddTag("investmentSector"))
                       }
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     />
                   </div>
                   <Button
                     type="button"
                     onClick={() => handleAddTag("investmentSector")}
-                    className="h-14 px-6 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90"
+                    className="h-14 px-6 rounded-2xl bg-slate-900 text-white font-bold hover:opacity-90"
                   >
                     Add
                   </Button>
@@ -377,7 +377,7 @@ const ResourceSignup = () => {
                     {formData.investmentSector.map((sector, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
                       >
                         {sector}
                         <button
@@ -406,7 +406,7 @@ const ResourceSignup = () => {
                     placeholder="₹1Cr - ₹5Cr"
                     value={formData.tenderValue}
                     onChange={(e) => setFormData({ ...formData, tenderValue: e.target.value })}
-                    className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                    className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                   />
                 </div>
               </div>
@@ -428,13 +428,13 @@ const ResourceSignup = () => {
                       onKeyPress={(e) =>
                         e.key === "Enter" && (e.preventDefault(), handleAddTag("tenderCategory"))
                       }
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     />
                   </div>
                   <Button
                     type="button"
                     onClick={() => handleAddTag("tenderCategory")}
-                    className="h-14 px-6 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90"
+                    className="h-14 px-6 rounded-2xl bg-slate-900 text-white font-bold hover:opacity-90"
                   >
                     Add
                   </Button>
@@ -444,7 +444,7 @@ const ResourceSignup = () => {
                     {formData.tenderCategory.map((cat, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
                       >
                         {cat}
                         <button
@@ -477,13 +477,13 @@ const ResourceSignup = () => {
                       onKeyPress={(e) =>
                         e.key === "Enter" && (e.preventDefault(), handleAddTag("machineryTypes"))
                       }
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     />
                   </div>
                   <Button
                     type="button"
                     onClick={() => handleAddTag("machineryTypes")}
-                    className="h-14 px-6 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90"
+                    className="h-14 px-6 rounded-2xl bg-slate-900 text-white font-bold hover:opacity-90"
                   >
                     Add
                   </Button>
@@ -493,7 +493,7 @@ const ResourceSignup = () => {
                     {formData.machineryTypes.map((type, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
                       >
                         {type}
                         <button
@@ -526,13 +526,13 @@ const ResourceSignup = () => {
                       onKeyPress={(e) =>
                         e.key === "Enter" && (e.preventDefault(), handleAddTag("equipmentTypes"))
                       }
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     />
                   </div>
                   <Button
                     type="button"
                     onClick={() => handleAddTag("equipmentTypes")}
-                    className="h-14 px-6 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90"
+                    className="h-14 px-6 rounded-2xl bg-slate-900 text-white font-bold hover:opacity-90"
                   >
                     Add
                   </Button>
@@ -542,7 +542,7 @@ const ResourceSignup = () => {
                     {formData.equipmentTypes.map((type, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
                       >
                         {type}
                         <button
@@ -575,13 +575,13 @@ const ResourceSignup = () => {
                       onKeyPress={(e) =>
                         e.key === "Enter" && (e.preventDefault(), handleAddTag("vehicleTypes"))
                       }
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     />
                   </div>
                   <Button
                     type="button"
                     onClick={() => handleAddTag("vehicleTypes")}
-                    className="h-14 px-6 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90"
+                    className="h-14 px-6 rounded-2xl bg-slate-900 text-white font-bold hover:opacity-90"
                   >
                     Add
                   </Button>
@@ -591,7 +591,7 @@ const ResourceSignup = () => {
                     {formData.vehicleTypes.map((type, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
                       >
                         {type}
                         <button
@@ -620,7 +620,7 @@ const ResourceSignup = () => {
                     placeholder="e.g., Pan India, Maharashtra"
                     value={formData.serviceArea}
                     onChange={(e) => setFormData({ ...formData, serviceArea: e.target.value })}
-                    className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                    className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                   />
                 </div>
               </div>
@@ -640,7 +640,7 @@ const ResourceSignup = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, projectExperience: parseInt(e.target.value) || 0 })
                     }
-                    className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                    className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     min="0"
                     max="50"
                   />
@@ -664,13 +664,13 @@ const ResourceSignup = () => {
                       onKeyPress={(e) =>
                         e.key === "Enter" && (e.preventDefault(), handleAddTag("certifications"))
                       }
-                      className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                      className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     />
                   </div>
                   <Button
                     type="button"
                     onClick={() => handleAddTag("certifications")}
-                    className="h-14 px-6 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90"
+                    className="h-14 px-6 rounded-2xl bg-slate-900 text-white font-bold hover:opacity-90"
                   >
                     Add
                   </Button>
@@ -680,7 +680,7 @@ const ResourceSignup = () => {
                     {formData.certifications.map((cert, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 rounded-xl text-xs font-bold uppercase tracking-wider animate-in zoom-in-50"
                       >
                         {cert}
                         <button
@@ -711,14 +711,14 @@ const ResourceSignup = () => {
                   placeholder="Min. 6 characters"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="pl-12 pr-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                  className="pl-12 pr-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                   required
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                 </button>
@@ -738,14 +738,14 @@ const ResourceSignup = () => {
                   placeholder="Re-enter password"
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className="pl-12 pr-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                  className="pl-12 pr-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                   required
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showConfirmPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                 </button>
@@ -755,7 +755,7 @@ const ResourceSignup = () => {
             {/* Error Message */}
             {error && (
               <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in zoom-in-95 duration-200">
-                <p className="text-sm text-red-600 dark:text-red-400 font-bold text-center">
+                <p className="text-sm text-red-600 font-bold text-center">
                   {error}
                 </p>
               </div>
@@ -783,7 +783,7 @@ const ResourceSignup = () => {
                 Already have an account?{" "}
                 <Link
                   to="/login/resource"
-                  className="text-blue-600 dark:text-blue-400 font-bold hover:underline"
+                  className="text-blue-600 font-bold hover:underline"
                 >
                   Login
                 </Link>

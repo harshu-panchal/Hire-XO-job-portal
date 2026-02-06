@@ -170,7 +170,7 @@ const VehicleInquiries = () => {
             placeholder="Search leads..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] py-4 pl-14 pr-6 text-sm font-medium focus:outline-none focus:border-blue-600 transition-all font-sans"
+            className="w-full bg-white border border-slate-200 rounded-[2rem] py-4 pl-14 pr-6 text-sm font-medium focus:outline-none focus:border-blue-600 transition-all font-sans"
           />
           {searchQuery && (
             <button
@@ -184,7 +184,7 @@ const VehicleInquiries = () => {
 
         {/* Filter Menu */}
         {showFilterMenu && (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-white/10 space-y-2">
+          <div className="bg-white rounded-2xl p-4 border border-slate-200 space-y-2">
             <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">
               Filter by Status
             </p>
@@ -199,7 +199,7 @@ const VehicleInquiries = () => {
                   className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                     statusFilter === status
                       ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                      : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                      : "bg-slate-50 text-slate-600 hover:bg-slate-100"
                   }`}
                 >
                   {status} ({statusCounts[status]})
@@ -215,7 +215,7 @@ const VehicleInquiries = () => {
             <span className="text-xs font-black uppercase tracking-widest text-slate-400">
               Filtered:
             </span>
-            <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-900">
+            <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-lg border border-blue-200">
               <span className="text-xs font-bold text-blue-600">{statusFilter}</span>
               <button
                 onClick={() => setStatusFilter("All")}
@@ -230,21 +230,21 @@ const VehicleInquiries = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded-2xl border border-blue-200 dark:border-blue-900">
+        <div className="bg-blue-50 p-3 rounded-2xl border border-blue-200">
           <p className="text-[9px] font-black uppercase tracking-widest text-blue-600 mb-1">New</p>
           <p className="text-2xl font-black text-blue-600">{statusCounts.New}</p>
         </div>
-        <div className="bg-emerald-50 dark:bg-emerald-950/20 p-3 rounded-2xl border border-emerald-200 dark:border-emerald-900">
+        <div className="bg-emerald-50 p-3 rounded-2xl border border-emerald-200">
           <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600 mb-1">
             Replied
           </p>
           <p className="text-2xl font-black text-emerald-600">{statusCounts.Replied}</p>
         </div>
-        <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-white/10">
-          <p className="text-[9px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-1">
+        <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+          <p className="text-[9px] font-black uppercase tracking-widest text-slate-600 mb-1">
             Closed
           </p>
-          <p className="text-2xl font-black text-slate-600 dark:text-slate-400">
+          <p className="text-2xl font-black text-slate-600">
             {statusCounts.Closed}
           </p>
         </div>
@@ -257,7 +257,7 @@ const VehicleInquiries = () => {
             <div
               key={inquiry.id}
               onClick={() => handleViewDetails(inquiry)}
-              className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] p-5 border border-slate-200 dark:border-white/10 group active:scale-[0.98] transition-all cursor-pointer hover:shadow-lg"
+              className="bg-white rounded-[2.5rem] p-5 border border-slate-200 group active:scale-[0.98] transition-all cursor-pointer hover:shadow-lg"
             >
               <div className="flex items-start gap-4">
                 <div
@@ -277,7 +277,7 @@ const VehicleInquiries = () => {
                       {inquiry.time}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 font-medium leading-relaxed">
+                  <p className="text-xs text-slate-600 line-clamp-2 mb-4 font-medium leading-relaxed">
                     "{inquiry.message}"
                   </p>
 
@@ -288,7 +288,7 @@ const VehicleInquiries = () => {
                           e.stopPropagation();
                           handleCall(inquiry.phone || "", inquiry.name);
                         }}
-                        className="size-9 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all border border-slate-100 dark:border-white/5"
+                        className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-all border border-slate-100"
                       >
                         <Phone className="size-4" />
                       </button>
@@ -297,7 +297,7 @@ const VehicleInquiries = () => {
                           e.stopPropagation();
                           handleEmail(inquiry.email || "", inquiry.name);
                         }}
-                        className="size-9 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all border border-slate-100 dark:border-white/5"
+                        className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-all border border-slate-100"
                       >
                         <Mail className="size-4" />
                       </button>
@@ -308,7 +308,7 @@ const VehicleInquiries = () => {
                           ? "bg-blue-600 text-white"
                           : inquiry.status === "Replied"
                             ? "bg-emerald-500 text-white"
-                            : "bg-slate-100 text-slate-400 dark:bg-white/5"
+                            : "bg-slate-100 text-slate-400"
                       }`}
                     >
                       {inquiry.status}
@@ -320,7 +320,7 @@ const VehicleInquiries = () => {
           ))
         ) : (
           <div className="text-center py-12">
-            <MessageSquare className="size-12 text-slate-200 dark:text-white/10 mx-auto mb-3" />
+            <MessageSquare className="size-12 text-slate-200 mx-auto mb-3" />
             <p className="text-sm font-bold text-slate-400">No inquiries found</p>
             <p className="text-xs text-slate-400 mt-1">Try adjusting your search or filters</p>
           </div>
@@ -335,7 +335,7 @@ const VehicleInquiries = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-2xl w-full border border-slate-200 dark:border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto"
+            className="bg-white rounded-3xl p-6 max-w-2xl w-full border border-slate-200 shadow-2xl max-h-[85vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
@@ -351,7 +351,7 @@ const VehicleInquiries = () => {
               </div>
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-10 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-5" />
               </button>
@@ -365,25 +365,25 @@ const VehicleInquiries = () => {
                     ? "bg-blue-600 text-white"
                     : selectedInquiry.status === "Replied"
                       ? "bg-emerald-500 text-white"
-                      : "bg-slate-100 text-slate-400 dark:bg-white/5"
+                      : "bg-slate-100 text-slate-400"
                 }`}
               >
                 {selectedInquiry.status}
               </div>
 
               {/* Message */}
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+              <div className="p-4 bg-slate-50 rounded-2xl">
                 <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
                   Message
                 </p>
-                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                <p className="text-sm text-slate-700 leading-relaxed">
                   "{selectedInquiry.message}"
                 </p>
               </div>
 
               {/* Details Grid */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-2xl border border-blue-200 dark:border-blue-900">
+                <div className="p-4 bg-blue-50 rounded-2xl border border-blue-200">
                   <div className="flex items-center gap-2 mb-2">
                     <Car className="size-4 text-blue-600" />
                     <p className="text-xs font-black uppercase tracking-widest text-blue-600">
@@ -393,7 +393,7 @@ const VehicleInquiries = () => {
                   <p className="text-sm font-bold text-blue-600">{selectedInquiry.vehicle}</p>
                 </div>
 
-                <div className="p-4 bg-purple-50 dark:bg-purple-950/20 rounded-2xl border border-purple-200 dark:border-purple-900">
+                <div className="p-4 bg-purple-50 rounded-2xl border border-purple-200">
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="size-4 text-purple-600" />
                     <p className="text-xs font-black uppercase tracking-widest text-purple-600">
@@ -403,7 +403,7 @@ const VehicleInquiries = () => {
                   <p className="text-sm font-bold text-purple-600">{selectedInquiry.rentalDates}</p>
                 </div>
 
-                <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-200 dark:border-emerald-900">
+                <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
                   <div className="flex items-center gap-2 mb-2">
                     <MapPin className="size-4 text-emerald-600" />
                     <p className="text-xs font-black uppercase tracking-widest text-emerald-600">
@@ -413,7 +413,7 @@ const VehicleInquiries = () => {
                   <p className="text-sm font-bold text-emerald-600">{selectedInquiry.location}</p>
                 </div>
 
-                <div className="p-4 bg-orange-50 dark:bg-orange-950/20 rounded-2xl border border-orange-200 dark:border-orange-900">
+                <div className="p-4 bg-orange-50 rounded-2xl border border-orange-200">
                   <div className="flex items-center gap-2 mb-2">
                     <Clock className="size-4 text-orange-600" />
                     <p className="text-xs font-black uppercase tracking-widest text-orange-600">
@@ -426,7 +426,7 @@ const VehicleInquiries = () => {
 
               {/* Contact Info */}
               <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
                   <Phone className="size-5 text-slate-400" />
                   <div className="flex-1">
                     <p className="text-xs font-black uppercase tracking-widest text-slate-400">
@@ -442,7 +442,7 @@ const VehicleInquiries = () => {
                   </button>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
                   <Mail className="size-5 text-slate-400" />
                   <div className="flex-1">
                     <p className="text-xs font-black uppercase tracking-widest text-slate-400">
@@ -460,7 +460,7 @@ const VehicleInquiries = () => {
               </div>
 
               {/* Status Actions */}
-              <div className="pt-6 border-t border-slate-200 dark:border-white/10">
+              <div className="pt-6 border-t border-slate-200">
                 <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">
                   Update Status
                 </p>

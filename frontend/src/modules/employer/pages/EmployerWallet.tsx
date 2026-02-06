@@ -43,10 +43,10 @@ const EmployerWallet = () => {
   return (
     <div className="pb-32 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 -mx-5 px-5">
+      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
         >
           <ChevronLeft className="size-6" />
         </button>
@@ -91,11 +91,11 @@ const EmployerWallet = () => {
             <Clock className="size-4 text-slate-300" />
           </div>
 
-          <div className="bg-white dark:bg-slate-900/50 rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden">
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
             {transactions.map((tx, i) => (
               <div
                 key={tx.id}
-                className={`p-5 flex items-center justify-between ${i !== transactions.length - 1 ? "border-b border-slate-100 dark:border-white/5" : ""}`}
+                className={`p-5 flex items-center justify-between ${i !== transactions.length - 1 ? "border-b border-slate-100" : ""}`}
               >
                 <div className="flex items-center gap-4">
                   <div
@@ -116,7 +116,7 @@ const EmployerWallet = () => {
                 </div>
                 <div className="text-right">
                   <p
-                    className={`text-sm font-black ${tx.type === "topup" ? "text-green-500" : "text-slate-900 dark:text-white"}`}
+                    className={`text-sm font-black ${tx.type === "topup" ? "text-green-500" : "text-slate-900"}`}
                   >
                     {tx.type === "topup" ? "+" : "-"}₹{tx.amount}
                   </p>
@@ -127,7 +127,7 @@ const EmployerWallet = () => {
         </div>
 
         {/* Info Box */}
-        <div className="p-6 rounded-[2rem] bg-slate-100 dark:bg-white/5 border border-dashed border-slate-200 dark:border-white/10">
+        <div className="p-6 rounded-[2rem] bg-slate-100 border border-dashed border-slate-200">
           <div className="flex gap-4">
             <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
               <Briefcase className="size-5 text-primary" />

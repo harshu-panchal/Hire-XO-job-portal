@@ -37,21 +37,21 @@ const BuyDashboard = () => {
       value: "124",
       icon: Package,
       color: "text-amber-600",
-      bgColor: "bg-amber-100 dark:bg-amber-950/30",
+      bgColor: "bg-amber-100",
     },
     {
       label: "Price Drop",
       value: "12",
       icon: TrendingUp,
       color: "text-rose-600",
-      bgColor: "bg-rose-100 dark:bg-rose-950/30",
+      bgColor: "bg-rose-100",
     },
     {
       label: "Top Sellers",
       value: "85+",
       icon: BadgeCheck,
       color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-950/30",
+      bgColor: "bg-blue-100",
     },
   ];
 
@@ -72,7 +72,7 @@ const BuyDashboard = () => {
           Machinery <br />
           <span className="text-amber-600">Marketplace</span>
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
           Buy verified industrial machinery
         </p>
       </div>
@@ -82,7 +82,7 @@ const BuyDashboard = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm"
+            className="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm"
           >
             <div className={`size-10 rounded-2xl ${stat.bgColor} flex items-center justify-center`}>
               <stat.icon className={`size-5 ${stat.color}`} />
@@ -106,7 +106,7 @@ const BuyDashboard = () => {
               key={cat.name}
               className="flex flex-col items-center gap-2 group cursor-pointer shrink-0"
             >
-              <div className="size-16 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 group-hover:bg-amber-50 dark:group-hover:bg-amber-950/20 group-hover:border-amber-200 transition-all">
+              <div className="size-16 rounded-[2rem] bg-white border border-slate-200 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 group-hover:bg-amber-50 group-hover:border-amber-200 transition-all">
                 {cat.icon}
               </div>
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
@@ -134,6 +134,7 @@ const BuyDashboard = () => {
         <div className="space-y-5">
           {featuredMachines.length === 0 ? <div className="text-center p-4 text-slate-400 text-xs font-bold uppercase">No machinery listed</div> : featuredMachines.map((item) => (
             <Link
+<<<<<<< HEAD
               key={item._id}
               to={`/machinery/buy/item/${item._id}`}
               className="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative"
@@ -147,6 +148,19 @@ const BuyDashboard = () => {
                       className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   ) : <div className="size-full flex items-center justify-center"><Package className="text-slate-300" /></div>}
+=======
+              key={item.id}
+              to={`/machinery/buy/item/${item.id}`}
+              className="block bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative"
+            >
+              <div className="flex gap-4">
+                <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 shrink-0">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+>>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
                 </div>
                 <div className="flex-1 space-y-2 py-1">
                   <div className="flex items-center justify-between">
@@ -154,8 +168,13 @@ const BuyDashboard = () => {
                       <Star className="size-3 text-amber-500 fill-amber-500" />
                       <span className="text-[10px] font-black">4.8</span>
                     </div>
+<<<<<<< HEAD
                     <span className="px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 text-[8px] font-black uppercase tracking-widest">
                       {item.condition || "Used"}
+=======
+                    <span className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase tracking-widest">
+                      {item.condition}
+>>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
                     </span>
                   </div>
                   <h3 className="text-base font-black tracking-tight group-hover:text-amber-600 transition-colors leading-tight line-clamp-2">
@@ -170,7 +189,7 @@ const BuyDashboard = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100 dark:border-white/5">
+              <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
                 <div className="flex items-center gap-1.5 text-slate-400">
                   <MapPin className="size-3" />
                   <span className="text-[10px] font-black uppercase tracking-widest">

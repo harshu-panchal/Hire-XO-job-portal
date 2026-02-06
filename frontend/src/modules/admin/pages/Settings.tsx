@@ -14,7 +14,6 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { useTheme } from "../../../context/ThemeContext";
 import { useAuthStore } from "../../../store/useAuthStore";
 
 const containerVariants: Variants = {
@@ -514,43 +513,11 @@ function SecuritySettings() {
 }
 
 function AppearanceSettings() {
-  const { theme, setTheme } = useTheme();
-
-  const themes = [
-    { id: "light", label: "Light" },
-    { id: "dark", label: "Dark" },
-    { id: "system", label: "System" },
-  ] as const;
-
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">Appearance</h3>
-        <p className="text-sm text-slate-500 dark:text-white/50">Customize the look and feel</p>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-3">
-          Theme
-        </label>
-        <div className="grid grid-cols-3 gap-4">
-          {themes.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTheme(t.id)}
-              className={`p-4 rounded-xl border-2 text-center transition-all ${theme === t.id
-                  ? "border-primary bg-primary/5 shadow-sm"
-                  : "border-slate-100 dark:border-white/5 hover:border-primary/30"
-                }`}
-            >
-              <span
-                className={`font-semibold text-sm ${theme === t.id ? "text-primary" : "text-slate-600 dark:text-white/60"}`}
-              >
-                {t.label}
-              </span>
-            </button>
-          ))}
-        </div>
+        <h3 className="text-lg font-semibold text-slate-900 mb-1">Appearance</h3>
+        <p className="text-sm text-slate-500">Appearance settings have been simplified</p>
       </div>
     </div>
   );

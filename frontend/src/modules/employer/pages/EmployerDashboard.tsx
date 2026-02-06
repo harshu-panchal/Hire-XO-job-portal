@@ -1,5 +1,16 @@
 import { useState, useEffect } from "react";
-import { Users, Briefcase, TrendingUp, Clock, Plus, Search, ArrowUpRight, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
+import {
+  Users,
+  Briefcase,
+  TrendingUp,
+  Clock,
+  Plus,
+  Search,
+  ArrowUpRight,
+  CheckCircle2,
+  ShieldCheck,
+  Zap,
+} from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { userService } from "@/services/userService";
 import { applicationService } from "@/services/applicationService";
@@ -114,7 +125,9 @@ const EmployerDashboard = () => {
           </div>
           <div>
             <h3 className="text-2xl font-black mb-2">Post a Job</h3>
-            <p className="text-white/80 text-sm font-medium">Reach thousands of qualified candidates.</p>
+            <p className="text-white/80 text-sm font-medium">
+              Reach thousands of qualified candidates.
+            </p>
           </div>
           <Link
             to="/login/employer"
@@ -126,7 +139,7 @@ const EmployerDashboard = () => {
 
         {/* Features Grid */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white dark:bg-slate-900/50 p-5 rounded-[2rem] border border-slate-200 dark:border-white/10 space-y-3">
+          <div className="bg-white p-5 rounded-[2rem] border border-slate-200 space-y-3">
             <div className="size-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
               <Users className="size-5" />
             </div>
@@ -135,7 +148,7 @@ const EmployerDashboard = () => {
               AI-powered candidate recommendations.
             </p>
           </div>
-          <div className="bg-white dark:bg-slate-900/50 p-5 rounded-[2rem] border border-slate-200 dark:border-white/10 space-y-3">
+          <div className="bg-white p-5 rounded-[2rem] border border-slate-200 space-y-3">
             <div className="size-10 bg-green-500/10 rounded-xl flex items-center justify-center text-green-500">
               <Zap className="size-5" />
             </div>
@@ -144,7 +157,7 @@ const EmployerDashboard = () => {
               Streamlined application process.
             </p>
           </div>
-          <div className="bg-white dark:bg-slate-900/50 p-5 rounded-[2rem] border border-slate-200 dark:border-white/10 space-y-3 col-span-2">
+          <div className="bg-white p-5 rounded-[2rem] border border-slate-200 space-y-3 col-span-2">
             <div className="size-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-500">
               <ShieldCheck className="size-5" />
             </div>
@@ -158,7 +171,10 @@ const EmployerDashboard = () => {
         {/* Login Prompt */}
         <div className="text-center">
           <p className="text-xs font-bold text-slate-400 mb-2">Already have an account?</p>
-          <Link to="/login/employer" className="text-primary font-black uppercase tracking-widest text-xs hover:underline">
+          <Link
+            to="/login/employer"
+            className="text-primary font-black uppercase tracking-widest text-xs hover:underline"
+          >
             Login to Dashboard
           </Link>
         </div>
@@ -195,7 +211,7 @@ const EmployerDashboard = () => {
             <Link
               key={i}
               to={stat.to}
-              className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 flex items-center justify-between active:scale-[0.98] transition-all"
+              className="bg-white p-6 rounded-[2.5rem] border border-slate-200 flex items-center justify-between active:scale-[0.98] transition-all"
             >
               <div className="flex items-center gap-4">
                 <div className={`size-14 rounded-2xl ${stat.bg} flex items-center justify-center`}>
@@ -208,14 +224,14 @@ const EmployerDashboard = () => {
                   <p className="text-2xl font-black tracking-tight">{stat.value}</p>
                 </div>
               </div>
-              <div className="size-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center">
+              <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center">
                 <ArrowUpRight className="size-5 text-slate-300" />
               </div>
             </Link>
           ) : (
             <div
               key={i}
-              className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-white/10 flex items-center justify-between"
+              className="bg-white p-6 rounded-[2.5rem] border border-slate-200 flex items-center justify-between"
             >
               <div className="flex items-center gap-4">
                 <div className={`size-14 rounded-2xl ${stat.bg} flex items-center justify-center`}>
@@ -228,7 +244,7 @@ const EmployerDashboard = () => {
                   <p className="text-2xl font-black tracking-tight">{stat.value}</p>
                 </div>
               </div>
-              <div className="size-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center">
+              <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center">
                 <ArrowUpRight className="size-5 text-slate-300" />
               </div>
             </div>
@@ -250,7 +266,7 @@ const EmployerDashboard = () => {
               navigate(`/employer/applications?q=${encodeURIComponent(query)}`);
             }
           }}
-          className="w-full h-16 pl-14 pr-6 rounded-[2rem] bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black placeholder:text-slate-400"
+          className="w-full h-16 pl-14 pr-6 rounded-[2rem] bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black placeholder:text-slate-400"
         />
       </div>
 
@@ -273,7 +289,7 @@ const EmployerDashboard = () => {
             <Link
               key={app.id}
               to="/employer/applications"
-              className="bg-white dark:bg-slate-900/50 p-5 rounded-3xl border border-slate-200 dark:border-white/10 flex items-center gap-4 active:scale-[0.98] transition-all"
+              className="bg-white p-5 rounded-3xl border border-slate-200 flex items-center gap-4 active:scale-[0.98] transition-all"
             >
               <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
                 <span className="text-primary font-black text-xs">{app.avatar}</span>
@@ -286,12 +302,13 @@ const EmployerDashboard = () => {
               </div>
               <div className="flex flex-col items-end gap-1.5">
                 <div
-                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${app.status === "Pending"
+                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                    app.status === "Pending"
                       ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
                       : app.status === "Accepted"
                         ? "bg-green-500/10 text-green-600 border-green-500/20"
                         : "bg-red-500/10 text-red-600 border-red-500/20"
-                    }`}
+                  }`}
                 >
                   {app.status}
                 </div>
@@ -312,6 +329,5 @@ const EmployerDashboard = () => {
     </div>
   );
 };
-
 
 export default EmployerDashboard;

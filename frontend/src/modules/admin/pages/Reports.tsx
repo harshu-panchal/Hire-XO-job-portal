@@ -91,13 +91,13 @@ export default function Reports() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Reports</h1>
-          <p className="text-slate-500 dark:text-white/60 mt-1">
+          <h1 className="text-2xl font-semibold text-slate-900">Reports</h1>
+          <p className="text-slate-500 mt-1">
             View analytics and generate reports
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <select className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+          <select className="px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
             <option>Last 30 days</option>
             <option>Last 90 days</option>
             <option>This Year</option>
@@ -130,12 +130,12 @@ export default function Reports() {
         {/* User Growth Chart */}
         <motion.div
           variants={itemVariants}
-          className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-6"
+          className="bg-white rounded-xl border border-slate-200 p-6"
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">User Growth</h3>
-              <p className="text-sm text-slate-500 dark:text-white/50">
+              <h3 className="text-lg font-semibold text-slate-900">User Growth</h3>
+              <p className="text-sm text-slate-500">
                 Monthly new user registrations
               </p>
             </div>
@@ -169,12 +169,12 @@ export default function Reports() {
         {/* Revenue Chart */}
         <motion.div
           variants={itemVariants}
-          className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-6"
+          className="bg-white rounded-xl border border-slate-200 p-6"
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Revenue</h3>
-              <p className="text-sm text-slate-500 dark:text-white/50">Monthly revenue in INR</p>
+              <h3 className="text-lg font-semibold text-slate-900">Revenue</h3>
+              <p className="text-sm text-slate-500">Monthly revenue in INR</p>
             </div>
           </div>
           <div className="h-[280px]">
@@ -203,9 +203,9 @@ export default function Reports() {
         {/* User Distribution */}
         <motion.div
           variants={itemVariants}
-          className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-6"
+          className="bg-white rounded-xl border border-slate-200 p-6"
         >
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
             User Distribution
           </h3>
           <div className="h-[200px] flex items-center justify-center">
@@ -231,7 +231,7 @@ export default function Reports() {
             {pieData.map((item, index) => (
               <div key={item.name} className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index] }} />
-                <span className="text-xs text-slate-600 dark:text-white/60">{item.name}</span>
+                <span className="text-xs text-slate-600">{item.name}</span>
               </div>
             ))}
           </div>
@@ -240,9 +240,9 @@ export default function Reports() {
         {/* Top Performing */}
         <motion.div
           variants={itemVariants}
-          className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-6"
+          className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6"
         >
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
             Top Employers
           </h3>
           <div className="space-y-4">
@@ -254,19 +254,19 @@ export default function Reports() {
             ].map((employer, index) => (
               <div
                 key={employer.name}
-                className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-white/5 last:border-0"
+                className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0"
               >
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
                     {index + 1}
                   </span>
-                  <span className="font-medium text-slate-900 dark:text-white">
+                  <span className="font-medium text-slate-900">
                     {employer.name}
                   </span>
                 </div>
                 <div className="flex items-center gap-6 text-sm">
-                  <span className="text-slate-500 dark:text-white/50">{employer.jobs} jobs</span>
-                  <span className="text-green-600 dark:text-green-400 font-medium">
+                  <span className="text-slate-500">{employer.jobs} jobs</span>
+                  <span className="text-green-600 font-medium">
                     {employer.hires} hires
                   </span>
                 </div>
@@ -291,18 +291,18 @@ function StatCard({
   icon: any;
 }) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-5">
+    <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center justify-between mb-3">
         <div className="p-2 rounded-lg bg-primary/10">
           <Icon className="w-5 h-5 text-primary" />
         </div>
-        <span className="text-xs font-medium text-green-600 dark:text-green-400 flex items-center gap-1">
+        <span className="text-xs font-medium text-green-600 flex items-center gap-1">
           <TrendingUp className="w-3 h-3" />
           {change}
         </span>
       </div>
-      <p className="text-2xl font-bold text-slate-900 dark:text-white">{value}</p>
-      <p className="text-sm text-slate-500 dark:text-white/50 mt-1">{title}</p>
+      <p className="text-2xl font-bold text-slate-900">{value}</p>
+      <p className="text-sm text-slate-500 mt-1">{title}</p>
     </div>
   );
 }

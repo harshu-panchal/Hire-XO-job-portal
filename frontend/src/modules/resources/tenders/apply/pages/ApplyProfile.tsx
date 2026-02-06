@@ -106,12 +106,12 @@ const ApplyProfile = () => {
       {/* Edit Modal */}
       {isEditing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[2rem] p-6 shadow-2xl border border-slate-200 dark:border-white/10 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white w-full max-w-lg rounded-[2rem] p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-black tracking-tight">Edit Organization Profile</h2>
               <button
                 onClick={() => setIsEditing(false)}
-                className="size-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:text-rose-600 transition-colors"
+                className="size-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-rose-100 hover:text-rose-600 transition-colors"
               >
                 <X className="size-4" />
               </button>
@@ -126,7 +126,7 @@ const ApplyProfile = () => {
                   type="text"
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
                   placeholder="Enter company name"
                 />
               </div>
@@ -140,7 +140,7 @@ const ApplyProfile = () => {
                     type="text"
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
                     placeholder="City, Country"
                   />
                 </div>
@@ -152,7 +152,7 @@ const ApplyProfile = () => {
                     type="text"
                     value={formData.website}
                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
                     placeholder="www.example.com"
                   />
                 </div>
@@ -169,7 +169,7 @@ const ApplyProfile = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, projectsWon: parseInt(e.target.value) || 0 })
                     }
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
                   />
                 </div>
                 <div className="space-y-1">
@@ -180,7 +180,7 @@ const ApplyProfile = () => {
                     type="text"
                     value={formData.experience}
                     onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
                     placeholder="e.g. 10+ Years"
                   />
                 </div>
@@ -194,7 +194,7 @@ const ApplyProfile = () => {
                   type="text"
                   value={formData.skills}
                   onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm"
                   placeholder="Civil, Electrical, Smart City"
                 />
               </div>
@@ -207,7 +207,7 @@ const ApplyProfile = () => {
                   rows={4}
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-white/10 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm resize-none"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-violet-500/20 outline-none font-bold text-sm resize-none"
                   placeholder="Brief description of your organization..."
                 />
               </div>
@@ -216,7 +216,7 @@ const ApplyProfile = () => {
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-xs border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                  className="flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-xs border border-slate-200 hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
@@ -278,8 +278,8 @@ const ApplyProfile = () => {
 
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm">
-          <div className="size-10 rounded-2xl bg-violet-100 dark:bg-violet-950/30 flex items-center justify-center">
+        <div className="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm">
+          <div className="size-10 rounded-2xl bg-violet-100 flex items-center justify-center">
             <Award className="size-5 text-violet-600" />
           </div>
           <div>
@@ -287,8 +287,8 @@ const ApplyProfile = () => {
             <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Won</p>
           </div>
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm">
-          <div className="size-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/30 flex items-center justify-center">
+        <div className="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm">
+          <div className="size-10 rounded-2xl bg-emerald-100 flex items-center justify-center">
             <Briefcase className="size-5 text-emerald-600" />
           </div>
           <div>
@@ -296,8 +296,8 @@ const ApplyProfile = () => {
             <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Exp</p>
           </div>
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm">
-          <div className="size-10 rounded-2xl bg-blue-100 dark:bg-blue-950/30 flex items-center justify-center">
+        <div className="bg-white border border-slate-200 rounded-3xl p-4 flex flex-col items-center text-center space-y-2 shadow-sm">
+          <div className="size-10 rounded-2xl bg-blue-100 flex items-center justify-center">
             <FileCheck className="size-5 text-blue-600" />
           </div>
           <div>
@@ -312,12 +312,12 @@ const ApplyProfile = () => {
         <h2 className="px-1 text-lg font-black tracking-tight flex items-center gap-2">
           <ShieldCheck className="size-5 text-violet-600" /> Organization Bio
         </h2>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shadow-sm">
-          <p className="text-sm font-bold text-slate-600 dark:text-slate-400 leading-relaxed italic">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm">
+          <p className="text-sm font-bold text-slate-600 leading-relaxed italic">
             "{companyData.bio}"
           </p>
           {companyData.website !== "Website not set" && (
-            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-4">
+            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-4">
               <a
                 href={
                   companyData.website.startsWith("http")
@@ -348,13 +348,13 @@ const ApplyProfile = () => {
             companyData.expertises.map((exp: string) => (
               <span
                 key={exp}
-                className="px-5 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest"
+                className="px-5 py-2.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-black uppercase tracking-widest"
               >
                 {exp}
               </span>
             ))
           ) : (
-            <span className="px-5 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest">
+            <span className="px-5 py-2.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-black uppercase tracking-widest">
               No sectors listed
             </span>
           )}
@@ -368,7 +368,7 @@ const ApplyProfile = () => {
           {companyData.regDetails.map((reg) => (
             <div
               key={reg.label}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl p-4 flex items-center justify-between group"
+              className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between group"
             >
               <div className="space-y-0.5">
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
@@ -376,7 +376,7 @@ const ApplyProfile = () => {
                 </p>
                 <p className="text-sm font-black tracking-tight">{reg.value}</p>
               </div>
-              <div className="size-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-violet-50 transition-colors">
+              <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-violet-50 transition-colors">
                 <ChevronRight className="size-4 text-slate-400 group-hover:text-violet-600" />
               </div>
             </div>

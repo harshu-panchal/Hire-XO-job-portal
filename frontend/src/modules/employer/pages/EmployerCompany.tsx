@@ -39,10 +39,10 @@ const EmployerCompany = () => {
   return (
     <div className="pb-40 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 -mx-5 px-5">
+      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
         >
           <ChevronLeft className="size-6" />
         </button>
@@ -54,7 +54,7 @@ const EmployerCompany = () => {
         {/* Logo Upload */}
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="size-32 rounded-[2.5rem] bg-primary/10 flex items-center justify-center overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl">
+            <div className="size-32 rounded-[2.5rem] bg-primary/10 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">
               {user?.profile.companyLogo ? (
                 <img
                   src={user.profile.companyLogo}
@@ -68,7 +68,7 @@ const EmployerCompany = () => {
             <button
               type="button"
               onClick={() => alert("Upload functionality coming soon!")}
-              className="absolute bottom-0 right-0 size-10 rounded-xl bg-slate-900 text-white flex items-center justify-center border-4 border-white dark:border-slate-800 active:scale-90 transition-all cursor-pointer"
+              className="absolute bottom-0 right-0 size-10 rounded-xl bg-slate-900 text-white flex items-center justify-center border-4 border-white active:scale-90 transition-all cursor-pointer"
             >
               <Upload className="size-4" />
             </button>
@@ -90,7 +90,7 @@ const EmployerCompany = () => {
                 required
                 value={formData.company}
                 onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
               />
             </div>
 
@@ -103,7 +103,7 @@ const EmployerCompany = () => {
                 placeholder="HQ Location"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
               />
             </div>
 
@@ -116,7 +116,7 @@ const EmployerCompany = () => {
                 placeholder="Website"
                 value={formData.website}
                 onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
               />
             </div>
 
@@ -133,7 +133,7 @@ const EmployerCompany = () => {
                   rows={4}
                   value={formData.about}
                   onChange={(e) => setFormData({ ...formData, about: e.target.value })}
-                  className="w-full p-5 pl-14 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black resize-none"
+                  className="w-full p-5 pl-14 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black resize-none"
                 />
               </div>
             </div>

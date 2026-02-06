@@ -202,33 +202,33 @@ const Login = () => {
 
   if (roleMismatch) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-background flex flex-col justify-center p-6 text-slate-900 dark:text-white">
+      <div className="min-h-screen relative overflow-hidden bg-slate-50 flex flex-col justify-center p-6 text-slate-900">
         <div
           className={`absolute top-0 left-0 w-full h-[400px] bg-gradient-to-b ${config.accent} opacity-5 rounded-b-[4rem] -z-10`}
         />
 
         <div className="w-full max-w-[400px] mx-auto space-y-6">
-          <Card className="border-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-2xl p-6 text-center animate-in fade-in zoom-in-95 duration-300">
-            <div className="size-16 bg-orange-100 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <Card className="border-0 bg-white/90 backdrop-blur-xl shadow-2xl p-6 text-center animate-in fade-in zoom-in-95 duration-300">
+            <div className="size-16 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <ShieldCheck className="size-8" />
             </div>
 
-            <h2 className="text-xl font-black text-slate-900 dark:text-white mb-2">
+            <h2 className="text-xl font-black text-slate-900 mb-2">
               Account Role Mismatch
             </h2>
 
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+            <p className="text-sm text-slate-500 mb-6 leading-relaxed">
               You logged in with a{" "}
-              <strong className="text-slate-900 dark:text-white">{roleMismatch.actual}</strong>{" "}
+              <strong className="text-slate-900">{roleMismatch.actual}</strong>{" "}
               account, but you are on the{" "}
-              <strong className="text-slate-900 dark:text-white">{roleMismatch.target}</strong>{" "}
+              <strong className="text-slate-900">{roleMismatch.target}</strong>{" "}
               portal.
             </p>
 
             <div className="space-y-3">
               <Button
                 onClick={handleContinueToDashboard}
-                className="w-full h-12 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:opacity-90 transition-all"
+                className="w-full h-12 rounded-xl bg-slate-900 text-white font-bold hover:opacity-90 transition-all"
               >
                 Continue to {roleMismatch.actual} Dashboard
               </Button>
@@ -236,7 +236,7 @@ const Login = () => {
               <Button
                 onClick={handleLogoutAndSwitch}
                 variant="outline"
-                className="w-full h-12 rounded-xl border-dashed border-slate-300 dark:border-slate-700 font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                className="w-full h-12 rounded-xl border-dashed border-slate-300 font-bold text-slate-600 hover:bg-slate-50"
               >
                 Logout & Try Different Account
               </Button>
@@ -248,7 +248,7 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-background flex flex-col justify-center p-6 text-slate-900 dark:text-white">
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 flex flex-col justify-center p-6 text-slate-900">
       {/* Animated Background Gradient */}
       <div
         className={`absolute top-0 left-0 w-full h-[400px] bg-gradient-to-b ${config.accent} opacity-5 rounded-b-[4rem] -z-10 transition-colors duration-500`}
@@ -258,9 +258,9 @@ const Login = () => {
         {/* Back Link */}
         <button
           onClick={() => navigate("/")}
-          className="group flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+          className="group flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors"
         >
-          <div className="size-8 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center group-hover:bg-slate-100 dark:group-hover:bg-slate-800 transition-colors">
+          <div className="size-8 rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:bg-slate-100 transition-colors">
             <ArrowLeft className="size-4" />
           </div>
           <span className="text-sm font-semibold">Back to Roles</span>
@@ -277,12 +277,12 @@ const Login = () => {
             <h1 className="text-3xl font-black tracking-tight">
               {config.title} <span className="text-slate-400 font-normal">Login</span>
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">{config.subtitle}</p>
+            <p className="text-slate-500 font-medium">{config.subtitle}</p>
           </div>
         </div>
 
         {/* Login Form Card */}
-        <Card className="border-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-xl shadow-slate-200/50 dark:shadow-none p-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <Card className="border-0 bg-white/80 backdrop-blur-xl shadow-xl shadow-slate-200/50 p-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
@@ -303,7 +303,7 @@ const Login = () => {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   onFocus={() => setFocusedField("email")}
                   onBlur={() => setFocusedField(null)}
-                  className="pl-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                  className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                   required
                 />
               </div>
@@ -328,13 +328,13 @@ const Login = () => {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   onFocus={() => setFocusedField("password")}
                   onBlur={() => setFocusedField(null)}
-                  className="pl-12 pr-12 h-14 bg-slate-50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                  className="pl-12 pr-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                 </button>
@@ -343,7 +343,7 @@ const Login = () => {
 
             {localError && (
               <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in zoom-in-95 duration-200">
-                <p className="text-sm text-red-600 dark:text-red-400 font-bold text-center">
+                <p className="text-sm text-red-600 font-bold text-center">
                   {localError}
                 </p>
               </div>

@@ -134,7 +134,7 @@ const BrowseProfile = () => {
         <h1 className="text-3xl font-black tracking-tight">
           Investor <span className="text-primary">Profile</span>
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest mt-1">
+        <p className="text-slate-500 font-black text-xs uppercase tracking-widest mt-1">
           Manage your investor information
         </p>
       </div>
@@ -146,7 +146,7 @@ const BrowseProfile = () => {
             <div className="size-20 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white font-black text-3xl">
               {profile.name.charAt(0)}
             </div>
-            <button className="absolute -bottom-1 -right-1 size-8 rounded-lg bg-white dark:bg-slate-900 border-2 border-primary/20 flex items-center justify-center active:scale-90 transition-all">
+            <button className="absolute -bottom-1 -right-1 size-8 rounded-lg bg-white border-2 border-primary/20 flex items-center justify-center active:scale-90 transition-all">
               <Camera className="size-4 text-primary" />
             </button>
           </div>
@@ -158,7 +158,7 @@ const BrowseProfile = () => {
                     type="text"
                     value={profile.name}
                     onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                    className="w-full bg-white/50 dark:bg-slate-900/50 rounded-lg px-2 py-1 text-2xl font-black tracking-tight focus:outline-none focus:ring-2 focus:ring-primary/20 mb-1"
+                    className="w-full bg-white/50 rounded-lg px-2 py-1 text-2xl font-black tracking-tight focus:outline-none focus:ring-2 focus:ring-primary/20 mb-1"
                   />
                 ) : (
                   <h2 className="text-2xl font-black tracking-tight">{profile.name}</h2>
@@ -168,10 +168,10 @@ const BrowseProfile = () => {
                     type="text"
                     value={profile.designation}
                     onChange={(e) => setProfile({ ...profile, designation: e.target.value })}
-                    className="w-full bg-white/50 dark:bg-slate-900/50 rounded-lg px-2 py-1 text-sm font-bold text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full bg-white/50 rounded-lg px-2 py-1 text-sm font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/20"
                   />
                 ) : (
-                  <p className="text-sm font-bold text-slate-600 dark:text-slate-400">
+                  <p className="text-sm font-bold text-slate-600">
                     {profile.designation}
                   </p>
                 )}
@@ -179,7 +179,7 @@ const BrowseProfile = () => {
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="size-10 rounded-xl bg-white/50 dark:bg-slate-900/50 flex items-center justify-center active:scale-90 transition-all ml-2"
+                  className="size-10 rounded-xl bg-white/50 flex items-center justify-center active:scale-90 transition-all ml-2"
                 >
                   <Edit2 className="size-5 text-primary" />
                 </button>
@@ -195,19 +195,19 @@ const BrowseProfile = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-white/50 dark:bg-slate-900/50 rounded-xl p-3 text-center">
+          <div className="bg-white/50 rounded-xl p-3 text-center">
             <p className="text-lg font-black text-primary">{profile.activeInvestments}</p>
             <p className="text-[8px] font-black uppercase tracking-widest text-slate-500 mt-0.5">
               Active
             </p>
           </div>
-          <div className="bg-white/50 dark:bg-slate-900/50 rounded-xl p-3 text-center">
+          <div className="bg-white/50 rounded-xl p-3 text-center">
             <p className="text-lg font-black text-emerald-600">{profile.totalInvestments}</p>
             <p className="text-[8px] font-black uppercase tracking-widest text-slate-500 mt-0.5">
               Invested
             </p>
           </div>
-          <div className="bg-white/50 dark:bg-slate-900/50 rounded-xl p-3 text-center">
+          <div className="bg-white/50 rounded-xl p-3 text-center">
             <p className="text-lg font-black text-blue-600">{profile.experience}</p>
             <p className="text-[8px] font-black uppercase tracking-widest text-slate-500 mt-0.5">
               Experience
@@ -217,7 +217,7 @@ const BrowseProfile = () => {
       </div>
 
       {/* Contact Information */}
-      <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
+      <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-black tracking-tight">Contact Information</h2>
           {!isEditing && (
@@ -230,7 +230,7 @@ const BrowseProfile = () => {
           )}
         </div>
         <div className="space-y-3">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
             <div className="size-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
               <Mail className="size-5 text-blue-600" />
             </div>
@@ -250,7 +250,7 @@ const BrowseProfile = () => {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
             <div className="size-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
               <Phone className="size-5 text-emerald-600" />
             </div>
@@ -270,7 +270,7 @@ const BrowseProfile = () => {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
             <div className="size-10 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
               <MapPin className="size-5 text-purple-600" />
             </div>
@@ -290,7 +290,7 @@ const BrowseProfile = () => {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
             <div className="size-10 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
               <Building2 className="size-5 text-amber-600" />
             </div>
@@ -314,7 +314,7 @@ const BrowseProfile = () => {
       </div>
 
       {/* Investment Preferences */}
-      <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
+      <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-black tracking-tight">Investment Preferences</h2>
           {!isEditing && (
@@ -337,7 +337,7 @@ const BrowseProfile = () => {
                 type="text"
                 value={profile.investmentRange}
                 onChange={(e) => setProfile({ ...profile, investmentRange: e.target.value })}
-                className="w-full bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-2 text-lg font-black text-emerald-600 focus:outline-none ml-7"
+                className="w-full bg-slate-50 rounded-xl px-4 py-2 text-lg font-black text-emerald-600 focus:outline-none ml-7"
               />
             ) : (
               <p className="text-lg font-black text-emerald-600 ml-7">{profile.investmentRange}</p>
@@ -353,7 +353,7 @@ const BrowseProfile = () => {
                 type="text"
                 value={profile.preferredEquity}
                 onChange={(e) => setProfile({ ...profile, preferredEquity: e.target.value })}
-                className="w-full bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-2 text-lg font-black text-blue-600 focus:outline-none ml-7"
+                className="w-full bg-slate-50 rounded-xl px-4 py-2 text-lg font-black text-blue-600 focus:outline-none ml-7"
               />
             ) : (
               <p className="text-lg font-black text-blue-600 ml-7">{profile.preferredEquity}</p>
@@ -379,7 +379,7 @@ const BrowseProfile = () => {
       </div>
 
       {/* Bio */}
-      <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
+      <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-black tracking-tight">About Me</h2>
           {!isEditing && (
@@ -395,10 +395,10 @@ const BrowseProfile = () => {
           <textarea
             value={profile.bio}
             onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-            className="w-full h-32 bg-slate-50 dark:bg-slate-800 rounded-xl p-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed focus:outline-none"
+            className="w-full h-32 bg-slate-50 rounded-xl p-4 text-sm text-slate-600 leading-relaxed focus:outline-none"
           />
         ) : (
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-sm text-slate-600 leading-relaxed">
             {profile.bio}
           </p>
         )}
@@ -410,7 +410,7 @@ const BrowseProfile = () => {
           <>
             <button
               onClick={() => setIsEditing(false)}
-              className="py-4 rounded-[1.5rem] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2"
+              className="py-4 rounded-[1.5rem] bg-slate-100 text-slate-600 font-black text-sm uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2"
             >
               <X className="size-4" />
               Cancel
@@ -430,7 +430,7 @@ const BrowseProfile = () => {
           </>
         ) : (
           <>
-            <button className="py-4 rounded-[1.5rem] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black text-sm uppercase tracking-widest active:scale-95 transition-all">
+            <button className="py-4 rounded-[1.5rem] bg-slate-100 text-slate-600 font-black text-sm uppercase tracking-widest active:scale-95 transition-all">
               View Public Profile
             </button>
             <button

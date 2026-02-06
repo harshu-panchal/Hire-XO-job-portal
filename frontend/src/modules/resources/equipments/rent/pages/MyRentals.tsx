@@ -40,11 +40,11 @@ const MyRentals = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "In Progress":
-        return "text-emerald-600 bg-emerald-100 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800";
+        return "text-emerald-600 bg-emerald-100 border-emerald-200";
       case "Scheduled":
-        return "text-blue-600 bg-blue-100 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800";
+        return "text-blue-600 bg-blue-100 border-blue-200";
       case "Completed":
-        return "text-slate-500 bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-white/5";
+        return "text-slate-500 bg-slate-100 border-slate-200";
       default:
         return "text-slate-500 bg-slate-100";
     }
@@ -55,7 +55,7 @@ const MyRentals = () => {
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-2xl font-black tracking-tight">My Rentals</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
           Track your equipment rental history
         </p>
       </div>
@@ -66,7 +66,7 @@ const MyRentals = () => {
           <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Total Spent</p>
           <p className="text-3xl font-black tracking-tighter italic">₹4.2L</p>
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-6 shrink-0 w-48 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shrink-0 w-48 shadow-sm">
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">On Rent</p>
           <p className="text-3xl font-black tracking-tighter">02</p>
         </div>
@@ -82,10 +82,10 @@ const MyRentals = () => {
           {rentals.map((rental) => (
             <div
               key={rental.id}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-sm relative group"
+              className="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-sm relative group"
             >
               <div className="p-5 flex gap-5">
-                <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
+                <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 shrink-0">
                   <img
                     src={rental.image}
                     alt={rental.name}
@@ -109,7 +109,7 @@ const MyRentals = () => {
               </div>
 
               <div className="px-5 pb-5 grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-between group-hover:bg-slate-100 dark:group-hover:bg-white/10 transition-colors">
+                <div className="p-4 rounded-2xl bg-slate-50 flex items-center justify-between group-hover:bg-slate-100 transition-colors">
                   <div className="space-y-0.5">
                     <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 leading-none">
                       ID
@@ -118,7 +118,7 @@ const MyRentals = () => {
                   </div>
                   <ChevronRight className="size-4 text-slate-300" />
                 </div>
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-between group-hover:bg-slate-100 dark:group-hover:bg-white/10 transition-colors">
+                <div className="p-4 rounded-2xl bg-slate-50 flex items-center justify-between group-hover:bg-slate-100 transition-colors">
                   <div className="space-y-0.5">
                     <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 leading-none">
                       Rate
@@ -130,7 +130,7 @@ const MyRentals = () => {
               </div>
 
               {/* Date Strip */}
-              <div className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 py-4 px-6 flex items-center justify-between">
+              <div className="bg-slate-900 text-white py-4 px-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Calendar className="size-4 opacity-40 shrink-0" />
                   <span className="text-[10px] font-black uppercase tracking-widest opacity-80">

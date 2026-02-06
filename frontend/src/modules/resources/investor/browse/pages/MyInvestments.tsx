@@ -84,7 +84,7 @@ const MyInvestments = () => {
         <h1 className="text-3xl font-black tracking-tight">
           My <span className="text-violet-600">Interests</span>
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest mt-1">
+        <p className="text-slate-500 font-black text-xs uppercase tracking-widest mt-1">
           Track your expressed investment interests
         </p>
       </div>
@@ -131,19 +131,19 @@ const MyInvestments = () => {
             placeholder="Search your portfolio..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-14 pr-4 py-4 rounded-[1.5rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm"
+            className="w-full pl-14 pr-4 py-4 rounded-[1.5rem] bg-white border border-slate-200 text-sm font-bold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all shadow-sm"
           />
         </div>
 
-        <div className="flex gap-2 p-1.5 bg-slate-100 dark:bg-slate-800/50 rounded-2xl">
+        <div className="flex gap-2 p-1.5 bg-slate-100 rounded-2xl">
           {["All", "Pending", "Accepted", "Rejected"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
                 activeTab === tab
-                  ? "bg-white dark:bg-slate-700 text-violet-600 shadow-sm"
-                  : "text-slate-500 hover:bg-white/50 dark:hover:bg-slate-700/30"
+                  ? "bg-white text-violet-600 shadow-sm"
+                  : "text-slate-500 hover:bg-white/50"
               }`}
             >
               {tab}
@@ -155,7 +155,7 @@ const MyInvestments = () => {
       {/* Interests List */}
       <div className="space-y-4">
         {filteredInterests.length === 0 ? (
-          <div className="text-center py-20 bg-white dark:bg-slate-900/50 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/5">
+          <div className="text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-slate-200">
             <Search className="size-16 text-slate-300 mx-auto mb-4" />
             <p className="text-lg font-black text-slate-500">No records found</p>
             <Link
@@ -178,11 +178,11 @@ const MyInvestments = () => {
             return (
               <div
                 key={interest._id}
-                className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 rounded-[2.5rem] p-6 active:scale-[0.98] transition-all hover:shadow-xl shadow-sm relative overflow-hidden group"
+                className="bg-white border border-slate-100 rounded-[2.5rem] p-6 active:scale-[0.98] transition-all hover:shadow-xl shadow-sm relative overflow-hidden group"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-4">
-                    <div className="size-16 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 flex items-center justify-center text-violet-600 font-black text-2xl shrink-0">
+                    <div className="size-16 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 flex items-center justify-center text-violet-600 font-black text-2xl shrink-0">
                       {resource.company?.charAt(0) || "I"}
                     </div>
                     <div>
@@ -217,7 +217,7 @@ const MyInvestments = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-5">
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4">
+                  <div className="bg-slate-50 rounded-2xl p-4">
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">
                       Seeking Amount
                     </p>
@@ -225,7 +225,7 @@ const MyInvestments = () => {
                       ₹{resource.amount || resource.seekingAmount || "Negotiable"}
                     </p>
                   </div>
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4">
+                  <div className="bg-slate-50 rounded-2xl p-4">
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">
                       Offered Equity
                     </p>
@@ -233,7 +233,7 @@ const MyInvestments = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/5">
+                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                   <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
                     <div className="flex items-center gap-1.5">
                       <MapPin className="size-3.5" />
@@ -259,7 +259,7 @@ const MyInvestments = () => {
       </div>
 
       {/* Performance Context */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[3rem] p-8 text-center space-y-4">
+      <div className="bg-white border border-slate-200 rounded-[3rem] p-8 text-center space-y-4">
         <div className="size-16 rounded-3xl bg-violet-600/10 text-violet-600 flex items-center justify-center mx-auto">
           <TrendingUp className="size-8" />
         </div>
@@ -271,7 +271,7 @@ const MyInvestments = () => {
         </div>
         <button
           onClick={() => toast.info("Portfolio analytics coming soon!")}
-          className="px-8 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest hover:bg-violet-600 hover:text-white transition-all shadow-sm active:scale-95"
+          className="px-8 py-3 rounded-2xl bg-slate-100 text-[10px] font-black uppercase tracking-widest hover:bg-violet-600 hover:text-white transition-all shadow-sm active:scale-95"
         >
           Detailed Analysis
         </button>

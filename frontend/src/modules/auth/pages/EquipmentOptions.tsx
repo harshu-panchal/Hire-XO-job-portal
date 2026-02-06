@@ -21,22 +21,22 @@ const EquipmentOptions = () => {
   const options = [
     {
       id: "rent-out-equipment",
-      title: "Rent Out Equipment",
-      description: "List your equipment for rental to businesses",
+      title: "List Equipment",
+      description: "List your equipment for others",
       icon: Package,
       color: "from-green-500 to-emerald-600",
-      bgColor: "bg-green-50 dark:bg-green-950/20",
-      iconColor: "text-green-600 dark:text-green-400",
+      bgColor: "bg-green-50",
+      iconColor: "text-green-600",
       dashboardPath: "/equipments/provide/dashboard",
     },
     {
       id: "rent-equipment",
-      title: "Rent Equipment",
-      description: "Find and rent equipment for your projects",
+      title: "Need Equipment",
+      description: "Find equipment for rent or purchase",
       icon: ShoppingCart,
       color: "from-emerald-500 to-teal-600",
-      bgColor: "bg-emerald-50 dark:bg-emerald-950/20",
-      iconColor: "text-emerald-600 dark:text-emerald-400",
+      bgColor: "bg-emerald-50",
+      iconColor: "text-emerald-600",
       dashboardPath: "/equipments/browse/dashboard",
     },
   ];
@@ -46,11 +46,11 @@ const EquipmentOptions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-background dark:via-slate-950 dark:to-background flex items-center justify-center p-5">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-5">
       <div className="w-full max-w-[430px]">
         <button
           onClick={() => navigate("/resources/categories")}
-          className="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+          className="mb-6 flex items-center gap-2 text-slate-600 hover:text-primary transition-colors"
         >
           <ArrowLeft className="size-5" />
           <span className="font-semibold">Back</span>
@@ -61,7 +61,7 @@ const EquipmentOptions = () => {
             <Package className="size-8 text-white" />
           </div>
           <h1 className="text-3xl font-black tracking-tighter mb-2">Equipment Options</h1>
-          <p className="text-slate-600 dark:text-slate-400">Choose your equipment preference</p>
+          <p className="text-slate-600">Choose your equipment preference</p>
         </div>
 
         <div className="space-y-4">
@@ -86,7 +86,7 @@ const EquipmentOptions = () => {
 
                   <div className="flex-1">
                     <h3 className="text-xl font-black tracking-tight mb-1">{option.title}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                    <p className="text-sm text-slate-600">
                       {option.description}
                     </p>
                   </div>
@@ -116,8 +116,8 @@ const EquipmentOptions = () => {
           })}
         </div>
 
-        <div className="mt-8 p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 rounded-xl">
-          <p className="text-sm text-green-900 dark:text-indigo-100 text-center">
+        <div className="mt-8 p-4 bg-green-50 border border-green-200 rounded-xl">
+          <p className="text-sm text-green-900 text-center">
             {isAuthenticated && user?.role === "resource" ? (
               <span>
                 <strong>Note:</strong> Select the module you want to access

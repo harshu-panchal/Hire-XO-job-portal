@@ -57,13 +57,13 @@ const MyEquipments = () => {
       <div className="flex items-center justify-between px-1">
         <div className="space-y-1">
           <h1 className="text-2xl font-black tracking-tight leading-none">Fleet Inventory</h1>
-          <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest">
+          <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
             Manage {fleet.length} pieces of hardware
           </p>
         </div>
         <Link
           to="/equipments/provide/post"
-          className="size-11 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+          className="size-11 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
         >
           <Plus className="size-5" />
         </Link>
@@ -74,10 +74,10 @@ const MyEquipments = () => {
         {fleet.map((item) => (
           <div
             key={item.id}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-sm group"
+            className="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-sm group"
           >
             <div className="p-5 flex gap-5">
-              <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
+              <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 shrink-0">
                 <img
                   src={item.image}
                   alt={item.name}
@@ -109,13 +109,13 @@ const MyEquipments = () => {
             </div>
 
             <div className="px-5 pb-5 grid grid-cols-2 gap-3">
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 space-y-0.5">
+              <div className="p-4 rounded-2xl bg-slate-50 space-y-0.5">
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 leading-none">
                   Last Base
                 </p>
                 <p className="text-[10px] font-black leading-none">{item.location}</p>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 space-y-0.5">
+              <div className="p-4 rounded-2xl bg-slate-50 space-y-0.5">
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 leading-none">
                   Pricing
                 </p>
@@ -124,14 +124,14 @@ const MyEquipments = () => {
             </div>
 
             {/* Action Bar */}
-            <div className="bg-slate-50 dark:bg-white/5 p-2 flex gap-2 border-t border-slate-100 dark:border-white/5">
-              <button className="flex-1 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors">
+            <div className="bg-slate-50 p-2 flex gap-2 border-t border-slate-100">
+              <button className="flex-1 py-3 rounded-2xl bg-white border border-slate-200 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all text-slate-600 hover:text-blue-600 transition-colors">
                 <Edit3 className="size-3.5" /> Edit Details
               </button>
-              <button className="flex-1 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors">
+              <button className="flex-1 py-3 rounded-2xl bg-white border border-slate-200 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all text-slate-600 hover:text-blue-600 transition-colors">
                 <Eye className="size-3.5" /> View Stats
               </button>
-              <button className="size-11 rounded-2xl bg-rose-50 dark:bg-rose-950/20 text-rose-600 border border-rose-100 dark:border-rose-900/30 flex items-center justify-center active:scale-90 transition-transform">
+              <button className="size-11 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center active:scale-90 transition-transform">
                 <Trash2 className="size-4" />
               </button>
             </div>

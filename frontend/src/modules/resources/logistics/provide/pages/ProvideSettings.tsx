@@ -143,7 +143,7 @@ const ProvideSettings = () => {
       {/* Header */}
       <div className="space-y-1 px-1">
         <h1 className="text-3xl font-black tracking-tighter skew-x-[-4deg]">Settings</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] px-1">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em] px-1">
           Logistics Admin Console
         </p>
       </div>
@@ -155,11 +155,11 @@ const ProvideSettings = () => {
           <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 px-2 italic">
             Engagement
           </h3>
-          <div className="bg-white dark:bg-slate-900/50 rounded-[3rem] border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            <div className="divide-y divide-slate-100 dark:divide-white/5">
+          <div className="bg-white rounded-[3rem] border border-slate-200 overflow-hidden shadow-sm">
+            <div className="divide-y divide-slate-100">
               <button
                 onClick={() => setShowNotificationModal(true)}
-                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 transition-colors group"
               >
                 <div className="flex items-center gap-5">
                   <div className="size-12 rounded-2xl bg-orange-500/10 text-orange-600 flex items-center justify-center border border-orange-500/10">
@@ -180,7 +180,7 @@ const ProvideSettings = () => {
 
               <button
                 onClick={() => setShowVisibilityModal(true)}
-                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 transition-colors group"
               >
                 <div className="flex items-center gap-5">
                   <div className="size-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center border border-emerald-500/10">
@@ -207,11 +207,11 @@ const ProvideSettings = () => {
           <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 px-2 italic">
             Access
           </h3>
-          <div className="bg-white dark:bg-slate-900/50 rounded-[3rem] border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm">
-            <div className="divide-y divide-slate-100 dark:divide-white/5">
+          <div className="bg-white rounded-[3rem] border border-slate-200 overflow-hidden shadow-sm">
+            <div className="divide-y divide-slate-100">
               <button
                 onClick={() => setShowPasswordModal(true)}
-                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 transition-colors group"
               >
                 <div className="flex items-center gap-5">
                   <div className="size-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center border border-amber-500/10">
@@ -226,7 +226,7 @@ const ProvideSettings = () => {
 
               <button
                 onClick={() => setShowDevicesModal(true)}
-                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 transition-colors group"
               >
                 <div className="flex items-center gap-5">
                   <div className="size-12 rounded-2xl bg-slate-500/10 text-slate-600 flex items-center justify-center border border-slate-500/10">
@@ -251,7 +251,7 @@ const ProvideSettings = () => {
         <div className="pt-4">
           <button
             onClick={() => setShowLogoutConfirm(true)}
-            className="w-full h-20 rounded-[3rem] bg-orange-600/5 text-slate-400 font-black text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-[0.98] transition-all border border-slate-200 dark:border-white/10 hover:bg-red-500 hover:text-white hover:border-red-500 group"
+            className="w-full h-20 rounded-[3rem] bg-orange-600/5 text-slate-400 font-black text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-[0.98] transition-all border border-slate-200 hover:bg-red-500 hover:text-white hover:border-red-500 group"
           >
             <LogOut className="size-5 group-hover:-translate-x-1 transition-transform" />
             Exit Admin Console
@@ -271,7 +271,7 @@ const ProvideSettings = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl"
+            className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -280,21 +280,21 @@ const ProvideSettings = () => {
               </div>
               <button
                 onClick={() => setShowNotificationModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-4" />
               </button>
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
                 <div>
                   <p className="text-sm font-black">Lead Alerts</p>
                   <p className="text-xs text-slate-500 mt-0.5">Get notified for new leads</p>
                 </div>
                 <button
                   onClick={() => setLeadAlerts(!leadAlerts)}
-                  className={`relative w-14 h-7 rounded-full transition-colors ${leadAlerts ? "bg-orange-600" : "bg-slate-300 dark:bg-slate-600"}`}
+                  className={`relative w-14 h-7 rounded-full transition-colors ${leadAlerts ? "bg-orange-600" : "bg-slate-300"}`}
                 >
                   <div
                     className={`absolute top-1 left-1 size-5 rounded-full bg-white transition-transform ${leadAlerts ? "translate-x-7" : ""}`}
@@ -302,14 +302,14 @@ const ProvideSettings = () => {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
                 <div>
                   <p className="text-sm font-black">Email Notifications</p>
                   <p className="text-xs text-slate-500 mt-0.5">Receive updates via email</p>
                 </div>
                 <button
                   onClick={() => setEmailNotifications(!emailNotifications)}
-                  className={`relative w-14 h-7 rounded-full transition-colors ${emailNotifications ? "bg-orange-600" : "bg-slate-300 dark:bg-slate-600"}`}
+                  className={`relative w-14 h-7 rounded-full transition-colors ${emailNotifications ? "bg-orange-600" : "bg-slate-300"}`}
                 >
                   <div
                     className={`absolute top-1 left-1 size-5 rounded-full bg-white transition-transform ${emailNotifications ? "translate-x-7" : ""}`}
@@ -317,14 +317,14 @@ const ProvideSettings = () => {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
                 <div>
                   <p className="text-sm font-black">Push Notifications</p>
                   <p className="text-xs text-slate-500 mt-0.5">Real-time mobile alerts</p>
                 </div>
                 <button
                   onClick={() => setPushNotifications(!pushNotifications)}
-                  className={`relative w-14 h-7 rounded-full transition-colors ${pushNotifications ? "bg-orange-600" : "bg-slate-300 dark:bg-slate-600"}`}
+                  className={`relative w-14 h-7 rounded-full transition-colors ${pushNotifications ? "bg-orange-600" : "bg-slate-300"}`}
                 >
                   <div
                     className={`absolute top-1 left-1 size-5 rounded-full bg-white transition-transform ${pushNotifications ? "translate-x-7" : ""}`}
@@ -351,7 +351,7 @@ const ProvideSettings = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl"
+            className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -360,35 +360,35 @@ const ProvideSettings = () => {
               </div>
               <button
                 onClick={() => setShowVisibilityModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-4" />
               </button>
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-200 dark:border-emerald-900">
+              <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Globe className="size-5 text-emerald-600" />
-                  <p className="text-sm font-black text-emerald-900 dark:text-emerald-100">
+                  <p className="text-sm font-black text-emerald-900">
                     Public Listing Status
                   </p>
                 </div>
-                <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                <p className="text-xs text-emerald-700">
                   {isPubliclyListed
                     ? "Your logistics services are visible to all potential clients on the platform."
                     : "Your profile is hidden from public search. Only direct links will work."}
                 </p>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
                 <div>
                   <p className="text-sm font-black">Show in Public Directory</p>
                   <p className="text-xs text-slate-500 mt-0.5">Make your services discoverable</p>
                 </div>
                 <button
                   onClick={() => setIsPubliclyListed(!isPubliclyListed)}
-                  className={`relative w-14 h-7 rounded-full transition-colors ${isPubliclyListed ? "bg-emerald-600" : "bg-slate-300 dark:bg-slate-600"}`}
+                  className={`relative w-14 h-7 rounded-full transition-colors ${isPubliclyListed ? "bg-emerald-600" : "bg-slate-300"}`}
                 >
                   <div
                     className={`absolute top-1 left-1 size-5 rounded-full bg-white transition-transform ${isPubliclyListed ? "translate-x-7" : ""}`}
@@ -415,7 +415,7 @@ const ProvideSettings = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl"
+            className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -424,7 +424,7 @@ const ProvideSettings = () => {
               </div>
               <button
                 onClick={() => setShowPasswordModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-4" />
               </button>
@@ -443,7 +443,7 @@ const ProvideSettings = () => {
                       setPasswordData({ ...passwordData, currentPassword: e.target.value })
                     }
                     required
-                    className="w-full px-4 py-3 pr-12 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-600/20 transition-all"
+                    className="w-full px-4 py-3 pr-12 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-600/20 transition-all"
                   />
                   <button
                     type="button"
@@ -471,7 +471,7 @@ const ProvideSettings = () => {
                       setPasswordData({ ...passwordData, newPassword: e.target.value })
                     }
                     required
-                    className="w-full px-4 py-3 pr-12 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-600/20 transition-all"
+                    className="w-full px-4 py-3 pr-12 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-600/20 transition-all"
                   />
                   <button
                     type="button"
@@ -494,7 +494,7 @@ const ProvideSettings = () => {
                     setPasswordData({ ...passwordData, confirmPassword: e.target.value })
                   }
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-600/20 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-600/20 transition-all"
                 />
               </div>
 
@@ -502,7 +502,7 @@ const ProvideSettings = () => {
                 <button
                   type="button"
                   onClick={() => setShowPasswordModal(false)}
-                  className="flex-1 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all"
+                  className="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-sm uppercase tracking-widest hover:bg-slate-200 active:scale-95 transition-all"
                 >
                   Cancel
                 </button>
@@ -526,7 +526,7 @@ const ProvideSettings = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-2xl w-full border border-slate-200 dark:border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto"
+            className="bg-white rounded-3xl p-6 max-w-2xl w-full border border-slate-200 shadow-2xl max-h-[85vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -537,7 +537,7 @@ const ProvideSettings = () => {
               </div>
               <button
                 onClick={() => setShowDevicesModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
               >
                 <X className="size-4" />
               </button>
@@ -547,7 +547,7 @@ const ProvideSettings = () => {
               {devices.map((device) => (
                 <div
                   key={device.id}
-                  className="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-between"
+                  className="p-4 bg-slate-50 rounded-2xl flex items-center justify-between"
                 >
                   <div className="flex items-center gap-4">
                     <div
@@ -571,7 +571,7 @@ const ProvideSettings = () => {
                     </span>
                     <button
                       onClick={() => handleRemoveDevice(device.id)}
-                      className="size-8 rounded-lg bg-red-50 dark:bg-red-950/20 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-950/30 transition-all"
+                      className="size-8 rounded-lg bg-red-50 flex items-center justify-center hover:bg-red-100 transition-all"
                     >
                       <Trash2 className="size-4 text-red-600" />
                     </button>
@@ -598,14 +598,14 @@ const ProvideSettings = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl"
+            className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl"
           >
             <div className="text-center mb-6">
               <div className="size-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
                 <AlertCircle className="size-8 text-red-600" />
               </div>
               <h3 className="text-xl font-black mb-2">Exit Admin Console?</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-slate-600">
                 You will be logged out and redirected to the home page.
               </p>
             </div>
@@ -613,7 +613,7 @@ const ProvideSettings = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="flex-1 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black text-sm uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all"
+                className="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-sm uppercase tracking-widest hover:bg-slate-200 active:scale-95 transition-all"
               >
                 Cancel
               </button>

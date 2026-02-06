@@ -13,23 +13,35 @@ const MachineryOptions = () => {
   const options = [
     {
       id: "provide-machinery",
-      title: "Provide Machinery",
-      description: "Offer machinery services and rentals",
+      title: "List Machinery",
+      description: "List your machinery for others",
       icon: Cog,
       color: "from-slate-500 to-gray-600",
+<<<<<<< HEAD
       bgColor: "bg-slate-50 dark:bg-slate-950/20",
       iconColor: "text-slate-600 dark:text-slate-400",
       dashboardPath: "/machinery/sell/dashboard",
+=======
+      bgColor: "bg-slate-50",
+      iconColor: "text-slate-600",
+      dashboardPath: "/machinery/provide/dashboard",
+>>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
     },
     {
       id: "need-machinery",
       title: "Need Machinery",
-      description: "Find machinery for your projects",
+      description: "Find machinery for your project",
       icon: Wrench,
       color: "from-gray-500 to-zinc-600",
+<<<<<<< HEAD
       bgColor: "bg-gray-50 dark:bg-gray-950/20",
       iconColor: "text-gray-600 dark:text-gray-400",
       dashboardPath: "/machinery/buy/dashboard",
+=======
+      bgColor: "bg-gray-50",
+      iconColor: "text-gray-600",
+      dashboardPath: "/machinery/need/dashboard",
+>>>>>>> 0bd50870b778749155b41d50edbce6c758b082bf
     },
   ];
 
@@ -38,11 +50,11 @@ const MachineryOptions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-background dark:via-slate-950 dark:to-background flex items-center justify-center p-5">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-5">
       <div className="w-full max-w-[430px]">
         <button
           onClick={() => navigate("/resources/categories")}
-          className="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+          className="mb-6 flex items-center gap-2 text-slate-600 hover:text-primary transition-colors"
         >
           <ArrowLeft className="size-5" />
           <span className="font-semibold">Back</span>
@@ -53,7 +65,7 @@ const MachineryOptions = () => {
             <Cog className="size-8 text-white" />
           </div>
           <h1 className="text-3xl font-black tracking-tighter mb-2">Machinery Options</h1>
-          <p className="text-slate-600 dark:text-slate-400">Choose your machinery preference</p>
+          <p className="text-slate-600">Choose your machinery preference</p>
         </div>
 
         <div className="space-y-4">
@@ -78,7 +90,7 @@ const MachineryOptions = () => {
 
                   <div className="flex-1">
                     <h3 className="text-xl font-black tracking-tight mb-1">{option.title}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                    <p className="text-sm text-slate-600">
                       {option.description}
                     </p>
                   </div>
@@ -108,8 +120,8 @@ const MachineryOptions = () => {
           })}
         </div>
 
-        <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-950/20 border border-slate-200 dark:border-slate-900 rounded-xl">
-          <p className="text-sm text-slate-900 dark:text-indigo-100 text-center">
+        <div className="mt-8 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+          <p className="text-sm text-slate-900 text-center">
             {isAuthenticated && user?.role === "resource" ? (
               <span>
                 <strong>Note:</strong> Select the module you want to access

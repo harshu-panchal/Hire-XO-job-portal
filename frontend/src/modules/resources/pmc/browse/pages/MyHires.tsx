@@ -31,7 +31,7 @@ const MyHires = () => {
       {/* Header */}
       <div className="space-y-1 px-1">
         <h1 className="text-3xl font-black tracking-tighter">My Hires</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
           Manage your consulting team
         </p>
       </div>
@@ -47,8 +47,8 @@ const MyHires = () => {
             Active Projects
           </p>
         </div>
-        <div className="bg-slate-900 dark:bg-white p-6 rounded-[2.5rem] text-white dark:text-slate-900">
-          <div className="size-10 rounded-xl bg-white/20 dark:bg-slate-900/10 flex items-center justify-center mb-3">
+        <div className="bg-slate-900 p-6 rounded-[2.5rem] text-white">
+          <div className="size-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
             <Briefcase className="size-5" />
           </div>
           <p className="text-2xl font-black italic">12</p>
@@ -63,7 +63,7 @@ const MyHires = () => {
           {hires.map((hire) => (
             <div
               key={hire.id}
-              className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-5 border border-slate-200 dark:border-white/10"
+              className="bg-white rounded-[2rem] p-5 border border-slate-200"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-4">
@@ -92,7 +92,7 @@ const MyHires = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-white/5">
+              <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-100">
                 <div className="flex items-center gap-2">
                   <Calendar className="size-4 text-slate-400" />
                   <div>
@@ -117,7 +117,7 @@ const MyHires = () => {
                 </div>
               </div>
 
-              <button className="w-full mt-4 h-12 rounded-2xl bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform group">
+              <button className="w-full mt-4 h-12 rounded-2xl bg-slate-50 text-slate-900 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform group">
                 View Details
                 <ChevronRight className="size-4 group-hover:translate-x-1 transition-transform" />
               </button>

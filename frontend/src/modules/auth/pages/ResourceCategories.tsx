@@ -44,8 +44,8 @@ const ResourceCategories = () => {
       description: "Investment opportunities and funding",
       icon: TrendingUp,
       color: "from-amber-500 to-orange-600",
-      bgColor: "bg-amber-50 dark:bg-amber-950/20",
-      iconColor: "text-amber-600 dark:text-amber-400",
+      bgColor: "bg-amber-50",
+      iconColor: "text-amber-600",
     },
     {
       id: "Tenders",
@@ -53,8 +53,8 @@ const ResourceCategories = () => {
       description: "Government and private tenders",
       icon: FileText,
       color: "from-violet-500 to-purple-600",
-      bgColor: "bg-violet-50 dark:bg-violet-950/20",
-      iconColor: "text-violet-600 dark:text-violet-400",
+      bgColor: "bg-violet-50",
+      iconColor: "text-violet-600",
     },
     {
       id: "Equipments",
@@ -62,8 +62,8 @@ const ResourceCategories = () => {
       description: "Construction and industrial equipment",
       icon: Package,
       color: "from-green-500 to-emerald-600",
-      bgColor: "bg-green-50 dark:bg-green-950/20",
-      iconColor: "text-green-600 dark:text-green-400",
+      bgColor: "bg-green-50",
+      iconColor: "text-green-600",
     },
     {
       id: "Machinery",
@@ -71,8 +71,8 @@ const ResourceCategories = () => {
       description: "Heavy machinery and tools",
       icon: Cog,
       color: "from-slate-500 to-gray-600",
-      bgColor: "bg-slate-50 dark:bg-slate-950/20",
-      iconColor: "text-slate-600 dark:text-slate-400",
+      bgColor: "bg-slate-50",
+      iconColor: "text-slate-600",
     },
     {
       id: "PMC",
@@ -80,8 +80,8 @@ const ResourceCategories = () => {
       description: "Project Management Consultancy",
       icon: Building,
       color: "from-indigo-500 to-blue-600",
-      bgColor: "bg-indigo-50 dark:bg-indigo-950/20",
-      iconColor: "text-indigo-600 dark:text-indigo-400",
+      bgColor: "bg-indigo-50",
+      iconColor: "text-indigo-600",
     },
     {
       id: "CSM",
@@ -89,8 +89,8 @@ const ResourceCategories = () => {
       description: "Construction Supervision Management",
       icon: HardHat,
       color: "from-rose-500 to-pink-600",
-      bgColor: "bg-rose-50 dark:bg-rose-950/20",
-      iconColor: "text-rose-600 dark:text-rose-400",
+      bgColor: "bg-rose-50",
+      iconColor: "text-rose-600",
     },
     {
       id: "Logistics",
@@ -98,8 +98,8 @@ const ResourceCategories = () => {
       description: "Transportation and supply chain",
       icon: Truck,
       color: "from-orange-500 to-red-600",
-      bgColor: "bg-orange-50 dark:bg-orange-950/20",
-      iconColor: "text-orange-600 dark:text-orange-400",
+      bgColor: "bg-orange-50",
+      iconColor: "text-orange-600",
     },
     {
       id: "Vehicles",
@@ -107,8 +107,8 @@ const ResourceCategories = () => {
       description: "Vehicle rental and services",
       icon: Car,
       color: "from-blue-500 to-cyan-600",
-      bgColor: "bg-blue-50 dark:bg-blue-950/20",
-      iconColor: "text-blue-600 dark:text-blue-400",
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-600",
     },
   ];
 
@@ -118,13 +118,13 @@ const ResourceCategories = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-background dark:via-slate-950 dark:to-background py-8 px-5">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8 px-5">
       <div className="w-full max-w-[430px] mx-auto">
         <div className="flex items-center justify-between mb-6">
           {/* Back Button */}
           <button
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+            className="flex items-center gap-2 text-slate-600 hover:text-primary transition-colors"
           >
             <ArrowLeft className="size-5" />
             <span className="font-semibold">Back to Roles</span>
@@ -147,7 +147,7 @@ const ResourceCategories = () => {
 
         {/* Header */}
         <div className="text-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <span className="inline-block py-1 px-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-bold tracking-wider mb-4 border border-blue-200 dark:border-blue-800">
+          <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-[10px] font-bold tracking-wider mb-4 border border-blue-200">
             STEP 1 of 3: CATEGORY SELECTION
           </span>
           <div className="flex justify-center mb-4">
@@ -156,7 +156,7 @@ const ResourceCategories = () => {
             </div>
           </div>
           <h1 className="text-3xl font-black tracking-tighter mb-2">Resource Categories</h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-slate-600">
             Select your business category to create your account
           </p>
         </div>
@@ -186,7 +186,7 @@ const ResourceCategories = () => {
                   {/* Content */}
                   <div>
                     <h3 className="text-base font-black tracking-tight mb-1">{category.title}</h3>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                    <p className="text-xs text-slate-600 leading-snug">
                       {category.description}
                     </p>
                   </div>
@@ -202,8 +202,8 @@ const ResourceCategories = () => {
         </div>
 
         {/* Info */}
-        <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-xl">
-          <p className="text-sm text-blue-900 dark:text-blue-100 text-center">
+        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <p className="text-sm text-blue-900 text-center">
             <strong>Note:</strong> Select the category that best matches your business needs
           </p>
         </div>

@@ -83,10 +83,10 @@ const EmployerProfile = () => {
   return (
     <div className="pb-40 select-none">
       {/* Header */}
-      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 dark:bg-background/80 backdrop-blur-md z-20 -mx-5 px-5">
+      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
         <button
           onClick={() => navigate(-1)}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 active:scale-90 transition-all"
+          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
         >
           <ChevronLeft className="size-6" />
         </button>
@@ -98,7 +98,7 @@ const EmployerProfile = () => {
         {/* Photo Upload */}
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="size-32 rounded-[2.5rem] bg-primary/10 flex items-center justify-center overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl">
+            <div className="size-32 rounded-[2.5rem] bg-primary/10 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">
               <img
                 src={
                   user?.profile?.profilePhoto ||
@@ -117,7 +117,7 @@ const EmployerProfile = () => {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="absolute bottom-0 right-0 size-10 rounded-xl bg-slate-900 text-white flex items-center justify-center border-4 border-white dark:border-slate-800 active:scale-90 transition-all disabled:opacity-70 disabled:active:scale-100"
+              className="absolute bottom-0 right-0 size-10 rounded-xl bg-slate-900 text-white flex items-center justify-center border-4 border-white active:scale-90 transition-all disabled:opacity-70 disabled:active:scale-100"
             >
               <Camera className="size-4" />
             </button>
@@ -147,7 +147,7 @@ const EmployerProfile = () => {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
               />
             </div>
 
@@ -160,7 +160,7 @@ const EmployerProfile = () => {
                 placeholder="Email Address"
                 disabled
                 value={formData.email}
-                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-slate-100 dark:bg-white/5 border-2 border-transparent text-sm font-black"
+                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-slate-100 border-2 border-transparent text-sm font-black"
               />
             </div>
 
@@ -173,7 +173,7 @@ const EmployerProfile = () => {
                 placeholder="Phone Number"
                 value={formData.phoneNumber}
                 onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
               />
             </div>
 
@@ -187,7 +187,7 @@ const EmployerProfile = () => {
                 placeholder="Job Role"
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-white/5 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
               />
             </div>
           </div>

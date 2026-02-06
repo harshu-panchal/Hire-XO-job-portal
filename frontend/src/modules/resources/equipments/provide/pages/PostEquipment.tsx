@@ -47,7 +47,7 @@ const PostEquipment = () => {
       {/* Header */}
       <div className="space-y-1 text-center">
         <h1 className="text-2xl font-black tracking-tighter uppercase italic">List New Gear</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-black text-[9px] uppercase tracking-[0.3em]">
+        <p className="text-slate-500 font-black text-[9px] uppercase tracking-[0.3em]">
           Step {step} of 3:{" "}
           {step === 1 ? "Product Identity" : step === 2 ? "Tech & Pricing" : "Confirmation"}
         </p>
@@ -65,7 +65,7 @@ const PostEquipment = () => {
                 <input
                   type="text"
                   placeholder="e.g. Caterpillar 320 GC Excavator"
-                  className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
+                  className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -73,7 +73,7 @@ const PostEquipment = () => {
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
                     Category
                   </label>
-                  <select className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 font-bold focus:outline-none appearance-none cursor-pointer">
+                  <select className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none appearance-none cursor-pointer">
                     <option>Excavators</option>
                     <option>Cranes</option>
                     <option>Generators</option>
@@ -84,7 +84,7 @@ const PostEquipment = () => {
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
                     Availability
                   </label>
-                  <select className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 font-bold focus:outline-none appearance-none cursor-pointer">
+                  <select className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none appearance-none cursor-pointer">
                     <option>Available Now</option>
                     <option>In 7 Days</option>
                     <option>In 30 Days</option>
@@ -94,7 +94,7 @@ const PostEquipment = () => {
             </div>
 
             {/* Location */}
-            <div className="bg-blue-50 dark:bg-blue-950/20 rounded-[2.5rem] p-6 space-y-4 border border-blue-100 dark:border-blue-900/30">
+            <div className="bg-blue-50 rounded-[2.5rem] p-6 space-y-4 border border-blue-100">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-blue-600/60 ml-1">
                   Current Base Location
@@ -104,7 +104,7 @@ const PostEquipment = () => {
                   <input
                     type="text"
                     placeholder="City, State"
-                    className="w-full pl-11 pr-5 py-4 rounded-2xl bg-white dark:bg-slate-900 border-none font-bold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="w-full pl-11 pr-5 py-4 rounded-2xl bg-white border-none font-bold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   />
                 </div>
               </div>
@@ -127,7 +127,7 @@ const PostEquipment = () => {
                   <input
                     type="text"
                     placeholder="e.g. 2,500"
-                    className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 font-black text-blue-600 focus:outline-none"
+                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-100 font-black text-blue-600 focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -137,7 +137,7 @@ const PostEquipment = () => {
                   <input
                     type="text"
                     placeholder="e.g. 18,000"
-                    className="w-full px-5 py-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 font-black text-blue-600 focus:outline-none"
+                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-100 font-black text-blue-600 focus:outline-none"
                   />
                 </div>
               </div>
@@ -151,7 +151,7 @@ const PostEquipment = () => {
               <textarea
                 rows={4}
                 placeholder="Describe performance, maintenance history, and what's included in the rent (e.g. operator, fuel)..."
-                className="w-full px-5 py-4 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+                className="w-full px-5 py-4 rounded-[2rem] bg-white border border-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
               ></textarea>
             </div>
 
@@ -174,12 +174,12 @@ const PostEquipment = () => {
                     <input
                       type="text"
                       placeholder="Label (e.g. Cap)"
-                      className="w-1/3 px-5 py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 font-bold text-[10px] uppercase"
+                      className="w-1/3 px-5 py-3.5 rounded-2xl bg-white border border-slate-100 font-bold text-[10px] uppercase"
                     />
                     <input
                       type="text"
                       placeholder="Value (e.g. 20T)"
-                      className="flex-1 px-5 py-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 font-bold text-sm"
+                      className="flex-1 px-5 py-3.5 rounded-2xl bg-white border border-slate-100 font-bold text-sm"
                     />
                   </div>
                 ))}
@@ -191,8 +191,8 @@ const PostEquipment = () => {
         {step === 3 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Photo Upload */}
-            <div className="p-8 border-2 border-dashed border-blue-200 dark:border-blue-900/40 rounded-[2.5rem] flex flex-col items-center text-center space-y-4 bg-blue-50/30 dark:bg-blue-950/5">
-              <div className="size-16 rounded-[2rem] bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center">
+            <div className="p-8 border-2 border-dashed border-blue-200 rounded-[2.5rem] flex flex-col items-center text-center space-y-4 bg-blue-50/30">
+              <div className="size-16 rounded-[2rem] bg-white shadow-xl flex items-center justify-center">
                 <Upload className="size-8 text-blue-600" />
               </div>
               <div className="space-y-1">
@@ -209,7 +209,7 @@ const PostEquipment = () => {
             </div>
 
             {/* Certification Verification */}
-            <div className="p-6 bg-slate-50 dark:bg-white/5 rounded-[2.5rem] flex gap-4 border border-slate-100 dark:border-white/5">
+            <div className="p-6 bg-slate-50 rounded-[2.5rem] flex gap-4 border border-slate-100">
               <div className="mt-1">
                 <input type="checkbox" className="size-5 accent-blue-600 rounded-lg" />
               </div>
@@ -228,7 +228,7 @@ const PostEquipment = () => {
           {step > 1 && (
             <button
               onClick={() => setStep(step - 1)}
-              className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-white/5 px-8 font-black text-xs uppercase tracking-widest py-5 rounded-[2rem] active:scale-95 transition-all shadow-xl"
+              className="bg-white text-slate-900 border border-slate-200 px-8 font-black text-xs uppercase tracking-widest py-5 rounded-[2rem] active:scale-95 transition-all shadow-xl"
             >
               Back
             </button>

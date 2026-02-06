@@ -18,7 +18,7 @@ const EmployeeLayout = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col max-w-[430px] mx-auto overflow-x-hidden border-x border-gray-100 dark:border-white/5 shadow-2xl bg-slate-50 dark:bg-background transition-colors duration-300">
+    <div className="relative flex min-h-screen w-full flex-col max-w-[430px] mx-auto overflow-x-hidden border-x border-gray-100 shadow-2xl bg-slate-50 transition-colors duration-300">
       {/* Header */}
       <EmployeeNavbar />
 
@@ -30,12 +30,13 @@ const EmployeeLayout = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 dark:bg-background/90 backdrop-blur-xl border-t border-slate-200/50 dark:border-white/5 z-50 px-8 pb-safe shadow-[0_-8px_30px_rgb(0,0,0,0.04)] select-none">
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 backdrop-blur-xl border-t border-slate-200/50 z-50 px-8 pb-safe shadow-[0_-8px_30px_rgb(0,0,0,0.04)] select-none">
         <div className="flex justify-between items-center h-20">
           <Link
             to="/jobs"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/jobs") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/jobs") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/jobs") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -50,8 +51,9 @@ const EmployeeLayout = () => {
           </Link>
           <Link
             to="/resources"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/resources") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/resources") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/resources") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -67,8 +69,9 @@ const EmployeeLayout = () => {
           <Link
             to="/profile"
             onClick={(e) => handleProtectedNavigation("/profile", e)}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/profile") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/profile") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/profile") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
@@ -84,8 +87,9 @@ const EmployeeLayout = () => {
           <Link
             to="/subscriptions"
             onClick={(e) => handleProtectedNavigation("/subscriptions", e)}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/subscriptions") ? "text-primary" : "text-slate-400"
-              }`}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
+              isActive("/subscriptions") ? "text-primary" : "text-slate-400"
+            }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/subscriptions") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
