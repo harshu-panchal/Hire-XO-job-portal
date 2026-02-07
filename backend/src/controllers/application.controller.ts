@@ -19,8 +19,33 @@ export class ApplicationController {
 
             const { jobId } = req.params;
             const { message } = req.body;
+            const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-            const application = await this.applicationService.applyToJob(userId, jobId, message);
+            let resumeUrl = '';
+            let documentUrls: string[] = [];
+
+            // Import util here to avoid top-level issues if any
+            const { CloudinaryUtil } = require('../utils/cloudinary');
+
+            // Handle Resume upload
+            if (files?.resume?.[0]) {
+                const result = await CloudinaryUtil.uploadFile(files.resume[0].path, 'resumes');
+                if (result) resumeUrl = result.url;
+            }
+
+            // Handle Additional Documents upload
+            if (files?.additionalDocuments) {
+                for (const file of files.additionalDocuments) {
+                    const result = await CloudinaryUtil.uploadFile(file.path, 'application-docs');
+                    if (result) documentUrls.push(result.url);
+                }
+            }
+
+            const application = await this.applicationService.applyToJob(userId, jobId, {
+                message,
+                resume: resumeUrl,
+                additionalDocuments: documentUrls
+            });
             res.status(201).json({
                 message: 'Application submitted successfully',
                 application

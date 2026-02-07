@@ -1,10 +1,31 @@
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, ChevronLeft, ShieldCheck, Zap } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useEffect, useState } from "react";
+import { subscriptionService } from "@/services/subscriptionService";
+import type { SubscriptionPlan } from "@/types";
+import { toast } from "sonner";
 
 const Subscription = () => {
   const navigate = useNavigate();
-  const { purchaseSubscription, user, isLoading } = useAuthStore();
+  const { purchaseSubscription, user, isLoading: isAuthLoading } = useAuthStore();
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  const [isLoadingPlans, setIsLoadingPlans] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const data = await subscriptionService.getAllPlans();
+        setPlans(data);
+      } catch (error: any) {
+        console.error("Failed to fetch plans:", error);
+      } finally {
+        setIsLoadingPlans(false);
+      }
+    };
+    fetchPlans();
+  }, []);
 
   // Calculate expiry date if exists
   const isSubscribed = user?.profile?.subscriptionExpiry
@@ -12,8 +33,29 @@ const Subscription = () => {
     : false;
 
   const handleSubscribe = async () => {
-    await purchaseSubscription("pro");
-    // No need to navigate, state update will reflect immediately
+    const proPlan = plans.find(p => p.name.includes("Pro")) || plans[0];
+    if (!proPlan) {
+      toast.error("Subscription plan not found. Please try again later.");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      // 1. Recharge wallet (Simulated Payment)
+      toast.info("Processing payment...");
+      await subscriptionService.rechargeWallet(proPlan.price);
+
+      // 2. Purchase subscription
+      toast.info("Activating subscription...");
+      await purchaseSubscription(proPlan.id || (proPlan as any)._id);
+
+      toast.success("Successfully upgraded to Pro!");
+      // State update in useAuthStore will reflect immediately
+    } catch (error: any) {
+      toast.error(error.message || "Failed to upgrade subscription");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (isSubscribed) {
@@ -50,6 +92,8 @@ const Subscription = () => {
       </div>
     );
   }
+
+  const activeLoading = isLoadingPlans || isAuthLoading || isProcessing;
 
   return (
     <div className="pb-32 select-none">
@@ -88,10 +132,10 @@ const Subscription = () => {
 
             <div className="space-y-1">
               <h3 className="text-lg font-black uppercase tracking-widest text-slate-400">
-                Pro Employer
+                {plans.find(p => p.name.includes("Pro"))?.name || "Pro Employer"}
               </h3>
               <div className="flex items-baseline justify-center gap-1">
-                <span className="text-4xl font-black text-slate-900">₹999</span>
+                <span className="text-4xl font-black text-slate-900">₹{plans.find(p => p.name.includes("Pro"))?.price || 999}</span>
                 <span className="text-sm font-bold text-slate-400">/ 6 months</span>
               </div>
             </div>
@@ -99,12 +143,12 @@ const Subscription = () => {
             <div className="w-full h-px bg-slate-100" />
 
             <ul className="space-y-4 text-left w-full">
-              {[
+              {(plans.find(p => p.name.includes("Pro"))?.features || [
                 "Contact Unlimited Candidates",
                 "Download Unlimited Resumes",
                 "Priority Job Listings",
                 "Verified Employer Badge",
-              ].map((feature, i) => (
+              ]).map((feature, i) => (
                 <li key={i} className="flex items-center gap-3">
                   <div className="size-5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
                     <CheckCircle2 className="size-3 text-green-500" />
@@ -122,10 +166,17 @@ const Subscription = () => {
       <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 z-50">
         <button
           onClick={handleSubscribe}
-          disabled={isLoading}
+          disabled={activeLoading}
           className="h-16 w-full rounded-3xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100"
         >
-          {isLoading ? "Processing..." : "Upgrade Now"}
+          {activeLoading ? (
+            <>
+              <div className="size-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Processing...
+            </>
+          ) : (
+            "Upgrade Now"
+          )}
         </button>
         <p className="text-[10px] text-center mt-4 text-slate-400 font-bold">
           Secure processing. Cancel anytime.

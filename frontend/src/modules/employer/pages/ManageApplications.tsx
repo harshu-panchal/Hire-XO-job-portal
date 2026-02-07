@@ -17,6 +17,8 @@ import {
   Video,
   Calendar as CalendarIcon,
   MapPin,
+  Lock,
+  Zap,
 } from "lucide-react";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -177,6 +179,10 @@ const ManageApplications = () => {
   const handleRestrictedAction = (action: string, app: any) => {
     setActiveMenu(null);
     if (checkSubscription()) {
+      if (action === "Download Resume" && app.resume) {
+        window.open(app.resume, "_blank");
+        return;
+      }
       alert(`${action} successfully! For ${app.name}`);
       return;
     }
@@ -419,7 +425,9 @@ const ManageApplications = () => {
                       <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
                         <Briefcase className="size-3.5 mr-1.5 text-primary/60" />
                         {Array.isArray(app.experience) && app.experience.length > 0
-                          ? `${app.experience[0].role} at ${app.experience[0].company}`
+                          ? app.experience[0].company === '********'
+                            ? <span className="flex items-center gap-1">Locked <Lock className="size-3 text-slate-300" /></span>
+                            : `${app.experience[0].role} at ${app.experience[0].company}`
                           : "No experience listed"}
                       </div>
                     </div>
@@ -530,28 +538,41 @@ const ManageApplications = () => {
 
                 {/* Experience */}
                 <div className="space-y-4">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                    <Briefcase className="size-4" /> Professional Experience
-                  </h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                      <Briefcase className="size-4" /> Professional Experience
+                    </h3>
+                    {!checkSubscription() && (
+                      <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1">
+                        <Lock className="size-3" /> Locked
+                      </span>
+                    )}
+                  </div>
                   <div className="space-y-4">
                     {Array.isArray(selectedApp.experience) && selectedApp.experience.length > 0 ? (
-                      selectedApp.experience.map((exp: any, i: number) => (
-                        <div key={i} className="flex gap-4 relative">
-                          {i !== selectedApp.experience.length - 1 && (
-                            <div className="absolute left-3.5 top-10 bottom-0 w-0.5 bg-slate-100" />
-                          )}
-                          <div className="size-7 rounded-full bg-slate-100 flex items-center justify-center shrink-0 z-10 border-2 border-white">
-                            <div className="size-2 rounded-full bg-primary" />
+                      selectedApp.experience.map((exp: any, i: number) => {
+                        const isMasked = exp.company === '********';
+                        return (
+                          <div key={i} className="flex gap-4 relative">
+                            {i !== selectedApp.experience.length - 1 && (
+                              <div className="absolute left-3.5 top-10 bottom-0 w-0.5 bg-slate-100" />
+                            )}
+                            <div className="size-7 rounded-full bg-slate-100 flex items-center justify-center shrink-0 z-10 border-2 border-white">
+                              <div className={`size-2 rounded-full ${isMasked ? 'bg-slate-300' : 'bg-primary'}`} />
+                            </div>
+                            <div className={`space-y-1 pb-4 flex-1 ${isMasked ? 'opacity-60' : ''}`}>
+                              <h4 className="font-black text-sm flex items-center gap-2">
+                                {exp.role}
+                                {isMasked && <Lock className="size-3 text-slate-400" />}
+                              </h4>
+                              <p className="text-xs font-bold text-primary">{exp.company}</p>
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">
+                                {exp.period}
+                              </p>
+                            </div>
                           </div>
-                          <div className="space-y-1 pb-4">
-                            <h4 className="font-black text-sm">{exp.role}</h4>
-                            <p className="text-xs font-bold text-primary">{exp.company}</p>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">
-                              {exp.period}
-                            </p>
-                          </div>
-                        </div>
-                      ))
+                        );
+                      })
                     ) : (
                       <p className="text-sm font-bold text-slate-400">
                         No experience details provided.
@@ -583,35 +604,112 @@ const ManageApplications = () => {
 
                 {/* Contact Information (Restricted) */}
                 <div className="space-y-4 pt-4 border-t border-slate-100">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
-                    Contact Details
-                  </h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
+                      Contact Details
+                    </h3>
+                    {!checkSubscription() && (
+                      <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1">
+                        <Lock className="size-3" /> PRO Required
+                      </span>
+                    )}
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-4 rounded-2xl bg-slate-50 space-y-1">
+                    <div className="p-4 rounded-2xl bg-slate-50 space-y-1 group relative overflow-hidden">
                       <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1">
                         <Mail className="size-3" /> Email Address
                       </p>
                       <p className="text-sm font-black truncate">
-                        {checkSubscription()
-                          ? selectedApp.email
-                          : selectedApp.email.replace(/(?<=.{3}).(?=.*@)/g, "*")}
+                        {selectedApp.email}
                       </p>
+                      {!checkSubscription() && (
+                        <div className="absolute inset-0 bg-slate-50/40 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => navigate("/employer/subscription")} className="text-[8px] font-black uppercase tracking-widest text-primary bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100">
+                            Reveal Email
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    <div className="p-4 rounded-2xl bg-slate-50 space-y-1">
+                    <div className="p-4 rounded-2xl bg-slate-50 space-y-1 group relative overflow-hidden">
                       <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1">
                         <Phone className="size-3" /> Phone Number
                       </p>
                       <p className="text-sm font-black">
-                        {checkSubscription()
-                          ? selectedApp.phone || "Not provided"
-                          : selectedApp.phone
-                            ? selectedApp.phone.replace(/.(?=.{4})/g, "*")
-                            : "Not provided"}
+                        {selectedApp.phone || "Not provided"}
                       </p>
+                      {!checkSubscription() && (
+                        <div className="absolute inset-0 bg-slate-50/40 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => navigate("/employer/subscription")} className="text-[8px] font-black uppercase tracking-widest text-primary bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100">
+                            Reveal Phone
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
+
+                {/* Additional Documents */}
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
+                      Application Documents
+                    </h3>
+                    {!checkSubscription() && (
+                      <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-1 rounded-lg uppercase tracking-widest flex items-center gap-1">
+                        <Lock className="size-3" /> Locked
+                      </span>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {selectedApp.additionalDocuments && selectedApp.additionalDocuments.length > 0 ? (
+                      selectedApp.additionalDocuments.map((doc: string, idx: number) => (
+                        <button
+                          key={idx}
+                          onClick={() => checkSubscription() && window.open(doc, '_blank')}
+                          className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 transition-all group relative overflow-hidden text-left"
+                        >
+                          <div className="size-9 rounded-xl bg-white shadow-sm flex items-center justify-center text-slate-400 group-hover:text-primary transition-colors">
+                            <FileText className="size-5" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Doc {idx + 1}</p>
+                            <p className="text-xs font-bold truncate">View Document</p>
+                          </div>
+                          {!checkSubscription() && (
+                            <div className="absolute inset-0 bg-slate-50/40 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Lock className="size-4 text-slate-400" />
+                            </div>
+                          )}
+                        </button>
+                      ))
+                    ) : (
+                      <p className="text-[10px] font-bold text-slate-400 italic px-1">No additional documents provided.</p>
+                    )}
+                  </div>
+                </div>
               </div>
+
+              {!checkSubscription() && (
+                <div className="px-8 pb-4">
+                  <div className="p-4 rounded-3xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-2xl bg-white flex items-center justify-center text-amber-500 shadow-sm">
+                        <Zap className="size-5 fill-current" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black text-amber-900 uppercase tracking-widest">Upgrade to PRO</p>
+                        <p className="text-[9px] font-bold text-amber-700">Unlock contact info & experience</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate("/employer/subscription")}
+                      className="px-4 py-2 rounded-xl bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-amber-500/20 active:scale-95 transition-all"
+                    >
+                      Learn More
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Modal Footer */}
               <div className="p-6 sm:p-8 bg-slate-50 flex flex-col sm:flex-row gap-4">

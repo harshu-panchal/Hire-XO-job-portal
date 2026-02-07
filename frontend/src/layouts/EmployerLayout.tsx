@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, PlusSquare, Users, Settings, Bell, LogIn, Briefcase, MessageSquare } from "lucide-react";
+import { PlusSquare, Bell, Home, Video, CreditCard, HelpCircle } from "lucide-react";
 import { NotificationDropdown } from "../components/NotificationDropdown";
 import { ProfileDropdown } from "@/components/ProfileDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -88,7 +88,7 @@ const EmployerLayout = () => {
                 : "bg-transparent"
                 }`}
             >
-              <Briefcase
+              <Home
                 className={`h-6 w-6 ${isActive("/employer") ? "fill-primary/20" : ""}`}
               />
             </div>
@@ -96,7 +96,7 @@ const EmployerLayout = () => {
               className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer") ? "opacity-100" : "opacity-40"
                 }`}
             >
-              Jobs
+              Home
             </span>
           </Link>
 
@@ -124,71 +124,71 @@ const EmployerLayout = () => {
           </Link>
 
           <Link
-            to="/post"
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/post") ? "text-primary" : "text-slate-400"
+            to={isAuthenticated ? "/employer/interviews" : "/login/employer"}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/interviews") ? "text-primary" : "text-slate-400"
               }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/post")
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/interviews")
                 ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
                 : "bg-transparent"
                 }`}
             >
-              <MessageSquare
-                className={`h-6 w-6 ${isActive("/post") ? "fill-primary/20" : ""}`}
+              <Video
+                className={`h-6 w-6 ${isActive("/employer/interviews") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/post") ? "opacity-100" : "opacity-40"
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/interviews") ? "opacity-100" : "opacity-40"
                 }`}
             >
-              Feed
+              Interview
             </span>
           </Link>
 
           <Link
-            to={isAuthenticated ? "/employer/applications" : "/login/employer"}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/applications") ? "text-primary" : "text-slate-400"
+            to={isAuthenticated ? "/employer/subscription" : "/login/employer"}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/subscription") ? "text-primary" : "text-slate-400"
               }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/applications")
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/subscription")
                 ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
                 : "bg-transparent"
                 }`}
             >
-              <Users
-                className={`h-6 w-6 ${isActive("/employer/applications") ? "fill-primary/20" : ""}`}
+              <CreditCard
+                className={`h-6 w-6 ${isActive("/employer/subscription") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/applications") ? "opacity-100" : "opacity-40"
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/subscription") ? "opacity-100" : "opacity-40"
                 }`}
             >
-              Apps
+              Payment
             </span>
           </Link>
 
           <Link
-            to={isAuthenticated ? "/employer/settings" : "/login/employer"}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/settings") ? "text-primary" : "text-slate-400"
+            to={isAuthenticated ? "/employer/faq" : "/login/employer"}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/faq") ? "text-primary" : "text-slate-400"
               }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/settings")
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/faq")
                 ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
                 : "bg-transparent"
                 }`}
             >
-              <Settings
-                className={`h-6 w-6 ${isActive("/employer/settings") ? "fill-primary/20" : ""}`}
+              <HelpCircle
+                className={`h-6 w-6 ${isActive("/employer/faq") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/settings") ? "opacity-100" : "opacity-40"
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/faq") ? "opacity-100" : "opacity-40"
                 }`}
             >
-              Setup
+              FAQ
             </span>
           </Link>
         </div>

@@ -5,6 +5,8 @@ export interface IJobApplication extends Document {
     jobId: mongoose.Types.ObjectId;
     status: 'Pending' | 'Accepted' | 'Rejected';
     message?: string;
+    resume?: string;
+    additionalDocuments?: string[];
     appliedAt: Date;
 }
 
@@ -13,6 +15,8 @@ const JobApplicationSchema: Schema = new Schema({
     jobId: { type: Schema.Types.ObjectId, ref: 'Job', required: true },
     status: { type: String, enum: ['Pending', 'Accepted', 'Rejected'], default: 'Pending' },
     message: { type: String },
+    resume: { type: String },
+    additionalDocuments: [{ type: String }],
 }, { timestamps: { createdAt: 'appliedAt', updatedAt: 'updatedAt' } });
 
 // Prevent duplicate applications

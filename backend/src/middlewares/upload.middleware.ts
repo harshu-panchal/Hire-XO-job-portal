@@ -29,8 +29,8 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
     const extname = path.extname(file.originalname).toLowerCase();
     const mimetype = file.mimetype;
 
-    if (file.fieldname === 'cv' || file.fieldname === 'certificate' || file.fieldname === 'tender-document') {
-        // CV, Certificates and Tender Documents: Accept PDFs and Word docs
+    if (file.fieldname === 'cv' || file.fieldname === 'resume' || file.fieldname === 'additionalDocuments' || file.fieldname === 'certificate' || file.fieldname === 'tender-document') {
+        // CV, Resume, Certificates and Tender Documents: Accept PDFs and Word docs
         if (allowedDocTypes.test(extname) && (
             mimetype === 'application/pdf' ||
             mimetype === 'application/msword' ||
@@ -65,10 +65,16 @@ export const uploadCV = upload.single('cv');
 export const uploadCompanyLogo = upload.single('companyLogo');
 export const uploadCertificate = upload.single('certificate');
 export const uploadTenderDocument = upload.single('tender-document');
+export const uploadApplication = upload.fields([
+    { name: 'resume', maxCount: 1 },
+    { name: 'additionalDocuments', maxCount: 5 }
+]);
 export const uploadMultiple = upload.fields([
     { name: 'profilePhoto', maxCount: 1 },
     { name: 'cv', maxCount: 1 },
     { name: 'companyLogo', maxCount: 1 },
     { name: 'certificate', maxCount: 1 },
-    { name: 'tender-document', maxCount: 5 }
+    { name: 'tender-document', maxCount: 5 },
+    { name: 'resume', maxCount: 1 },
+    { name: 'additionalDocuments', maxCount: 5 }
 ]);

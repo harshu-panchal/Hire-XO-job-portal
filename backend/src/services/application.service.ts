@@ -14,7 +14,15 @@ import User from '../models/user.model';
 
 export class ApplicationService {
     // Apply to a job
-    public async applyToJob(applicantId: string, jobId: string, message?: string) {
+    public async applyToJob(
+        applicantId: string,
+        jobId: string,
+        data: {
+            message?: string;
+            resume?: string;
+            additionalDocuments?: string[];
+        }
+    ) {
         // Check if job exists
         const job = await Job.findById(jobId);
         if (!job) {
@@ -36,7 +44,9 @@ export class ApplicationService {
         const application = await JobApplication.create({
             applicantId,
             jobId,
-            message,
+            message: data.message,
+            resume: data.resume,
+            additionalDocuments: data.additionalDocuments,
             status: 'Pending'
         });
 
@@ -158,6 +168,9 @@ export class ApplicationService {
 
     // Get applications for a specific job (for job owner)
     public async getJobApplications(jobId: string, ownerId: string) {
+        // Check subscription status
+        const isSubscribed = await this.checkUserSubscription(ownerId);
+
         // Verify ownership
         const job = await Job.findById(jobId);
         if (!job) {
@@ -169,14 +182,22 @@ export class ApplicationService {
         }
 
         const applications = await JobApplication.find({ jobId })
-            .populate('applicantId', 'name email phoneNumber')
-            .sort({ appliedAt: -1 });
+            .populate('applicantId', 'name email phoneNumber profilePhoto profile')
+            .sort({ appliedAt: -1 })
+            .lean();
+
+        if (!isSubscribed) {
+            return applications.map(app => this.maskApplicationData(app));
+        }
 
         return applications;
     }
 
     // Get all applications received for jobs posted by the user (Recruiter Dashboard)
     public async getReceivedApplications(userId: string) {
+        // Check subscription status
+        const isSubscribed = await this.checkUserSubscription(userId);
+
         // Find all jobs posted by the user
         const jobs = await Job.find({ userId });
         const jobIds = jobs.map(job => job._id);
@@ -185,7 +206,12 @@ export class ApplicationService {
         const applications = await JobApplication.find({ jobId: { $in: jobIds } })
             .populate('applicantId', 'name email phoneNumber profilePhoto profile')
             .populate('jobId', 'title')
-            .sort({ appliedAt: -1 });
+            .sort({ appliedAt: -1 })
+            .lean();
+
+        if (!isSubscribed) {
+            return applications.map(app => this.maskApplicationData(app));
+        }
 
         return applications;
     }
@@ -242,17 +268,28 @@ export class ApplicationService {
         const resources = await ResourceModel.find({ userId });
         const resourceIds = resources.map((r: any) => r._id);
 
+        // Check subscription status
+        const isSubscribed = await this.checkUserSubscription(userId);
+
         // Find applications for these resources
         const applications = await ResourceApplication.find({ resourceId: { $in: resourceIds } })
-            .populate('applicantId', 'name email phoneNumber profilePhoto')
+            .populate('applicantId', 'name email phoneNumber profilePhoto profile')
             .populate('resourceId')
-            .sort({ appliedAt: -1 });
+            .sort({ appliedAt: -1 })
+            .lean();
+
+        if (!isSubscribed) {
+            return applications.map(app => this.maskApplicationData(app));
+        }
 
         return applications;
     }
 
     // Get applications for a specific resource (for resource owner)
     public async getResourceApplications(resourceId: string, resourceType: string, ownerId: string) {
+        // Check subscription status
+        const isSubscribed = await this.checkUserSubscription(ownerId);
+
         const modelMap: any = {
             'Investor': Investor,
             'Tender': Tender,
@@ -280,8 +317,13 @@ export class ApplicationService {
         }
 
         const applications = await ResourceApplication.find({ resourceId, resourceType })
-            .populate('applicantId', 'name email phoneNumber')
-            .sort({ appliedAt: -1 });
+            .populate('applicantId', 'name email phoneNumber profilePhoto profile')
+            .sort({ appliedAt: -1 })
+            .lean();
+
+        if (!isSubscribed) {
+            return applications.map(app => this.maskApplicationData(app));
+        }
 
         return applications;
     }
@@ -368,6 +410,77 @@ export class ApplicationService {
 
             return application;
         }
+    }
+
+    // Helper to mask application data for unsubscribed users
+    private maskApplicationData(application: any) {
+        if (application.applicantId && typeof application.applicantId === 'object') {
+            const applicant = application.applicantId;
+
+            // Mask email (show first 3 chars)
+            if (applicant.email) {
+                const [user, domain] = applicant.email.split('@');
+                applicant.email = `${user.substring(0, 3)}***@${domain}`;
+            }
+
+            // Mask phone (show last 4 chars)
+            if (applicant.phoneNumber) {
+                applicant.phoneNumber = applicant.phoneNumber.replace(/.(?=.{4})/g, "*");
+            }
+
+            // Mask profile details
+            if (applicant.profile) {
+                if (applicant.profile.experience && applicant.profile.experience.length > 0) {
+                    applicant.profile.experience = applicant.profile.experience.map(() => ({
+                        company: '********',
+                        role: '********',
+                        period: '********'
+                    }));
+                }
+
+                if (applicant.profile.education && applicant.profile.education.length > 0) {
+                    applicant.profile.education = applicant.profile.education.map(() => ({
+                        school: '********',
+                        degree: '********',
+                        period: '********'
+                    }));
+                }
+
+                applicant.profile.bio = "Upgrade to a PRO subscription to view this candidate's full profile, experience history, and contact details.";
+            }
+
+            // Mask application message
+            if (application.message) {
+                application.message = "This message is only visible to PRO subscribers.";
+            }
+
+            // Mask cover letter (for resource applications)
+            if (application.coverLetter) {
+                application.coverLetter = "Upgrade to view cover letter.";
+            }
+
+            // Mask resume and additional documents
+            if (application.resume) {
+                application.resume = "";
+            }
+            if (application.additionalDocuments) {
+                application.additionalDocuments = [];
+            }
+        }
+        return application;
+    }
+
+    // Helper to check if a user has an active subscription
+    private async checkUserSubscription(userId: string): Promise<boolean> {
+        const user = await User.findById(userId);
+        if (!user) return false;
+
+        if (!user.activeSubscriptionId || !user.subscriptionExpiry) {
+            return false;
+        }
+
+        const now = new Date();
+        return user.subscriptionExpiry > now;
     }
 }
 

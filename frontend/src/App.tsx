@@ -325,6 +325,7 @@ function App() {
           <Route path="/employer/security" element={<EmployerSecurity />} />
           <Route path="/employer/promotions" element={<EmployerPromotions />} />
           <Route path="/employer/interviews" element={<Interviews />} />
+          <Route path="/employer/faq" element={<FAQ />} />
         </Route>
       </Route>
 
