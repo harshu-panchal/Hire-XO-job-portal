@@ -18,7 +18,17 @@ export interface Post {
     resume?: string;
     images?: string[];
     likes: string[];
-    comments: any[];
+    comments: {
+        _id: string;
+        userId: {
+            _id: string;
+            name: string;
+            profilePhoto?: string;
+            role?: string;
+        };
+        text: string;
+        createdAt: string;
+    }[];
     createdAt: string;
 }
 
@@ -59,6 +69,15 @@ export const postService = {
         try {
             const response = await apiClient.post<{ likes: number }>(`/posts/${id}/like`);
             return response.data.likes;
+        } catch (error) {
+            throw new Error(getErrorMessage(error));
+        }
+    },
+
+    async addComment(id: string, text: string): Promise<Post> {
+        try {
+            const response = await apiClient.post<{ data: Post }>(`/posts/${id}/comments`, { text });
+            return response.data.data;
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }

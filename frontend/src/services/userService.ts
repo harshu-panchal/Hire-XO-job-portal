@@ -51,7 +51,7 @@ export const userService = {
    */
   async addBookmark(resourceId: string): Promise<{ message: string }> {
     try {
-      const response = await apiClient.post(`/resources/${resourceId}/bookmark`);
+      const response = await apiClient.post(`/users/bookmarks/${resourceId}`);
       return response.data;
     } catch (error) {
       throw new Error(getErrorMessage(error));
@@ -63,7 +63,7 @@ export const userService = {
    */
   async removeBookmark(resourceId: string): Promise<{ message: string }> {
     try {
-      const response = await apiClient.delete(`/resources/${resourceId}/bookmark`);
+      const response = await apiClient.delete(`/users/bookmarks/${resourceId}`);
       return response.data;
     } catch (error) {
       throw new Error(getErrorMessage(error));

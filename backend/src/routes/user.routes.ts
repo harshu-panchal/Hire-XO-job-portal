@@ -12,5 +12,9 @@ router.get('/stats', authenticateToken, userController.getDashboardStats);
 router.patch('/profile-photo', authenticateToken, uploadProfilePhoto, userController.updateProfilePhoto);
 router.patch('/profile', authenticateToken, userController.updateProfile);
 
+// Bookmark routes
+router.post('/bookmarks/:id', authenticateToken, userController.addBookmark);
+router.delete('/bookmarks/:id', authenticateToken, userController.removeBookmark);
+
 export default router;
 

@@ -298,7 +298,11 @@ export class AuthService {
         // Send email
         const { EmailService } = require('./email.service');
         const emailService = new EmailService();
-        await emailService.sendPasswordResetEmail(user.email, resetToken);
+        const emailSent = await emailService.sendPasswordResetEmail(user.email, resetToken);
+
+        if (!emailSent) {
+            throw new Error('Failed to send password reset email. Please try again later.');
+        }
 
         return { message: 'Password reset email sent' };
     }

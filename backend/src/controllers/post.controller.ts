@@ -159,4 +159,47 @@ export class PostController {
             res.status(500).json({ message: 'Failed to delete post', error: error.message });
         }
     };
+
+    public addComment = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            const postId = req.params.id;
+            const { text } = req.body;
+
+            if (!userId) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            if (!text || !text.trim()) {
+                res.status(400).json({ message: 'Comment text is required' });
+                return;
+            }
+
+            const post = await Post.findById(postId);
+            if (!post) {
+                res.status(404).json({ message: 'Post not found' });
+                return;
+            }
+
+            const newComment = {
+                userId: new (require('mongoose').Types.ObjectId)(userId),
+                text: text.trim(),
+                createdAt: new Date()
+            };
+
+            post.comments.push(newComment);
+            await post.save();
+
+            // Return the updated post with populated comments
+            const updatedPost = await Post.findById(postId)
+                .populate('userId', 'name role profilePhoto')
+                .populate('comments.userId', 'name role profilePhoto');
+
+            res.status(200).json({ message: 'Comment added successfully', data: updatedPost });
+        } catch (error: any) {
+            console.error('Error adding comment:', error);
+            res.status(500).json({ message: 'Failed to add comment', error: error.message });
+        }
+    };
 }

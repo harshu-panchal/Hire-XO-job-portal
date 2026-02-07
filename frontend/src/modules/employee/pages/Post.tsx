@@ -81,6 +81,38 @@ const Post = () => {
         }
     };
 
+    const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+    const [commentText, setCommentText] = useState<Record<string, string>>({});
+    const [isCommenting, setIsCommenting] = useState<Record<string, boolean>>({});
+
+    const toggleComments = (postId: string) => {
+        const newExpanded = new Set(expandedComments);
+        if (newExpanded.has(postId)) {
+            newExpanded.delete(postId);
+        } else {
+            newExpanded.add(postId);
+        }
+        setExpandedComments(newExpanded);
+    };
+
+    const handlePostComment = async (postId: string) => {
+        const text = commentText[postId]?.trim();
+        if (!text) return;
+
+        setIsCommenting(prev => ({ ...prev, [postId]: true }));
+        try {
+            const updatedPost = await postService.addComment(postId, text);
+            setPosts(posts.map(p => p._id === postId ? updatedPost : p));
+            setCommentText(prev => ({ ...prev, [postId]: "" }));
+            toast.success("Comment added");
+        } catch (error) {
+            console.error("Failed to add comment:", error);
+            toast.error("Failed to add comment");
+        } finally {
+            setIsCommenting(prev => ({ ...prev, [postId]: false }));
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-50 pb-20 animate-in fade-in duration-700">
             <div className="bg-white px-6 pt-12 pb-6 rounded-b-[2rem] shadow-sm mb-6">
@@ -338,6 +370,85 @@ const Post = () => {
                                                 </Link>
                                             </div>
                                         )}
+                                    </div>
+                                )}
+
+                                {/* Action Buttons */}
+                                <div className="flex items-center gap-4 border-t border-slate-100 pt-4">
+                                    <button className="flex items-center gap-2 text-slate-500 hover:text-rose-500 transition-colors group">
+                                        <Heart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                        <span className="text-xs font-bold">{post.likes.length} Likes</span>
+                                    </button>
+                                    <button
+                                        onClick={() => toggleComments(post._id)}
+                                        className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors group"
+                                    >
+                                        <MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                        <span className="text-xs font-bold">{post.comments?.length || 0} Comments</span>
+                                    </button>
+                                    <button className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors ml-auto">
+                                        <Share2 className="w-5 h-5" />
+                                    </button>
+                                </div>
+
+                                {/* Comments Section */}
+                                {expandedComments.has(post._id) && (
+                                    <div className="mt-4 pt-4 border-t border-slate-100 animate-in fade-in slide-in-from-top-2">
+                                        {/* Comment List */}
+                                        <div className="space-y-4 mb-4 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
+                                            {post.comments?.length > 0 ? (
+                                                post.comments.map((comment, idx) => (
+                                                    <div key={idx} className="flex gap-3">
+                                                        <div className="size-8 rounded-full bg-slate-100 flex-shrink-0 overflow-hidden">
+                                                            {comment.userId.profilePhoto ? (
+                                                                <img src={comment.userId.profilePhoto} alt="" className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center font-bold text-slate-500 text-xs">
+                                                                    {comment.userId.name ? comment.userId.name[0] : 'U'}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 bg-slate-50 rounded-2xl rounded-tl-none p-3">
+                                                            <div className="flex justify-between items-start mb-1">
+                                                                <span className="text-xs font-black text-slate-800">{comment.userId.name}</span>
+                                                                <span className="text-[10px] text-slate-400 font-bold">{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
+                                                            </div>
+                                                            <p className="text-xs text-slate-600 leading-relaxed">{comment.text}</p>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p className="text-center text-xs text-slate-400 py-4 italic">No comments yet. Start the conversation!</p>
+                                            )}
+                                        </div>
+
+                                        {/* Add Comment Input */}
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={commentText[post._id] || ""}
+                                                onChange={(e) => setCommentText(prev => ({ ...prev, [post._id]: e.target.value }))}
+                                                placeholder="Write a comment..."
+                                                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                                        e.preventDefault();
+                                                        handlePostComment(post._id);
+                                                    }
+                                                }}
+                                            />
+                                            <Button
+                                                onClick={() => handlePostComment(post._id)}
+                                                disabled={!commentText[post._id]?.trim() || isCommenting[post._id]}
+                                                className="rounded-xl w-10 h-10 p-0 flex items-center justify-center bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90 disabled:opacity-50"
+                                            >
+                                                {isCommenting[post._id] ? (
+                                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                ) : (
+                                                    <Send className="w-4 h-4" />
+                                                )}
+                                            </Button>
+                                        </div>
                                     </div>
                                 )}
                             </Card>
