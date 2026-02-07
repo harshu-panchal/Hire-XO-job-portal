@@ -12,7 +12,7 @@ import Logistics from '../models/logistics.model';
 import Vehicle from '../models/vehicle.model';
 import User from '../models/user.model';
 import { notificationEmitter } from '../utils/notificationEmitter';
-import { notificationEmitter } from '../utils/notificationEmitter';
+
 
 export class ApplicationService {
     // Apply to a job

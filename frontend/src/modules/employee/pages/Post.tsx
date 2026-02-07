@@ -40,27 +40,41 @@ const Post = () => {
 
         try {
             setIsPosting(true);
-            // In a real app, we'd upload the resume to a CDN and get a URL
-            // For now, we'll pass the filename to signify it's functional
-            const resumeName = resume ? resume.name : undefined;
+
+            let resumeUrl: string | undefined = undefined;
+
+            // Upload resume if selected
+            if (resume) {
+                try {
+                    const uploadResult = await postService.uploadMedia(resume);
+                    resumeUrl = uploadResult.url;
+                } catch (uploadError) {
+                    console.error("Failed to upload resume:", uploadError);
+                    toast.error("Failed to upload file. Please try again.");
+                    setIsPosting(false);
+                    return;
+                }
+            }
 
             await postService.createPost(
                 postContent,
-                undefined, // contactDetail (deprecating in favor of specific fields)
+                undefined, // contactDetail
                 undefined, // images
                 contactEmail || undefined,
                 contactPhone || undefined,
-                resumeName
+                resumeUrl
             );
 
             setPostContent("");
             setContactEmail("");
             setContactPhone("");
             setResume(null);
+            toast.success("Post created successfully!");
             // Refresh feed
             fetchPosts();
         } catch (error) {
             console.error("Failed to create post:", error);
+            toast.error(error instanceof Error ? error.message : "Failed to create post");
         } finally {
             setIsPosting(false);
         }
@@ -70,10 +84,11 @@ const Post = () => {
         // Optimistic update
         setPosts((prev: IPost[]) => prev.map((p: IPost) => {
             if (p._id === postId) {
-                const isLiked = p.likes.includes(user?._id || user?.id || '');
+                const userId = user?._id || user?.id || '';
+                const isLiked = p.likes.includes(userId);
                 return {
                     ...p,
-                    likes: isLiked ? p.likes.filter((id: string) => id !== (user?._id || user?.id)) : [...p.likes, user?._id || user?.id || '']
+                    likes: isLiked ? p.likes.filter((id: string) => id !== userId) : [...p.likes, userId]
                 };
             }
             return p;
@@ -340,12 +355,25 @@ const Post = () => {
                                         )}
                                         {post.resume && (
                                             <div className="flex items-center gap-2">
-                                                <div className="size-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                                <div className="flex items-center gap-2">
+                                                    <div className="size-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                                                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                                    </div>
+                                                    {post.resume && post.resume.startsWith('http') ? (
+                                                        <a
+                                                            href={post.resume}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className={`text-[10px] uppercase tracking-widest font-black hover:underline ${post.userId.isContactHidden ? "text-slate-300 italic pointer-events-none" : "text-emerald-700"}`}
+                                                        >
+                                                            View Resume
+                                                        </a>
+                                                    ) : (
+                                                        <span className={`text-[10px] uppercase tracking-widest font-black ${post.userId.isContactHidden ? "text-slate-300 italic" : "text-emerald-700"}`}>
+                                                            Resume Available
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                <span className={`text-[10px] uppercase tracking-widest font-black ${post.userId.isContactHidden ? "text-slate-300 italic" : "text-emerald-700"}`}>
-                                                    Resume: {post.resume}
-                                                </span>
                                             </div>
                                         )}
 
