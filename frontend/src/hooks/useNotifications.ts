@@ -36,8 +36,9 @@ export const useNotifications = () => {
       fetchNotifications();
 
       // Setup SSE
-      const token = useAuthStore.getState().token;
-      const eventSource = new EventSource(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"}/notifications/stream?token=${token}`);
+      const eventSource = new EventSource(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"}/notifications/stream`, {
+        withCredentials: true
+      });
 
       eventSource.onmessage = (event) => {
         const newNotification = JSON.parse(event.data);

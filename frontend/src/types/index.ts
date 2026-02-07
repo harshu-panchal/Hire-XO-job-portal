@@ -2,6 +2,7 @@ export const TYPES_LOADED = true;
 
 export interface Job {
   id: string;
+  _id?: string; // MongoDB ID
   title: string;
   company: string;
   companyLogo?: string;
@@ -75,6 +76,7 @@ export type VehicleType = string;
 
 export interface User {
   id: string;
+  _id?: string; // MongoDB ID
   email: string;
   name: string;
   username: string;

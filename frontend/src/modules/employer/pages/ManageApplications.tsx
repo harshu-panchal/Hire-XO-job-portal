@@ -19,6 +19,7 @@ import {
   MapPin,
   Lock,
   Zap,
+  FileText,
 } from "lucide-react";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
