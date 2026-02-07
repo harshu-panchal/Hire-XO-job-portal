@@ -14,10 +14,14 @@ export class InterviewService {
             const employer = await User.findById(data.employerId);
             const employerName = employer ? employer.name : 'An employer';
 
+            const details = data.type === 'Remote'
+                ? `Join via: ${data.link}`
+                : `Location: ${data.location}`;
+
             await Notification.create({
                 userId: data.applicantId,
                 title: 'Interview Scheduled',
-                message: `${employerName} has scheduled an interview for ${data.title} on ${new Date(data.date).toLocaleDateString()} at ${data.time}.`,
+                message: `${employerName} has scheduled an interview for ${data.title} on ${new Date(data.date).toLocaleDateString()} at ${data.time}. Type: ${data.type}. ${details}`,
                 type: 'info',
                 relatedId: interview._id.toString(),
                 relatedType: 'job_application' // Or generic 'interview'?
@@ -33,6 +37,8 @@ export class InterviewService {
         const query = role === 'employer' ? { employerId: userId } : { applicantId: userId };
         return await Interview.find(query)
             .populate('jobId', 'title company location')
+            .populate('applicantId', 'name profilePhoto email')
+            .populate('employerId', 'name profilePhoto email')
             .sort({ date: 1, time: 1 });
     };
 
@@ -79,6 +85,24 @@ export class InterviewService {
 
         if (interview.employerId.toString() !== userId) {
             throw new Error('Only the employer can cancel/delete the interview');
+        }
+
+
+        // Notify Applicant about cancellation
+        try {
+            const employer = await User.findById(userId);
+            const employerName = employer ? employer.name : 'The employer';
+
+            await Notification.create({
+                userId: interview.applicantId,
+                title: 'Interview Canceled',
+                message: `${employerName} has canceled the interview for ${interview.title}.`,
+                type: 'info',
+                relatedId: interview.applicationId.toString(), // Redirect to application since interview is gone
+                relatedType: 'job_application'
+            });
+        } catch (error) {
+            console.error('Failed to notify about interview cancellation', error);
         }
 
         await Interview.findByIdAndDelete(interviewId);

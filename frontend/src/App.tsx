@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProfileRedirect from "./components/ProfileRedirect";
 import PaymentRedirect from "./components/PaymentRedirect";
+import { useAuthStore } from "@/store/useAuthStore";
 
 // Layouts
 import EmployeeLayout from "./layouts/EmployeeLayout";
@@ -224,11 +225,19 @@ import VehicleProvideProfile from "./modules/resources/vehicles/provide/pages/Pr
 import VehicleProvideSettings from "./modules/resources/vehicles/provide/pages/ProvideSettings";
 import VehicleProvideNotifications from "./modules/resources/vehicles/provide/pages/VehicleProvideNotifications";
 
+const InterviewsRedirect = () => {
+  const { user } = useAuthStore();
+  if (user?.role === 'employer') return <Navigate to="/employer/interviews" replace />;
+  if (user?.role === 'employee') return <Navigate to="/employee/interviews" replace />;
+  return <Navigate to="/" replace />;
+};
+
 function App() {
   return (
     <Routes>
       {/* Public Routes - Authentication */}
       <Route path="/" element={<RoleSelection />} />
+      <Route path="/interviews" element={<InterviewsRedirect />} />
       <Route path="/login/:role" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
@@ -272,7 +281,7 @@ function App() {
           <Route path="/saved-jobs" element={<SavedJobs />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/notifications" element={<Notifications />} />
-          <Route path="/interviews" element={<Interviews />} />
+          <Route path="/employee/interviews" element={<Interviews />} />
         </Route>
         <Route path="/faq" element={<FAQ />} />
 
@@ -315,6 +324,7 @@ function App() {
           />
           <Route path="/employer/security" element={<EmployerSecurity />} />
           <Route path="/employer/promotions" element={<EmployerPromotions />} />
+          <Route path="/employer/interviews" element={<Interviews />} />
         </Route>
       </Route>
 

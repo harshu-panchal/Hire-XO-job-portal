@@ -3,11 +3,17 @@ import { Calendar, Clock, Video, MapPin, CheckCircle, XCircle, AlertCircle } fro
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { interviewService, type Interview } from "@/services/interviewService";
+
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const Interviews = () => {
     const [interviews, setInterviews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuthStore();
+    const navigate = useNavigate();
+    const isEmployer = user?.role === "employer";
 
     useEffect(() => {
         const fetchInterviews = async () => {
@@ -88,10 +94,12 @@ const Interviews = () => {
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h3 className="font-black text-lg text-slate-900 truncate max-w-[200px]">
-                                        {interview.jobId?.company || interview.resourceType || "Organization"}
+                                        {isEmployer
+                                            ? interview.applicantId?.name || "Candidate"
+                                            : interview.jobId?.company || interview.resourceType || "Organization"}
                                     </h3>
                                     <p className="text-primary font-black text-[10px] uppercase tracking-widest">
-                                        {interview.title || interview.jobId?.title || "Interviewer"}
+                                        {interview.title || interview.jobId?.title || "Interview"}
                                     </p>
                                 </div>
                                 <div
@@ -152,14 +160,16 @@ const Interviews = () => {
                         <div className="space-y-2">
                             <h3 className="font-black text-xl text-slate-900 tracking-tight">No interviews yet</h3>
                             <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest max-w-[250px] mx-auto">
-                                Apply to more jobs to start coordinating with employers!
+                                {isEmployer
+                                    ? "Review applications to schedule interviews with candidates."
+                                    : "Apply to more jobs to start coordinating with employers!"}
                             </p>
                         </div>
                         <Button
-                            onClick={() => window.location.href = '/jobs'}
+                            onClick={() => navigate(isEmployer ? '/employer/applications' : '/jobs')}
                             className="bg-primary text-white font-black px-8 py-4 rounded-2xl text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all"
                         >
-                            Browse Jobs
+                            {isEmployer ? "Manage Applications" : "Browse Jobs"}
                         </Button>
                     </div>
                 )}

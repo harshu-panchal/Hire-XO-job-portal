@@ -68,18 +68,18 @@ const EmployeeLayout = () => {
           </Link>
 
           <Link
-            to="/interviews"
-            onClick={(e) => handleProtectedNavigation("/interviews", e)}
-            className={`flex flex-col items-center gap-1 min-w-[3.5rem] transition-all duration-200 active:scale-90 ${isActive("/interviews") ? "text-primary" : "text-slate-400"
+            to="/employee/interviews"
+            onClick={(e) => handleProtectedNavigation("/employee/interviews", e)}
+            className={`flex flex-col items-center gap-1 min-w-[3.5rem] transition-all duration-200 active:scale-90 ${isActive("/employee/interviews") ? "text-primary" : "text-slate-400"
               }`}
           >
             <div
-              className={`p-2 rounded-2xl transition-all duration-200 ${isActive("/interviews") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
+              className={`p-2 rounded-2xl transition-all duration-200 ${isActive("/employee/interviews") ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5" : "bg-transparent"}`}
             >
-              <Video className={`h-5 w-5 ${isActive("/interviews") ? "fill-primary/20" : ""}`} />
+              <Video className={`h-5 w-5 ${isActive("/employee/interviews") ? "fill-primary/20" : ""}`} />
             </div>
             <span
-              className={`text-[9px] font-black uppercase tracking-wider ${isActive("/interviews") ? "opacity-100" : "opacity-40"}`}
+              className={`text-[9px] font-black uppercase tracking-wider ${isActive("/employee/interviews") ? "opacity-100" : "opacity-40"}`}
             >
               Interview
             </span>

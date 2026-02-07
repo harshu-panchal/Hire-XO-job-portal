@@ -201,24 +201,15 @@ const EmployerPromotions = () => {
                             </div>
                         </div>
 
-                        {/* Budget Slider */}
-                        <div className="space-y-4 pt-2">
-                            <div className="flex items-center justify-between">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-1">Set Budget</label>
-                                <span className="text-xl font-black text-primary">₹{budget}</span>
+                        {/* Fixed Budget Display */}
+                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-sm font-black text-slate-900">Promotion Cost</h3>
+                                <p className="text-xs font-medium text-slate-500">Fixed rate per promotion</p>
                             </div>
-                            <input
-                                type="range"
-                                min="100"
-                                max="10000"
-                                step="100"
-                                value={budget}
-                                onChange={(e) => setBudget(Number(e.target.value))}
-                                className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                            />
-                            <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                <span>₹100</span>
-                                <span>₹10,000</span>
+                            <div className="text-right">
+                                <span className="text-xl font-black text-primary">₹100</span>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">/ Post</p>
                             </div>
                         </div>
 
