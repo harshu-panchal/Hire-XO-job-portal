@@ -79,26 +79,52 @@ export const requireRole = (...allowedRoles: string[]) => {
  * Checks if subscription is active but does NOT block the request.
  * Adds subscription status to the request object or logs it.
  */
-export const checkSubscription = (req: AuthRequest, res: Response, next: NextFunction): void => {
-    if (!req.user) {
-        next();
-        return;
+// Subscription Enforcement Middleware (Hard Mode)
+export const checkSubscription = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        if (!req.user) {
+            // If not authenticated (and route allows it), pass. 
+            // But if route needed auth, authenticateToken should have run first.
+            next();
+            return;
+        }
+
+        const User = require('../models/user.model').default;
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            res.status(401).json({ message: 'User not found' });
+            return;
+        }
+
+        // Admin always bypasses
+        if (user.role === 'admin') {
+            next();
+            return;
+        }
+
+        // Job Seekers / Employees usually don't need subscription check for general access
+        // But if this middleware is applied, it means we WANT to check.
+        // However, to be safe and avoid breaking basic features, we only strictly enforce 
+        // for Recruiter/Employer users if they are accessing paid features.
+        // If the middleware is applied globally, we must be careful.
+        // For now, we assume this middleware is applied selectively to Paid Routes.
+
+        // Check expiry
+        const now = new Date();
+        if (user.subscriptionExpiry && new Date(user.subscriptionExpiry) > now) {
+            // Active subscription
+            next();
+        } else {
+            // Expired or no subscription
+            res.status(403).json({
+                message: 'Active subscription required to access this feature.',
+                code: 'SUBSCRIPTION_EXPIRED'
+            });
+        }
+    } catch (error) {
+        console.error('Subscription check error:', error);
+        res.status(500).json({ message: 'Internal server error during subscription check' });
     }
-
-    // This is where we would check the database for subscription status
-    // For now, we only proceed as this is 'dry-run' mode
-    // logic to check expiry would go here:
-    /*
-    const now = new Date();
-    if (!req.user.subscriptionExpiry || new Date(req.user.subscriptionExpiry) < now) {
-         console.warn(`[Soft Block] User ${req.user.id} has expired subscription.`);
-         // In strict mode: return res.status(403).json({ code: 'SUBSCRIPTION_EXPIRED', ... });
-    }
-    */
-
-    // In soft mode, we can attach status metadata for controllers if they want to use it
-    // (req as any).subscriptionStatus = 'expired'; // Example
-
-    next();
 };
 

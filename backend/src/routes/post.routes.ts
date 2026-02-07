@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { PostController } from '../controllers/post.controller';
 import { authenticateToken, optionalAuthenticate } from '../middlewares/auth.middleware';
+import { validate } from '../middlewares/validation.middleware';
+import { createPostSchema } from '../validations/post.validation';
 
 const router = Router();
 const postController = new PostController();
@@ -10,7 +12,7 @@ const postController = new PostController();
 router.get('/', optionalAuthenticate, postController.getAll);
 
 // Protected routes
-router.post('/', authenticateToken, postController.create);
+router.post('/', authenticateToken, validate(createPostSchema), postController.create);
 router.post('/:id/like', authenticateToken, postController.like);
 router.delete('/:id', authenticateToken, postController.delete);
 

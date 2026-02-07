@@ -40,6 +40,20 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
         } else {
             cb(new Error('Only PDF and Word documents are allowed for documents'));
         }
+    } else if (file.fieldname === 'file') {
+        // Generic post media: Accept both images and docs
+        if (
+            (allowedImageTypes.test(extname) && mimetype.startsWith('image/')) ||
+            (allowedDocTypes.test(extname) && (
+                mimetype === 'application/pdf' ||
+                mimetype === 'application/msword' ||
+                mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ))
+        ) {
+            cb(null, true);
+        } else {
+            cb(new Error('Invalid file type. Allowed: Images, PDF, Word docs'));
+        }
     } else {
         // Profile photo and company logo: Accept images only
         if (allowedImageTypes.test(extname) && mimetype.startsWith('image/')) {
@@ -72,3 +86,4 @@ export const uploadMultiple = upload.fields([
     { name: 'certificate', maxCount: 1 },
     { name: 'tender-document', maxCount: 5 }
 ]);
+export const uploadPostMedia = upload.single('file');

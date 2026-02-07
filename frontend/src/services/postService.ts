@@ -63,11 +63,19 @@ export const postService = {
         }
     },
 
-    async deletePost(id: string): Promise<void> {
-        try {
-            await apiClient.delete(`/posts/${id}`);
-        } catch (error) {
-            throw new Error(getErrorMessage(error));
-        }
+    async deletePost(id: string) {
+        const response = await apiClient.delete(`/posts/${id}`);
+        return response.data;
+    },
+
+    async uploadMedia(file: File) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await apiClient.post('/upload/post-media', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
     }
 };
