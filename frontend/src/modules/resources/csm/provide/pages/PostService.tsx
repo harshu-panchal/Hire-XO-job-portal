@@ -1,53 +1,99 @@
-import { ArrowLeft, Building2, FileText, Camera, Plus } from "lucide-react";
+import { useState, useRef } from "react";
+import { ArrowLeft, Building2, FileText, Camera, Plus, X, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useCSMStore } from "@/store/useCSMStore";
+import { resourceService } from "@/services/resourceService";
+import { uploadService } from "@/services/uploadService";
+import { toast } from "sonner";
 
 const PostService = () => {
   const navigate = useNavigate();
-  const { addService } = useCSMStore();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
-    category: "Structural Audit",
+    company: "",
+    location: "Remote / Pan-India",
+    compensation: "As per industry standards",
+    type: "Service Provider",
     description: "",
-    experience: "5",
-    certification: "Structural Engineer",
+    category: "CSM",
+    csmType: "offer-csm-services",
+    urgency: "Immediate",
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serviceCategory, setServiceCategory] = useState("Structural Audit");
+  const [files, setFiles] = useState<File[]>([]);
 
-  const handleSubmit = () => {
-    if (!formData.title || !formData.description) {
-      alert("Please fill in all required fields.");
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setFiles([...files, ...newFiles]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(files.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.title || !formData.company || !formData.description) {
+      toast.error("Please fill in all required fields");
       return;
     }
 
-    setIsSubmitting(true);
+    setLoading(true);
+    try {
+      // Upload images if any
+      const imageUrls = [];
+      if (files.length > 0) {
+        const toastId = toast.loading("Uploading portfolio images...");
+        try {
+          for (const file of files) {
+            const res = await uploadService.uploadCSMImage(file);
+            imageUrls.push(res.url);
+          }
+        } finally {
+          toast.dismiss(toastId);
+        }
+      }
 
-    // Simulate API delay
-    setTimeout(() => {
-      addService({
-        title: formData.title,
-        category: formData.category,
-      });
-      setIsSubmitting(false);
-      alert("CSM Service listed successfully! It is now under review.");
-      navigate("/csm/provide/my-services");
-    }, 800);
+      const payload = {
+        ...formData,
+        category: "CSM" as any,
+        requirements: [serviceCategory], // Store sub-category
+        images: imageUrls,
+        postedAt: new Date().toISOString(),
+      };
+
+      await resourceService.create("csm", payload);
+      toast.success("CSM service published successfully!");
+      navigate("/csm/provide/dashboard");
+    } catch (error: any) {
+      console.error("Failed to save CSM service", error);
+      toast.error(error.message || "Failed to save CSM service");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="py-6 space-y-8 select-none">
+    <div className="py-6 space-y-8 select-none mb-24">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
         <button
           onClick={() => navigate(-1)}
-          className="size-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center active:scale-90 transition-transform"
+          className="size-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center active:scale-90 transition-transform shadow-sm"
         >
-          <ArrowLeft className="size-6" />
+          <ArrowLeft className="size-6 text-slate-600" />
         </button>
-        <h1 className="text-xl font-black tracking-tight">Post CSM service</h1>
+        <h1 className="text-xl font-black tracking-tight uppercase italic">Post CSM service</h1>
         <div className="size-12 opacity-0" />
       </div>
 
@@ -68,10 +114,25 @@ const PostService = () => {
                 Service Title
               </label>
               <input
-                type="text"
+                name="title"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={handleChange}
+                type="text"
                 placeholder="e.g. Structural Safety & Site Supervision"
+                className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
+                Firm / Consultant Name
+              </label>
+              <input
+                name="company"
+                value={formData.company}
+                onChange={handleChange}
+                type="text"
+                placeholder="e.g. SafeBuild Consultancy"
                 className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans"
               />
             </div>
@@ -80,19 +141,17 @@ const PostService = () => {
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
                 Specialty Area
               </label>
-              <div className="relative">
-                <select
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans appearance-none"
-                >
-                  <option>Structural Audit</option>
-                  <option>Quality Control</option>
-                  <option>Safety Compliance</option>
-                  <option>MEP Supervision</option>
-                  <option>General Site Oversight</option>
-                </select>
-              </div>
+              <select
+                value={serviceCategory}
+                onChange={(e) => setServiceCategory(e.target.value)}
+                className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans appearance-none"
+              >
+                <option>Structural Audit</option>
+                <option>Quality Control</option>
+                <option>Safety Compliance</option>
+                <option>MEP Supervision</option>
+                <option>General Site Oversight</option>
+              </select>
             </div>
           </div>
         </div>
@@ -103,9 +162,7 @@ const PostService = () => {
             <div className="size-8 rounded-lg bg-emerald-600/10 flex items-center justify-center text-emerald-600">
               <FileText className="size-4" />
             </div>
-            <h2 className="text-sm font-black uppercase tracking-widest italic">
-              Experience & Specs
-            </h2>
+            <h2 className="text-sm font-black uppercase tracking-widest italic">Experience & Specs</h2>
           </div>
 
           <div className="space-y-4">
@@ -114,9 +171,10 @@ const PostService = () => {
                 Detailed Description
               </label>
               <textarea
-                rows={4}
+                name="description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={handleChange}
+                rows={4}
                 placeholder="Describe your supervision process and safety standards..."
                 className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans resize-none"
               />
@@ -125,29 +183,30 @@ const PostService = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
-                  Min Exp (Yrs)
+                  Base Location
                 </label>
                 <input
-                  type="number"
-                  value={formData.experience}
-                  onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-                  placeholder="5"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="e.g. Noida, UP"
                   className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans"
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
-                  Certification
+                  Urgency
                 </label>
                 <select
-                  value={formData.certification}
-                  onChange={(e) => setFormData({ ...formData, certification: e.target.value })}
+                  name="urgency"
+                  value={formData.urgency}
+                  onChange={handleChange}
                   className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans appearance-none"
                 >
-                  <option>Structural Engineer</option>
-                  <option>ISO 45001 (Safety)</option>
-                  <option>B.Tech / M.Tech Civil</option>
-                  <option>Govt. Licensed</option>
+                  <option>Immediate</option>
+                  <option>Within Week</option>
+                  <option>Flexible</option>
                 </select>
               </div>
             </div>
@@ -160,14 +219,39 @@ const PostService = () => {
             <div className="size-8 rounded-lg bg-amber-600/10 flex items-center justify-center text-amber-600">
               <Camera className="size-4" />
             </div>
-            <h2 className="text-sm font-black uppercase tracking-widest italic">
-              Portfolio & Docs
-            </h2>
+            <h2 className="text-sm font-black uppercase tracking-widest italic">Portfolio & Docs</h2>
           </div>
 
+          <input
+            type="file"
+            multiple
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="image/*"
+          />
+
           <div className="grid grid-cols-3 gap-3">
+            {files.map((file, index) => (
+              <div
+                key={index}
+                className="relative aspect-square rounded-2xl overflow-hidden border border-slate-100 shadow-sm"
+              >
+                <img
+                  src={URL.createObjectURL(file)}
+                  className="w-full h-full object-cover"
+                  alt="preview"
+                />
+                <button
+                  onClick={() => removeFile(index)}
+                  className="absolute top-1 right-1 size-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                >
+                  <X className="size-3" />
+                </button>
+              </div>
+            ))}
             <button
-              onClick={() => alert("Portfolio upload coming soon!")}
+              onClick={() => fileInputRef.current?.click()}
               className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 hover:bg-slate-50 transition-colors group"
             >
               <Plus className="size-5 text-slate-400 group-hover:text-rose-600 transition-colors" />
@@ -180,10 +264,11 @@ const PostService = () => {
 
         <button
           onClick={handleSubmit}
-          disabled={isSubmitting}
-          className={`w-full h-20 rounded-[2.5rem] bg-rose-600 text-white font-black text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-[0.98] transition-all shadow-xl shadow-rose-600/25 mt-4 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
+          disabled={loading}
+          className="w-full h-20 rounded-[2.5rem] bg-rose-600 text-white font-black text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-[0.98] transition-all shadow-xl shadow-rose-600/25 mt-4 disabled:opacity-70"
         >
-          {isSubmitting ? "Listing..." : "List CSM Service"}
+          {loading ? "Publishing..." : "Publish CSM Service"}
+          <ChevronRight className="size-5" />
         </button>
       </div>
     </div>

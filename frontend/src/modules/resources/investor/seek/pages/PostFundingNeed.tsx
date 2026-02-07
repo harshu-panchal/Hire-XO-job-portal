@@ -9,6 +9,8 @@ import {
   Building2,
   MapPin,
   Loader2,
+  Camera,
+  Plus,
 } from "lucide-react";
 import { resourceService } from "@/services/resourceService";
 import { uploadService } from "@/services/uploadService";
@@ -21,8 +23,10 @@ const PostFundingNeed = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
 
   const [formData, setFormData] = useState({
     businessName: "",
@@ -39,6 +43,7 @@ const PostFundingNeed = () => {
   });
 
   const [documents, setDocuments] = useState<{ name: string; url: string }[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   const sectors = [
     "Technology",
@@ -56,7 +61,6 @@ const PostFundingNeed = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Size check (10MB)
     if (file.size > 10 * 1024 * 1024) {
       toast.error("File size must be less than 10MB");
       return;
@@ -75,6 +79,17 @@ const PostFundingNeed = () => {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setImageFiles([...imageFiles, ...newFiles]);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImageFiles(imageFiles.filter((_, i) => i !== index));
+  };
+
   const removeDocument = (index: number) => {
     setDocuments((prev) => prev.filter((_, i) => i !== index));
   };
@@ -90,18 +105,35 @@ const PostFundingNeed = () => {
     try {
       setIsSubmitting(true);
 
+      // Upload images if any
+      const imageUrls = [];
+      if (imageFiles.length > 0) {
+        setIsUploadingImages(true);
+        const toastId = toast.loading("Uploading project images...");
+        try {
+          for (const file of imageFiles) {
+            const res = await uploadService.uploadInvestorImage(file);
+            imageUrls.push(res.url);
+          }
+        } finally {
+          toast.dismiss(toastId);
+          setIsUploadingImages(false);
+        }
+      }
+
       const payload = {
         title: `${formData.businessName} - Funding Request`,
         company: formData.businessName,
         category: "Investor" as ResourceCategory,
         location: formData.location,
-        compensation: formData.amount, // Required field
-        type: "seeking-investment", // Required field
-        description: formData.description, // Required field
+        compensation: formData.amount,
+        type: "seeking-investment",
+        description: formData.description,
         investorType: "want-investment",
         investmentAmount: formData.amount,
         investmentSector: [formData.sector],
         duration: formData.duration,
+        images: imageUrls,
         details: {
           useOfFunds: formData.useOfFunds,
           revenueModel: formData.revenueModel,
@@ -125,7 +157,7 @@ const PostFundingNeed = () => {
   };
 
   return (
-    <div className="py-6 space-y-6 select-none">
+    <div className="py-6 space-y-6 select-none mb-24">
       {/* Header */}
       <div className="px-1">
         <h1 className="text-3xl font-black tracking-tight">
@@ -139,7 +171,9 @@ const PostFundingNeed = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
         <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
-          <h2 className="text-xl font-black tracking-tight mb-4">Basic Information</h2>
+          <h2 className="text-xl font-black tracking-tight mb-4 uppercase italic">
+            Basic Information
+          </h2>
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">
@@ -166,7 +200,7 @@ const PostFundingNeed = () => {
                 required
                 value={formData.sector}
                 onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
-                className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                className="w-full px-4 py-4 rounded-[1.5rem] bg-slate-50 border border-slate-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none"
               >
                 <option value="">Select sector</option>
                 {sectors.map((sector) => (
@@ -198,7 +232,9 @@ const PostFundingNeed = () => {
 
         {/* Funding Details */}
         <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
-          <h2 className="text-xl font-black tracking-tight mb-4">Funding Details</h2>
+          <h2 className="text-xl font-black tracking-tight mb-4 uppercase italic">
+            Funding Details
+          </h2>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -256,7 +292,9 @@ const PostFundingNeed = () => {
 
         {/* Business Details */}
         <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
-          <h2 className="text-xl font-black tracking-tight mb-4">Business Details</h2>
+          <h2 className="text-xl font-black tracking-tight mb-4 uppercase italic">
+            Business Details
+          </h2>
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">
@@ -328,9 +366,64 @@ const PostFundingNeed = () => {
           </div>
         </div>
 
+        {/* Project Images */}
+        <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
+          <h2 className="text-xl font-black tracking-tight mb-4 uppercase italic">Project Media</h2>
+          <div className="space-y-4">
+            <input
+              type="file"
+              multiple
+              ref={imageInputRef}
+              onChange={handleImageChange}
+              className="hidden"
+              accept="image/*"
+            />
+            <div
+              onClick={() => imageInputRef.current?.click()}
+              className="border-2 border-dashed border-slate-200 rounded-[1.5rem] p-8 text-center cursor-pointer hover:bg-slate-50 transition-all"
+            >
+              <div className="size-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Camera className="size-8 text-primary" />
+              </div>
+              <p className="text-sm font-black mb-1 italic uppercase tracking-widest">
+                Add Project Photos
+              </p>
+              <p className="text-[10px] text-slate-500 mb-4 uppercase font-black tracking-widest">
+                PNG, JPG upto 5MB
+              </p>
+            </div>
+
+            {imageFiles.length > 0 && (
+              <div className="grid grid-cols-4 gap-3">
+                {imageFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="relative aspect-square rounded-xl overflow-hidden border border-slate-100 shadow-sm"
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      className="w-full h-full object-cover"
+                      alt="preview"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-1 right-1 size-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Documents */}
         <div className="bg-white rounded-[2rem] p-6 border border-slate-200">
-          <h2 className="text-xl font-black tracking-tight mb-4">Supporting Documents</h2>
+          <h2 className="text-xl font-black tracking-tight mb-4 uppercase italic">
+            Supporting Documents
+          </h2>
           <div className="space-y-4">
             <div
               onClick={() => fileInputRef.current?.click()}
@@ -350,11 +443,11 @@ const PostFundingNeed = () => {
                   <Upload className="size-8 text-primary" />
                 )}
               </div>
-              <p className="text-sm font-black mb-1">
+              <p className="text-sm font-black mb-1 italic uppercase tracking-widest">
                 {isUploading ? "Uploading..." : "Upload Documents"}
               </p>
-              <p className="text-xs text-slate-500 mb-4">
-                Business plan, financial projections, pitch deck (PDF, max 10MB)
+              <p className="text-[10px] text-slate-500 mb-4 uppercase font-black tracking-widest">
+                Business plan, pitch deck (PDF, max 10MB)
               </p>
               <button
                 type="button"

@@ -42,6 +42,55 @@ export const uploadService = {
   },
 
   /**
+   * Upload equipment image
+   */
+  async uploadEquipmentImage(file: File): Promise<UploadResponse> {
+    return this.uploadFile(file, "/upload/equipment-image", "equipment-image");
+  },
+
+  /**
+   * Upload machinery image
+   */
+  async uploadMachineryImage(file: File): Promise<UploadResponse> {
+    return this.uploadFile(file, "/upload/machinery-image", "machinery-image");
+  },
+
+  /**
+   * Upload vehicle image
+   */
+  async uploadVehicleImage(file: File): Promise<UploadResponse> {
+    return this.uploadFile(file, "/upload/vehicle-image", "vehicle-image");
+  },
+
+  /**
+   * Upload logistics image
+   */
+  async uploadLogisticsImage(file: File): Promise<UploadResponse> {
+    return this.uploadFile(file, "/upload/logistics-image", "logistics-image");
+  },
+
+  /**
+   * Upload PMC image
+   */
+  async uploadPMCImage(file: File): Promise<UploadResponse> {
+    return this.uploadFile(file, "/upload/pmc-image", "pmc-image");
+  },
+
+  /**
+   * Upload CSM image
+   */
+  async uploadCSMImage(file: File): Promise<UploadResponse> {
+    return this.uploadFile(file, "/upload/csm-image", "csm-image");
+  },
+
+  /**
+   * Upload investor image
+   */
+  async uploadInvestorImage(file: File): Promise<UploadResponse> {
+    return this.uploadFile(file, "/upload/investor-image", "investor-image");
+  },
+
+  /**
    * Upload multiple files
    */
   async uploadMultipleFiles(

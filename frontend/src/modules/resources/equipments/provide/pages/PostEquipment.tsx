@@ -1,31 +1,90 @@
-import { useState } from "react";
-import { ArrowLeft, Upload, Plus, ChevronRight, MapPin } from "lucide-react";
+import { useState, useRef } from "react";
+import { ArrowLeft, Upload, Plus, ChevronRight, MapPin, Trash2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
+import { uploadService } from "@/services/uploadService";
+import { toast } from "sonner";
 
 const PostEquipment = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: "",
+    title: "",
     category: "Excavators",
-    brand: "",
-    model: "",
-    year: "",
-    hourlyRate: "",
-    dailyRate: "",
     location: "",
     description: "",
-    specs: [{ label: "", value: "" }],
-    features: [""],
+    compensation: "",
+    type: "Rental",
+    equipmentType: "rent-out-equipment",
+    duration: "Per Day",
+    urgency: "Immediate",
   });
 
-  const addSpec = () => {
-    setFormData({ ...formData, specs: [...formData.specs, { label: "", value: "" }] });
+  const [files, setFiles] = useState<File[]>([]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setFiles([...files, ...newFiles]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(files.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.title || !formData.location || !formData.compensation) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Upload images if any
+      const imageUrls = [];
+      if (files.length > 0) {
+        const toastId = toast.loading("Uploading images...");
+        try {
+          for (const file of files) {
+            const res = await uploadService.uploadEquipmentImage(file);
+            imageUrls.push(res.url);
+          }
+        } finally {
+          toast.dismiss(toastId);
+        }
+      }
+
+      const payload = {
+        ...formData,
+        category: "Equipments" as any,
+        equipmentTypes: [formData.category], // Store sub-category
+        images: imageUrls,
+        postedAt: new Date(),
+      };
+
+      await resourceService.create("equipments", payload);
+      toast.success("Equipment listed successfully!");
+      navigate("/equipments/provide/dashboard");
+    } catch (error: any) {
+      console.error("Failed to save equipment", error);
+      toast.error(error.message || "Failed to save equipment");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="py-6 space-y-8 select-none">
+    <div className="py-6 space-y-8 select-none mb-24">
       {/* Action Bar */}
       <div className="flex items-center justify-between px-1">
         <button
@@ -60,9 +119,12 @@ const PostEquipment = () => {
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
-                  Equipment Name
+                  Equipment Name/Title
                 </label>
                 <input
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
                   type="text"
                   placeholder="e.g. Caterpillar 320 GC Excavator"
                   className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-sm"
@@ -73,7 +135,12 @@ const PostEquipment = () => {
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
                     Category
                   </label>
-                  <select className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none appearance-none cursor-pointer">
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none appearance-none cursor-pointer"
+                  >
                     <option>Excavators</option>
                     <option>Cranes</option>
                     <option>Generators</option>
@@ -82,12 +149,17 @@ const PostEquipment = () => {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
-                    Availability
+                    Urgency
                   </label>
-                  <select className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none appearance-none cursor-pointer">
-                    <option>Available Now</option>
-                    <option>In 7 Days</option>
-                    <option>In 30 Days</option>
+                  <select
+                    name="urgency"
+                    value={formData.urgency}
+                    onChange={handleChange}
+                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none appearance-none cursor-pointer"
+                  >
+                    <option>Immediate</option>
+                    <option>Within Week</option>
+                    <option>Flexible</option>
                   </select>
                 </div>
               </div>
@@ -102,6 +174,9 @@ const PostEquipment = () => {
                 <div className="relative">
                   <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-blue-600" />
                   <input
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
                     type="text"
                     placeholder="City, State"
                     className="w-full pl-11 pr-5 py-4 rounded-2xl bg-white border-none font-bold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -122,9 +197,12 @@ const PostEquipment = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
-                    Rate / Hour
+                    Rate Amount
                   </label>
                   <input
+                    name="compensation"
+                    value={formData.compensation}
+                    onChange={handleChange}
                     type="text"
                     placeholder="e.g. 2,500"
                     className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-100 font-black text-blue-600 focus:outline-none"
@@ -132,13 +210,18 @@ const PostEquipment = () => {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
-                    Rate / Day
+                    Unit
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 18,000"
-                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-100 font-black text-blue-600 focus:outline-none"
-                  />
+                  <select
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleChange}
+                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-100 font-bold text-blue-600 focus:outline-none appearance-none"
+                  >
+                    <option>Per Hour</option>
+                    <option>Per Day</option>
+                    <option>Per Month</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -149,41 +232,13 @@ const PostEquipment = () => {
                 Machine Condition & Scope
               </label>
               <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
                 rows={4}
-                placeholder="Describe performance, maintenance history, and what's included in the rent (e.g. operator, fuel)..."
+                placeholder="Describe performance, maintenance history..."
                 className="w-full px-5 py-4 rounded-[2rem] bg-white border border-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
               ></textarea>
-            </div>
-
-            {/* Dynamic Specs */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between ml-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Technical Specs
-                </label>
-                <button
-                  onClick={addSpec}
-                  className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-blue-600"
-                >
-                  <Plus className="size-3" /> Add Spec
-                </button>
-              </div>
-              <div className="space-y-3">
-                {formData.specs.map((_, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      placeholder="Label (e.g. Cap)"
-                      className="w-1/3 px-5 py-3.5 rounded-2xl bg-white border border-slate-100 font-bold text-[10px] uppercase"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Value (e.g. 20T)"
-                      className="flex-1 px-5 py-3.5 rounded-2xl bg-white border border-slate-100 font-bold text-sm"
-                    />
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         )}
@@ -191,7 +246,18 @@ const PostEquipment = () => {
         {step === 3 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Photo Upload */}
-            <div className="p-8 border-2 border-dashed border-blue-200 rounded-[2.5rem] flex flex-col items-center text-center space-y-4 bg-blue-50/30">
+            <input
+              type="file"
+              multiple
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept="image/*"
+            />
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="p-8 border-2 border-dashed border-blue-200 rounded-[2.5rem] flex flex-col items-center text-center space-y-4 bg-blue-50/30 cursor-pointer"
+            >
               <div className="size-16 rounded-[2rem] bg-white shadow-xl flex items-center justify-center">
                 <Upload className="size-8 text-blue-600" />
               </div>
@@ -203,15 +269,41 @@ const PostEquipment = () => {
                   Front, Side, Cabin, Serial Number
                 </p>
               </div>
-              <button className="bg-blue-600 text-white px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95 transition-transform">
-                Open Gallery
-              </button>
+              <div className="bg-blue-600 text-white px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 active:scale-95 transition-transform">
+                Select Images
+              </div>
             </div>
+
+            {files.length > 0 && (
+              <div className="grid grid-cols-2 gap-3">
+                {files.map((file, index) => (
+                  <div
+                    key={index}
+                    className="relative group aspect-square rounded-2xl overflow-hidden border border-slate-100"
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      className="w-full h-full object-cover"
+                      alt="preview"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile(index);
+                      }}
+                      className="absolute top-2 right-2 size-8 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Certification Verification */}
             <div className="p-6 bg-slate-50 rounded-[2.5rem] flex gap-4 border border-slate-100">
               <div className="mt-1">
-                <input type="checkbox" className="size-5 accent-blue-600 rounded-lg" />
+                <input type="checkbox" required className="size-5 accent-blue-600 rounded-lg" />
               </div>
               <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-relaxed">
                 I confirm that this equipment has valid pollution and fitness certificates. Rental
@@ -228,23 +320,25 @@ const PostEquipment = () => {
           {step > 1 && (
             <button
               onClick={() => setStep(step - 1)}
-              className="bg-white text-slate-900 border border-slate-200 px-8 font-black text-xs uppercase tracking-widest py-5 rounded-[2rem] active:scale-95 transition-all shadow-xl"
+              className="bg-white text-slate-900 border border-slate-200 px-8 font-black text-[10px] uppercase tracking-widest py-5 rounded-[2rem] active:scale-95 transition-all shadow-xl"
             >
               Back
             </button>
           )}
           <button
-            onClick={() =>
-              step < 3 ? setStep(step + 1) : navigate("/equipments/provide/dashboard")
-            }
-            className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black text-xs uppercase tracking-[0.2em] py-5 rounded-[2rem] shadow-2xl shadow-blue-500/40 active:scale-95 transition-all flex items-center justify-center gap-2 italic"
+            onClick={() => (step < 3 ? setStep(step + 1) : handleSubmit())}
+            disabled={loading}
+            className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black text-[10px] uppercase tracking-[0.2em] py-5 rounded-[2rem] shadow-2xl shadow-blue-500/40 active:scale-95 transition-all flex items-center justify-center gap-2 italic disabled:opacity-70"
           >
-            {step === 3 ? "Launch Listing" : "Continue"} <ChevronRight className="size-4" />
+            {loading
+              ? "Listing..."
+              : step === 3
+                ? "Launch Listing"
+                : "Continue"}{" "}
+            <ChevronRight className="size-4" />
           </button>
         </div>
       </div>
-
-      <div className="h-16" />
     </div>
   );
 };

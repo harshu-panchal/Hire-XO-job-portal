@@ -18,6 +18,7 @@ export interface IEquipment extends Document {
     duration?: string;
     urgency?: "Immediate" | "Within Week" | "Flexible";
     postedAt: Date;
+    images?: string[];
 }
 
 const EquipmentSchema: Schema = new Schema({
@@ -37,6 +38,7 @@ const EquipmentSchema: Schema = new Schema({
     equipmentTypes: [{ type: String }],
     duration: { type: String },
     urgency: { type: String, enum: ["Immediate", "Within Week", "Flexible"] },
+    images: [{ type: String }],
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
 export default mongoose.model<IEquipment>('Equipment', EquipmentSchema);
