@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { walletService, type Transaction } from "@/services/walletService";
@@ -41,7 +42,7 @@ const EmployerWallet = () => {
     setIsLoading(true);
     try {
       const result = await walletService.topUp(500);
-      setWalletData(prev => ({
+      setWalletData((prev: { balance: number; transactions: Transaction[] }) => ({
         balance: result.balance,
         transactions: [
           {
@@ -115,7 +116,7 @@ const EmployerWallet = () => {
           </div>
 
           <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
-            {walletData.transactions.map((tx, i) => (
+            {walletData.transactions.map((tx: Transaction, i: number) => (
               <div
                 key={tx._id}
                 className={`p-5 flex items-center justify-between ${i !== walletData.transactions.length - 1 ? "border-b border-slate-100" : ""}`}

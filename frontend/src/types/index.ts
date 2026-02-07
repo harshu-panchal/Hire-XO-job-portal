@@ -82,6 +82,7 @@ export interface User {
   username: string;
   role: UserRole;
   profile: UserProfile;
+  walletBalance?: number;
   createdAt: string;
   phoneNumber?: string;
   profilePhoto?: string; // Added to fix build
