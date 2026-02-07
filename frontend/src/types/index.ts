@@ -63,7 +63,7 @@ export interface Resource {
 }
 
 // Missing types
-export type UserRole = "employee" | "employer" | "resource" | "admin";
+export type UserRole = "employee" | "employer" | "resource" | "admin" | "recruiter";
 export type InvestorType = string;
 export type TenderType = string;
 export type EquipmentType = string;
