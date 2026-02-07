@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, type Variants } from "framer-motion";
 import {
   LineChart,
@@ -16,13 +16,14 @@ import {
 } from "recharts";
 import {
   Download,
-  Calendar,
   TrendingUp,
   Users,
   DollarSign,
   Briefcase,
   FileText,
 } from "lucide-react";
+import { adminService, type SystemStats } from "@/services/adminService";
+import { toast } from "sonner";
 
 const monthlyData = [
   { name: "Jan", users: 1200, revenue: 32000, jobs: 450 },
@@ -33,13 +34,7 @@ const monthlyData = [
   { name: "Jun", users: 2100, revenue: 65000, jobs: 720 },
 ];
 
-const pieData = [
-  { name: "Employees", value: 65 },
-  { name: "Employers", value: 25 },
-  { name: "Resources", value: 10 },
-];
-
-const COLORS = ["#3B82F6", "#10B981", "#F59E0B"];
+const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -57,8 +52,26 @@ const itemVariants: Variants = {
     transition: { type: "spring", stiffness: 300, damping: 25 },
   },
 } as const;
+
 export default function Reports() {
   const [isExporting, setIsExporting] = useState(false);
+  const [stats, setStats] = useState<SystemStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await adminService.getSystemStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+        toast.error("Failed to load reports data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -82,6 +95,13 @@ export default function Reports() {
 
     setIsExporting(false);
   };
+
+  const pieData = stats ? [
+    { name: "Employees", value: stats.users.byRole["job-seeker"] || 0 },
+    { name: "Employers", value: stats.users.byRole["recruiter"] || 0 },
+    { name: "Resources", value: stats.users.byRole["resource"] || 0 },
+    { name: "Admins", value: stats.users.byRole["admin"] || 0 },
+  ].filter(d => d.value > 0) : [];
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
@@ -119,10 +139,30 @@ export default function Reports() {
 
       {/* Quick Stats */}
       <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Users" value="12,459" change="+12.5%" icon={Users} />
-        <StatCard title="Active Jobs" value="3,842" change="+8.2%" icon={Briefcase} />
-        <StatCard title="Revenue" value="₹4.2L" change="+18.7%" icon={DollarSign} />
-        <StatCard title="Reports Generated" value="156" change="+5.4%" icon={FileText} />
+        <StatCard
+          title="Total Users"
+          value={isLoading ? "..." : stats?.users.total.toLocaleString() || "0"}
+          change="+12.5%"
+          icon={Users}
+        />
+        <StatCard
+          title="Active Jobs"
+          value={isLoading ? "..." : stats?.jobs.active.toLocaleString() || "0"}
+          change="+8.2%"
+          icon={Briefcase}
+        />
+        <StatCard
+          title="Total Revenue"
+          value={isLoading ? "..." : `₹${stats?.revenue.total.toLocaleString() || "0"}`}
+          change="+18.7%"
+          icon={DollarSign}
+        />
+        <StatCard
+          title="Total Applications"
+          value={isLoading ? "..." : stats?.applications.total.toLocaleString() || "0"}
+          change="+5.4%"
+          icon={FileText}
+        />
       </motion.div>
 
       {/* Charts Row */}
@@ -209,29 +249,33 @@ export default function Reports() {
             User Distribution
           </h3>
           <div className="h-[200px] flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={80}
-                  dataKey="value"
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {isLoading ? (
+              <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={80}
+                    dataKey="value"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </div>
-          <div className="flex justify-center gap-6 mt-4">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4">
             {pieData.map((item, index) => (
               <div key={item.name} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index] }} />
-                <span className="text-xs text-slate-600">{item.name}</span>
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                <span className="text-xs text-slate-600">{item.name} ({item.value})</span>
               </div>
             ))}
           </div>

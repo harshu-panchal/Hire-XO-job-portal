@@ -66,6 +66,28 @@ const Post = () => {
         }
     };
 
+    const handleLike = async (postId: string) => {
+        // Optimistic update
+        setLocalPosts(prev => prev.map(p => {
+            if (p._id === postId) {
+                const isLiked = p.likes.includes(user?._id || '');
+                return {
+                    ...p,
+                    likes: isLiked ? p.likes.filter(id => id !== user?._id) : [...p.likes, user?._id || '']
+                };
+            }
+            return p;
+        }));
+
+        try {
+            await postService.likePost(postId);
+        } catch (err) {
+            // Revert on error
+            fetchPosts();
+            toast.error("Failed to like post");
+        }
+    };
+
     const handleDeletePost = async (id: string) => {
         if (!window.confirm("Are you sure you want to delete this post?")) return;
 
@@ -340,6 +362,22 @@ const Post = () => {
                                         )}
                                     </div>
                                 )}
+
+                                {/* Action Buttons */}
+                                <div className="flex items-center gap-4 border-t border-slate-100 pt-4">
+                                    <button
+                                        onClick={() => handleLike(post._id)}
+                                        className={`flex items-center gap-2 transition-colors group ${post.likes.includes(user?._id || '') ? 'text-rose-500' : 'text-slate-500 hover:text-rose-500'}`}
+                                        disabled={isLoading}
+                                    >
+                                        <Heart className={`w-5 h-5 group-hover:scale-110 transition-transform ${post.likes.includes(user?._id || '') ? 'fill-current' : ''}`} />
+                                        <span className="text-xs font-bold">{post.likes.length} Likes</span>
+                                    </button>
+
+                                    <button className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors ml-auto">
+                                        <Share2 className="w-5 h-5" />
+                                    </button>
+                                </div>
                             </Card>
                         ))
                     ) : (
@@ -350,8 +388,8 @@ const Post = () => {
                         </div>
                     )}
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

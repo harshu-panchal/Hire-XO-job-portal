@@ -3,6 +3,7 @@ import JobApplication from '../models/job-application.model';
 import ResourceApplication from '../models/resource-application.model';
 import Notification from '../models/notification.model';
 import User from '../models/user.model';
+import { notificationEmitter } from '../utils/notificationEmitter';
 import mongoose from 'mongoose';
 
 export class InterviewService {
@@ -18,7 +19,7 @@ export class InterviewService {
                 ? `Join via: ${data.link}`
                 : `Location: ${data.location}`;
 
-            await Notification.create({
+            const notification = await Notification.create({
                 userId: data.applicantId,
                 title: 'Interview Scheduled',
                 message: `${employerName} has scheduled an interview for ${data.title} on ${new Date(data.date).toLocaleDateString()} at ${data.time}. Type: ${data.type}. ${details}`,
@@ -26,6 +27,7 @@ export class InterviewService {
                 relatedId: interview._id.toString(),
                 relatedType: 'job_application' // Or generic 'interview'?
             });
+            notificationEmitter.emit('new_notification', { userId: data.applicantId, notification });
         } catch (error) {
             console.error('Failed to notify applicant about interview', error);
         }
@@ -62,7 +64,7 @@ export class InterviewService {
             const updater = await User.findById(userId);
             const updaterName = updater ? updater.name : 'The other party';
 
-            await Notification.create({
+            const notification = await Notification.create({
                 userId: notificationTarget,
                 title: 'Interview Status Updated',
                 message: `${updaterName} has marked the interview for ${interview.title} as ${status}.`,
@@ -70,6 +72,7 @@ export class InterviewService {
                 relatedId: interview._id.toString(),
                 relatedType: 'job_application'
             });
+            notificationEmitter.emit('new_notification', { userId: notificationTarget, notification });
         } catch (error) {
             console.error('Failed to notify about interview status update', error);
         }
@@ -93,7 +96,7 @@ export class InterviewService {
             const employer = await User.findById(userId);
             const employerName = employer ? employer.name : 'The employer';
 
-            await Notification.create({
+            const notification = await Notification.create({
                 userId: interview.applicantId,
                 title: 'Interview Canceled',
                 message: `${employerName} has canceled the interview for ${interview.title}.`,
@@ -101,6 +104,7 @@ export class InterviewService {
                 relatedId: interview.applicationId.toString(), // Redirect to application since interview is gone
                 relatedType: 'job_application'
             });
+            notificationEmitter.emit('new_notification', { userId: interview.applicantId, notification });
         } catch (error) {
             console.error('Failed to notify about interview cancellation', error);
         }

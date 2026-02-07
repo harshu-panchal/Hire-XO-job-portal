@@ -17,8 +17,7 @@ export interface Post {
     phoneNumber?: string;
     resume?: string;
     images?: string[];
-    likes: string[];
-    comments: any[];
+    likes: string[]; // Array of user IDs
     createdAt: string;
 }
 
