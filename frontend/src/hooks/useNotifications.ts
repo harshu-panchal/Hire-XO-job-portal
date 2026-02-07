@@ -3,6 +3,7 @@ import { useNotificationStore } from "@/store/useNotificationStore";
 import { CheckCircle, Info, Clock, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
+import { tokenManager } from "@/lib/tokenManager";
 
 export interface UINotification {
   id: string; // Changed to string to match _id
@@ -36,7 +37,7 @@ export const useNotifications = () => {
       fetchNotifications();
 
       // Setup SSE
-      const token = useAuthStore.getState().token;
+      const token = tokenManager.getToken();
       const eventSource = new EventSource(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"}/notifications/stream?token=${token}`);
 
       eventSource.onmessage = (event) => {
