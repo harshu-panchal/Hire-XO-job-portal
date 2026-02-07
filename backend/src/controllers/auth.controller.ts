@@ -21,6 +21,9 @@ export class AuthController {
 
     public signup = async (req: Request, res: Response): Promise<void> => {
         try {
+            console.log('[DEBUG] Signup Request Body:', req.body);
+            console.log('[DEBUG] Signup Request Files:', req.files ? 'Files present' : 'No files');
+
             const userData = { ...req.body };
             const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
