@@ -54,6 +54,22 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
         } else {
             cb(new Error('Invalid file type. Allowed: Images, PDF, Word docs'));
         }
+    } else if (
+        file.fieldname === 'equipment-image' ||
+        file.fieldname === 'machinery-image' ||
+        file.fieldname === 'vehicle-image' ||
+        file.fieldname === 'logistics-image' ||
+        file.fieldname === 'pmc-image' ||
+        file.fieldname === 'csm-image' ||
+        file.fieldname === 'investor-image' ||
+        file.fieldname === 'resource-image'
+    ) {
+        // Resource images
+        if (allowedImageTypes.test(extname) && mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed for resource images'));
+        }
     } else {
         // Profile photo and company logo: Accept images only
         if (allowedImageTypes.test(extname) && mimetype.startsWith('image/')) {
@@ -93,3 +109,11 @@ export const uploadMultiple = upload.fields([
     { name: 'additionalDocuments', maxCount: 5 }
 ]);
 export const uploadPostMedia = upload.single('file');
+export const uploadResourceImage = upload.single('resource-image');
+export const uploadEquipmentImage = upload.single('equipment-image');
+export const uploadMachineryImage = upload.single('machinery-image');
+export const uploadVehicleImage = upload.single('vehicle-image');
+export const uploadLogisticsImage = upload.single('logistics-image');
+export const uploadPMCImage = upload.single('pmc-image');
+export const uploadCSMImage = upload.single('csm-image');
+export const uploadInvestorImage = upload.single('investor-image');

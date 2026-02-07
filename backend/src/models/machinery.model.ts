@@ -18,6 +18,7 @@ export interface IMachinery extends Document {
     duration?: string;
     urgency?: "Immediate" | "Within Week" | "Flexible";
     postedAt: Date;
+    images?: string[];
 }
 
 const MachinerySchema: Schema = new Schema({
@@ -37,6 +38,7 @@ const MachinerySchema: Schema = new Schema({
     machineryTypes: [{ type: String }],
     duration: { type: String },
     urgency: { type: String, enum: ["Immediate", "Within Week", "Flexible"] },
+    images: [{ type: String }],
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
 export default mongoose.model<IMachinery>('Machinery', MachinerySchema);

@@ -1,13 +1,90 @@
-import { useState } from "react";
-import { ArrowLeft, Upload, CheckCircle2, ChevronRight, DollarSign } from "lucide-react";
+import { useState, useRef } from "react";
+import { ArrowLeft, Upload, CheckCircle2, ChevronRight, DollarSign, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
+import { uploadService } from "@/services/uploadService";
+import { toast } from "sonner";
 
 const PostMachine = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "Concrete Mixers",
+    brand: "",
+    year: "",
+    hoursUsed: "",
+    compensation: "",
+    description: "",
+    location: "India", // Default or collected
+  });
+
+  const [files, setFiles] = useState<File[]>([]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setFiles([...files, ...newFiles]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(files.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.title || !formData.compensation) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Upload images if any
+      const imageUrls = [];
+      if (files.length > 0) {
+        const toastId = toast.loading("Uploading images...");
+        try {
+          for (const file of files) {
+            const res = await uploadService.uploadMachineryImage(file);
+            imageUrls.push(res.url);
+          }
+        } finally {
+          toast.dismiss(toastId);
+        }
+      }
+
+      const payload = {
+        ...formData,
+        category: "Machinery" as any,
+        machineryTypes: [formData.category], // Store sub-category
+        images: imageUrls,
+        postedAt: new Date().toISOString(),
+        type: "Sale", // Machinery sell sub-module
+      };
+
+      await resourceService.create("machinery", payload);
+      toast.success("Machinery listed successfully!");
+      navigate("/machinery/sell/dashboard");
+    } catch (error: any) {
+      console.error("Failed to save machinery", error);
+      toast.error(error.message || "Failed to save machinery");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="py-6 space-y-8 select-none bg-slate-50 min-h-screen text-slate-900">
+    <div className="py-6 space-y-8 select-none bg-slate-50 min-h-screen text-slate-900 mb-24">
       {/* Nav Bar */}
       <div className="flex items-center justify-between px-1">
         <button
@@ -46,6 +123,9 @@ const PostMachine = () => {
                   Primary Asset Name
                 </label>
                 <input
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
                   type="text"
                   placeholder="e.g. Schwing Stetter CP30 Concrete Mixer"
                   className="w-full px-6 py-4 rounded-[1.8rem] bg-white border border-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/10 text-sm placeholder:text-slate-300 shadow-sm"
@@ -57,7 +137,12 @@ const PostMachine = () => {
                     Category
                   </label>
                   <div className="relative">
-                    <select className="w-full px-6 py-4 rounded-[1.8rem] bg-white border border-slate-200 font-bold focus:outline-none appearance-none cursor-pointer text-xs shadow-sm">
+                    <select
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      className="w-full px-6 py-4 rounded-[1.8rem] bg-white border border-slate-200 font-bold focus:outline-none appearance-none cursor-pointer text-xs shadow-sm"
+                    >
                       <option>Concrete Mixers</option>
                       <option>Generators</option>
                       <option>Excavators</option>
@@ -71,6 +156,9 @@ const PostMachine = () => {
                     Brand / OEM
                   </label>
                   <input
+                    name="brand"
+                    value={formData.brand}
+                    onChange={handleChange}
                     type="text"
                     placeholder="e.g. Kirloskar"
                     className="w-full px-6 py-4 rounded-[1.8rem] bg-white border border-slate-200 font-bold focus:outline-none text-xs shadow-sm"
@@ -79,7 +167,18 @@ const PostMachine = () => {
               </div>
             </div>
 
-            <div className="p-8 border-2 border-dashed border-slate-200 rounded-[2.5rem] bg-white flex flex-col items-center text-center space-y-4 shadow-sm">
+            <input
+              type="file"
+              multiple
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept="image/*"
+            />
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="p-8 border-2 border-dashed border-slate-200 rounded-[2.5rem] bg-white flex flex-col items-center text-center space-y-4 shadow-sm cursor-pointer"
+            >
               <div className="size-16 rounded-[2rem] bg-indigo-50 flex items-center justify-center border border-indigo-100">
                 <Upload className="size-8 text-indigo-600" />
               </div>
@@ -88,13 +187,39 @@ const PostMachine = () => {
                   Primary Media
                 </h3>
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
-                  Min 4 Hi-Res photos required
+                  Select Hi-Res photos
                 </p>
               </div>
-              <button className="px-6 py-2.5 rounded-xl bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest active:scale-95 transition-transform shadow-lg">
+              <div className="px-6 py-2.5 rounded-xl bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest shadow-lg">
                 Attach Assets
-              </button>
+              </div>
             </div>
+
+            {files.length > 0 && (
+              <div className="grid grid-cols-2 gap-3">
+                {files.map((file, index) => (
+                  <div
+                    key={index}
+                    className="relative group aspect-square rounded-2xl overflow-hidden border border-slate-100 shadow-sm"
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      className="w-full h-full object-cover"
+                      alt="preview"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile(index);
+                      }}
+                      className="absolute top-2 right-2 size-7 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -107,6 +232,9 @@ const PostMachine = () => {
                     Manufacture Year
                   </label>
                   <input
+                    name="year"
+                    value={formData.year}
+                    onChange={handleChange}
                     type="number"
                     placeholder="2022"
                     className="w-full px-6 py-4 rounded-[1.8rem] bg-white border border-slate-200 font-bold focus:outline-none text-xs shadow-sm"
@@ -117,6 +245,9 @@ const PostMachine = () => {
                     Hours Used
                   </label>
                   <input
+                    name="hoursUsed"
+                    value={formData.hoursUsed}
+                    onChange={handleChange}
                     type="text"
                     placeholder="e.g. 1200h"
                     className="w-full px-6 py-4 rounded-[1.8rem] bg-white border border-slate-200 font-bold focus:outline-none text-xs shadow-sm"
@@ -133,6 +264,9 @@ const PostMachine = () => {
                     <DollarSign className="size-4" />
                   </div>
                   <input
+                    name="compensation"
+                    value={formData.compensation}
+                    onChange={handleChange}
                     type="text"
                     placeholder="0.00"
                     className="w-full pl-14 pr-6 py-5 rounded-[2rem] bg-white border border-indigo-200 font-black text-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/5 text-slate-900 shadow-sm"
@@ -145,6 +279,9 @@ const PostMachine = () => {
                   Brief History / Condition
                 </label>
                 <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
                   className="w-full px-6 py-4 rounded-[2rem] bg-white border border-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/10 text-xs shadow-sm resize-none"
                   rows={4}
                   placeholder="Explain recent servicing, upgrades and current status..."
@@ -177,6 +314,7 @@ const PostMachine = () => {
                 <div className="mt-0.5">
                   <input
                     type="checkbox"
+                    required
                     className="size-4 accent-indigo-600 border-slate-200 rounded-md"
                   />
                 </div>
@@ -202,15 +340,19 @@ const PostMachine = () => {
             </button>
           )}
           <button
-            onClick={() => (step < 3 ? setStep(step + 1) : navigate("/machinery/sell/dashboard"))}
-            className="flex-1 bg-slate-900 text-white font-black text-[12px] uppercase tracking-[0.2em] py-5 rounded-[2rem] shadow-2xl shadow-indigo-500/10 active:scale-95 transition-all flex items-center justify-center gap-3 italic"
+            onClick={() => (step < 3 ? setStep(step + 1) : handleSubmit())}
+            disabled={loading}
+            className="flex-1 bg-slate-900 text-white font-black text-[12px] uppercase tracking-[0.2em] py-5 rounded-[2rem] shadow-2xl shadow-indigo-500/10 active:scale-95 transition-all flex items-center justify-center gap-3 italic disabled:opacity-70"
           >
-            {step === 3 ? "Process Listing" : "Continue"} <ChevronRight className="size-4" />
+            {loading
+              ? "Publishing..."
+              : step === 3
+                ? "Process Listing"
+                : "Continue"}{" "}
+            <ChevronRight className="size-4" />
           </button>
         </div>
       </div>
-
-      <div className="h-20" />
     </div>
   );
 };
