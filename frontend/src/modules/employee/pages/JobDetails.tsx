@@ -144,12 +144,6 @@ const JobDetails = () => {
         </button>
         <div className="flex gap-3">
           <button
-            onClick={handleShare}
-            className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
-          >
-            <Share2 className="size-5 text-slate-400" />
-          </button>
-          <button
             onClick={toggleSave}
             className={`size-11 flex items-center justify-center rounded-2xl border transition-all active:scale-90 ${isBookmarked ? "bg-primary/10 border-primary" : "bg-white border-slate-200"}`}
           >

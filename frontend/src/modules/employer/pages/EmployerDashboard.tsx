@@ -15,7 +15,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { userService } from "@/services/userService";
 import { applicationService } from "@/services/applicationService";
 import { jobService } from "@/services/jobService";
+import { postService, type Post } from "@/services/postService";
 import { useAuthStore } from "@/store/useAuthStore";
+import { formatDistanceToNow } from "date-fns";
 
 const EmployerDashboard = () => {
   const navigate = useNavigate();
@@ -26,6 +28,7 @@ const EmployerDashboard = () => {
     interviews: 0,
   });
   const [recentApplications, setRecentApplications] = useState<any[]>([]);
+  const [recentPosts, setRecentPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,10 +38,11 @@ const EmployerDashboard = () => {
         return;
       }
       try {
-        const [statsData, appsData, myJobs] = await Promise.all([
+        const [statsData, appsData, myJobs, postsData] = await Promise.all([
           userService.getDashboardStats(),
           applicationService.getReceivedApplications(),
           jobService.getMyListings(),
+          postService.getAllPosts(),
         ]);
 
         setStats({
@@ -57,6 +61,7 @@ const EmployerDashboard = () => {
           avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase(),
         }));
         setRecentApplications(formattedApps);
+        setRecentPosts(postsData.slice(0, 3));
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
@@ -302,13 +307,12 @@ const EmployerDashboard = () => {
               </div>
               <div className="flex flex-col items-end gap-1.5">
                 <div
-                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
-                    app.status === "Pending"
-                      ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                      : app.status === "Accepted"
-                        ? "bg-green-500/10 text-green-600 border-green-500/20"
-                        : "bg-red-500/10 text-red-600 border-red-500/20"
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${app.status === "Pending"
+                    ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                    : app.status === "Accepted"
+                      ? "bg-green-500/10 text-green-600 border-green-500/20"
+                      : "bg-red-500/10 text-red-600 border-red-500/20"
+                    }`}
                 >
                   {app.status}
                 </div>
@@ -324,6 +328,90 @@ const EmployerDashboard = () => {
               No applications yet
             </div>
           )}
+        </div>
+        {/* Recent Talent Posts (Community) */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+              Recent Talent Feed
+            </h2>
+            <Link
+              to="/post"
+              className="text-[10px] font-black text-primary uppercase tracking-widest active:scale-95 transition-transform"
+            >
+              Go to Feed
+            </Link>
+          </div>
+
+          <div className="grid gap-4">
+            {recentPosts.map((post) => (
+              <div
+                key={post._id}
+                className="bg-white p-5 rounded-[2.5rem] border border-slate-200 space-y-4 shadow-sm hover:shadow-md transition-all active:scale-[0.99]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
+                    {post.userId.profilePhoto ? (
+                      <img src={post.userId.profilePhoto} alt="" className="size-full object-cover" />
+                    ) : (
+                      <Users className="size-5 text-slate-300" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-black text-xs truncate tracking-tight text-slate-900">
+                      {post.userId.name}
+                    </h4>
+                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
+                      Available for Work • {formatDistanceToNow(new Date(post.createdAt))} ago
+                    </p>
+                  </div>
+                  {post.userId.isContactHidden && (
+                    <Link
+                      to="/employer/subscription"
+                      className="size-8 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 border border-amber-500/10"
+                    >
+                      <ShieldCheck className="size-4" />
+                    </Link>
+                  )}
+                </div>
+
+                <p className="text-[11px] font-medium text-slate-600 line-clamp-2 leading-relaxed">
+                  {post.content}
+                </p>
+
+                {(post.email || post.phoneNumber || post.resume) && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {post.email && (
+                      <div className="px-2 py-1 rounded-lg bg-slate-50 border border-slate-100 flex items-center gap-1.5">
+                        <div className="size-1.5 rounded-full bg-slate-300" />
+                        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Email Attached</span>
+                      </div>
+                    )}
+                    {post.phoneNumber && (
+                      <div className="px-2 py-1 rounded-lg bg-slate-50 border border-slate-100 flex items-center gap-1.5">
+                        <div className="size-1.5 rounded-full bg-slate-300" />
+                        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Phone Provided</span>
+                      </div>
+                    )}
+                    {post.resume && (
+                      <div className="px-2 py-1 rounded-lg bg-emerald-500/5 border border-emerald-500/10 flex items-center gap-1.5">
+                        <div className="size-1.5 rounded-full bg-emerald-500" />
+                        <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest">Resume Uploaded</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {recentPosts.length === 0 && (
+              <div className="text-center p-8 bg-slate-50/50 rounded-[2rem] border-2 border-dashed border-slate-200">
+                <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                  No talent updates yet
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

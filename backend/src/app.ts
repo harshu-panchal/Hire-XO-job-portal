@@ -22,6 +22,7 @@ import userRoutes from './routes/user.routes';
 import resourceRoutes from './routes/resource.routes';
 import adminRoutes from './routes/admin.routes';
 import notificationRoutes from './routes/notification.routes';
+import postRoutes from './routes/post.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 
@@ -48,6 +49,7 @@ const limiter = rateLimit({
 });
 
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/posts', postRoutes);
 app.use('/api/', limiter);
 
 // Routes

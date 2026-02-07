@@ -13,7 +13,8 @@ const EmployeeLayout = () => {
   const handleProtectedNavigation = (path: string, e: React.MouseEvent) => {
     if (!isAuthenticated) {
       e.preventDefault();
-      navigate("/login/employee");
+      const role = location.pathname.includes('employer') ? 'employer' : 'employee';
+      navigate(`/login/${role}`);
     }
   };
 

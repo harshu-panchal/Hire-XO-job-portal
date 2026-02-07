@@ -271,13 +271,19 @@ function App() {
           <Route path="/saved-jobs" element={<SavedJobs />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/notifications" element={<Notifications />} />
-
-
-          {/* New Navigation Routes */}
-          <Route path="/post" element={<Post />} />
           <Route path="/interviews" element={<Interviews />} />
         </Route>
         <Route path="/faq" element={<FAQ />} />
+
+        {/* Community Route - Shared by both roles */}
+        <Route
+          path="/post"
+          element={
+            <ProtectedRoute allowedRoles={["employee", "employer"]} loginPath="/">
+              <Post />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       {/* Employer Routes - Mixed Public/Protected */}

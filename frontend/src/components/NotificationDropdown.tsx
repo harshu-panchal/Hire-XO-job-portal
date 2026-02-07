@@ -45,24 +45,24 @@ export const NotificationDropdown = ({
             className="fixed inset-0 z-40 bg-black/10 backdrop-blur-[1px]"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            exit={{ opacity: 0, scale: 0.95, y: -10 }}
             onClick={(e) => e.stopPropagation()}
-            className="fixed right-4 top-20 w-[280px] sm:w-[320px] bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 overflow-hidden"
+            className="fixed right-4 top-20 w-[300px] sm:w-[350px] bg-white/90 backdrop-blur-xl border border-white/50 rounded-[2.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] z-50 overflow-hidden ring-1 ring-black/5"
           >
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div className="px-6 py-5 border-b border-slate-100/50 flex items-center justify-between bg-white/50">
               <div className="flex items-center gap-3">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onClose();
                   }}
-                  className="p-1 -ml-1 rounded-lg hover:bg-slate-100 transition-colors text-slate-400"
+                  className="size-8 flex items-center justify-center rounded-xl bg-slate-100/50 hover:bg-slate-200/50 transition-all text-slate-500 active:scale-90"
                 >
                   <ArrowLeft className="size-4" />
                 </button>
-                <h3 className="font-bold text-slate-900">Notifications</h3>
+                <h3 className="font-black text-slate-900 tracking-tight">Activity</h3>
               </div>
               {unreadCount > 0 && onMarkAllRead && (
                 <button
@@ -70,62 +70,70 @@ export const NotificationDropdown = ({
                     e.stopPropagation();
                     onMarkAllRead();
                   }}
-                  className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70"
+                  className="text-[9px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity"
                 >
-                  Mark all read
+                  Mark all
                 </button>
               )}
             </div>
-            <div className="max-h-[350px] overflow-y-auto no-scrollbar">
+
+            <div className="max-h-[400px] overflow-y-auto no-scrollbar py-2">
               {notifications.length > 0 ? (
                 notifications.map((notif) => (
                   <div
                     key={notif.id}
                     onClick={() => onNotificationClick?.(notif.id)}
-                    className={`p-4 flex gap-3 hover:bg-slate-50 transition-colors cursor-pointer border-b border-slate-100 last:border-0 ${notif.unread ? "bg-primary/[0.02]" : ""}`}
+                    className={`px-6 py-4 flex gap-4 hover:bg-slate-50/50 transition-all cursor-pointer relative group ${notif.unread ? "bg-primary/[0.03]" : ""}`}
                   >
                     <div
-                      className={`size-8 shrink-0 rounded-xl flex items-center justify-center ${
-                        notif.type === "success"
-                          ? "bg-green-100 text-green-600"
+                      className={`size-10 shrink-0 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 ${notif.type === "success"
+                          ? "bg-green-100 text-green-600 shadow-sm shadow-green-100"
                           : notif.type === "info"
-                            ? "bg-blue-100 text-blue-600"
-                            : "bg-yellow-100 text-yellow-600"
-                      }`}
+                            ? "bg-blue-100 text-blue-600 shadow-sm shadow-blue-100"
+                            : "bg-yellow-100 text-yellow-600 shadow-sm shadow-yellow-100"
+                        }`}
                     >
-                      <notif.icon className="size-4" />
+                      <notif.icon className="size-5" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p
-                        className={`text-xs leading-tight mb-1 ${notif.unread ? "font-bold text-slate-900" : "font-medium text-slate-700"}`}
+                        className={`text-xs leading-snug mb-0.5 truncate ${notif.unread ? "font-black text-slate-900" : "font-bold text-slate-700"}`}
                       >
                         {notif.title}
                       </p>
-                      <p className="text-[10px] leading-relaxed text-slate-500 mb-1 line-clamp-2">
+                      <p className="text-[10px] leading-relaxed text-slate-500 mb-1.5 line-clamp-2">
                         {notif.description}
                       </p>
-                      <p className="text-[8px] uppercase font-black tracking-widest text-slate-400">
-                        {notif.time}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[8px] uppercase font-black tracking-widest text-slate-400">
+                          {notif.time}
+                        </p>
+                        {notif.unread && (
+                          <span className="size-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(234,88,12,0.5)]" />
+                        )}
+                      </div>
                     </div>
-                    {notif.unread && (
-                      <div className="size-1.5 bg-primary rounded-full mt-1.5"></div>
-                    )}
                   </div>
                 ))
               ) : (
-                <div className="py-10 text-center">
-                  <Bell className="size-10 text-slate-200 mx-auto mb-2" />
-                  <p className="text-xs text-slate-500">No notifications yet</p>
+                <div className="py-16 text-center space-y-4">
+                  <div className="size-16 rounded-[2rem] bg-slate-50 flex items-center justify-center mx-auto opacity-50">
+                    <Bell className="size-8 text-slate-300" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-black text-slate-900">All caught up!</p>
+                    <p className="text-[10px] uppercase font-black tracking-widest text-slate-400">No new notifications</p>
+                  </div>
                 </div>
               )}
             </div>
+
             <Link
               to={viewAllPath}
               onClick={onClose}
-              className="block w-full p-3 text-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-t border-slate-100 hover:bg-slate-50 transition-colors"
+              className="flex items-center justify-center w-full py-5 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-primary hover:bg-primary/5 transition-all bg-slate-50/30 border-t border-slate-100/50"
             >
-              View All
+              See all activity
             </Link>
           </motion.div>
         </>

@@ -157,12 +157,6 @@ const ResourceDetails = () => {
         </button>
         <div className="flex gap-3">
           <button
-            onClick={handleShare}
-            className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
-          >
-            <Share2 className="size-5 text-slate-400" />
-          </button>
-          <button
             onClick={() => toggleBookmark(resource.id)}
             className={`size-11 flex items-center justify-center rounded-2xl border transition-all active:scale-90 ${isBookmarked ? "bg-primary/10 border-primary" : "bg-white border-slate-200"}`}
           >
@@ -349,11 +343,10 @@ const ResourceDetails = () => {
           <button
             onClick={handleApply}
             disabled={isApplied}
-            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${
-              isApplied
+            className={`h-14 px-8 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-90 flex items-center gap-2 ${isApplied
                 ? "bg-green-500 text-white shadow-green-500/20 cursor-not-allowed"
                 : "bg-primary text-white shadow-xl shadow-primary/20"
-            }`}
+              }`}
           >
             {isApplied ? (
               <>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, PlusSquare, Users, Settings, Bell, LogIn } from "lucide-react";
+import { LayoutDashboard, PlusSquare, Users, Settings, Bell, LogIn, Briefcase, MessageSquare } from "lucide-react";
 import { NotificationDropdown } from "../components/NotificationDropdown";
 import { ProfileDropdown } from "@/components/ProfileDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -25,17 +25,6 @@ const EmployerLayout = () => {
 
   const handleNotifClick = (id: string | number) => {
     handleNotificationClick(id);
-    const notification = notifs.find((n) => n.id === id);
-    if (notification) {
-      // Navigate based on type
-      if (notification.relatedType === "job_application") {
-        // Ideally navigate to specific application, but for now lists
-        navigate("/employer/applications");
-      } else if (notification.relatedType === "resource_application") {
-        // Navigate to resource applications (if page exists) or generic applications
-        navigate("/employer/applications");
-      }
-    }
     setShowNotifications(false);
   };
 
@@ -99,7 +88,7 @@ const EmployerLayout = () => {
                 : "bg-transparent"
                 }`}
             >
-              <LayoutDashboard
+              <Briefcase
                 className={`h-6 w-6 ${isActive("/employer") ? "fill-primary/20" : ""}`}
               />
             </div>
@@ -107,7 +96,7 @@ const EmployerLayout = () => {
               className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer") ? "opacity-100" : "opacity-40"
                 }`}
             >
-              Dash
+              Jobs
             </span>
           </Link>
 
@@ -131,6 +120,29 @@ const EmployerLayout = () => {
                 }`}
             >
               Post
+            </span>
+          </Link>
+
+          <Link
+            to="/post"
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/post") ? "text-primary" : "text-slate-400"
+              }`}
+          >
+            <div
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/post")
+                ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
+                : "bg-transparent"
+                }`}
+            >
+              <MessageSquare
+                className={`h-6 w-6 ${isActive("/post") ? "fill-primary/20" : ""}`}
+              />
+            </div>
+            <span
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/post") ? "opacity-100" : "opacity-40"
+                }`}
+            >
+              Feed
             </span>
           </Link>
 
