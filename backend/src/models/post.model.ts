@@ -9,11 +9,6 @@ export interface IPost extends Document {
     resume?: string;
     images?: string[];
     likes: mongoose.Types.ObjectId[]; // Array of user IDs who liked
-    comments: {
-        userId: mongoose.Types.ObjectId;
-        text: string;
-        createdAt: Date;
-    }[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,12 +21,7 @@ const PostSchema: Schema = new Schema({
     phoneNumber: { type: String },
     resume: { type: String },
     images: [{ type: String }],
-    likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    comments: [{
-        userId: { type: Schema.Types.ObjectId, ref: 'User' },
-        text: { type: String, required: true },
-        createdAt: { type: Date, default: Date.now }
-    }]
+    likes: [{ type: Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true });
 
 // Index for better query performance

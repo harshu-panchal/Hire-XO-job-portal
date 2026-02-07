@@ -32,9 +32,29 @@ export const useNotifications = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
+      // Initial fetch
       fetchNotifications();
-      const interval = setInterval(fetchNotifications, 30000); // Poll every 30 seconds
-      return () => clearInterval(interval);
+
+      // Setup SSE
+      const token = useAuthStore.getState().token;
+      const eventSource = new EventSource(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"}/notifications/stream?token=${token}`);
+
+      eventSource.onmessage = (event) => {
+        const newNotification = JSON.parse(event.data);
+        // We could just refetch or append. Refetching ensures consistency for now.
+        // Or append to store if store supports it.
+        // Let's refetch to be safe and simple
+        fetchNotifications();
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("SSE Error:", error);
+        eventSource.close();
+      };
+
+      return () => {
+        eventSource.close();
+      };
     }
   }, [isAuthenticated, fetchNotifications]);
 

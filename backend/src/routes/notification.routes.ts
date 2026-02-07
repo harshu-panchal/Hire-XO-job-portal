@@ -7,6 +7,7 @@ const notificationController = new NotificationController();
 
 router.use(authenticateToken); // Protect all notification routes
 
+router.get('/stream', notificationController.streamNotifications);
 router.get('/', notificationController.getNotifications);
 router.put('/:notificationId/read', notificationController.markAsRead);
 router.put('/mark-all-read', notificationController.markAllAsRead);

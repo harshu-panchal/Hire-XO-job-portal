@@ -82,4 +82,29 @@ export class NotificationController {
             res.status(500).json({ message: error.message || 'Failed to delete notification' });
         }
     };
+
+    public streamNotifications = async (req: AuthRequest, res: Response): Promise<void> => {
+        const userId = req.user?.id;
+        if (!userId) {
+            res.status(401).json({ message: 'Unauthorized' });
+            return;
+        }
+
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+
+        const onNewNotification = (data: { userId: string, notification: any }) => {
+            if (data.userId.toString() === userId.toString()) {
+                res.write(`data: ${JSON.stringify(data.notification)}\n\n`);
+            }
+        };
+
+        const { notificationEmitter } = require('../utils/notificationEmitter');
+        notificationEmitter.on('new_notification', onNewNotification);
+
+        req.on('close', () => {
+            notificationEmitter.off('new_notification', onNewNotification);
+        });
+    };
 }

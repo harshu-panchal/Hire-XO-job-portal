@@ -11,6 +11,8 @@ import CSM from '../models/csm.model';
 import Logistics from '../models/logistics.model';
 import Vehicle from '../models/vehicle.model';
 import User from '../models/user.model';
+import { notificationEmitter } from '../utils/notificationEmitter';
+import { notificationEmitter } from '../utils/notificationEmitter';
 
 export class ApplicationService {
     // Apply to a job
@@ -45,7 +47,7 @@ export class ApplicationService {
             const applicant = await User.findById(applicantId);
             const applicantName = applicant ? applicant.name : 'A candidate';
 
-            await Notification.create({
+            const notification = await Notification.create({
                 userId: job.userId,
                 title: 'New Job Application',
                 message: `${applicantName} has applied for ${job.title}`,
@@ -53,6 +55,7 @@ export class ApplicationService {
                 relatedId: application._id.toString(),
                 relatedType: 'job_application'
             });
+            notificationEmitter.emit('new_notification', { userId: job.userId, notification });
         } catch (error) {
             console.error('Failed to create notification for job owner', error);
         }
@@ -125,7 +128,7 @@ export class ApplicationService {
             const applicant = await User.findById(applicantId);
             const applicantName = applicant ? applicant.name : 'A candidate';
 
-            await Notification.create({
+            const notification = await Notification.create({
                 userId: resource.userId,
                 title: 'New Resource Application',
                 message: `${applicantName} has applied for your ${resourceType}`,
@@ -133,6 +136,7 @@ export class ApplicationService {
                 relatedId: application._id.toString(),
                 relatedType: 'resource_application'
             });
+            notificationEmitter.emit('new_notification', { userId: resource.userId, notification });
         } catch (error) {
             console.error('Failed to create notification for resource owner', error);
         }
@@ -313,7 +317,7 @@ export class ApplicationService {
                 ? `You are shortlisted for ${job.title}. Our team will contact you soon.`
                 : `Thank you for your interest in ${job.title}. Unfortunately, your application was not selected at this time.`;
 
-            await Notification.create({
+            const notification = await Notification.create({
                 userId: application.applicantId,
                 title,
                 message,
@@ -321,6 +325,7 @@ export class ApplicationService {
                 relatedId: application._id.toString(),
                 relatedType: 'job_application'
             });
+            notificationEmitter.emit('new_notification', { userId: application.applicantId, notification });
 
             return application;
         } else {
@@ -357,7 +362,7 @@ export class ApplicationService {
                 ? `You are shortlisted for the ${application.resourceType} position. Our team will contact you soon.`
                 : `Thank you for your interest in the ${application.resourceType} position. Unfortunately, your application was not selected at this time.`;
 
-            await Notification.create({
+            const notification = await Notification.create({
                 userId: application.applicantId,
                 title,
                 message,
@@ -365,6 +370,7 @@ export class ApplicationService {
                 relatedId: application._id.toString(),
                 relatedType: 'resource_application'
             });
+            notificationEmitter.emit('new_notification', { userId: application.applicantId, notification });
 
             return application;
         }
