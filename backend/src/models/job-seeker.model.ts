@@ -27,13 +27,15 @@ const JobSeekerSchema: Schema = new Schema({
     education: [{
         school: String,
         degree: String,
-        period: String
+        period: String,
+        type: Schema.Types.Mixed // Mixed allowing both objects and strings during transition
     }],
     age: { type: Number },
     experience: [{
         company: String,
         role: String,
-        period: String
+        period: String,
+        type: Schema.Types.Mixed // Mixed allowing both objects and strings during transition
     }],
     interestedCompanies: [{ type: String }],
     cv: { type: String },

@@ -30,11 +30,20 @@ export class AuthService {
         let profile;
 
         if (role === 'job-seeker' || role === 'employee') {
+            // Handle potentially string inputs from frontend (especially in signup FormData)
+            const education = typeof profileData.education === 'string'
+                ? [{ degree: profileData.education }]
+                : profileData.education;
+
+            const experience = typeof profileData.experience === 'string' || typeof profileData.experience === 'number'
+                ? [{ role: String(profileData.experience) + ' years' }]
+                : profileData.experience;
+
             profile = await JobSeeker.create({
                 userId: newUser._id,
-                education: profileData.education,
+                education,
                 age: profileData.age,
-                experience: profileData.experience,
+                experience,
                 interestedCompanies: profileData.interestedCompanies,
                 cv: profileData.cv?.name || profileData.cv,
             });
@@ -43,7 +52,7 @@ export class AuthService {
                 userId: newUser._id,
                 company: profileData.company,
                 companyLogo: profileData.companyLogo?.name || profileData.companyLogo,
-                experience: profileData.experience,
+                experience: String(profileData.experience),
             });
         } else if (role === 'resource') {
             profile = await ResourceProfile.create({

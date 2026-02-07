@@ -1,39 +1,29 @@
+import { useState, useEffect } from "react";
 import { Calendar, Clock, Video, MapPin, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { interviewService, type Interview } from "@/services/interviewService";
+import { toast } from "sonner";
 
 const Interviews = () => {
-    const interviews = [
-        {
-            id: 1,
-            company: "Tech Corp Solutions",
-            role: "Senior Frontend Developer",
-            date: "2026-02-15",
-            time: "10:00 AM",
-            type: "Remote (Video)",
-            status: "scheduled",
-            link: "https://meet.google.com/abc-defg-hij",
-        },
-        {
-            id: 2,
-            company: "InnovateX",
-            role: "Full Stack Engineer",
-            date: "2026-02-18",
-            time: "02:30 PM",
-            type: "On-site",
-            location: "Building A, Tech Park, Bangalore",
-            status: "pending",
-        },
-        {
-            id: 3,
-            company: "Design Studio",
-            role: "UI/UX Designer",
-            date: "2026-02-10",
-            time: "11:00 AM",
-            type: "Remote (Video)",
-            status: "completed",
-        },
-    ];
+    const [interviews, setInterviews] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchInterviews = async () => {
+            try {
+                const data = await interviewService.getMyInterviews();
+                setInterviews(data);
+            } catch (error) {
+                console.error("Failed to fetch interviews:", error);
+                toast.error("Failed to load interviews");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchInterviews();
+    }, []);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -65,6 +55,25 @@ const Interviews = () => {
         }
     };
 
+    const handleJoin = (link?: string) => {
+        if (link) {
+            window.open(link, "_blank");
+        } else {
+            toast.info("Meeting link not available yet");
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-5 space-y-4">
+                <div className="animate-spin size-10 border-4 border-primary border-t-transparent rounded-full" />
+                <p className="text-sm font-black text-slate-400 uppercase tracking-widest">
+                    Loading interviews...
+                </p>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-slate-50 pb-20 animate-in fade-in duration-700">
             <div className="bg-white px-6 pt-12 pb-6 rounded-b-[2rem] shadow-sm mb-6">
@@ -73,65 +82,85 @@ const Interviews = () => {
             </div>
 
             <div className="px-5 space-y-4">
-                {interviews.map((interview) => (
-                    <Card key={interview.id} className="p-5 border-slate-200 hover:shadow-md transition-shadow">
-                        <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 className="font-bold text-lg text-slate-900">{interview.company}</h3>
-                                <p className="text-slate-500 font-medium text-sm">{interview.role}</p>
+                {interviews.length > 0 ? (
+                    interviews.map((interview) => (
+                        <Card key={interview._id} className="p-5 border-slate-200 hover:shadow-md transition-all rounded-[2rem]">
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 className="font-black text-lg text-slate-900 truncate max-w-[200px]">
+                                        {interview.jobId?.company || interview.resourceType || "Organization"}
+                                    </h3>
+                                    <p className="text-primary font-black text-[10px] uppercase tracking-widest">
+                                        {interview.title || interview.jobId?.title || "Interviewer"}
+                                    </p>
+                                </div>
+                                <div
+                                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${getStatusColor(
+                                        interview.status
+                                    )}`}
+                                >
+                                    {getStatusIcon(interview.status)}
+                                    <span>{interview.status}</span>
+                                </div>
                             </div>
-                            <div
-                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold capitalize ${getStatusColor(
-                                    interview.status
-                                )}`}
-                            >
-                                {getStatusIcon(interview.status)}
-                                <span>{interview.status}</span>
+
+                            <div className="space-y-3 mb-5">
+                                <div className="flex items-center gap-3 text-slate-600 text-xs font-bold">
+                                    <div className="size-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
+                                        <Calendar className="size-4" />
+                                    </div>
+                                    <span>{new Date(interview.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-slate-600 text-xs font-bold">
+                                    <div className="size-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
+                                        <Clock className="size-4" />
+                                    </div>
+                                    <span>{interview.time}</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-slate-600 text-xs font-bold">
+                                    <div className="size-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
+                                        {interview.type === "Remote" ? <Video className="size-4" /> : <MapPin className="size-4" />}
+                                    </div>
+                                    <span className="truncate">{interview.location || interview.type}</span>
+                                </div>
                             </div>
+
+                            {interview.status === "scheduled" && (
+                                <Button
+                                    onClick={() => handleJoin(interview.link)}
+                                    className="w-full bg-primary hover:bg-primary/90 text-white font-black text-xs uppercase tracking-widest rounded-2xl h-14 shadow-lg shadow-primary/20 transition-all active:scale-95"
+                                >
+                                    {interview.type === "Remote" ? "Join Meeting" : "View Location"}
+                                </Button>
+                            )}
+
+                            {interview.status === "pending" && (
+                                <Button
+                                    variant="outline"
+                                    className="w-full border-slate-200 font-black text-xs uppercase tracking-widest rounded-2xl h-14 text-slate-600 hover:bg-slate-50 transition-all"
+                                >
+                                    Awaiting Confirmation
+                                </Button>
+                            )}
+                        </Card>
+                    ))
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
+                        <div className="size-24 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/50 flex items-center justify-center">
+                            <Video className="size-10 text-slate-300" />
                         </div>
-
-                        <div className="space-y-3 mb-4">
-                            <div className="flex items-center gap-3 text-slate-600 text-sm font-medium">
-                                <Calendar className="w-4 h-4 text-slate-400" />
-                                <span>{new Date(interview.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-slate-600 text-sm font-medium">
-                                <Clock className="w-4 h-4 text-slate-400" />
-                                <span>{interview.time}</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-slate-600 text-sm font-medium">
-                                {interview.type.includes("Remote") ? (
-                                    <Video className="w-4 h-4 text-slate-400" />
-                                ) : (
-                                    <MapPin className="w-4 h-4 text-slate-400" />
-                                )}
-                                <span>{interview.location || interview.type}</span>
-                            </div>
+                        <div className="space-y-2">
+                            <h3 className="font-black text-xl text-slate-900 tracking-tight">No interviews yet</h3>
+                            <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest max-w-[250px] mx-auto">
+                                Apply to more jobs to start coordinating with employers!
+                            </p>
                         </div>
-
-                        {interview.status === "scheduled" && interview.link && (
-                            <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl h-11">
-                                Join Interview
-                            </Button>
-                        )}
-
-                        {interview.status === "pending" && (
-                            <Button variant="outline" className="w-full border-slate-200 font-bold rounded-xl h-11 text-slate-600">
-                                Reschedule
-                            </Button>
-                        )}
-                    </Card>
-                ))}
-
-                {interviews.length === 0 && (
-                    <div className="text-center py-10">
-                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Video className="w-8 h-8 text-slate-400" />
-                        </div>
-                        <h3 className="font-bold text-slate-900">No interviews scheduled</h3>
-                        <p className="text-slate-500 text-sm mt-1">
-                            Apply to jobs to start getting interview calls!
-                        </p>
+                        <Button
+                            onClick={() => window.location.href = '/jobs'}
+                            className="bg-primary text-white font-black px-8 py-4 rounded-2xl text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all"
+                        >
+                            Browse Jobs
+                        </Button>
                     </div>
                 )}
             </div>

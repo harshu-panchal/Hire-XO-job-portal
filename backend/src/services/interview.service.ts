@@ -1,0 +1,86 @@
+import Interview, { IInterview } from '../models/interview.model';
+import JobApplication from '../models/job-application.model';
+import ResourceApplication from '../models/resource-application.model';
+import Notification from '../models/notification.model';
+import User from '../models/user.model';
+import mongoose from 'mongoose';
+
+export class InterviewService {
+    public createInterview = async (data: any): Promise<IInterview> => {
+        const interview = await Interview.create(data);
+
+        // Notify Applicant
+        try {
+            const employer = await User.findById(data.employerId);
+            const employerName = employer ? employer.name : 'An employer';
+
+            await Notification.create({
+                userId: data.applicantId,
+                title: 'Interview Scheduled',
+                message: `${employerName} has scheduled an interview for ${data.title} on ${new Date(data.date).toLocaleDateString()} at ${data.time}.`,
+                type: 'info',
+                relatedId: interview._id.toString(),
+                relatedType: 'job_application' // Or generic 'interview'?
+            });
+        } catch (error) {
+            console.error('Failed to notify applicant about interview', error);
+        }
+
+        return interview;
+    };
+
+    public getInterviewsForUser = async (userId: string, role: string): Promise<IInterview[]> => {
+        const query = role === 'employer' ? { employerId: userId } : { applicantId: userId };
+        return await Interview.find(query)
+            .populate('jobId', 'title company location')
+            .sort({ date: 1, time: 1 });
+    };
+
+    public updateInterviewStatus = async (interviewId: string, status: string, userId: string): Promise<IInterview> => {
+        const interview = await Interview.findById(interviewId);
+        if (!interview) {
+            throw new Error('Interview not found');
+        }
+
+        // Verify authorization
+        if (interview.employerId.toString() !== userId && interview.applicantId.toString() !== userId) {
+            throw new Error('Unauthorized');
+        }
+
+        interview.status = status as any;
+        await interview.save();
+
+        // Notify other party
+        try {
+            const notificationTarget = interview.employerId.toString() === userId ? interview.applicantId : interview.employerId;
+            const updater = await User.findById(userId);
+            const updaterName = updater ? updater.name : 'The other party';
+
+            await Notification.create({
+                userId: notificationTarget,
+                title: 'Interview Status Updated',
+                message: `${updaterName} has marked the interview for ${interview.title} as ${status}.`,
+                type: 'info',
+                relatedId: interview._id.toString(),
+                relatedType: 'job_application'
+            });
+        } catch (error) {
+            console.error('Failed to notify about interview status update', error);
+        }
+
+        return interview;
+    };
+
+    public deleteInterview = async (interviewId: string, userId: string): Promise<void> => {
+        const interview = await Interview.findById(interviewId);
+        if (!interview) {
+            throw new Error('Interview not found');
+        }
+
+        if (interview.employerId.toString() !== userId) {
+            throw new Error('Only the employer can cancel/delete the interview');
+        }
+
+        await Interview.findByIdAndDelete(interviewId);
+    };
+}

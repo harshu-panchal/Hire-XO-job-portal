@@ -14,11 +14,16 @@ import {
   CheckCircle2,
   XCircle,
   UserPlus,
+  Video,
+  Calendar as CalendarIcon,
+  MapPin,
 } from "lucide-react";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { applicationService, type Application } from "@/services/applicationService";
+import { interviewService } from "@/services/interviewService";
+import { toast } from "sonner";
 
 const ManageApplications = () => {
   const [searchParams] = useSearchParams();
@@ -28,6 +33,13 @@ const ManageApplications = () => {
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const [selectedApp, setSelectedApp] = useState<any>(null);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [isInterviewModalOpen, setIsInterviewModalOpen] = useState(false);
+  const [interviewDate, setInterviewDate] = useState("");
+  const [interviewTime, setInterviewTime] = useState("");
+  const [interviewType, setInterviewType] = useState<"Remote" | "On-site">("Remote");
+  const [interviewLocation, setInterviewLocation] = useState("");
+  const [interviewLink, setInterviewLink] = useState("");
+  const [isScheduling, setIsScheduling] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
   const navigate = useNavigate();
   const { checkSubscription, user: currentUser } = useAuthStore();
@@ -53,6 +65,8 @@ const ManageApplications = () => {
           avatarUrl: app.applicantId?.profilePhoto,
           avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase(),
           message: app.message,
+          applicantId: app.applicantId?._id || app.applicantId?.id,
+          jobId: app.jobId?._id || app.jobId?.id,
         }));
         setApplications(formatted);
 
@@ -85,6 +99,41 @@ const ManageApplications = () => {
   const handleViewDetails = (app: any) => {
     setSelectedApp(app);
     setActiveMenu(null);
+  };
+
+  const handleScheduleInterview = async () => {
+    if (!interviewDate || !interviewTime) {
+      toast.error("Please select date and time");
+      return;
+    }
+
+    setIsScheduling(true);
+    try {
+      await interviewService.scheduleInterview({
+        applicationId: selectedApp.id,
+        applicationType: "JobApplication",
+        jobId: selectedApp.jobId,
+        applicantId: selectedApp.applicantId,
+        title: selectedApp.role + " Interview",
+        date: interviewDate as any,
+        time: interviewTime,
+        type: interviewType,
+        location: interviewType === "On-site" ? interviewLocation : "",
+        link: interviewType === "Remote" ? interviewLink : "",
+      });
+      toast.success("Interview scheduled successfully");
+      setIsInterviewModalOpen(false);
+
+      // Optionally update status to Shortlisted
+      if (selectedApp.status === "Pending") {
+        handleUpdateStatus(selectedApp.id, "Shortlisted");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to schedule interview");
+    } finally {
+      setIsScheduling(false);
+    }
   };
 
   const handleUpdateStatus = async (appId: string, newStatus: string) => {
@@ -136,11 +185,10 @@ const ManageApplications = () => {
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${
-              filter === f
-                ? "bg-primary text-white shadow-lg shadow-primary/20"
-                : "bg-white border border-slate-200 text-slate-400"
-            }`}
+            className={`whitespace-nowrap px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 ${filter === f
+              ? "bg-primary text-white shadow-lg shadow-primary/20"
+              : "bg-white border border-slate-200 text-slate-400"
+              }`}
           >
             {f}
           </button>
@@ -232,6 +280,18 @@ const ManageApplications = () => {
                               <div className="h-px bg-slate-100 my-1" />
                               <button
                                 type="button"
+                                onClick={() => {
+                                  setSelectedApp(app);
+                                  setIsInterviewModalOpen(true);
+                                  setActiveMenu(null);
+                                }}
+                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors text-xs font-bold"
+                              >
+                                <CalendarIcon className="size-4 text-slate-400" />
+                                Schedule Interview
+                              </button>
+                              <button
+                                type="button"
                                 onClick={() => handleViewDetails(app)}
                                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors text-xs font-bold"
                               >
@@ -260,10 +320,9 @@ const ManageApplications = () => {
 
                   <div className="flex items-center justify-between pt-2">
                     <div
-                      className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
-                        statusColors[app.status as keyof typeof statusColors] ||
+                      className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${statusColors[app.status as keyof typeof statusColors] ||
                         statusColors.Pending
-                      }`}
+                        }`}
                     >
                       {app.status}
                     </div>
@@ -477,6 +536,114 @@ const ManageApplications = () => {
               >
                 Resume
                 <Download className="size-4" />
+              </button>
+              <button
+                type="button"
+                className="h-14 px-8 rounded-2xl bg-white border-2 border-slate-100 font-black text-sm uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2"
+                onClick={() => setIsInterviewModalOpen(true)}
+              >
+                Schedule
+                <CalendarIcon className="size-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Schedule Interview Modal */}
+      {isInterviewModalOpen && selectedApp && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={() => !isScheduling && setIsInterviewModalOpen(false)}
+          />
+          <div className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div className="p-8 border-b border-slate-100 flex items-center justify-between">
+              <div className="space-y-1">
+                <h2 className="text-xl font-black text-slate-900 tracking-tight">Schedule Interview</h2>
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary">With {selectedApp.name}</p>
+              </div>
+              <button
+                onClick={() => setIsInterviewModalOpen(false)}
+                className="size-10 flex items-center justify-center rounded-2xl bg-slate-50 text-slate-400 hover:bg-slate-100 transition-all active:scale-90"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <div className="p-8 space-y-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Interview Type</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setInterviewType("Remote")}
+                      className={`h-12 rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${interviewType === "Remote" ? "border-primary bg-primary/5 text-primary" : "border-slate-100 text-slate-400"}`}
+                    >
+                      <Video className="size-4" /> Remote
+                    </button>
+                    <button
+                      onClick={() => setInterviewType("On-site")}
+                      className={`h-12 rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${interviewType === "On-site" ? "border-primary bg-primary/5 text-primary" : "border-slate-100 text-slate-400"}`}
+                    >
+                      <MapPin className="size-4" /> On-site
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Date</label>
+                    <input
+                      type="date"
+                      value={interviewDate}
+                      onChange={(e) => setInterviewDate(e.target.value)}
+                      className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-100 text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Time</label>
+                    <input
+                      type="time"
+                      value={interviewTime}
+                      onChange={(e) => setInterviewTime(e.target.value)}
+                      className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-100 text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none"
+                    />
+                  </div>
+                </div>
+
+                {interviewType === "Remote" ? (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Meeting Link</label>
+                    <input
+                      type="url"
+                      placeholder="e.g. Google Meet, Zoom link"
+                      value={interviewLink}
+                      onChange={(e) => setInterviewLink(e.target.value)}
+                      className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-100 text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none"
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Location</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Office Address, Floor"
+                      value={interviewLocation}
+                      onChange={(e) => setInterviewLocation(e.target.value)}
+                      className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-100 text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={handleScheduleInterview}
+                disabled={isScheduling}
+                className="w-full h-14 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+              >
+                {isScheduling ? "Scheduling..." : "Confirm Schedule"}
+                {!isScheduling && <ChevronRight className="size-4" />}
               </button>
             </div>
           </div>

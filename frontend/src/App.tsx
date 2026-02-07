@@ -55,6 +55,7 @@ import EmployerWallet from "./modules/employer/pages/EmployerWallet";
 import EmployerActivity from "./modules/employer/pages/EmployerActivity";
 import EmployerNotificationSettings from "./modules/employer/pages/EmployerNotificationSettings";
 import EmployerSecurity from "./modules/employer/pages/EmployerSecurity";
+import EmployerPromotions from "./modules/employer/pages/EmployerPromotions";
 
 // Other Pages
 import StyleGuide from "./modules/resources/pages/StyleGuide";
@@ -313,6 +314,7 @@ function App() {
             element={<EmployerNotificationSettings />}
           />
           <Route path="/employer/security" element={<EmployerSecurity />} />
+          <Route path="/employer/promotions" element={<EmployerPromotions />} />
         </Route>
       </Route>
 

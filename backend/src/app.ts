@@ -23,6 +23,8 @@ import resourceRoutes from './routes/resource.routes';
 import adminRoutes from './routes/admin.routes';
 import notificationRoutes from './routes/notification.routes';
 import postRoutes from './routes/post.routes';
+import interviewRoutes from './routes/interview.routes';
+import promotionRoutes from './routes/promotion.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 
@@ -48,8 +50,10 @@ const limiter = rateLimit({
     message: { message: 'Too many requests from this IP, please try again after 15 minutes' }
 });
 
+app.use('/api/promotions', promotionRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/interviews', interviewRoutes);
 app.use('/api/', limiter);
 
 // Routes

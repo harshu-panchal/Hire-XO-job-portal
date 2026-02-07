@@ -4,6 +4,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { userService } from "@/services/userService";
 import { ChevronLeft, User, Camera, Mail, Phone, Briefcase, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { promotionService } from "@/services/promotionService";
 
 const EmployerProfile = () => {
   const navigate = useNavigate();
@@ -11,6 +12,19 @@ const EmployerProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [promotionStats, setPromotionStats] = useState<{ totalReach: string } | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const { stats } = await promotionService.getMyPromotions();
+        setPromotionStats(stats);
+      } catch (error) {
+        console.error("Failed to fetch promotion stats", error);
+      }
+    };
+    fetchStats();
+  }, []);
 
   // Local state for form
   const [formData, setFormData] = useState({
@@ -130,6 +144,27 @@ const EmployerProfile = () => {
             />
           </div>
         </div>
+
+
+
+
+        {/* Promotion Reach Stats */}
+        {promotionStats && (
+          <div className="bg-slate-900 rounded-3xl p-5 text-center relative overflow-hidden mx-auto w-full max-w-[300px] shadow-xl shadow-slate-900/10">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20" />
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1 relative z-10">Profile Reach</p>
+            <h3 className="text-2xl font-black text-white relative z-10">{promotionStats.totalReach}</h3>
+            <p className="text-[10px] text-slate-400 mt-1 relative z-10 font-medium">Employees Reached</p>
+
+            <button
+              onClick={() => navigate('/employer/promotions')}
+              className="mt-3 text-[10px] font-black uppercase tracking-widest text-primary hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
+            >
+              <span>Boost Profile</span>
+              <ChevronLeft className="rotate-180 size-3" />
+            </button>
+          </div>
+        )}
 
         <form onSubmit={handleSave} className="space-y-4">
           <div className="space-y-4">

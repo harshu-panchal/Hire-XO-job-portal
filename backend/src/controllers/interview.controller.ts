@@ -1,0 +1,81 @@
+import { Response } from 'express';
+import { AuthRequest } from '../middlewares/auth.middleware';
+import { InterviewService } from '../services/interview.service';
+
+export class InterviewController {
+    private interviewService: InterviewService;
+
+    constructor() {
+        this.interviewService = new InterviewService();
+    }
+
+    public scheduleInterview = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const employerId = req.user?.id;
+            if (!employerId) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const interviewData = {
+                ...req.body,
+                employerId
+            };
+
+            const interview = await this.interviewService.createInterview(interviewData);
+            res.status(201).json(interview);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message || 'Failed to schedule interview' });
+        }
+    };
+
+    public getMyInterviews = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            const role = req.user?.role;
+            if (!userId || !role) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const interviews = await this.interviewService.getInterviewsForUser(userId, role);
+            res.status(200).json(interviews);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message || 'Failed to fetch interviews' });
+        }
+    };
+
+    public updateStatus = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const { interviewId } = req.params;
+            const { status } = req.body;
+
+            const interview = await this.interviewService.updateInterviewStatus(interviewId, status, userId);
+            res.status(200).json(interview);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message || 'Failed to update interview status' });
+        }
+    };
+
+    public cancelInterview = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const { interviewId } = req.params;
+            await this.interviewService.deleteInterview(interviewId, userId);
+            res.status(200).json({ message: 'Interview cancelled successfully' });
+        } catch (error: any) {
+            res.status(400).json({ message: error.message || 'Failed to cancel interview' });
+        }
+    };
+}
