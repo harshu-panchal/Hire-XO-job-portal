@@ -25,6 +25,7 @@ import notificationRoutes from './routes/notification.routes';
 import postRoutes from './routes/post.routes';
 import interviewRoutes from './routes/interview.routes';
 import promotionRoutes from './routes/promotion.routes';
+import walletRoutes from './routes/wallet.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 
@@ -75,6 +76,7 @@ app.use('/api/certificates', certificateRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/wallet', walletRoutes);
 
 // Serve static files from uploads directory
 

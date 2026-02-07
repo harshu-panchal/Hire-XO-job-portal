@@ -4,6 +4,8 @@ import { useEmployeeStore } from "@/store/useEmployeeStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { generateCertificate } from "@/lib/certificate-utils";
 import { useEffect } from "react";
+import { toast } from "sonner";
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 const Certificates = () => {
   const navigate = useNavigate();
@@ -19,12 +21,31 @@ const Certificates = () => {
 
   const handleClaimCertificate = async () => {
     if (userSuccessRate >= 50) {
-      const newCert = generateCertificate("Frontend Mastery Certificate", userSuccessRate);
-      // Since uploadCertificate expects FormData, we might need a different method or mock it
-      // For now, let's just alert and assume it's a mock action if we don't have a direct "add" API
-      alert("Top quality certificate earned!");
+      try {
+        const toastId = toast.loading("Generating your certificate...");
+
+        // Setup mock certificate details for auto-generation
+        const formData = new FormData();
+        formData.append("name", "Frontend Mastery Certificate");
+        formData.append("issueDate", new Date().toISOString());
+
+        const expiry = new Date();
+        expiry.setFullYear(expiry.getFullYear() + 1);
+        formData.append("expiryDate", expiry.toISOString());
+        formData.append("successRate", userSuccessRate.toString());
+
+        // We could also append a blob if we wanted to true-generate a file here, 
+        // but for now the backend supports optional documentUrl if no file is provided.
+        // Or we can just send the data.
+
+        await uploadCertificate(formData);
+        toast.dismiss(toastId);
+        toast.success("Certificate claimed and added to your collection!");
+      } catch (error: any) {
+        toast.error(error.message || "Failed to claim certificate");
+      }
     } else {
-      alert(
+      toast.error(
         `Success rate too low (${userSuccessRate}%). You need at least 50% to claim a new certificate.`
       );
     }
@@ -101,19 +122,17 @@ const Certificates = () => {
               return (
                 <div
                   key={cert.id}
-                  className={`relative overflow-hidden rounded-3xl p-6 border transition-all active:scale-[0.98] active:shadow-md ${
-                    expired
+                  className={`relative overflow-hidden rounded-3xl p-6 border transition-all active:scale-[0.98] active:shadow-md ${expired
                       ? "bg-slate-50 border-slate-100 opacity-60"
                       : "bg-white border-slate-200 shadow-sm active:border-primary/20"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start gap-5">
                     <div
-                      className={`size-16 rounded-2xl shrink-0 flex items-center justify-center border transition-colors ${
-                        expired
+                      className={`size-16 rounded-2xl shrink-0 flex items-center justify-center border transition-colors ${expired
                           ? "bg-slate-200 border-transparent text-slate-400"
                           : "bg-primary/5 border-primary/10 text-primary"
-                      }`}
+                        }`}
                     >
                       <Award className="h-8 w-8" />
                     </div>
@@ -121,11 +140,10 @@ const Certificates = () => {
                       <div className="flex justify-between items-start mb-1">
                         <h3 className="font-black text-lg truncate tracking-tight">{cert.name}</h3>
                         <div
-                          className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border ${
-                            expired
+                          className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border ${expired
                               ? "border-slate-200 text-slate-400"
                               : "border-primary/20 text-primary bg-primary/5"
-                          }`}
+                            }`}
                         >
                           {cert.status}
                         </div>
