@@ -21,6 +21,29 @@ export class WalletService {
     }
 
     /**
+     * Get full transaction history
+     */
+    public async getTransactions(userId: string, page: number = 1, limit: number = 20) {
+        const skip = (page - 1) * limit;
+        const transactions = await Transaction.find({ userId })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Transaction.countDocuments({ userId });
+
+        return {
+            data: transactions,
+            pagination: {
+                total,
+                page,
+                limit,
+                pages: Math.ceil(total / limit)
+            }
+        };
+    }
+
+    /**
      * Simulated Top-up (since actual payment gateway is not integrated)
      */
     public async topUp(userId: string, amount: number) {
@@ -31,11 +54,13 @@ export class WalletService {
 
         try {
             // Log transaction
-            await Transaction.create([{
+            const transaction = await Transaction.create([{
                 userId,
                 type: 'topup',
                 amount,
-                description: 'Wallet Top-up'
+                description: 'Wallet Top-up',
+                status: 'completed',
+                createdAt: new Date()
             }], { session });
 
             // Update user balance
@@ -46,7 +71,11 @@ export class WalletService {
             );
 
             await session.commitTransaction();
-            return { balance: user?.walletBalance || 0 };
+
+            return {
+                balance: user?.walletBalance || 0,
+                transaction: transaction[0]
+            };
         } catch (error) {
             await session.abortTransaction();
             throw error;
@@ -74,7 +103,9 @@ export class WalletService {
                 userId,
                 type: 'deduction',
                 amount,
-                description
+                description,
+                status: 'completed',
+                createdAt: new Date()
             }], { session });
 
             const updatedUser = await User.findByIdAndUpdate(

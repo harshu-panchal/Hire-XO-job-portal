@@ -12,9 +12,11 @@ export interface Notification {
 }
 
 export const notificationService = {
-  async getNotifications(): Promise<Notification[]> {
+  async getNotifications(page: number = 1, limit: number = 20): Promise<any> {
     try {
-      const response = await apiClient.get<Notification[]>("/notifications");
+      const response = await apiClient.get('/notifications', {
+        params: { page, limit }
+      });
       return response.data;
     } catch (error) {
       throw new Error(getErrorMessage(error));

@@ -41,11 +41,15 @@ const EmployerWallet = () => {
   const handleTopUp = async () => {
     setIsLoading(true);
     try {
+      // Simulate payment gateway delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       const result = await walletService.topUp(500);
-      setWalletData((prev: { balance: number; transactions: Transaction[] }) => ({
+
+      setWalletData((prev) => ({
         balance: result.balance,
         transactions: [
-          {
+          result.transaction || {
             _id: Date.now().toString(),
             type: 'topup',
             amount: 500,
@@ -55,6 +59,7 @@ const EmployerWallet = () => {
           ...prev.transactions
         ]
       }));
+
       updateUser({ walletBalance: result.balance });
       toast.success("₹500 added to your wallet successfully!");
     } catch (error: any) {
@@ -112,6 +117,14 @@ const EmployerWallet = () => {
             <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Recent Transactions
             </h3>
+            <button
+              onClick={() => navigate('/employer/wallet/history')}
+              className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline flex items-center gap-1"
+            >
+              View All <ChevronLeft className="size-3 rotate-180" />
+            </button>
+          </div>
+          <div className="hidden">
             <Clock className="size-4 text-slate-300" />
           </div>
 

@@ -64,12 +64,28 @@ export class ApplicationController {
             }
 
             const { resourceId, resourceType } = req.params;
+            const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+            let documentUrls: string[] = [];
+
+            // Import util here to avoid top-level issues if any
+            const { CloudinaryUtil } = require('../utils/cloudinary');
+
+            // Handle Additional Documents/Proposal Documents upload
+            if (files?.additionalDocuments) {
+                for (const file of files.additionalDocuments) {
+                    const result = await CloudinaryUtil.uploadFile(file.path, 'resource-applications');
+                    if (result) documentUrls.push(result.url);
+                }
+            }
 
             const application = await this.applicationService.applyToResource(
                 userId,
                 resourceId,
                 resourceType,
-                req.body
+                {
+                    ...req.body,
+                    proposalDocuments: documentUrls
+                }
             );
             res.status(201).json({
                 message: 'Application submitted successfully',

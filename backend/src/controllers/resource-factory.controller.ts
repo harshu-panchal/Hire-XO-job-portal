@@ -4,13 +4,15 @@ import { Model, Document } from 'mongoose';
 export class ResourceFactoryController<T extends Document> {
     private model: Model<T>;
     private resourceName: string;
+    private fileFields: string[];
 
-    constructor(model: Model<T>, resourceName: string) {
+    constructor(model: Model<T>, resourceName: string, fileFields: string[] = []) {
         this.model = model;
         this.resourceName = resourceName;
+        this.fileFields = fileFields;
     }
 
-    public create = async (req: Request, res: Response): Promise<void> => {
+    public create = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             // Assume user is attached to req by auth middleware
             const userId = (req as any).user?.id || req.body.userId;
@@ -33,12 +35,11 @@ export class ResourceFactoryController<T extends Document> {
 
             res.status(201).json({ message: `${this.resourceName} created successfully`, data: newItem });
         } catch (error: any) {
-            console.error(`Error creating ${this.resourceName}:`, error);
-            res.status(400).json({ message: `Failed to create ${this.resourceName}`, error: error.message || error });
+            next(error);
         }
     };
 
-    public getAll = async (req: Request, res: Response): Promise<void> => {
+    public getAll = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             // Build query filters
             const query: any = {};
@@ -110,11 +111,11 @@ export class ResourceFactoryController<T extends Document> {
                 }
             });
         } catch (error: any) {
-            res.status(500).json({ message: `Failed to fetch ${this.resourceName}s`, error: error.message });
+            next(error);
         }
     };
 
-    public getById = async (req: Request, res: Response): Promise<void> => {
+    public getById = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const item = await this.model.findById(req.params.id);
             if (!item) {
@@ -123,16 +124,11 @@ export class ResourceFactoryController<T extends Document> {
             }
             res.status(200).json(item);
         } catch (error: any) {
-            // Handle invalid MongoDB ObjectId format
-            if (error.name === 'CastError') {
-                res.status(400).json({ message: 'Invalid ID format' });
-                return;
-            }
-            res.status(500).json({ message: `Failed to fetch ${this.resourceName}`, error: error.message });
+            next(error);
         }
     };
 
-    public getMyListings = async (req: Request, res: Response): Promise<void> => {
+    public getMyListings = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = (req as any).user?.id || req.query.userId;
             if (!userId) {
@@ -152,11 +148,11 @@ export class ResourceFactoryController<T extends Document> {
                 }
             });
         } catch (error: any) {
-            res.status(500).json({ message: `Failed to fetch your ${this.resourceName}s`, error: error.message });
+            next(error);
         }
     };
 
-    public update = async (req: Request, res: Response): Promise<void> => {
+    public update = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = (req as any).user?.id;
 
@@ -182,11 +178,11 @@ export class ResourceFactoryController<T extends Document> {
 
             res.status(200).json({ message: `${this.resourceName} updated successfully`, data: updatedItem });
         } catch (error: any) {
-            res.status(400).json({ message: `Failed to update ${this.resourceName}`, error: error.message });
+            next(error);
         }
     };
 
-    public delete = async (req: Request, res: Response): Promise<void> => {
+    public delete = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = (req as any).user?.id;
 
@@ -204,10 +200,37 @@ export class ResourceFactoryController<T extends Document> {
                 return;
             }
 
+            // Cleanup associated files from Cloudinary
+            if (this.fileFields && this.fileFields.length > 0) {
+                const { CloudinaryUtil } = require('../utils/cloudinary');
+
+                for (const field of this.fileFields) {
+                    const value = item.get(field);
+
+                    if (Array.isArray(value)) {
+                        // Handle array of URLs (e.g. images)
+                        for (const url of value) {
+                            if (typeof url === 'string') {
+                                const publicId = CloudinaryUtil.extractPublicIdFromUrl(url);
+                                if (publicId) {
+                                    await CloudinaryUtil.deleteFile(publicId);
+                                }
+                            }
+                        }
+                    } else if (typeof value === 'string') {
+                        // Handle single URL
+                        const publicId = CloudinaryUtil.extractPublicIdFromUrl(value);
+                        if (publicId) {
+                            await CloudinaryUtil.deleteFile(publicId);
+                        }
+                    }
+                }
+            }
+
             await this.model.findByIdAndDelete(req.params.id);
             res.status(200).json({ message: `${this.resourceName} deleted successfully` });
         } catch (error: any) {
-            res.status(500).json({ message: `Failed to delete ${this.resourceName}`, error: error.message });
+            next(error);
         }
     };
 }

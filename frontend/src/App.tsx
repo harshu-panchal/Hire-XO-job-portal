@@ -54,6 +54,7 @@ import Subscription from "./modules/employer/pages/Subscription";
 import EmployerProfile from "./modules/employer/pages/EmployerProfile";
 import EmployerCompany from "./modules/employer/pages/EmployerCompany";
 import EmployerWallet from "./modules/employer/pages/EmployerWallet";
+import TransactionHistory from "./modules/employer/pages/TransactionHistory";
 import EmployerActivity from "./modules/employer/pages/EmployerActivity";
 import EmployerNotificationSettings from "./modules/employer/pages/EmployerNotificationSettings";
 import EmployerSecurity from "./modules/employer/pages/EmployerSecurity";
@@ -318,6 +319,7 @@ function App() {
             <Route path="/employer/profile" element={<EmployerProfile />} />
             <Route path="/employer/company" element={<EmployerCompany />} />
             <Route path="/employer/wallet" element={<EmployerWallet />} />
+            <Route path="/employer/wallet/history" element={<TransactionHistory />} />
             {/* Employer Activities and Settings */}
             <Route path="/employer/notifications" element={<EmployerActivity />} />
             <Route

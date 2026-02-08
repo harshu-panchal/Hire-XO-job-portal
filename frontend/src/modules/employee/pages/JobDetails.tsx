@@ -21,6 +21,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useState, useEffect } from "react";
 import type { Job } from "@/types";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -61,7 +62,7 @@ const JobDetails = () => {
   if (!job) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full" />
+        <Spinner size="xl" />
         <p className="text-slate-500 font-black uppercase tracking-widest text-xs">
           Loading Job Details...
         </p>

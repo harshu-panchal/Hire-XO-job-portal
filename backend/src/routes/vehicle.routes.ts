@@ -1,4 +1,6 @@
 import { vehicleController } from '../controllers/resource.controller';
 import { createResourceRouter } from './resource-router-factory';
 
-export default createResourceRouter(vehicleController);
+import { baseResourceSchema, updateResourceSchema } from '../validations/resource.validation';
+
+export default createResourceRouter(vehicleController, baseResourceSchema, updateResourceSchema);

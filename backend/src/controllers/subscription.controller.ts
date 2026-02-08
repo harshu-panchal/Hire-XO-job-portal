@@ -9,16 +9,16 @@ export class SubscriptionController {
         this.subscriptionService = new SubscriptionService();
     }
 
-    public getAllPlans = async (req: AuthRequest, res: Response): Promise<void> => {
+    public getAllPlans = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const plans = await this.subscriptionService.getAllPlans();
             res.status(200).json(plans);
         } catch (error: any) {
-            res.status(500).json({ message: error.message || 'Failed to fetch plans' });
+            next(error);
         }
     };
 
-    public getWalletBalance = async (req: AuthRequest, res: Response): Promise<void> => {
+    public getWalletBalance = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
@@ -29,11 +29,11 @@ export class SubscriptionController {
             const result = await this.subscriptionService.getWalletBalance(userId);
             res.status(200).json(result);
         } catch (error: any) {
-            res.status(404).json({ message: error.message || 'Failed to fetch balance' });
+            next(error);
         }
     };
 
-    public rechargeWallet = async (req: AuthRequest, res: Response): Promise<void> => {
+    public rechargeWallet = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
@@ -50,11 +50,11 @@ export class SubscriptionController {
             const result = await this.subscriptionService.rechargeWallet(userId, amount);
             res.status(200).json(result);
         } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Failed to recharge wallet' });
+            next(error);
         }
     };
 
-    public purchaseSubscription = async (req: AuthRequest, res: Response): Promise<void> => {
+    public purchaseSubscription = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
@@ -71,11 +71,11 @@ export class SubscriptionController {
             const result = await this.subscriptionService.purchaseSubscription(userId, planId);
             res.status(200).json(result);
         } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Failed to purchase subscription' });
+            next(error);
         }
     };
 
-    public checkSubscriptionStatus = async (req: AuthRequest, res: Response): Promise<void> => {
+    public checkSubscriptionStatus = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
@@ -86,7 +86,7 @@ export class SubscriptionController {
             const result = await this.subscriptionService.checkSubscriptionStatus(userId);
             res.status(200).json(result);
         } catch (error: any) {
-            res.status(404).json({ message: error.message || 'Failed to check status' });
+            next(error);
         }
     };
 
@@ -96,7 +96,7 @@ export class SubscriptionController {
      * Create a new subscription plan (Admin only)
      * POST /api/admin/plans
      */
-    public createPlan = async (req: AuthRequest, res: Response): Promise<void> => {
+    public createPlan = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const { name, price, durationDays, description, features } = req.body;
 
@@ -122,10 +122,7 @@ export class SubscriptionController {
                 data: plan
             });
         } catch (error: any) {
-            res.status(400).json({
-                success: false,
-                message: error.message || 'Failed to create plan'
-            });
+            next(error);
         }
     };
 
@@ -133,7 +130,7 @@ export class SubscriptionController {
      * Update a subscription plan (Admin only)
      * PUT /api/admin/plans/:id
      */
-    public updatePlan = async (req: AuthRequest, res: Response): Promise<void> => {
+    public updatePlan = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const { id } = req.params;
             const updateData = req.body;
@@ -146,10 +143,7 @@ export class SubscriptionController {
                 data: plan
             });
         } catch (error: any) {
-            res.status(400).json({
-                success: false,
-                message: error.message || 'Failed to update plan'
-            });
+            next(error);
         }
     };
 
@@ -157,7 +151,7 @@ export class SubscriptionController {
      * Delete a subscription plan (Admin only - soft delete)
      * DELETE /api/admin/plans/:id
      */
-    public deletePlan = async (req: AuthRequest, res: Response): Promise<void> => {
+    public deletePlan = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const { id } = req.params;
 
@@ -168,10 +162,7 @@ export class SubscriptionController {
                 message: 'Subscription plan deleted successfully'
             });
         } catch (error: any) {
-            res.status(400).json({
-                success: false,
-                message: error.message || 'Failed to delete plan'
-            });
+            next(error);
         }
     };
 }

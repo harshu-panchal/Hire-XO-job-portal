@@ -82,6 +82,7 @@ export class ApplicationService {
             message?: string;
             bidAmount?: number;
             coverLetter?: string;
+            proposalDocuments?: string[];
         }
     ) {
         // Get the appropriate model
@@ -130,6 +131,7 @@ export class ApplicationService {
             message: data.message,
             bidAmount: data.bidAmount,
             coverLetter: data.coverLetter,
+            proposalDocuments: data.proposalDocuments,
             status: 'Pending'
         });
 

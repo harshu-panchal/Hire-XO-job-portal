@@ -8,7 +8,7 @@ const applicationController = new ApplicationController();
 
 // All routes require authentication
 router.post('/jobs/:jobId/apply', authenticateToken, uploadApplication, applicationController.applyToJob);
-router.post('/resources/:resourceType/:resourceId/apply', authenticateToken, applicationController.applyToResource);
+router.post('/resources/:resourceType/:resourceId/apply', authenticateToken, uploadApplication, applicationController.applyToResource);
 router.get('/my-applications', authenticateToken, applicationController.getMyApplications);
 router.get('/received', authenticateToken, applicationController.getReceivedApplications);
 router.get('/jobs/:jobId/applications', authenticateToken, applicationController.getJobApplications);

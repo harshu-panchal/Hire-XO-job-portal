@@ -1,4 +1,6 @@
 import { machineryController } from '../controllers/resource.controller';
 import { createResourceRouter } from './resource-router-factory';
 
-export default createResourceRouter(machineryController);
+import { baseResourceSchema, updateResourceSchema } from '../validations/resource.validation';
+
+export default createResourceRouter(machineryController, baseResourceSchema, updateResourceSchema);

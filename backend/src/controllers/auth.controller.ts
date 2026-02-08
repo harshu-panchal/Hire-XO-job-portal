@@ -10,16 +10,16 @@ export class AuthController {
         this.authService = new AuthService();
     }
 
-    public login = async (req: Request, res: Response): Promise<void> => {
+    public login = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const { token, user } = await this.authService.login(req.body);
             res.status(200).json({ message: 'Login successful', token, user });
         } catch (error: any) {
-            res.status(401).json({ message: error.message || 'Login failed' });
+            next(error);
         }
     };
 
-    public signup = async (req: Request, res: Response): Promise<void> => {
+    public signup = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             console.log('[DEBUG] Signup Request Body:', req.body);
             console.log('[DEBUG] Signup Request Files:', req.files ? 'Files present' : 'No files');
@@ -50,11 +50,11 @@ export class AuthController {
             const result = await this.authService.signup(userData);
             res.status(201).json({ message: 'User registered successfully', ...result });
         } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Signup failed' });
+            next(error);
         }
     };
 
-    public getCurrentUser = async (req: AuthRequest, res: Response): Promise<void> => {
+    public getCurrentUser = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
@@ -65,11 +65,11 @@ export class AuthController {
             const user = await this.authService.getCurrentUser(userId);
             res.status(200).json({ user });
         } catch (error: any) {
-            res.status(404).json({ message: error.message || 'User not found' });
+            next(error);
         }
     };
 
-    public updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+    public updateProfile = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
@@ -80,11 +80,11 @@ export class AuthController {
             const user = await this.authService.updateProfile(userId, req.body);
             res.status(200).json({ message: 'Profile updated successfully', user });
         } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Update failed' });
+            next(error);
         }
     };
 
-    public changePassword = async (req: AuthRequest, res: Response): Promise<void> => {
+    public changePassword = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
@@ -101,7 +101,7 @@ export class AuthController {
             const result = await this.authService.changePassword(userId, oldPassword, newPassword);
             res.status(200).json(result);
         } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Password change failed' });
+            next(error);
         }
     };
 
@@ -111,7 +111,7 @@ export class AuthController {
         res.status(200).json({ message: 'Logout successful' });
     };
 
-    public forgotPassword = async (req: Request, res: Response): Promise<void> => {
+    public forgotPassword = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const { email } = req.body;
             if (!email) {
@@ -122,11 +122,11 @@ export class AuthController {
             const result = await this.authService.forgotPassword(email);
             res.status(200).json(result);
         } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Forgot password request failed' });
+            next(error);
         }
     };
 
-    public resetPassword = async (req: Request, res: Response): Promise<void> => {
+    public resetPassword = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const { token, newPassword } = req.body;
             if (!token || !newPassword) {
@@ -137,7 +137,7 @@ export class AuthController {
             const result = await this.authService.resetPassword(token, newPassword);
             res.status(200).json(result);
         } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Reset password failed' });
+            next(error);
         }
     };
 }

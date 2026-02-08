@@ -11,11 +11,26 @@ export class NotificationController {
                 return;
             }
 
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 20;
+            const skip = (page - 1) * limit;
+
             const notifications = await Notification.find({ userId })
                 .sort({ createdAt: -1 })
-                .limit(50); // Limit to last 50 notifications
+                .skip(skip)
+                .limit(limit);
 
-            res.status(200).json(notifications);
+            const total = await Notification.countDocuments({ userId });
+
+            res.status(200).json({
+                data: notifications,
+                pagination: {
+                    total,
+                    page,
+                    limit,
+                    pages: Math.ceil(total / limit)
+                }
+            });
         } catch (error: any) {
             res.status(500).json({ message: error.message || 'Failed to fetch notifications' });
         }

@@ -8,6 +8,7 @@ export interface IResourceApplication extends Document {
     bidAmount?: number;
     coverLetter?: string;
     message?: string; // Kept for backward compatibility
+    proposalDocuments?: string[];
     appliedAt: Date;
 }
 
@@ -23,6 +24,7 @@ const ResourceApplicationSchema: Schema = new Schema({
     bidAmount: { type: Number },
     coverLetter: { type: String },
     message: { type: String },
+    proposalDocuments: [{ type: String }],
 }, { timestamps: { createdAt: 'appliedAt', updatedAt: 'updatedAt' } });
 
 // Prevent duplicate applications

@@ -66,4 +66,26 @@ export class CloudinaryUtil {
             console.error('Local File Cleanup Error:', error);
         }
     }
+
+    /**
+     * Extract public ID from Cloudinary URL
+     * @param url Cloudinary secure URL
+     */
+    static extractPublicIdFromUrl(url: string): string | null {
+        try {
+            if (!url) return null;
+
+            // Example: https://res.cloudinary.com/demo/image/upload/v1611322222/hire-xo/folder/image.jpg
+            const regex = /\/hire-xo\/(.+)\.(jpg|jpeg|png|gif|webp|pdf|doc|docx)/;
+            const match = url.match(regex);
+
+            if (match && match[1]) {
+                return `hire-xo/${match[1]}`;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error extracting public ID:', error);
+            return null;
+        }
+    }
 }

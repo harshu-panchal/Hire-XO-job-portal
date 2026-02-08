@@ -61,7 +61,8 @@ const EmployerDashboard = () => {
           avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase(),
         }));
         setRecentApplications(formattedApps);
-        setRecentPosts(postsData.slice(0, 3));
+        const { data } = await postService.getAllPosts(1, 10);
+        setRecentPosts(data.slice(0, 3));
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
