@@ -9,11 +9,11 @@ export class ApplicationController {
         this.applicationService = new ApplicationService();
     }
 
-    public applyToJob = async (req: AuthRequest, res: Response): Promise<void> => {
+    public applyToJob = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
@@ -47,19 +47,20 @@ export class ApplicationController {
                 additionalDocuments: documentUrls
             });
             res.status(201).json({
+                success: true,
                 message: 'Application submitted successfully',
                 application
             });
         } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Failed to apply' });
+            next(error);
         }
     };
 
-    public applyToResource = async (req: AuthRequest, res: Response): Promise<void> => {
+    public applyToResource = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
@@ -88,85 +89,97 @@ export class ApplicationController {
                 }
             );
             res.status(201).json({
+                success: true,
                 message: 'Application submitted successfully',
                 application
             });
         } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Failed to apply' });
+            next(error);
         }
     };
 
-    public getMyApplications = async (req: AuthRequest, res: Response): Promise<void> => {
+    public getMyApplications = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
             const applications = await this.applicationService.getMyApplications(userId);
-            res.status(200).json(applications);
+            res.status(200).json({ success: true, data: applications });
         } catch (error: any) {
-            res.status(500).json({ message: error.message || 'Failed to fetch applications' });
+            next(error);
         }
     };
 
-    public getJobApplications = async (req: AuthRequest, res: Response): Promise<void> => {
+    public getJobApplications = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
             const { jobId } = req.params;
-            const applications = await this.applicationService.getJobApplications(jobId, userId);
-            res.status(200).json(applications);
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 20;
+
+            const result = await this.applicationService.getJobApplications(jobId, userId, page, limit);
+            res.status(200).json({ success: true, ...result });
         } catch (error: any) {
-            res.status(403).json({ message: error.message || 'Failed to fetch applications' });
+            next(error);
         }
     };
 
-    public getReceivedApplications = async (req: AuthRequest, res: Response): Promise<void> => {
+    public getReceivedApplications = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
-            const applications = await this.applicationService.getReceivedApplications(userId);
-            res.status(200).json(applications);
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 20;
+
+            const result = await this.applicationService.getReceivedApplications(userId, page, limit);
+            res.status(200).json({ success: true, ...result });
         } catch (error: any) {
-            res.status(500).json({ message: error.message || 'Failed to fetch applications' });
+            next(error);
         }
     };
 
-    public getResourceApplications = async (req: AuthRequest, res: Response): Promise<void> => {
+    public getResourceApplications = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
             const { resourceId, resourceType } = req.params;
-            const applications = await this.applicationService.getResourceApplications(
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 20;
+
+            const result = await this.applicationService.getResourceApplications(
                 resourceId,
                 resourceType,
-                userId
+                userId,
+                page,
+                limit
             );
-            res.status(200).json(applications);
+            res.status(200).json({ success: true, ...result });
         } catch (error: any) {
-            res.status(403).json({ message: error.message || 'Failed to fetch applications' });
+            next(error);
         }
     };
 
-    public getReceivedResourceApplications = async (req: AuthRequest, res: Response): Promise<void> => {
+    public getReceivedResourceApplications = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
@@ -174,7 +187,6 @@ export class ApplicationController {
             // We can fetch user profile or pass it if frontend knows.
             // Better to fetch user profile here to be secure/accurate.
             const { User } = require('../models/user.model');
-            const { ResourceProfile } = require('../models/resource-profile.model');
             // Or use existing imports if available. Checking...
             // User imported at top. ResourceProfile not imported.
 
@@ -199,22 +211,25 @@ export class ApplicationController {
 
             const { category } = req.query;
             if (!category) {
-                res.status(400).json({ message: 'Category is required' });
+                res.status(400).json({ success: false, message: 'Category is required' });
                 return;
             }
 
-            const applications = await this.applicationService.getReceivedResourceApplications(userId, category as string);
-            res.status(200).json(applications);
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 20;
+
+            const result = await this.applicationService.getReceivedResourceApplications(userId, category as string, page, limit);
+            res.status(200).json({ success: true, ...result });
         } catch (error: any) {
-            res.status(500).json({ message: error.message || 'Failed to fetch applications' });
+            next(error);
         }
     };
 
-    public updateApplicationStatus = async (req: AuthRequest, res: Response): Promise<void> => {
+    public updateApplicationStatus = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
@@ -222,7 +237,7 @@ export class ApplicationController {
             const { status, type } = req.body; // type: 'job' or 'resource'
 
             if (!['Accepted', 'Rejected'].includes(status)) {
-                res.status(400).json({ message: 'Invalid status' });
+                res.status(400).json({ success: false, message: 'Invalid status' });
                 return;
             }
 
@@ -235,11 +250,12 @@ export class ApplicationController {
             );
 
             res.status(200).json({
+                success: true,
                 message: 'Application status updated',
                 application
             });
         } catch (error: any) {
-            res.status(403).json({ message: error.message || 'Failed to update status' });
+            next(error);
         }
     };
 }

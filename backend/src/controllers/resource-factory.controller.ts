@@ -18,7 +18,7 @@ export class ResourceFactoryController<T extends Document> {
             const userId = (req as any).user?.id || req.body.userId;
 
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized: User ID missing' });
+                res.status(401).json({ success: false, message: 'Unauthorized: User ID missing' });
                 return;
             }
 
@@ -33,7 +33,7 @@ export class ResourceFactoryController<T extends Document> {
                 postedAt: new Date()
             });
 
-            res.status(201).json({ message: `${this.resourceName} created successfully`, data: newItem });
+            res.status(201).json({ success: true, message: `${this.resourceName} created successfully`, data: newItem });
         } catch (error: any) {
             next(error);
         }
@@ -102,6 +102,7 @@ export class ResourceFactoryController<T extends Document> {
             const total = await this.model.countDocuments(query);
 
             res.status(200).json({
+                success: true,
                 data: items,
                 pagination: {
                     page,
@@ -119,10 +120,10 @@ export class ResourceFactoryController<T extends Document> {
         try {
             const item = await this.model.findById(req.params.id);
             if (!item) {
-                res.status(404).json({ message: `${this.resourceName} not found` });
+                res.status(404).json({ success: false, message: `${this.resourceName} not found` });
                 return;
             }
-            res.status(200).json(item);
+            res.status(200).json({ success: true, data: item });
         } catch (error: any) {
             next(error);
         }
@@ -132,19 +133,29 @@ export class ResourceFactoryController<T extends Document> {
         try {
             const userId = (req as any).user?.id || req.query.userId;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
-            const items = await this.model.find({ userId }).sort({ createdAt: -1 });
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 20;
+            const skip = (page - 1) * limit;
+
+            const items = await this.model.find({ userId })
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit);
+
+            const total = await this.model.countDocuments({ userId });
 
             res.status(200).json({
+                success: true,
                 data: items,
                 pagination: {
-                    page: 1,
-                    limit: items.length,
-                    total: items.length,
-                    pages: 1
+                    page,
+                    limit,
+                    total,
+                    pages: Math.ceil(total / limit)
                 }
             });
         } catch (error: any) {
@@ -160,13 +171,13 @@ export class ResourceFactoryController<T extends Document> {
             const item = await this.model.findById(req.params.id);
 
             if (!item) {
-                res.status(404).json({ message: `${this.resourceName} not found` });
+                res.status(404).json({ success: false, message: `${this.resourceName} not found` });
                 return;
             }
 
             // Check ownership
             if (item.get('userId').toString() !== userId) {
-                res.status(403).json({ message: 'You can only update your own listings' });
+                res.status(403).json({ success: false, message: 'You can only update your own listings' });
                 return;
             }
 
@@ -176,7 +187,7 @@ export class ResourceFactoryController<T extends Document> {
                 { new: true, runValidators: true }
             );
 
-            res.status(200).json({ message: `${this.resourceName} updated successfully`, data: updatedItem });
+            res.status(200).json({ success: true, message: `${this.resourceName} updated successfully`, data: updatedItem });
         } catch (error: any) {
             next(error);
         }
@@ -190,13 +201,13 @@ export class ResourceFactoryController<T extends Document> {
             const item = await this.model.findById(req.params.id);
 
             if (!item) {
-                res.status(404).json({ message: `${this.resourceName} not found` });
+                res.status(404).json({ success: false, message: `${this.resourceName} not found` });
                 return;
             }
 
             // Check ownership
             if (item.get('userId').toString() !== userId) {
-                res.status(403).json({ message: 'You can only delete your own listings' });
+                res.status(403).json({ success: false, message: 'You can only delete your own listings' });
                 return;
             }
 
@@ -228,7 +239,7 @@ export class ResourceFactoryController<T extends Document> {
             }
 
             await this.model.findByIdAndDelete(req.params.id);
-            res.status(200).json({ message: `${this.resourceName} deleted successfully` });
+            res.status(200).json({ success: true, message: `${this.resourceName} deleted successfully` });
         } catch (error: any) {
             next(error);
         }

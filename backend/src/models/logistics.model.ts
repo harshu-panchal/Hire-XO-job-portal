@@ -41,4 +41,7 @@ const LogisticsSchema: Schema = new Schema({
     images: [{ type: String }],
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
+// Optimize resource queries by user
+LogisticsSchema.index({ userId: 1, postedAt: -1 });
+
 export default mongoose.model<ILogistics>('Logistics', LogisticsSchema);

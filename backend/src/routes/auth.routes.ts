@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { uploadMultiple } from '../middlewares/upload.middleware';
+import { authLimiter } from '../middlewares/limit.middleware';
 import { validate } from '../middlewares/validation.middleware';
 import { registerSchema, loginSchema } from '../validations/auth.validation';
 import { AuthController } from '../controllers/auth.controller';
@@ -9,10 +10,10 @@ const router = Router();
 const authController = new AuthController();
 
 // Public routes
-router.post('/login', validate(loginSchema), authController.login);
-router.post('/signup', uploadMultiple, validate(registerSchema), authController.signup);
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
+router.post('/login', authLimiter, validate(loginSchema), authController.login);
+router.post('/signup', authLimiter, uploadMultiple, validate(registerSchema), authController.signup);
+router.post('/forgot-password', authLimiter, authController.forgotPassword);
+router.post('/reset-password', authLimiter, authController.resetPassword);
 
 // Protected routes
 router.get('/me', authenticateToken, authController.getCurrentUser);

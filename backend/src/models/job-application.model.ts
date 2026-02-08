@@ -21,5 +21,8 @@ const JobApplicationSchema: Schema = new Schema({
 
 // Prevent duplicate applications
 JobApplicationSchema.index({ applicantId: 1, jobId: 1 }, { unique: true });
+JobApplicationSchema.index({ jobId: 1 }); // Optimize queries by jobId
+// Optimize queries by applicant and status
+JobApplicationSchema.index({ applicantId: 1, status: 1 });
 
 export default mongoose.model<IJobApplication>('JobApplication', JobApplicationSchema);

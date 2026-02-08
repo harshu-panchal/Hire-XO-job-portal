@@ -21,4 +21,7 @@ const NotificationSchema: Schema = new Schema({
     relatedType: { type: String, enum: ['job_application', 'resource_application'] },
 }, { timestamps: true });
 
+// Optimize notification queries by user
+NotificationSchema.index({ userId: 1, createdAt: -1 });
+
 export default mongoose.model<INotification>('Notification', NotificationSchema);

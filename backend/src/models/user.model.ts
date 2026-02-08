@@ -103,5 +103,29 @@ const UserSchema: Schema = new Schema({
     resetPasswordExpires: { type: Date },
 }, { timestamps: true });
 
+// Cascade delete profiles when a user is deleted
+UserSchema.pre('findOneAndDelete', async function () {
+    try {
+        const doc = await this.model.findOne(this.getQuery());
+        if (doc) {
+            // Delete associated profiles using imported models to avoid TS errors
+            // Delete associated profiles using imported models to avoid TS errors
+            // Use explicit any to bypass TypeScript limitations with dynamic model access
+            const JobSeeker: any = mongoose.models.JobSeeker || mongoose.model('JobSeeker');
+            const Recruiter: any = mongoose.models.Recruiter || mongoose.model('Recruiter');
+            const ResourceProfile: any = mongoose.models.ResourceProfile || mongoose.model('ResourceProfile');
+
+            if (JobSeeker) await JobSeeker.deleteMany({ userId: doc._id });
+            if (Recruiter) await Recruiter.deleteMany({ userId: doc._id });
+            if (ResourceProfile) await ResourceProfile.deleteMany({ userId: doc._id });
+
+            // Note: We are currently NOT cascading delete for Jobs or Applications 
+            // to preserve legacy data for analytics, unless explicitly required.
+        }
+    } catch (error: any) {
+        throw error;
+    }
+});
+
 export default mongoose.model<IUser>('User', UserSchema);
 

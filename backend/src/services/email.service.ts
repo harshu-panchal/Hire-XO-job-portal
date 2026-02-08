@@ -48,11 +48,13 @@ export class EmailService {
             }
         } else {
             console.warn('SMTP not configured. Logging email content to console.');
-            console.log('--- EMAIL SIMULATION ---');
-            console.log(`To: ${to}`);
-            console.log(`Subject: Reset Your Password`);
-            console.log(`Link: ${resetLink}`);
-            console.log('------------------------');
+            if (process.env.NODE_ENV !== 'production') {
+                console.log('--- EMAIL SIMULATION ---');
+                console.log(`To: ${to}`);
+                console.log(`Subject: Reset Your Password`);
+                console.log(`Link: ${resetLink}`);
+                console.log('------------------------');
+            }
             return true; // Return true to allow flow to continue in dev mode
         }
     }

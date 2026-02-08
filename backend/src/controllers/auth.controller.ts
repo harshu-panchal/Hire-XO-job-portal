@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { CloudinaryUtil } from '../utils/cloudinary';
 import { AuthService } from '../services/auth.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
@@ -19,10 +19,8 @@ export class AuthController {
         }
     };
 
-    public signup = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log('[DEBUG] Signup Request Body:', req.body);
-            console.log('[DEBUG] Signup Request Files:', req.files ? 'Files present' : 'No files');
 
             const userData = { ...req.body };
             const files = req.files as { [fieldname: string]: Express.Multer.File[] };

@@ -41,4 +41,7 @@ const MachinerySchema: Schema = new Schema({
     images: [{ type: String }],
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
+// Optimize resource queries by user
+MachinerySchema.index({ userId: 1, postedAt: -1 });
+
 export default mongoose.model<IMachinery>('Machinery', MachinerySchema);

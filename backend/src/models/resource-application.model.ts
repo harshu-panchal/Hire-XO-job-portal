@@ -29,5 +29,6 @@ const ResourceApplicationSchema: Schema = new Schema({
 
 // Prevent duplicate applications
 ResourceApplicationSchema.index({ applicantId: 1, resourceId: 1, resourceType: 1 }, { unique: true });
+ResourceApplicationSchema.index({ resourceId: 1, resourceType: 1 }); // Optimize queries by resource
 
 export default mongoose.model<IResourceApplication>('ResourceApplication', ResourceApplicationSchema);
