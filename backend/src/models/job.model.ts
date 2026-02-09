@@ -22,10 +22,14 @@ const JobSchema: Schema = new Schema({
     company: { type: String, required: true },
     companyLogo: { type: String },
     location: { type: String, required: true },
-    salary: { type: String, required: true },
+    salary: { type: String }, // Made optional or string, we will use min/max mostly
+    minSalary: { type: Number },
+    maxSalary: { type: Number },
+    experience: { type: Number }, // Years required
+    vacancies: { type: Number },
     type: { type: String, enum: ["Full-time", "Part-time", "Contract", "Freelance"], required: true },
     description: { type: String, required: true },
-    requirements: [{ type: String }],
+    requirements: [{ type: String }], // This maps to "Required Skills"
     responsibilities: [{ type: String }],
     benefits: [{ type: String }],
     category: { type: String, required: true },

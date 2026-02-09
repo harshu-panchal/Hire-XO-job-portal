@@ -13,63 +13,68 @@ import {
 } from "lucide-react";
 import { jobService } from "@/services/jobService";
 
+
 const PostJob = () => {
   const navigate = useNavigate();
-  const { user, updateUser } = useAuthStore();
-  const [step, setStep] = useState(1);
+  const { user } = useAuthStore();
+
+  const [step, setStep] = useState(1); // 1 = Form, 3 = Success
   const [formData, setFormData] = useState({
     title: "",
     category: "Development",
     type: "Full-time",
     location: "",
-    salary: "",
+    minSalary: "",
+    maxSalary: "",
+    experience: "",
+    vacancies: "",
     description: "",
-    requirements: ["", ""],
-    responsibilities: ["", ""],
+    requirements: ["", ""], // Required Skills
   });
 
-  const handleAddField = (field: "requirements" | "responsibilities") => {
+  const handleAddField = () => {
     setFormData((prev) => ({
       ...prev,
-      [field]: [...prev[field], ""],
+      requirements: [...prev.requirements, ""],
     }));
   };
 
-  const handleRemoveField = (field: "requirements" | "responsibilities", index: number) => {
+  const handleRemoveField = (index: number) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: prev[field].filter((_, i) => i !== index),
+      requirements: prev.requirements.filter((_, i) => i !== index),
     }));
   };
 
-  const handleInputChange = (
-    field: "requirements" | "responsibilities",
-    index: number,
-    value: string
-  ) => {
-    const newArr = [...formData[field]];
+  const handleRequirementChange = (index: number, value: string) => {
+    const newArr = [...formData.requirements];
     newArr[index] = value;
-    setFormData((prev) => ({ ...prev, [field]: newArr }));
+    setFormData((prev) => ({ ...prev, requirements: newArr }));
   };
 
   const [loading, setLoading] = useState(false);
 
-  // ... (existing code)
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setLoading(true);
     try {
+      const min = formData.minSalary ? `${formData.minSalary}` : "0";
+      const max = formData.maxSalary ? `${formData.maxSalary}` : "0";
+      const salaryString = `${min} - ${max} LPA`;
+
       await jobService.createJob({
         title: formData.title,
         category: formData.category,
         type: formData.type as any,
         location: formData.location,
-        salary: formData.salary,
+        salary: salaryString, // Backward compatibility
+        minSalary: Number(formData.minSalary),
+        maxSalary: Number(formData.maxSalary),
+        experience: Number(formData.experience),
+        vacancies: Number(formData.vacancies),
         description: formData.description,
         requirements: formData.requirements.filter((r) => r.trim() !== ""),
-        responsibilities: formData.responsibilities.filter((r) => r.trim() !== ""),
+        responsibilities: [], // Removed as not requested
       });
       setStep(3); // Success step
     } catch (error) {
@@ -107,219 +112,196 @@ const PostJob = () => {
       {/* Header */}
       <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
         <button
-          onClick={() => (step > 1 ? setStep(step - 1) : navigate(-1))}
+          onClick={() => navigate(-1)}
           className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
         >
           <ChevronLeft className="size-6" />
         </button>
         <div className="flex flex-col items-center">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-            Step {step} of 2
-          </p>
           <h2 className="text-sm font-black uppercase tracking-widest">Post a New Job</h2>
         </div>
         <div className="size-11" /> {/* Spacer */}
       </div>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-8">
-        {step === 1 ? (
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">
-                Basic Information
-              </label>
+        <div className="space-y-6">
 
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                  <Type className="size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
-                </div>
+          {/* Job Title */}
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+              <Type className="size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+            </div>
+            <input
+              type="text"
+              placeholder="Job Title (e.g. Senior React Dev)"
+              required
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+            />
+          </div>
+
+          {/* Category, Experience, Vacancies */}
+          <div className="grid grid-cols-1 gap-4">
+            <div className="relative group">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 mb-1.5 block">Job Category</label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                className="w-full h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
+              >
+                <option>Development</option>
+                <option>Design</option>
+                <option>Marketing</option>
+                <option>Sales</option>
+                <option>Logistics</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 mb-1.5 block">Req. Experience (Yrs)</label>
                 <input
-                  type="text"
-                  placeholder="Job Title (e.g. Senior React Dev)"
+                  type="number"
+                  min="0"
+                  placeholder="e.g. 2"
                   required
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                  value={formData.experience}
+                  onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                  className="w-full h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="relative group">
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
-                  >
-                    <option>Development</option>
-                    <option>Design</option>
-                    <option>Marketing</option>
-                    <option>Sales</option>
-                  </select>
-                </div>
-                <div className="relative group">
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
-                  >
-                    <option>Full-time</option>
-                    <option>Part-time</option>
-                    <option>Contract</option>
-                    <option>Freelance</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                  <MapPin className="size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
-                </div>
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 mb-1.5 block">No. of Vacancies</label>
                 <input
-                  type="text"
-                  placeholder="Location (e.g. Remote, Bangalore)"
+                  type="number"
+                  min="1"
+                  placeholder="e.g. 1"
                   required
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
-                />
-              </div>
-
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                  <DollarSign className="size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Salary Range (e.g. ₹15L - ₹25L)"
-                  required
-                  value={formData.salary}
-                  onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                  className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                  value={formData.vacancies}
+                  onChange={(e) => setFormData({ ...formData, vacancies: e.target.value })}
+                  className="w-full h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
                 />
               </div>
             </div>
+          </div>
 
-            <div className="space-y-4 pt-4">
-              <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">
-                Job Description
-              </label>
-              <textarea
-                placeholder="Describe the role and your company..."
+          {/* Heading: Compensation and Location */}
+          <div className="pt-4 pb-1 border-b border-slate-100">
+            <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Compensation and Location</h3>
+          </div>
+
+          {/* Min/Max Salary */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                <DollarSign className="size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+              </div>
+              <input
+                type="number"
+                placeholder="Min Salary (LPA)"
                 required
-                rows={5}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-6 rounded-3xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black resize-none"
+                value={formData.minSalary}
+                onChange={(e) => setFormData({ ...formData, minSalary: e.target.value })}
+                className="w-full h-16 pl-12 pr-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+              />
+            </div>
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                <DollarSign className="size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+              </div>
+              <input
+                type="number"
+                placeholder="Max Salary (LPA)"
+                required
+                value={formData.maxSalary}
+                onChange={(e) => setFormData({ ...formData, maxSalary: e.target.value })}
+                className="w-full h-16 pl-12 pr-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
               />
             </div>
           </div>
-        ) : (
-          <div className="space-y-10">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between px-1">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-400">
-                  Requirements
-                </label>
-                <button
-                  type="button"
-                  onClick={() => handleAddField("requirements")}
-                  className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center active:scale-90 transition-all"
-                >
-                  <Plus className="size-4" />
-                </button>
-              </div>
-              <div className="space-y-3">
-                {formData.requirements.map((req, i) => (
-                  <div key={i} className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder={`Requirement #${i + 1}`}
-                      required
-                      value={req}
-                      onChange={(e) => handleInputChange("requirements", i, e.target.value)}
-                      className="flex-1 h-14 px-5 rounded-xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
-                    />
-                    {formData.requirements.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveField("requirements", i)}
-                        className="size-14 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 active:scale-90 transition-all"
-                      >
-                        <Trash2 className="size-5" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
 
-            <div className="space-y-6">
-              <div className="flex items-center justify-between px-1">
-                <label className="text-xs font-black uppercase tracking-widest text-slate-400">
-                  Responsibilities
-                </label>
-                <button
-                  type="button"
-                  onClick={() => handleAddField("responsibilities")}
-                  className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center active:scale-90 transition-all"
-                >
-                  <Plus className="size-4" />
-                </button>
-              </div>
-              <div className="space-y-3">
-                {formData.responsibilities.map((resp, i) => (
-                  <div key={i} className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder={`Responsibility #${i + 1}`}
-                      required
-                      value={resp}
-                      onChange={(e) => handleInputChange("responsibilities", i, e.target.value)}
-                      className="flex-1 h-14 px-5 rounded-xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
-                    />
-                    {formData.responsibilities.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveField("responsibilities", i)}
-                        className="size-14 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 active:scale-90 transition-all"
-                      >
-                        <Trash2 className="size-5" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
+          {/* Job Location */}
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+              <MapPin className="size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
             </div>
+            <input
+              type="text"
+              placeholder="Job Location"
+              required
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+            />
           </div>
-        )}
+
+          {/* Heading: Requirement */}
+          <div className="pt-4 pb-1 border-b border-slate-100">
+            <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Requirement</h3>
+          </div>
+
+          {/* Required Skills */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <label className="text-xs font-black uppercase tracking-widest text-slate-400">
+                Required Skills
+              </label>
+              <button
+                type="button"
+                onClick={handleAddField}
+                className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center active:scale-90 transition-all"
+              >
+                <Plus className="size-4" />
+              </button>
+            </div>
+            {formData.requirements.map((req, i) => (
+              <div key={i} className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder={`Skill #${i + 1}`}
+                  required
+                  value={req}
+                  onChange={(e) => handleRequirementChange(i, e.target.value)}
+                  className="flex-1 h-14 px-5 rounded-xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-xs font-black"
+                />
+                {formData.requirements.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveField(i)}
+                    className="size-14 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 active:scale-90 transition-all"
+                  >
+                    <Trash2 className="size-5" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Job Description */}
+          <div className="space-y-2">
+            <label className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">
+              Job Description
+            </label>
+            <textarea
+              placeholder="Describe the role and your company..."
+              required
+              rows={8}
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="w-full p-6 rounded-3xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black resize-none"
+            />
+          </div>
+
+        </div>
 
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 z-40">
-          {step === 2 && (
-            <div className="flex justify-between items-center mb-4 px-2">
-              <span className="text-slate-400 text-xs font-black uppercase tracking-widest">
-                Job Posting Fee
-              </span>
-              <span className="text-green-500 font-black">FREE</span>
-            </div>
-          )}
           <button
-            type={step === 2 ? "submit" : "button"}
-            onClick={(e) => {
-              if (step === 1) {
-                const form = e.currentTarget.closest("form");
-                if (form) {
-                  if (form.checkValidity()) {
-                    setStep(2);
-                  } else {
-                    form.reportValidity();
-                  }
-                }
-              }
-            }}
+            type="submit"
             disabled={loading}
             className="mt-8 h-16 w-full rounded-3xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100"
           >
-            {loading ? "Posting..." : step === 2 ? "Post Job Now" : "Continue to Details"}
+            {loading ? "Posting..." : "Post Job Now"}
             {!loading && <ArrowRight className="size-4" />}
           </button>
         </div>

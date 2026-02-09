@@ -101,7 +101,7 @@ const EmployeeLayout = () => {
             <span
               className={`text-[9px] font-black uppercase tracking-wider ${isActive("/payments") ? "opacity-100" : "opacity-40"}`}
             >
-              Payment
+              Subscription
             </span>
           </Link>
 

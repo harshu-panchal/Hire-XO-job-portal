@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ChevronLeft, ShieldCheck, Zap } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ShieldCheck, Zap, Crown, Shield, XCircle, Star } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useState } from "react";
 import { subscriptionService } from "@/services/subscriptionService";
@@ -20,6 +20,7 @@ const Subscription = () => {
         setPlans(data);
       } catch (error: any) {
         console.error("Failed to fetch plans:", error);
+        toast.error("Failed to load plans");
       } finally {
         setIsLoadingPlans(false);
       }
@@ -32,25 +33,43 @@ const Subscription = () => {
     ? new Date(user.profile.subscriptionExpiry) > new Date()
     : false;
 
-  const handleSubscribe = async () => {
-    const proPlan = plans.find(p => p.name.includes("Pro")) || plans[0];
-    if (!proPlan) {
-      toast.error("Subscription plan not found. Please try again later.");
+  const getPlanIcon = (planName: string) => {
+    const name = planName.toLowerCase();
+    if (name.includes("premium")) return Star;
+    if (name.includes("unlimited")) return Crown;
+    if (name.includes("verification")) return ShieldCheck;
+    if (name.includes("employees")) return Zap;
+    return Shield;
+  };
+
+  const getPlanColor = (index: number) => {
+    const colors = [
+      { bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-500/20", gradient: "from-blue-500/20 to-blue-500/5" },
+      { bg: "bg-purple-500/10", text: "text-purple-500", border: "border-purple-500/20", gradient: "from-purple-500/20 to-purple-500/5" },
+      { bg: "bg-amber-500/10", text: "text-amber-500", border: "border-amber-500/20", gradient: "from-amber-500/20 to-amber-500/5" },
+      { bg: "bg-green-500/10", text: "text-green-500", border: "border-green-500/20", gradient: "from-green-500/20 to-green-500/5" },
+    ];
+    return colors[index % colors.length];
+  };
+
+  const handleSelectPlan = async (plan: SubscriptionPlan) => {
+    // If it's the free plan, just navigate back
+    const isFree = plan.price === 0 || plan.name.toLowerCase().includes("free");
+    if (isFree) {
+      toast.info("You're already on the free plan!");
       return;
     }
 
+    // For paid plans, process subscription
     setIsProcessing(true);
     try {
-      // 1. Recharge wallet (Simulated Payment)
       toast.info("Processing payment...");
-      await subscriptionService.rechargeWallet(proPlan.price);
+      await subscriptionService.rechargeWallet(plan.price);
 
-      // 2. Purchase subscription
       toast.info("Activating subscription...");
-      await purchaseSubscription(proPlan.id || (proPlan as any)._id);
+      await purchaseSubscription(plan.id || (plan as any)._id);
 
-      toast.success("Successfully upgraded to Pro!");
-      // State update in useAuthStore will reflect immediately
+      toast.success(`Successfully upgraded to ${plan.name}!`);
     } catch (error: any) {
       toast.error(error.message || "Failed to upgrade subscription");
     } finally {
@@ -58,42 +77,18 @@ const Subscription = () => {
     }
   };
 
-  if (isSubscribed) {
+  if (isLoadingPlans) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] px-5 text-center select-none">
-        {/* Header */}
-        <div className="fixed top-0 left-0 right-0 flex items-center justify-between py-6 bg-slate-50/80 backdrop-blur-md z-20 px-5">
-          <button
-            onClick={() => navigate(-1)}
-            className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
-          >
-            <ChevronLeft className="size-6" />
-          </button>
-          <h2 className="text-sm font-black uppercase tracking-widest">Subscription</h2>
-          <div className="size-11" />
-        </div>
-
-        <div className="size-32 rounded-[3rem] bg-green-500/10 flex items-center justify-center animate-bounce-subtle mb-8 mt-20">
-          <ShieldCheck className="size-16 text-green-500" />
-        </div>
-        <h1 className="text-3xl font-black tracking-tight mb-3">You are a Pro!</h1>
-        <p className="text-slate-500 text-sm font-black leading-relaxed max-w-[280px] mx-auto mb-10">
-          Your subscription is active until <br />
-          <span className="text-primary">
-            {new Date(user!.profile.subscriptionExpiry!).toLocaleDateString()}
-          </span>
+        <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-sm font-black uppercase tracking-widest text-slate-400">
+          Loading Plans...
         </p>
-        <button
-          onClick={() => navigate("/employer")}
-          className="h-16 w-full rounded-3xl bg-slate-900 text-white font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
-        >
-          Back to Dashboard
-        </button>
       </div>
     );
   }
 
-  const activeLoading = isLoadingPlans || isAuthLoading || isProcessing;
+
 
   return (
     <div className="pb-32 select-none">
@@ -105,82 +100,136 @@ const Subscription = () => {
         >
           <ChevronLeft className="size-6" />
         </button>
-        <h2 className="text-sm font-black uppercase tracking-widest">Upgrade Plan</h2>
+        <h2 className="text-sm font-black uppercase tracking-widest">Choose Your Plan</h2>
         <div className="size-11" /> {/* Spacer */}
       </div>
 
       <div className="mt-6 space-y-6">
+        {/* Title */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-black tracking-tighter">
-            Unlock <span className="text-primary">Full Access</span>
+            Select the <span className="text-primary">Perfect Plan</span>
           </h1>
           <p className="text-slate-500 text-xs font-black uppercase tracking-widest">
-            Supercharge your hiring process
+            For your business needs
           </p>
         </div>
 
-        {/* Pricing Card */}
-        <div className="bg-white rounded-[2.5rem] border-2 border-primary/20 p-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-bl-2xl">
-            Best Value
-          </div>
+        {/* Plans Grid */}
+        <div className="space-y-4">
+          {plans.map((plan, index) => {
+            const Icon = getPlanIcon(plan.name);
+            const colors = getPlanColor(index);
+            const isFree = plan.price === 0 || plan.name.toLowerCase().includes("free");
 
-          <div className="flex flex-col items-center text-center space-y-6">
-            <div className="size-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-              <Zap className="size-8" />
-            </div>
+            // Logic for badges based on description keywords from seed
+            const isPopular = plan.description.toLowerCase().includes("popular");
+            const isBestValue = plan.description.toLowerCase().includes("best value");
+            const isVerification = plan.name.toLowerCase().includes("verification");
 
-            <div className="space-y-1">
-              <h3 className="text-lg font-black uppercase tracking-widest text-slate-400">
-                {plans.find(p => p.name.includes("Pro"))?.name || "Pro Employer"}
-              </h3>
-              <div className="flex items-baseline justify-center gap-1">
-                <span className="text-4xl font-black text-slate-900">₹{plans.find(p => p.name.includes("Pro"))?.price || 999}</span>
-                <span className="text-sm font-bold text-slate-400">/ 6 months</span>
-              </div>
-            </div>
+            return (
+              <div
+                key={plan.id || (plan as any)._id}
+                className={`bg-white rounded-[2.5rem] border-2 p-6 relative overflow-hidden transition-all hover:shadow-lg ${isPopular || isBestValue
+                  ? "border-primary/30 shadow-lg shadow-primary/10"
+                  : "border-slate-200"
+                  }`}
+              >
+                {/* Background Gradient */}
+                <div className={`absolute top-0 right-0 w-48 h-48 bg-gradient-to-br ${colors.gradient} rounded-full blur-3xl opacity-50 -z-0`}></div>
 
-            <div className="w-full h-px bg-slate-100" />
-
-            <ul className="space-y-4 text-left w-full">
-              {(plans.find(p => p.name.includes("Pro"))?.features || [
-                "Contact Unlimited Candidates",
-                "Download Unlimited Resumes",
-                "Priority Job Listings",
-                "Verified Employer Badge",
-              ]).map((feature, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <div className="size-5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="size-3 text-green-500" />
+                {(isPopular || isBestValue) && (
+                  <div className={`absolute top-0 right-0 ${isPopular ? "bg-blue-500" : "bg-primary"} text-white text-[9px] font-black uppercase tracking-widest py-1.5 px-3 rounded-bl-2xl z-10 shadow-lg`}>
+                    {isPopular ? "Most Popular" : "Best Value"}
                   </div>
-                  <span className="text-sm font-bold text-slate-600">
-                    {feature}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
+                )}
 
-      <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 z-50">
-        <button
-          onClick={handleSubscribe}
-          disabled={activeLoading}
-          className="h-16 w-full rounded-3xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100"
-        >
-          {activeLoading ? (
-            <>
-              <div className="size-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Processing...
-            </>
-          ) : (
-            "Upgrade Now"
-          )}
-        </button>
-        <p className="text-[10px] text-center mt-4 text-slate-400 font-bold">
-          Secure processing. Cancel anytime.
-        </p>
+                <div className="space-y-4 relative z-10">
+                  {/* Plan Header */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`size-14 rounded-2xl ${colors.bg} flex items-center justify-center ${colors.text} shadow-lg`}>
+                        <Icon className="size-7" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-black tracking-tight leading-tight max-w-[200px]">{plan.name}</h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                          {plan.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price */}
+                  <div className="flex items-baseline gap-1 mt-2">
+                    <span className="text-4xl font-black text-slate-900">
+                      {isFree ? "FREE" : `₹${plan.price}`}
+                    </span>
+                    {!isFree && !isVerification && (
+                      <span className="text-sm font-bold text-slate-400">
+                        / Month
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Features */}
+                  <ul className="space-y-3 pt-2">
+                    {plan.features.map((feature, i) => {
+                      // Check if feature is "crossed out" style (convention: 'Resources access' in 'Only Employees' plan)
+                      // Or simple text matching as per user requirement
+                      const isCrossedOut = feature.toLowerCase().includes("resources access") && plan.name.toLowerCase().includes("only employees");
+
+                      return (
+                        <li key={i} className="flex items-start gap-3">
+                          <div className={`size-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isCrossedOut ? "bg-red-500/10" : "bg-green-500/10"}`}>
+                            {isCrossedOut ? (
+                              <XCircle className="size-3 text-red-500" />
+                            ) : (
+                              <CheckCircle2 className="size-3 text-green-500" />
+                            )}
+                          </div>
+                          <span className={`text-sm font-bold leading-relaxed ${isCrossedOut ? "text-slate-400 line-through decoration-slate-400/50" : "text-slate-600"}`}>
+                            {feature}
+                          </span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+
+                  {/* Select Button */}
+                  <button
+                    onClick={() => handleSelectPlan(plan)}
+                    disabled={isProcessing}
+                    className={`w-full h-14 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100 mt-4 border-2 ${isPopular || isBestValue
+                      ? "bg-primary border-primary text-white shadow-lg shadow-primary/20"
+                      : isVerification
+                        ? "bg-white border-slate-900 text-slate-900 hover:bg-slate-50"
+                        : "bg-slate-900 border-slate-900 text-white"
+                      }`}
+                  >
+                    {isProcessing ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        Processing...
+                      </div>
+                    ) : isVerification ? (
+                      "Verify Now"
+                    ) : (
+                      "Get Started"
+                    )}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Info Note */}
+        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-center">
+          <p className="text-[10px] font-bold text-blue-600 leading-relaxed">
+            💡 You can post jobs for free with the basic plan. Upgrade anytime to unlock premium features!
+          </p>
+        </div>
       </div>
     </div>
   );

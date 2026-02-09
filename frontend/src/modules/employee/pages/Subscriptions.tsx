@@ -1,35 +1,55 @@
-import { Check, Zap, Sparkles, Rocket, ChevronLeft } from "lucide-react";
+import { CheckCircle, ShieldCheck, Briefcase, Users, ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 const PLANS = [
   {
-    id: "15-day",
-    name: "Standard",
-    price: "₹23",
-    duration: "15 Days",
-    description: "Perfect for active employees",
-    features: ["Priority Job Alerts", "Direct Message Employers", "Profile Visibility Boost"],
-    icon: <Zap className="h-6 w-6 text-yellow-500" />,
-  },
-  {
-    id: "1-week",
-    name: "Professional",
-    price: "₹41",
-    duration: "7 Days",
-    description: "Intensive job hunting",
-    features: ["All Standard features", "Mock Interviews", "Resume Review"],
-    popular: true,
-    icon: <Sparkles className="h-6 w-6 text-primary" />,
-  },
-  {
-    id: "same-day",
-    name: "Executive",
+    id: "emp-verify",
+    name: "Employee Verification Certificate",
+    tagline: "Verified Employee – Identity & Profile Checked",
     price: "₹99",
-    duration: "1 Day",
-    description: "Urgent placement",
-    features: ["Instant Verification", "Fast-track Applications", "Live Chat Support"],
-    icon: <Rocket className="h-6 w-6 text-primary-dark" />,
+    duration: "6 Months",
+    features: [
+      "Employee identity verification",
+      "Verified badge on employee profile",
+      "Builds trust with employers & resource providers",
+      "Higher chances of selection"
+    ],
+    icon: <ShieldCheck className="h-6 w-6 text-blue-600" />,
+    color: "blue",
+  },
+  {
+    id: "job-loss",
+    name: "Job Loss Cover Certificate",
+    tagline: "Job Loss Support – We Help You Get Re-Hired Faster",
+    price: "₹99",
+    duration: "6 Months",
+    features: [
+      "If employee loses job due to project closure or employer issue",
+      "Platform helps employee find a new job opportunity",
+      "Priority support from hub team",
+      "Reduced waiting time for next job"
+    ],
+    icon: <Briefcase className="h-6 w-6 text-sky-500" />,
+    color: "sky",
+  },
+  {
+    id: "emergency-support",
+    name: "Emergency Replacement Support Certificate",
+    tagline: "Emergency Support – Managed Replacement & Re-Joining Assistance",
+    price: "₹199",
+    duration: "6 Months",
+    features: [
+      "If employee needs to go home due to emergency",
+      "Platform coordinates with hub employers",
+      "Replacement employee arranged as per employer requirement",
+      "Employer project continuity maintained",
+      "Employee can re-join later if required"
+    ],
+    icon: <Users className="h-6 w-6 text-indigo-600" />,
+    color: "indigo",
+    bestValue: true,
   },
 ];
 
@@ -38,117 +58,93 @@ const Subscriptions = () => {
   const { user } = useAuthStore();
   const activePlanId = user?.activeSubscriptionId;
 
+  const handlePurchase = (plan: typeof PLANS[0]) => {
+    toast.promise(new Promise(resolve => setTimeout(resolve, 2000)), {
+      loading: 'Processing payment...',
+      success: `Successfully purchased ${plan.name}!`,
+      error: 'Payment failed'
+    });
+  };
+
   return (
-    <div className="py-8 space-y-10 select-none">
+    <div className="py-8 space-y-8 select-none bg-slate-50 min-h-screen">
       <div className="flex items-center gap-4 px-4">
         <button
           onClick={() => navigate(-1)}
           className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all shadow-sm"
         >
-          <ChevronLeft className="size-6" />
+          <ChevronLeft className="size-6 text-slate-600" />
         </button>
         <div className="space-y-1">
-          <h1 className="text-2xl font-black tracking-tight leading-tight">
-            Choose Your <span className="text-primary">Growth</span>
+          <h1 className="text-2xl font-black tracking-tight leading-tight text-slate-900">
+            Employee Support <span className="text-primary">Certificates</span>
           </h1>
-          <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
-            Premium features to accelerate your career
+          <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest">
+            Secure your career with premium coverage
           </p>
         </div>
       </div>
 
-      <div className="grid gap-8 pb-10">
+      <div className="grid gap-6 pb-24 px-4 overflow-y-auto">
         {PLANS.map((plan) => (
           <div
             key={plan.id}
-            className={`relative rounded-[3rem] p-8 border-2 transition-all duration-300 active:scale-[0.98] ${
-              plan.popular
-                ? "bg-slate-900 border-primary shadow-2xl shadow-primary/20 text-white"
-                : "bg-white border-slate-200 text-slate-900"
-            }`}
+            className={`relative rounded-[2rem] p-6 border transition-all duration-300 ${plan.bestValue
+                ? "bg-white border-blue-500 shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/50"
+                : "bg-white border-slate-200 shadow-sm hover:shadow-md"
+              }`}
           >
-            {plan.popular && (
-              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] px-6 py-2 rounded-full shadow-xl">
-                Most Popular
+            {plan.bestValue && (
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full shadow-lg">
+                Best Value
               </div>
             )}
 
-            <div className="flex justify-between items-start mb-8">
-              <div>
-                <h3
-                  className={`text-2xl font-black tracking-tight ${plan.popular ? "text-white" : "text-slate-900"}`}
-                >
-                  {plan.name}
-                </h3>
-                <div className="flex items-baseline gap-1 mt-2">
-                  <span className="text-4xl font-black">{plan.price}</span>
-                  <span className={`text-sm font-black uppercase tracking-widest opacity-40`}>
-                    /month
-                  </span>
-                </div>
-              </div>
-              <div
-                className={`p-4 rounded-3xl ${plan.popular ? "bg-primary/20 text-primary-light" : "bg-primary/10 text-primary"}`}
-              >
+            <div className="flex justify-between items-start mb-4">
+              <div className={`p-3 rounded-2xl ${plan.bestValue ? "bg-blue-50" : "bg-slate-50"
+                }`}>
                 {plan.icon}
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-black text-slate-900 block">{plan.price}</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{plan.duration}</span>
               </div>
             </div>
 
-            <div className="space-y-5 mb-10">
+            <h3 className="text-lg font-black text-slate-900 mb-2 leading-tight">
+              {plan.name}
+            </h3>
+            <p className={`text-xs font-bold mb-6 leading-relaxed ${plan.bestValue ? "text-blue-600" : "text-slate-500"
+              }`}>
+              {plan.tagline}
+            </p>
+
+            <div className="space-y-3 mb-8">
               {plan.features.map((feature, idx) => (
-                <div key={idx} className="flex items-center gap-4">
-                  <div
-                    className={`shrink-0 size-6 rounded-full flex items-center justify-center ${plan.popular ? "bg-primary/20 text-primary-light" : "bg-primary/10 text-primary"}`}
-                  >
-                    <Check className="size-3.5 stroke-[3]" />
+                <div key={idx} className="flex items-start gap-3">
+                  <div className="shrink-0 mt-0.5">
+                    <CheckCircle className={`size-3.5 ${plan.bestValue ? "text-blue-500" : "text-green-500"
+                      }`} />
                   </div>
-                  <span className="text-sm font-black tracking-wide opacity-80">{feature}</span>
+                  <span className="text-xs font-medium text-slate-600 leading-tight">{feature}</span>
                 </div>
               ))}
             </div>
 
             <button
-              onClick={() => {
-                // TODO: Implement subscription purchase API
-                alert(`Successfully upgraded to ${plan.name} plan!`);
-              }}
-              className={`w-full py-5 rounded-[2rem] text-sm font-black uppercase tracking-[0.2em] transition-all active:scale-90 shadow-xl ${
-                activePlanId === plan.id
-                  ? "bg-green-500 text-white shadow-green-500/20"
-                  : plan.popular
-                    ? "bg-white text-slate-900 shadow-white/10"
-                    : "bg-primary text-white shadow-primary/20"
-              }`}
+              onClick={() => handlePurchase(plan)}
+              className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-[0.1em] transition-all active:scale-95 shadow-lg ${activePlanId === plan.id
+                  ? "bg-green-500 text-white shadow-green-500/20 cursor-default"
+                  : plan.bestValue
+                    ? "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-600/20"
+                    : "bg-slate-900 text-white hover:bg-slate-800 shadow-slate-900/10"
+                }`}
+              disabled={activePlanId === plan.id}
             >
-              {activePlanId === plan.id ? "Current Plan" : "Upgrade Now"}
+              {activePlanId === plan.id ? "Active Certificate" : "Get Certificate"}
             </button>
           </div>
         ))}
-      </div>
-
-      {/* Trust Badge */}
-      <div className="flex flex-col items-center gap-4 py-6 px-8 rounded-[2rem] bg-slate-100 border border-slate-200 text-center">
-        <div className="flex -space-x-3">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="size-10 rounded-full border-4 border-slate-100 overflow-hidden bg-slate-200"
-            >
-              <img
-                src={`https://i.pravatar.cc/150?u=${i}`}
-                alt="user"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ))}
-          <div className="size-10 rounded-full border-4 border-slate-100 bg-primary flex items-center justify-center text-[10px] font-black text-white">
-            +2k
-          </div>
-        </div>
-        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-          Joined by <span className="text-slate-900 font-black">2,400+</span>{" "}
-          professionals this month
-        </p>
       </div>
     </div>
   );

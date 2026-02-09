@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { PlusSquare, Bell, Home, Video, CreditCard, HelpCircle } from "lucide-react";
+import { PlusSquare, Bell, Home, TrendingUp, CreditCard, HelpCircle } from "lucide-react";
 import { NotificationDropdown } from "../components/NotificationDropdown";
 import { ProfileDropdown } from "@/components/ProfileDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -124,25 +124,25 @@ const EmployerLayout = () => {
           </Link>
 
           <Link
-            to={isAuthenticated ? "/employer/interviews" : "/login/employer"}
-            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/interviews") ? "text-primary" : "text-slate-400"
+            to={isAuthenticated ? "/employer/promotions" : "/login/employer"}
+            className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/promotions") ? "text-primary" : "text-slate-400"
               }`}
           >
             <div
-              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/interviews")
+              className={`p-2.5 rounded-2xl transition-all duration-200 ${isActive("/employer/promotions")
                 ? "bg-primary/10 scale-110 shadow-lg shadow-primary/5"
                 : "bg-transparent"
                 }`}
             >
-              <Video
-                className={`h-6 w-6 ${isActive("/employer/interviews") ? "fill-primary/20" : ""}`}
+              <TrendingUp
+                className={`h-6 w-6 ${isActive("/employer/promotions") ? "fill-primary/20" : ""}`}
               />
             </div>
             <span
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/interviews") ? "opacity-100" : "opacity-40"
+              className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/promotions") ? "opacity-100" : "opacity-40"
                 }`}
             >
-              Interview
+              Promote
             </span>
           </Link>
 
@@ -165,7 +165,7 @@ const EmployerLayout = () => {
               className={`text-[10px] font-black uppercase tracking-[0.2em] ${isActive("/employer/subscription") ? "opacity-100" : "opacity-40"
                 }`}
             >
-              Payment
+              Subscription
             </span>
           </Link>
 

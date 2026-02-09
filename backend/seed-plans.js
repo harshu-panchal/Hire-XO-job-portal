@@ -21,27 +21,55 @@ const SubscriptionPlan = mongoose.model('SubscriptionPlan', SubscriptionPlanSche
 
 const plans = [
     {
-        name: 'Basic Plan',
+        name: 'Employer Verification',
         price: 99,
-        durationDays: 30,
-        description: 'Basic plan for individuals',
-        features: ['Post up to 5 jobs', 'View applicants'],
-        isActive: true
-    },
-    {
-        name: 'Pro Plan',
-        price: 299,
-        durationDays: 90,
-        description: 'Professional plan for companies',
-        features: ['Unlimited job posts', 'Priority support', 'Resume search'],
-        isActive: true
-    },
-    {
-        name: 'Enterprise Plan',
-        price: 999,
         durationDays: 365,
-        description: 'Enterprise plan for large organizations',
-        features: ['All Pro features', 'Dedicated account manager', 'API access'],
+        description: 'Get verified and build trust',
+        features: [
+            'Get certificate & verified badge',
+            'Build trust for employees & resources',
+            'Displayed to all users'
+        ],
+        isActive: true
+    },
+    {
+        name: 'Only Employees',
+        price: 499,
+        durationDays: 30,
+        description: 'Essential hiring tools',
+        features: [
+            'Post jobs unlimited',
+            'Browse employees',
+            '3 Free contacts',
+            'Resources access' // Will be handled in frontend as crossed out
+        ],
+        isActive: true
+    },
+    {
+        name: 'Employees + Resources - Unlimited',
+        price: 999,
+        durationDays: 30,
+        description: 'Most Popular Choice',
+        features: [
+            'All resources unlimited',
+            'Employee contacts unlimited',
+            'Tender apply unlimited',
+            'Investor connect limited'
+        ],
+        isActive: true
+    },
+    {
+        name: 'Employees + Resources - Premium',
+        price: 2499,
+        durationDays: 30,
+        description: 'Best Value Plan',
+        features: [
+            'Everything unlimited',
+            'Featured badge',
+            'Priority support',
+            'Direct WhatsApp / Call',
+            'Tender & investor priority apply'
+        ],
         isActive: true
     }
 ];
