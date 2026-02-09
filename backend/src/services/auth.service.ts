@@ -52,9 +52,10 @@ export class AuthService {
             } else if (role === 'recruiter' || role === 'employer') {
                 profile = await Recruiter.create({
                     userId: newUser._id,
-                    company: profileData.company,
+                    company: profileData.company || profileData.companyName, // Handle both
                     companyLogo: profileData.companyLogo?.name || profileData.companyLogo,
                     experience: String(profileData.experience),
+                    username: profileData.username,
                 });
             } else if (role === 'resource') {
                 profile = await ResourceProfile.create({

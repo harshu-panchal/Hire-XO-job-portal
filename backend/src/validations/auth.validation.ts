@@ -5,10 +5,15 @@ export const registerSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(6).max(100).required(),
     role: Joi.string().valid('employee', 'employer', 'resource', 'admin').default('employee'),
-    // Optional fields that might be sent during registration
+    // Updated fields to match frontend
+    username: Joi.string().optional(),
+    phoneNumber: Joi.string().optional(),
+    company: Joi.string().optional(),
+    experience: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+    // Keep these for backward compatibility if needed, or remove if strictly cleaning up
     phone: Joi.string().optional(),
     companyName: Joi.string().optional()
-});
+}).unknown(true);
 
 export const loginSchema = Joi.object({
     email: Joi.string().email().required(),
@@ -25,4 +30,4 @@ export const updateProfileSchema = Joi.object({
     skills: Joi.array().items(Joi.string()).optional(),
     experience: Joi.array().optional(),
     education: Joi.array().optional()
-}).unknown(true); // Allow other fields that might be in the profile
+}).unknown(true);

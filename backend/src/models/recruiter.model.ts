@@ -5,6 +5,7 @@ export interface IRecruiter extends Document {
     company: string;
     companyLogo?: string;
     experience: string;
+    username?: string;
 }
 
 const RecruiterSchema: Schema = new Schema({
@@ -12,6 +13,7 @@ const RecruiterSchema: Schema = new Schema({
     company: { type: String, required: true },
     companyLogo: { type: String },
     experience: { type: String },
+    username: { type: String },
 }, { timestamps: true });
 
 export default mongoose.model<IRecruiter>('Recruiter', RecruiterSchema);
