@@ -67,9 +67,10 @@ const PostEquipment = () => {
       const payload = {
         ...formData,
         category: "Equipments" as any,
-        equipmentTypes: [formData.category], // Store sub-category
+        equipmentType: formData.category,
+        equipmentTypes: [formData.category],
         images: imageUrls,
-        postedAt: new Date(),
+        postedAt: new Date().toISOString(),
       };
 
       await resourceService.create("equipments", payload);

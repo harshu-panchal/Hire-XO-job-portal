@@ -1,6 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config(); // Load .env FIRST before any other imports
 
+if (!process.env.JWT_SECRET) {
+    console.error('FATAL ERROR: JWT_SECRET is not defined.');
+    process.exit(1);
+}
+
 import app from './app';
 import { connectDB } from './config/database';
 import { seedPlans } from './utils/seed';

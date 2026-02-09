@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import authRoutes from './routes/auth.routes';
@@ -25,6 +26,7 @@ import notificationRoutes from './routes/notification.routes';
 import postRoutes from './routes/post.routes';
 import interviewRoutes from './routes/interview.routes';
 import promotionRoutes from './routes/promotion.routes';
+import walletRoutes from './routes/wallet.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 
@@ -34,12 +36,14 @@ const app = express();
 // Security Middleware
 app.use(helmet());
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://hire-xo-job-portal.vercel.app', 'https://hire-xo-job-portal.onrender.com'], // Add your Vercel domain here
+    // origin: https://hire-xo-job-portal.vercel.app/
+    //  process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5173'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
+app.use(mongoSanitize());
 
 // Rate Limiting
 const limiter = rateLimit({
@@ -75,6 +79,7 @@ app.use('/api/certificates', certificateRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/wallet', walletRoutes);
 
 // Serve static files from uploads directory
 

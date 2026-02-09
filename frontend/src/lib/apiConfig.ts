@@ -105,6 +105,7 @@ apiClient.interceptors.response.use(
 
 /**
  * Helper function to extract error message from API response
+ * Supports new standardized format: { message, errors: [{field, message}] }
  */
 export const getErrorMessage = (error: any): string => {
   if (error.response?.data?.message) {
@@ -114,6 +115,28 @@ export const getErrorMessage = (error: any): string => {
     return error.message;
   }
   return "An unexpected error occurred";
+};
+
+/**
+ * Helper function to extract field-level errors from API response
+ * Returns array of { field, message } objects for validation errors
+ * 
+ * Usage:
+ *   const fieldErrors = getFieldErrors(error);
+ *   fieldErrors.forEach(err => showErrorNearField(err.field, err.message));
+ */
+export const getFieldErrors = (error: any): Array<{ field: string; message: string }> => {
+  if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+    return error.response.data.errors;
+  }
+  return [];
+};
+
+/**
+ * Check if error has field-level validation errors
+ */
+export const hasFieldErrors = (error: any): boolean => {
+  return getFieldErrors(error).length > 0;
 };
 
 export default apiClient;

@@ -43,4 +43,7 @@ const InvestorSchema: Schema = new Schema({
     images: [{ type: String }],
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
+// Optimize resource queries by user
+InvestorSchema.index({ userId: 1, postedAt: -1 });
+
 export default mongoose.model<IInvestor>('Investor', InvestorSchema);

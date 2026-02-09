@@ -1,4 +1,6 @@
 import { csmController } from '../controllers/resource.controller';
 import { createResourceRouter } from './resource-router-factory';
 
-export default createResourceRouter(csmController);
+import { baseResourceSchema, updateResourceSchema } from '../validations/resource.validation';
+
+export default createResourceRouter(csmController, baseResourceSchema, updateResourceSchema);

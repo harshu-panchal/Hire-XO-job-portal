@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { EmployerSignupData } from "@/types";
+import { getErrorMessage } from "@/lib/apiConfig";
 
 const EmployerSignup = () => {
   const navigate = useNavigate();
@@ -55,15 +56,8 @@ const EmployerSignup = () => {
       return;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    if (!logoFile) {
-      setError("Company logo is required");
-      return;
-    }
+    // Email validation removed - backend handles it with Joi
+    // Logo is now optional - removed validation
 
     if (!formData.password || formData.password.length < 6) {
       setError("Password must be at least 6 characters");
@@ -89,8 +83,10 @@ const EmployerSignup = () => {
 
       await signup(signupData, "employer");
       navigate("/employer");
-    } catch (err) {
-      setError("Failed to create account. Please try again.");
+    } catch (err: any) {
+      // Use helper to get actual error message from backend
+      const errorMsg = getErrorMessage(err);
+      setError(errorMsg);
     }
   };
 

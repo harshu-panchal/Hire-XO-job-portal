@@ -43,4 +43,7 @@ const TenderSchema: Schema = new Schema({
     documents: [{ type: String }],
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
+// Optimize resource queries by user
+TenderSchema.index({ userId: 1, postedAt: -1 });
+
 export default mongoose.model<ITender>('Tender', TenderSchema);

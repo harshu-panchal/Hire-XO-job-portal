@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
+import { walletService, type Transaction } from "@/services/walletService";
+import { toast } from "sonner";
 import {
   ChevronLeft,
   Wallet,
@@ -15,29 +17,56 @@ const EmployerWallet = () => {
   const navigate = useNavigate();
   const { user, updateUser } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [walletData, setWalletData] = useState<{ balance: number; transactions: Transaction[] }>({
+    balance: user?.walletBalance || 0,
+    transactions: []
+  });
 
-  // Mock Transaction History
-  const transactions = [
-    { id: 1, type: "deduction", amount: 50, desc: "Job Posted: Senior React Dev", date: "2h ago" },
-    { id: 2, type: "deduction", amount: 50, desc: "Job Posted: UI/UX Designer", date: "1d ago" },
-    { id: 3, type: "topup", amount: 500, desc: "Wallet Top-up", date: "3d ago" },
-    { id: 4, type: "deduction", amount: 50, desc: "Job Posted: Frontend Lead", date: "5d ago" },
-  ];
+  useEffect(() => {
+    const fetchWallet = async () => {
+      try {
+        const data = await walletService.getWallet();
+        setWalletData(data);
+        // Sync auth store balance
+        if (user && data.balance !== user.walletBalance) {
+          updateUser({ walletBalance: data.balance });
+        }
+      } catch (error) {
+        console.error("Failed to fetch wallet", error);
+      }
+    };
+    fetchWallet();
+  }, []);
 
   const handleTopUp = async () => {
     setIsLoading(true);
-    // Simulate payment gateway
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Simulate payment gateway delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-    updateUser({
-      profile: {
-        ...user!.profile,
-        walletBalance: (user?.profile.walletBalance || 0) + 500,
-      },
-    });
+      const result = await walletService.topUp(500);
 
-    setIsLoading(false);
-    alert("₹500 added to your wallet successfully!");
+      setWalletData((prev) => ({
+        balance: result.balance,
+        transactions: [
+          result.transaction || {
+            _id: Date.now().toString(),
+            type: 'topup',
+            amount: 500,
+            description: 'Wallet Top-up',
+            createdAt: new Date().toISOString()
+          },
+          ...prev.transactions
+        ]
+      }));
+
+      updateUser({ walletBalance: result.balance });
+      toast.success("₹500 added to your wallet successfully!");
+    } catch (error: any) {
+      toast.error(error.message || "Top-up failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -66,7 +95,7 @@ const EmployerWallet = () => {
               Available Balance
             </p>
             <h1 className="text-5xl font-black tabular-nums">
-              ₹{user?.profile.walletBalance || 0}
+              ₹{walletData.balance}
             </h1>
           </div>
 
@@ -88,14 +117,22 @@ const EmployerWallet = () => {
             <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Recent Transactions
             </h3>
+            <button
+              onClick={() => navigate('/employer/wallet/history')}
+              className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline flex items-center gap-1"
+            >
+              View All <ChevronLeft className="size-3 rotate-180" />
+            </button>
+          </div>
+          <div className="hidden">
             <Clock className="size-4 text-slate-300" />
           </div>
 
           <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
-            {transactions.map((tx, i) => (
+            {walletData.transactions.map((tx: Transaction, i: number) => (
               <div
-                key={tx.id}
-                className={`p-5 flex items-center justify-between ${i !== transactions.length - 1 ? "border-b border-slate-100" : ""}`}
+                key={tx._id}
+                className={`p-5 flex items-center justify-between ${i !== walletData.transactions.length - 1 ? "border-b border-slate-100" : ""}`}
               >
                 <div className="flex items-center gap-4">
                   <div
@@ -108,9 +145,9 @@ const EmployerWallet = () => {
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-black tracking-tight">{tx.desc}</p>
+                    <p className="text-sm font-black tracking-tight">{tx.description}</p>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                      {tx.date}
+                      {new Date(tx.createdAt).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -123,6 +160,11 @@ const EmployerWallet = () => {
                 </div>
               </div>
             ))}
+            {walletData.transactions.length === 0 && (
+              <div className="p-10 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">
+                No transactions yet
+              </div>
+            )}
           </div>
         </div>
 

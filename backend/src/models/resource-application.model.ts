@@ -8,6 +8,7 @@ export interface IResourceApplication extends Document {
     bidAmount?: number;
     coverLetter?: string;
     message?: string; // Kept for backward compatibility
+    proposalDocuments?: string[];
     appliedAt: Date;
 }
 
@@ -23,9 +24,11 @@ const ResourceApplicationSchema: Schema = new Schema({
     bidAmount: { type: Number },
     coverLetter: { type: String },
     message: { type: String },
+    proposalDocuments: [{ type: String }],
 }, { timestamps: { createdAt: 'appliedAt', updatedAt: 'updatedAt' } });
 
 // Prevent duplicate applications
 ResourceApplicationSchema.index({ applicantId: 1, resourceId: 1, resourceType: 1 }, { unique: true });
+ResourceApplicationSchema.index({ resourceId: 1, resourceType: 1 }); // Optimize queries by resource
 
 export default mongoose.model<IResourceApplication>('ResourceApplication', ResourceApplicationSchema);

@@ -70,10 +70,10 @@ export const applicationService = {
    */
   async getMyApplications(): Promise<{ jobs: Application[]; resources: Application[] }> {
     try {
-      const response = await apiClient.get<{ jobs: any[]; resources: any[] }>(
+      const response = await apiClient.get<{ success: boolean; data: { jobs: any[]; resources: any[] } }>(
         "/applications/my-applications"
       );
-      const { jobs = [], resources = [] } = response.data || {};
+      const { jobs = [], resources = [] } = response.data.data || {};
 
       return {
         jobs: jobs.map((app: any) => ({
@@ -95,10 +95,10 @@ export const applicationService = {
    */
   async getJobApplications(jobId: string): Promise<Application[]> {
     try {
-      const response = await apiClient.get<Application[]>(
+      const response = await apiClient.get<{ success: boolean; data: Application[] }>(
         `/applications/jobs/${jobId}/applications`
       );
-      const apps = response.data || [];
+      const apps = response.data.data || [];
       return apps.map((app: any) => ({
         ...app,
         id: app.id || app._id,
@@ -113,8 +113,8 @@ export const applicationService = {
    */
   async getReceivedApplications(): Promise<Application[]> {
     try {
-      const response = await apiClient.get<Application[]>("/applications/received");
-      const apps = response.data || [];
+      const response = await apiClient.get<{ success: boolean; data: Application[] }>("/applications/received");
+      const apps = response.data.data || [];
       return apps.map((app: any) => ({
         ...app,
         id: app.id || app._id,
@@ -129,10 +129,10 @@ export const applicationService = {
    */
   async getResourceApplications(resourceType: string, resourceId: string): Promise<Application[]> {
     try {
-      const response = await apiClient.get<Application[]>(
+      const response = await apiClient.get<{ success: boolean; data: Application[] }>(
         `/applications/resources/${resourceType}/${resourceId}/applications`
       );
-      const apps = response.data || [];
+      const apps = response.data.data || [];
       return apps.map((app: any) => ({
         ...app,
         id: app.id || app._id,
@@ -147,10 +147,10 @@ export const applicationService = {
    */
   async getReceivedResourceApplications(category: string): Promise<Application[]> {
     try {
-      const response = await apiClient.get<Application[]>("/applications/resources/received", {
+      const response = await apiClient.get<{ success: boolean; data: Application[] }>("/applications/resources/received", {
         params: { category },
       });
-      const apps = response.data || [];
+      const apps = response.data.data || [];
       return apps.map((app: any) => ({
         ...app,
         id: app.id || app._id,

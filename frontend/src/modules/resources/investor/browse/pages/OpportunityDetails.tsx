@@ -76,9 +76,20 @@ const OpportunityDetails = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-pulse text-sm font-black uppercase tracking-widest text-slate-400">
-          Loading Details...
+      <div className="py-6 space-y-6">
+        <div className="h-4 w-32 bg-slate-100 rounded animate-pulse" />
+        <div className="bg-white border border-slate-200 rounded-[3rem] p-8 space-y-8">
+          <div className="flex gap-6">
+            <div className="size-20 rounded-3xl bg-slate-100 animate-pulse" />
+            <div className="space-y-3 flex-1">
+              <div className="h-4 w-24 bg-slate-100 rounded animate-pulse" />
+              <div className="h-8 w-3/4 bg-slate-100 rounded animate-pulse" />
+              <div className="flex gap-2">
+                <div className="h-6 w-20 bg-slate-100 rounded-full animate-pulse" />
+                <div className="h-6 w-24 bg-slate-100 rounded-full animate-pulse" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -254,8 +265,8 @@ const OpportunityDetails = () => {
               onClick={handleExpressInterest}
               disabled={isExpressing || hasExpressed}
               className={`w-full py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg ${hasExpressed
-                  ? "bg-emerald-600 text-white shadow-emerald-500/20"
-                  : "bg-violet-600 text-white shadow-violet-500/20"
+                ? "bg-emerald-600 text-white shadow-emerald-500/20"
+                : "bg-violet-600 text-white shadow-violet-500/20"
                 } disabled:opacity-80`}
             >
               {isExpressing

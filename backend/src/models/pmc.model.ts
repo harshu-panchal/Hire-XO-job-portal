@@ -43,4 +43,7 @@ const PMCSchema: Schema = new Schema({
     images: [{ type: String }],
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
+// Optimize resource queries by user
+PMCSchema.index({ userId: 1, postedAt: -1 });
+
 export default mongoose.model<IPMC>('PMC', PMCSchema);

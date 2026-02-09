@@ -34,14 +34,8 @@ const EmployerPromotions = () => {
                 setPromotions(data.promotions);
 
                 // Fetch Posts (Filter by user)
-                const allPosts = await postService.getAllPosts();
-                const userPosts = allPosts.filter(p => {
-                    // Robust check for userId (string or object)
-                    const pUserId = typeof p.userId === 'string'
-                        ? p.userId
-                        : (p.userId as any)?._id;
-                    return pUserId === user.id;
-                });
+                const { data: postsData } = await postService.getAllPosts(1, 100);
+                const userPosts = postsData.filter((p: any) => p.userId?._id === user?.id);
                 setMyPosts(userPosts);
 
                 // Fetch Jobs

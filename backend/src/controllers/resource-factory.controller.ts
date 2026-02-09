@@ -4,19 +4,21 @@ import { Model, Document } from 'mongoose';
 export class ResourceFactoryController<T extends Document> {
     private model: Model<T>;
     private resourceName: string;
+    private fileFields: string[];
 
-    constructor(model: Model<T>, resourceName: string) {
+    constructor(model: Model<T>, resourceName: string, fileFields: string[] = []) {
         this.model = model;
         this.resourceName = resourceName;
+        this.fileFields = fileFields;
     }
 
-    public create = async (req: Request, res: Response): Promise<void> => {
+    public create = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             // Assume user is attached to req by auth middleware
             const userId = (req as any).user?.id || req.body.userId;
 
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized: User ID missing' });
+                res.status(401).json({ success: false, message: 'Unauthorized: User ID missing' });
                 return;
             }
 
@@ -31,14 +33,13 @@ export class ResourceFactoryController<T extends Document> {
                 postedAt: new Date()
             });
 
-            res.status(201).json({ message: `${this.resourceName} created successfully`, data: newItem });
+            res.status(201).json({ success: true, message: `${this.resourceName} created successfully`, data: newItem });
         } catch (error: any) {
-            console.error(`Error creating ${this.resourceName}:`, error);
-            res.status(400).json({ message: `Failed to create ${this.resourceName}`, error: error.message || error });
+            next(error);
         }
     };
 
-    public getAll = async (req: Request, res: Response): Promise<void> => {
+    public getAll = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             // Build query filters
             const query: any = {};
@@ -101,6 +102,7 @@ export class ResourceFactoryController<T extends Document> {
             const total = await this.model.countDocuments(query);
 
             res.status(200).json({
+                success: true,
                 data: items,
                 pagination: {
                     page,
@@ -110,53 +112,58 @@ export class ResourceFactoryController<T extends Document> {
                 }
             });
         } catch (error: any) {
-            res.status(500).json({ message: `Failed to fetch ${this.resourceName}s`, error: error.message });
+            next(error);
         }
     };
 
-    public getById = async (req: Request, res: Response): Promise<void> => {
+    public getById = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const item = await this.model.findById(req.params.id);
             if (!item) {
-                res.status(404).json({ message: `${this.resourceName} not found` });
+                res.status(404).json({ success: false, message: `${this.resourceName} not found` });
                 return;
             }
-            res.status(200).json(item);
+            res.status(200).json({ success: true, data: item });
         } catch (error: any) {
-            // Handle invalid MongoDB ObjectId format
-            if (error.name === 'CastError') {
-                res.status(400).json({ message: 'Invalid ID format' });
-                return;
-            }
-            res.status(500).json({ message: `Failed to fetch ${this.resourceName}`, error: error.message });
+            next(error);
         }
     };
 
-    public getMyListings = async (req: Request, res: Response): Promise<void> => {
+    public getMyListings = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = (req as any).user?.id || req.query.userId;
             if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+                res.status(401).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
-            const items = await this.model.find({ userId }).sort({ createdAt: -1 });
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 20;
+            const skip = (page - 1) * limit;
+
+            const items = await this.model.find({ userId })
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit);
+
+            const total = await this.model.countDocuments({ userId });
 
             res.status(200).json({
+                success: true,
                 data: items,
                 pagination: {
-                    page: 1,
-                    limit: items.length,
-                    total: items.length,
-                    pages: 1
+                    page,
+                    limit,
+                    total,
+                    pages: Math.ceil(total / limit)
                 }
             });
         } catch (error: any) {
-            res.status(500).json({ message: `Failed to fetch your ${this.resourceName}s`, error: error.message });
+            next(error);
         }
     };
 
-    public update = async (req: Request, res: Response): Promise<void> => {
+    public update = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = (req as any).user?.id;
 
@@ -164,13 +171,13 @@ export class ResourceFactoryController<T extends Document> {
             const item = await this.model.findById(req.params.id);
 
             if (!item) {
-                res.status(404).json({ message: `${this.resourceName} not found` });
+                res.status(404).json({ success: false, message: `${this.resourceName} not found` });
                 return;
             }
 
             // Check ownership
             if (item.get('userId').toString() !== userId) {
-                res.status(403).json({ message: 'You can only update your own listings' });
+                res.status(403).json({ success: false, message: 'You can only update your own listings' });
                 return;
             }
 
@@ -180,13 +187,13 @@ export class ResourceFactoryController<T extends Document> {
                 { new: true, runValidators: true }
             );
 
-            res.status(200).json({ message: `${this.resourceName} updated successfully`, data: updatedItem });
+            res.status(200).json({ success: true, message: `${this.resourceName} updated successfully`, data: updatedItem });
         } catch (error: any) {
-            res.status(400).json({ message: `Failed to update ${this.resourceName}`, error: error.message });
+            next(error);
         }
     };
 
-    public delete = async (req: Request, res: Response): Promise<void> => {
+    public delete = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = (req as any).user?.id;
 
@@ -194,20 +201,47 @@ export class ResourceFactoryController<T extends Document> {
             const item = await this.model.findById(req.params.id);
 
             if (!item) {
-                res.status(404).json({ message: `${this.resourceName} not found` });
+                res.status(404).json({ success: false, message: `${this.resourceName} not found` });
                 return;
             }
 
             // Check ownership
             if (item.get('userId').toString() !== userId) {
-                res.status(403).json({ message: 'You can only delete your own listings' });
+                res.status(403).json({ success: false, message: 'You can only delete your own listings' });
                 return;
             }
 
+            // Cleanup associated files from Cloudinary
+            if (this.fileFields && this.fileFields.length > 0) {
+                const { CloudinaryUtil } = require('../utils/cloudinary');
+
+                for (const field of this.fileFields) {
+                    const value = item.get(field);
+
+                    if (Array.isArray(value)) {
+                        // Handle array of URLs (e.g. images)
+                        for (const url of value) {
+                            if (typeof url === 'string') {
+                                const publicId = CloudinaryUtil.extractPublicIdFromUrl(url);
+                                if (publicId) {
+                                    await CloudinaryUtil.deleteFile(publicId);
+                                }
+                            }
+                        }
+                    } else if (typeof value === 'string') {
+                        // Handle single URL
+                        const publicId = CloudinaryUtil.extractPublicIdFromUrl(value);
+                        if (publicId) {
+                            await CloudinaryUtil.deleteFile(publicId);
+                        }
+                    }
+                }
+            }
+
             await this.model.findByIdAndDelete(req.params.id);
-            res.status(200).json({ message: `${this.resourceName} deleted successfully` });
+            res.status(200).json({ success: true, message: `${this.resourceName} deleted successfully` });
         } catch (error: any) {
-            res.status(500).json({ message: `Failed to delete ${this.resourceName}`, error: error.message });
+            next(error);
         }
     };
 }

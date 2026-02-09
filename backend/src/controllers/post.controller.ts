@@ -40,9 +40,17 @@ export class PostController {
 
     public getAll = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 20;
+            const skip = (page - 1) * limit;
+
             const posts = await Post.find()
                 .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
                 .populate('userId', 'name role profilePhoto email phoneNumber subscriptionExpiry profile');
+
+            const total = await Post.countDocuments();
 
             // Business Logic: If the requester is an employer, 
             // check if they have an active subscription before showing contact info
@@ -59,8 +67,21 @@ export class PostController {
             }
 
             // Map posts to scrub info if necessary
-            const scrubbedPosts = posts.map(post => {
+            const scrubbedPosts = posts.map((post: any) => {
                 const postObj = post.toObject();
+                // Check if author exists (handle orphan posts)
+                if (!postObj.userId) {
+                    return {
+                        ...postObj,
+                        userId: {
+                            _id: '000000000000000000000000', // Dummy 24-char hex ID
+                            name: 'Deleted User',
+                            role: 'unknown',
+                            profilePhoto: null
+                        }
+                    };
+                }
+
                 const author = postObj.userId as any;
 
                 if (!author) return postObj;
@@ -92,7 +113,15 @@ export class PostController {
                 return postObj;
             });
 
-            res.status(200).json({ data: scrubbedPosts });
+            res.status(200).json({
+                data: scrubbedPosts,
+                pagination: {
+                    total,
+                    page,
+                    limit,
+                    pages: Math.ceil(total / limit)
+                }
+            });
         } catch (error: any) {
             console.error('Error fetching posts:', error);
             res.status(500).json({ message: 'Failed to fetch posts', error: error.message });

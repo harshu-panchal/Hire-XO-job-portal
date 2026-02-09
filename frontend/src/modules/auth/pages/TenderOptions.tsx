@@ -127,8 +127,19 @@ const TenderOptions = () => {
                 <strong>Note:</strong> Select the module you want to access
               </span>
             ) : (
-              <span>
-                <strong>Note:</strong> Select the option that best matches your tender needs
+              <span className="flex flex-col gap-1">
+                <span>
+                  <strong>Note:</strong> Select the option that best matches your tender needs
+                </span>
+                <span className="mt-1">
+                  Already have an account?{" "}
+                  <button
+                    onClick={() => navigate("/login/resource")}
+                    className="font-bold underline cursor-pointer hover:text-violet-700"
+                  >
+                    Log In
+                  </button>
+                </span>
               </span>
             )}
           </p>

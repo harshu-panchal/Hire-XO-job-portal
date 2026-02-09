@@ -41,4 +41,7 @@ const EquipmentSchema: Schema = new Schema({
     images: [{ type: String }],
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
+// Optimize resource queries by user
+EquipmentSchema.index({ userId: 1, postedAt: -1 });
+
 export default mongoose.model<IEquipment>('Equipment', EquipmentSchema);

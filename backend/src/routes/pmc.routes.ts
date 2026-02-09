@@ -1,4 +1,6 @@
 import { pmcController } from '../controllers/resource.controller';
 import { createResourceRouter } from './resource-router-factory';
 
-export default createResourceRouter(pmcController);
+import { baseResourceSchema, updateResourceSchema } from '../validations/resource.validation';
+
+export default createResourceRouter(pmcController, baseResourceSchema, updateResourceSchema);

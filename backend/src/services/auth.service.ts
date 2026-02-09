@@ -4,6 +4,7 @@ import User, { IUser } from '../models/user.model';
 import JobSeeker from '../models/job-seeker.model';
 import Recruiter from '../models/recruiter.model';
 import ResourceProfile from '../models/resource-profile.model';
+import { BadRequestError, UnauthorizedError, NotFoundError, ConflictError } from '../utils/errors';
 
 export class AuthService {
     private secretKey = process.env.JWT_SECRET || 'secret';
@@ -13,119 +14,129 @@ export class AuthService {
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            throw new Error('User already exists');
+            throw new ConflictError('An account with this email already exists');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = await User.create({
-            name: userData.name,
-            email,
-            password: hashedPassword,
-            role,
-            phoneNumber: userData.phoneNumber,
-            profilePhoto: userData.profilePhoto?.name || userData.profilePhoto, // Handle File object or string
-        });
-
-        let profile;
-
-        if (role === 'job-seeker' || role === 'employee') {
-            // Handle potentially string inputs from frontend (especially in signup FormData)
-            const education = typeof profileData.education === 'string'
-                ? [{ degree: profileData.education }]
-                : profileData.education;
-
-            const experience = typeof profileData.experience === 'string' || typeof profileData.experience === 'number'
-                ? [{ role: String(profileData.experience) + ' years' }]
-                : profileData.experience;
-
-            profile = await JobSeeker.create({
-                userId: newUser._id,
-                education,
-                age: profileData.age,
-                experience,
-                interestedCompanies: profileData.interestedCompanies,
-                cv: profileData.cv?.name || profileData.cv,
+        let newUser: any; // Using any to avoid complex Mongoose document type issues in try-catch scope
+        try {
+            newUser = await User.create({
+                name: userData.name,
+                email,
+                password: hashedPassword,
+                role,
+                phoneNumber: userData.phoneNumber,
+                profilePhoto: userData.profilePhoto?.name || userData.profilePhoto, // Handle File object or string
             });
-        } else if (role === 'recruiter' || role === 'employer') {
-            profile = await Recruiter.create({
-                userId: newUser._id,
-                company: profileData.company,
-                companyLogo: profileData.companyLogo?.name || profileData.companyLogo,
-                experience: String(profileData.experience),
-            });
-        } else if (role === 'resource') {
-            profile = await ResourceProfile.create({
-                userId: newUser._id,
-                organizationName: profileData.organizationName || profileData.company, // Frontend sends organizationName or company depending on exact form
-                category: profileData.category,
-                investorType: profileData.investorType,
-                tenderType: profileData.tenderType,
-                equipmentType: profileData.equipmentType,
-                machineryType: profileData.machineryType,
-                pmcType: profileData.pmcType,
-                csmType: profileData.csmType,
-                logisticsType: profileData.logisticsType,
-                vehicleType: profileData.vehicleType,
-                // Spread other potential fields
-                ...profileData,
-            });
-        }
 
-        // Generate JWT token
-        const token = jwt.sign(
-            { id: newUser._id.toString(), role: newUser.role, email: newUser.email },
-            this.secretKey,
-            { expiresIn: '24h' as any }
-        );
+            let profile;
 
-        // Construct the unified response
-        const userResponse = newUser.toObject();
-        delete userResponse.password;
+            if (role === 'job-seeker' || role === 'employee') {
+                // Handle potentially string inputs from frontend (especially in signup FormData)
+                const education = typeof profileData.education === 'string'
+                    ? [{ degree: profileData.education }]
+                    : profileData.education;
 
-        return {
-            token,
-            user: {
-                ...userResponse,
-                id: newUser._id,
-                // Flattened profile fields
-                ...(profile?.toObject() || {}),
-                // Helper fields from user model
-                name: newUser.name,
-                email: newUser.email,
-                role: newUser.role,
-                // Preserved nested profile for backward compatibility
-                profile: {
-                    ...profile?.toObject(),
-                    id: profile?._id,
+                const experience = typeof profileData.experience === 'string' || typeof profileData.experience === 'number'
+                    ? [{ role: String(profileData.experience) + ' years' }]
+                    : profileData.experience;
+
+                profile = await JobSeeker.create({
+                    userId: newUser._id,
+                    education,
+                    age: profileData.age,
+                    experience,
+                    interestedCompanies: profileData.interestedCompanies,
+                    cv: profileData.cv?.name || profileData.cv,
+                });
+            } else if (role === 'recruiter' || role === 'employer') {
+                profile = await Recruiter.create({
+                    userId: newUser._id,
+                    company: profileData.company || profileData.companyName, // Handle both
+                    companyLogo: profileData.companyLogo?.name || profileData.companyLogo,
+                    experience: String(profileData.experience),
+                    username: profileData.username,
+                });
+            } else if (role === 'resource') {
+                profile = await ResourceProfile.create({
+                    userId: newUser._id,
+                    organizationName: profileData.organizationName || profileData.company, // Frontend sends organizationName or company depending on exact form
+                    category: profileData.category,
+                    investorType: profileData.investorType,
+                    tenderType: profileData.tenderType,
+                    equipmentType: profileData.equipmentType,
+                    machineryType: profileData.machineryType,
+                    pmcType: profileData.pmcType,
+                    csmType: profileData.csmType,
+                    logisticsType: profileData.logisticsType,
+                    vehicleType: profileData.vehicleType,
+                    // Spread other potential fields
+                    ...profileData,
+                });
+            }
+
+            // Generate JWT token
+            const token = jwt.sign(
+                { id: newUser._id.toString(), role: newUser.role, email: newUser.email },
+                this.secretKey,
+                { expiresIn: '24h' as any }
+            );
+
+            // Construct the unified response
+            const userResponse = newUser.toObject();
+            delete userResponse.password;
+
+            return {
+                token,
+                user: {
+                    ...userResponse,
+                    id: newUser._id,
+                    // Flattened profile fields
+                    ...(profile?.toObject() || {}),
+                    // Helper fields from user model
                     name: newUser.name,
                     email: newUser.email,
                     role: newUser.role,
+                    // Preserved nested profile for backward compatibility
+                    profile: {
+                        ...profile?.toObject(),
+                        id: profile?._id,
+                        name: newUser.name,
+                        email: newUser.email,
+                        role: newUser.role,
+                    }
                 }
+            };
+        } catch (error) {
+            // Rollback: Delete user if profile creation failed to prevent orphan records
+            if (newUser?._id) {
+                console.error(`[AuthService] Signup failed. Rolling back user creation for: ${email}`);
+                await User.findByIdAndDelete(newUser._id).catch(err =>
+                    console.error(`[AuthService] CRITICAL: Failed to rollback user deletion for ${newUser._id}:`, err)
+                );
             }
-        };
+            throw error;
+        }
 
     }
 
     public async login(credentials: any) {
         const { email, password } = credentials;
-        console.log(`[AuthService] Attempting login for: ${email}`);
+        // Check if user exists
+        const user = await User.findOne({ email }).select('+password');
 
-        const user = await User.findOne({ email });
         if (!user) {
-            console.log(`[AuthService] User not found: ${email}`);
-            throw new Error('Invalid credentials');
+            throw new UnauthorizedError('Invalid email or password');
         }
 
-        console.log(`[AuthService] User found: ${user._id}, Role: ${user.role}`);
-
+        // Check password
+        // Check password
         const isMatch = await bcrypt.compare(password, user.password as string);
-        if (!isMatch) {
-            console.log(`[AuthService] Password mismatch for: ${email}`);
-            throw new Error('Invalid credentials');
-        }
 
-        console.log(`[AuthService] Password matched. Generating token...`);
+        if (!isMatch) {
+            throw new UnauthorizedError('Invalid email or password');
+        }
 
         let profile;
         if (user.role === 'job-seeker' || user.role === 'employee') {
@@ -175,7 +186,7 @@ export class AuthService {
     public async getCurrentUser(userId: string) {
         const user = await User.findById(userId);
         if (!user) {
-            throw new Error('User not found');
+            throw new NotFoundError('User not found');
         }
 
         let profile;
@@ -270,7 +281,7 @@ export class AuthService {
 
         const isMatch = await bcrypt.compare(oldPassword, user.password as string);
         if (!isMatch) {
-            throw new Error('Current password is incorrect');
+            throw new UnauthorizedError('Current password is incorrect');
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -282,7 +293,7 @@ export class AuthService {
     public async forgotPassword(email: string) {
         const user = await User.findOne({ email });
         if (!user) {
-            throw new Error('User with this email does not exist');
+            throw new NotFoundError('User with this email does not exist');
         }
 
         // Generate reset token
@@ -314,7 +325,7 @@ export class AuthService {
         });
 
         if (!user) {
-            throw new Error('Password reset token is invalid or has expired');
+            throw new BadRequestError('Password reset token is invalid or has expired');
         }
 
         // Hash new password

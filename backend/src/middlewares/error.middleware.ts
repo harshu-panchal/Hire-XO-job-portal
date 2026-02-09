@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../utils/errors';
 
 /**
  * Global Error Handling Middleware
@@ -13,10 +14,32 @@ export const errorHandler = (
     let statusCode = err.statusCode || 500;
     let message = err.message || 'Internal Server Error';
 
+    // Handle custom AppError instances (BadRequestError, UnauthorizedError, etc.)
+    if (err instanceof AppError) {
+        statusCode = err.statusCode;
+        message = err.message;
+    }
+
     // Handle Mongoose Validation Error
     if (err.name === 'ValidationError') {
         statusCode = 400;
-        message = Object.values(err.errors).map((val: any) => val.message).join(', ');
+        message = 'Validation failed';
+
+        // Transform Mongoose validation errors to standard format
+        const errors = Object.keys(err.errors).map(field => ({
+            field,
+            message: err.errors[field].message
+        }));
+
+        // Log the error for developers
+        if (process.env.NODE_ENV !== 'test') {
+            console.error(`[Error] ${statusCode} - ${message}`);
+        }
+
+        return res.status(statusCode).json({
+            message,
+            errors
+        });
     }
 
     // Handle Mongoose CastError (Invalid ID)
@@ -44,9 +67,9 @@ export const errorHandler = (
         }
     }
 
+    // Return standardized error format
     res.status(statusCode).json({
-        success: false,
         message,
-        // stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        errors: [] // Empty array for non-validation errors
     });
 };

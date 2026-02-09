@@ -7,7 +7,8 @@ export class CertificateService {
         name: string,
         issueDate: Date,
         expiryDate: Date,
-        successRate: number
+        successRate: number,
+        documentUrl?: string
     ) {
         if (successRate < 0 || successRate > 100) {
             throw new Error('Success rate must be between 0 and 100');
@@ -25,7 +26,8 @@ export class CertificateService {
             issueDate,
             expiryDate,
             successRate,
-            status
+            status,
+            documentUrl
         });
 
         return certificate;

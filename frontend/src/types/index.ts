@@ -86,6 +86,7 @@ export interface User {
   username: string;
   role: UserRole;
   profile: UserProfile;
+  walletBalance?: number;
   createdAt: string;
   phoneNumber?: string;
   profilePhoto?: string; // Added to fix build
@@ -98,7 +99,7 @@ export interface EmployerSignupData {
   company: string;
   phoneNumber: string;
   email: string;
-  companyLogo: File;
+  companyLogo?: File | null;
   experience: number;
   password: string;
 }

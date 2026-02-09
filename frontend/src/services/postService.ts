@@ -22,12 +22,15 @@ export interface Post {
 }
 
 export const postService = {
-    async getAllPosts(): Promise<Post[]> {
+    async getAllPosts(page: number = 1, limit: number = 20): Promise<{ data: Post[]; pagination: any }> {
         try {
-            const response = await apiClient.get<{ data: Post[] }>("/posts");
-            return response.data.data;
+            const response = await apiClient.get('/posts', {
+                params: { page, limit }
+            });
+            return response.data;
         } catch (error) {
-            throw new Error(getErrorMessage(error));
+            console.error('Error fetching posts:', error);
+            throw error;
         }
     },
 

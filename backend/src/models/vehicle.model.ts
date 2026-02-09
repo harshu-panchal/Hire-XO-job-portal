@@ -41,4 +41,7 @@ const VehicleSchema: Schema = new Schema({
     images: [{ type: String }],
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
+// Optimize resource queries by user
+VehicleSchema.index({ userId: 1, postedAt: -1 });
+
 export default mongoose.model<IVehicle>('Vehicle', VehicleSchema);

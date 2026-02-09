@@ -24,12 +24,20 @@ export class CertificateController {
                 return;
             }
 
+            let documentUrl = '';
+            if (req.file) {
+                const { CloudinaryUtil } = require('../utils/cloudinary');
+                const result = await CloudinaryUtil.uploadFile(req.file.path, 'certificates');
+                documentUrl = result.url;
+            }
+
             const certificate = await this.certificateService.createCertificate(
                 userId,
                 name,
                 new Date(issueDate),
                 new Date(expiryDate),
-                successRate
+                Number(successRate),
+                documentUrl
             );
 
             res.status(201).json({

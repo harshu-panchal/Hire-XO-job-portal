@@ -128,9 +128,20 @@ const InvestorOptions = () => {
                 <strong>Note:</strong> Select the module you want to access
               </span>
             ) : (
-              <span>
-                <strong>Note:</strong> You'll need to create an account to access investment
-                features
+              <span className="flex flex-col gap-1">
+                <span>
+                  <strong>Note:</strong> You'll need to create an account to access investment
+                  features
+                </span>
+                <span className="mt-1">
+                  Already have an account?{" "}
+                  <button
+                    onClick={() => navigate("/login/resource")}
+                    className="font-bold underline cursor-pointer hover:text-amber-700"
+                  >
+                    Log In
+                  </button>
+                </span>
               </span>
             )}
           </p>

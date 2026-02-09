@@ -22,8 +22,8 @@ const Post = () => {
     const fetchPosts = async () => {
         try {
             setIsLoading(true);
-            const data = await postService.getAllPosts();
-            setPosts(data.filter(post => post.userId));
+            const { data: postsData } = await postService.getAllPosts();
+            setPosts(postsData.filter((post: any) => post.userId));
         } catch (error) {
             console.error("Failed to fetch posts:", error);
         } finally {

@@ -80,26 +80,46 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
     }
 };
 
-// Multer configuration
-export const upload = multer({
+// Multer configurations
+const limitsImage = { fileSize: 5 * 1024 * 1024 }; // 5MB for images
+const limitsDoc = { fileSize: 10 * 1024 * 1024 }; // 10MB for documents/mixed
+
+const uploadImage = multer({
     storage: storage,
     fileFilter: fileFilter,
-    limits: {
-        fileSize: 10 * 1024 * 1024 // 10MB limit (increased for documents)
-    }
+    limits: limitsImage
 });
 
-// Multiple file upload configurations
-export const uploadProfilePhoto = upload.single('profilePhoto');
-export const uploadCV = upload.single('cv');
-export const uploadCompanyLogo = upload.single('companyLogo');
-export const uploadCertificate = upload.single('certificate');
-export const uploadTenderDocument = upload.single('tender-document');
-export const uploadApplication = upload.fields([
+const uploadDoc = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: limitsDoc
+});
+
+// Export instances for specific use cases
+export const uploadProfilePhoto = uploadImage.single('profilePhoto');
+export const uploadCompanyLogo = uploadImage.single('companyLogo');
+export const uploadResourceImage = uploadImage.single('resource-image');
+export const uploadEquipmentImage = uploadImage.single('equipment-image');
+export const uploadMachineryImage = uploadImage.single('machinery-image');
+export const uploadVehicleImage = uploadImage.single('vehicle-image');
+export const uploadLogisticsImage = uploadImage.single('logistics-image');
+export const uploadPMCImage = uploadImage.single('pmc-image');
+export const uploadCSMImage = uploadImage.single('csm-image');
+export const uploadInvestorImage = uploadImage.single('investor-image');
+
+// Documents and Mixed
+export const uploadCV = uploadDoc.single('cv');
+export const uploadCertificate = uploadDoc.single('certificate');
+export const uploadTenderDocument = uploadDoc.single('tender-document');
+export const uploadPostMedia = uploadDoc.single('file'); // Posts can be images or docs
+
+export const uploadApplication = uploadDoc.fields([
     { name: 'resume', maxCount: 1 },
     { name: 'additionalDocuments', maxCount: 5 }
 ]);
-export const uploadMultiple = upload.fields([
+
+export const uploadMultiple = uploadDoc.fields([
     { name: 'profilePhoto', maxCount: 1 },
     { name: 'cv', maxCount: 1 },
     { name: 'companyLogo', maxCount: 1 },
@@ -108,12 +128,3 @@ export const uploadMultiple = upload.fields([
     { name: 'resume', maxCount: 1 },
     { name: 'additionalDocuments', maxCount: 5 }
 ]);
-export const uploadPostMedia = upload.single('file');
-export const uploadResourceImage = upload.single('resource-image');
-export const uploadEquipmentImage = upload.single('equipment-image');
-export const uploadMachineryImage = upload.single('machinery-image');
-export const uploadVehicleImage = upload.single('vehicle-image');
-export const uploadLogisticsImage = upload.single('logistics-image');
-export const uploadPMCImage = upload.single('pmc-image');
-export const uploadCSMImage = upload.single('csm-image');
-export const uploadInvestorImage = upload.single('investor-image');

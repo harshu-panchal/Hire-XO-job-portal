@@ -82,6 +82,7 @@ export class ApplicationService {
             message?: string;
             bidAmount?: number;
             coverLetter?: string;
+            proposalDocuments?: string[];
         }
     ) {
         // Get the appropriate model
@@ -130,6 +131,7 @@ export class ApplicationService {
             message: data.message,
             bidAmount: data.bidAmount,
             coverLetter: data.coverLetter,
+            proposalDocuments: data.proposalDocuments,
             status: 'Pending'
         });
 
@@ -171,7 +173,7 @@ export class ApplicationService {
     }
 
     // Get applications for a specific job (for job owner)
-    public async getJobApplications(jobId: string, ownerId: string) {
+    public async getJobApplications(jobId: string, ownerId: string, page: number = 1, limit: number = 20) {
         // Check subscription status
         const isSubscribed = await this.checkUserSubscription(ownerId);
 
@@ -185,20 +187,35 @@ export class ApplicationService {
             throw new Error('You are not authorized to view these applications');
         }
 
+        const skip = (page - 1) * limit;
+
         const applications = await JobApplication.find({ jobId })
             .populate('applicantId', 'name email phoneNumber profilePhoto profile')
             .sort({ appliedAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .lean();
 
+        const total = await JobApplication.countDocuments({ jobId });
+
+        let data = applications;
         if (!isSubscribed) {
-            return applications.map(app => this.maskApplicationData(app));
+            data = applications.map(app => this.maskApplicationData(app));
         }
 
-        return applications;
+        return {
+            data,
+            pagination: {
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        };
     }
 
     // Get all applications received for jobs posted by the user (Recruiter Dashboard)
-    public async getReceivedApplications(userId: string) {
+    public async getReceivedApplications(userId: string, page: number = 1, limit: number = 20) {
         // Check subscription status
         const isSubscribed = await this.checkUserSubscription(userId);
 
@@ -206,22 +223,37 @@ export class ApplicationService {
         const jobs = await Job.find({ userId });
         const jobIds = jobs.map(job => job._id);
 
+        const skip = (page - 1) * limit;
+
         // Find applications for these jobs
         const applications = await JobApplication.find({ jobId: { $in: jobIds } })
             .populate('applicantId', 'name email phoneNumber profilePhoto profile')
             .populate('jobId', 'title')
             .sort({ appliedAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .lean();
 
+        const total = await JobApplication.countDocuments({ jobId: { $in: jobIds } });
+
+        let data = applications;
         if (!isSubscribed) {
-            return applications.map(app => this.maskApplicationData(app));
+            data = applications.map(app => this.maskApplicationData(app));
         }
 
-        return applications;
+        return {
+            data,
+            pagination: {
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        };
     }
 
     // Get all applications received for resources posted by the user
-    public async getReceivedResourceApplications(userId: string, category: string) {
+    public async getReceivedResourceApplications(userId: string, category: string, page: number = 1, limit: number = 20) {
         // Map category to model
         const modelMap: any = {
             'investor': Investor,
@@ -234,15 +266,7 @@ export class ApplicationService {
             'vehicles': Vehicle
         };
 
-        // Handle case sensitivity or mapping differences if any
-        // Assuming category matches keys (lowercased or capitalized properly)
-        // The ResourceProfile category is usually lowercase (e.g. "investor").
-        // The modelMap keys above are capitalized. Adjusting.
-
         const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
-        // Special case for plurals/singulars if needed. 
-        // In AuthController/Service, 'investor' matches schema.
-        // Let's assume the mapping needs to be robust.
 
         // Better map:
         const refinedMap: any = {
@@ -263,9 +287,15 @@ export class ApplicationService {
         const ResourceModel = refinedMap[category.toLowerCase()];
 
         if (!ResourceModel) {
-            // If no specific category logic or mixed, return empty or throw
-            // For now, return empty if category unknown
-            return [];
+            return {
+                data: [],
+                pagination: {
+                    page,
+                    limit,
+                    total: 0,
+                    pages: 0
+                }
+            };
         }
 
         // Find all resources posted by the user
@@ -275,22 +305,37 @@ export class ApplicationService {
         // Check subscription status
         const isSubscribed = await this.checkUserSubscription(userId);
 
+        const skip = (page - 1) * limit;
+
         // Find applications for these resources
         const applications = await ResourceApplication.find({ resourceId: { $in: resourceIds } })
             .populate('applicantId', 'name email phoneNumber profilePhoto profile')
             .populate('resourceId')
             .sort({ appliedAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .lean();
 
+        const total = await ResourceApplication.countDocuments({ resourceId: { $in: resourceIds } });
+
+        let data = applications;
         if (!isSubscribed) {
-            return applications.map(app => this.maskApplicationData(app));
+            data = applications.map(app => this.maskApplicationData(app));
         }
 
-        return applications;
+        return {
+            data,
+            pagination: {
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        };
     }
 
     // Get applications for a specific resource (for resource owner)
-    public async getResourceApplications(resourceId: string, resourceType: string, ownerId: string) {
+    public async getResourceApplications(resourceId: string, resourceType: string, ownerId: string, page: number = 1, limit: number = 20) {
         // Check subscription status
         const isSubscribed = await this.checkUserSubscription(ownerId);
 
@@ -320,16 +365,31 @@ export class ApplicationService {
             throw new Error('You are not authorized to view these applications');
         }
 
+        const skip = (page - 1) * limit;
+
         const applications = await ResourceApplication.find({ resourceId, resourceType })
             .populate('applicantId', 'name email phoneNumber profilePhoto profile')
             .sort({ appliedAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .lean();
 
+        const total = await ResourceApplication.countDocuments({ resourceId, resourceType });
+
+        let data = applications;
         if (!isSubscribed) {
-            return applications.map(app => this.maskApplicationData(app));
+            data = applications.map(app => this.maskApplicationData(app));
         }
 
-        return applications;
+        return {
+            data,
+            pagination: {
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        };
     }
 
     // Update application status

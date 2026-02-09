@@ -27,25 +27,23 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         const { notifications: oldNotifications } = get();
         set({ loading: true, error: null });
         try {
-            const data = await notificationService.getNotifications();
+            const response = await notificationService.getNotifications();
+            const notifications = response.data || [];
 
             // Check for new notifications to show toast
             const oldIds = new Set(oldNotifications.map(n => n._id));
-            const newUnread = data.filter(n => !n.read && !oldIds.has(n._id));
+            const newUnread = notifications.filter((n: Notification) => !n.read && !oldIds.has(n._id));
 
-            const { lastFetched } = get();
-            if (lastFetched > 0) {
-                newUnread.forEach(n => {
-                    toast(n.title, {
-                        description: n.message,
-                        duration: 5000,
-                    });
+            if (newUnread.length > 0) {
+                // Play sound or show toast
+                newUnread.forEach((n: Notification) => {
+                    // toast.info(n.message);
                 });
             }
 
             set({
-                notifications: data,
-                unreadCount: data.filter(n => !n.read).length,
+                notifications: notifications,
+                unreadCount: notifications.filter((n: Notification) => !n.read).length,
                 loading: false,
                 lastFetched: Date.now()
             });
