@@ -238,7 +238,18 @@ const ResourceCategories = () => {
             return (
               <button
                 key={item.id}
-                onClick={() => navigate(item.path)}
+                onClick={() => {
+                  if (!isAuthenticated && (item.path === "/profile" || item.path === "/subscriptions")) {
+                    // Check if we should send to signup or login
+                    // User requested "if account is not created it should ask for resource signup"
+                    // Default to Login, which links to Signup. 
+                    // Or we could send to a generic Resource Signup if they click Profile? 
+                    // Usually Profile -> Login. Payment -> Login.
+                    navigate("/login/resource");
+                  } else {
+                    navigate(item.path);
+                  }
+                }}
                 className={`relative flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all duration-300 ${isActive ? "text-primary bg-primary/10 shadow-sm" : "text-slate-400 hover:text-slate-600"
                   }`}
               >
