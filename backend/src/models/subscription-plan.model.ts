@@ -6,6 +6,7 @@ export interface ISubscriptionPlan extends Document {
     durationDays: number;
     description: string;
     features: string[];
+    type: 'job-seeker' | 'employer';
     isActive: boolean;
 }
 
@@ -15,6 +16,7 @@ const SubscriptionPlanSchema: Schema = new Schema({
     durationDays: { type: Number, required: true },
     description: { type: String, required: true },
     features: [{ type: String }],
+    type: { type: String, enum: ['job-seeker', 'employer'], default: 'employer' },
     isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 

@@ -34,13 +34,49 @@ export class AuthService {
 
             if (role === 'job-seeker' || role === 'employee') {
                 // Handle potentially string inputs from frontend (especially in signup FormData)
-                const education = typeof profileData.education === 'string'
-                    ? [{ degree: profileData.education }]
-                    : profileData.education;
+                // Helper to parse potentially JSON-stringified array items from FormData
+                const parseComplexField = (field: any) => {
+                    if (typeof field === 'string') {
+                        try {
+                            const parsed = JSON.parse(field);
+                            return Array.isArray(parsed) ? parsed : [parsed];
+                        } catch (e) {
+                            return [{ degree: field }]; // Fallback for simple string education
+                        }
+                    } else if (Array.isArray(field)) {
+                        return field.map(item => {
+                            if (typeof item === 'string') {
+                                try { return JSON.parse(item); } catch (e) { return item; }
+                            }
+                            return item;
+                        });
+                    }
+                    return field;
+                };
 
-                const experience = typeof profileData.experience === 'string' || typeof profileData.experience === 'number'
-                    ? [{ role: String(profileData.experience) + ' years' }]
-                    : profileData.experience;
+                const parseExperience = (field: any) => {
+                    if (typeof field === 'string') {
+                        try {
+                            const parsed = JSON.parse(field);
+                            return Array.isArray(parsed) ? parsed : [parsed];
+                        } catch (e) { // Logic for simple string/number input
+                            return [{ role: String(field) + ' years' }];
+                        }
+                    } else if (typeof field === 'number') {
+                        return [{ role: String(field) + ' years' }];
+                    } else if (Array.isArray(field)) {
+                        return field.map(item => {
+                            if (typeof item === 'string') {
+                                try { return JSON.parse(item); } catch (e) { return item; }
+                            }
+                            return item;
+                        });
+                    }
+                    return field;
+                };
+
+                const education = parseComplexField(profileData.education);
+                const experience = parseExperience(profileData.experience);
 
                 profile = await JobSeeker.create({
                     userId: newUser._id,

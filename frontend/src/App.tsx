@@ -66,6 +66,7 @@ import StyleGuide from "./modules/resources/pages/StyleGuide";
 // Admin Pages
 import AdminDashboard from "./modules/admin/pages/Dashboard";
 import Employers from "./modules/admin/pages/Employers";
+import JobSeekers from "./modules/admin/pages/JobSeekers";
 import EmployeePlans from "./modules/admin/pages/EmployeePlans";
 import EmployerPlans from "./modules/admin/pages/EmployerPlans";
 import Payments from "./modules/admin/pages/Payments";
@@ -650,6 +651,7 @@ function App() {
         >
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/employers" element={<Employers />} />
+          <Route path="/admin/job-seekers" element={<JobSeekers />} />
           <Route path="/admin/employee-plans" element={<EmployeePlans />} />
           <Route path="/admin/employer-plans" element={<EmployerPlans />} />
           <Route path="/admin/payments" element={<Payments />} />

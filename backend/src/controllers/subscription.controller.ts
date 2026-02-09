@@ -11,7 +11,8 @@ export class SubscriptionController {
 
     public getAllPlans = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
-            const plans = await this.subscriptionService.getAllPlans();
+            const { type } = req.query;
+            const plans = await this.subscriptionService.getAllPlans(type as string);
             res.status(200).json(plans);
         } catch (error: any) {
             next(error);

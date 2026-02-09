@@ -3,8 +3,10 @@ import User from '../models/user.model';
 
 export class SubscriptionService {
     // Get all active subscription plans
-    public async getAllPlans() {
-        const plans = await SubscriptionPlan.find({ isActive: true }).sort({ price: 1 });
+    public async getAllPlans(type?: string) {
+        const query: any = { isActive: true };
+        if (type) query.type = type;
+        const plans = await SubscriptionPlan.find(query).sort({ price: 1 });
         return plans;
     }
 

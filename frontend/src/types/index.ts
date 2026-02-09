@@ -23,20 +23,30 @@ export interface Job {
 
 export interface SubscriptionPlan {
   id: string;
+  _id?: string; // MongoDB ID
   name: string;
   price: number;
   durationDays: number;
   description: string;
   features: string[];
+  type: 'job-seeker' | 'employer';
 }
 
 export interface Certificate {
   id: string;
+  _id?: string; // MongoDB ID
   name: string;
   issueDate: string;
   expiryDate: string;
   successRate: number;
   status: "Active" | "Expired";
+  verificationStatus?: "pending" | "approved" | "rejected";
+  userId?: { // Populated field
+    _id: string;
+    name: string;
+    email: string;
+  } | string;
+  documentUrl?: string; // For the document link
 }
 
 export type ResourceCategory =
@@ -91,6 +101,7 @@ export interface User {
   phoneNumber?: string;
   profilePhoto?: string; // Added to fix build
   activeSubscriptionId?: string; // Added to fix build
+  status?: "active" | "suspended" | "banned";
 }
 
 export interface EmployerSignupData {

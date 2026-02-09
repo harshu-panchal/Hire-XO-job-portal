@@ -25,14 +25,7 @@ import {
 import { adminService, type SystemStats } from "@/services/adminService";
 import { toast } from "sonner";
 
-const monthlyData = [
-  { name: "Jan", users: 1200, revenue: 32000, jobs: 450 },
-  { name: "Feb", users: 1400, revenue: 45000, jobs: 520 },
-  { name: "Mar", users: 1100, revenue: 41000, jobs: 480 },
-  { name: "Apr", users: 1800, revenue: 58000, jobs: 620 },
-  { name: "May", users: 1600, revenue: 49000, jobs: 550 },
-  { name: "Jun", users: 2100, revenue: 65000, jobs: 720 },
-];
+
 
 const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
 
@@ -79,8 +72,19 @@ export default function Reports() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Simple CSV generation
-    const headers = ["Month", "Users", "Revenue", "Jobs"];
-    const rows = monthlyData.map((d) => [d.name, d.users, d.revenue, d.jobs]);
+    const headers = ["Month", "Users", "Revenue"];
+    const rows = (stats?.charts.revenue || []).map((d, i) => {
+      const userGrowth = stats?.charts.userGrowth[i]?.users || 0;
+      return [d.name, userGrowth, d.value];
+    });
+
+    // Fallback if no data
+    if (rows.length === 0) {
+      toast.error("No data to export");
+      setIsExporting(false);
+      return;
+    }
+
     const csvContent = [headers, ...rows].map((e) => e.join(",")).join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -182,7 +186,7 @@ export default function Reports() {
           </div>
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyData}>
+              <LineChart data={stats?.charts.userGrowth || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:opacity-10" />
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
                 <YAxis stroke="#94a3b8" fontSize={12} />
@@ -219,7 +223,7 @@ export default function Reports() {
           </div>
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyData}>
+              <BarChart data={stats?.charts.revenue || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:opacity-10" />
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
                 <YAxis stroke="#94a3b8" fontSize={12} />
@@ -231,7 +235,7 @@ export default function Reports() {
                     color: "#fff",
                   }}
                 />
-                <Bar dataKey="revenue" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" name="Revenue" fill="#3B82F6" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -290,12 +294,7 @@ export default function Reports() {
             Top Employers
           </h3>
           <div className="space-y-4">
-            {[
-              { name: "TechCorp India", jobs: 45, hires: 32 },
-              { name: "InnovateTech", jobs: 38, hires: 28 },
-              { name: "GlobalHR Solutions", jobs: 32, hires: 24 },
-              { name: "StartupHub", jobs: 28, hires: 18 },
-            ].map((employer, index) => (
+            {(stats?.topEmployers || []).map((employer, index) => (
               <div
                 key={employer.name}
                 className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0"
@@ -310,12 +309,15 @@ export default function Reports() {
                 </div>
                 <div className="flex items-center gap-6 text-sm">
                   <span className="text-slate-500">{employer.jobs} jobs</span>
-                  <span className="text-green-600 font-medium">
-                    {employer.hires} hires
+                  <span className="text-slate-400 font-medium">
+                    (Hires not yet tracked)
                   </span>
                 </div>
               </div>
             ))}
+            {(!stats?.topEmployers || stats.topEmployers.length === 0) && (
+              <p className="text-slate-500 text-sm">No employers found</p>
+            )}
           </div>
         </motion.div>
       </div>

@@ -25,7 +25,8 @@ import logo from "@/assets/logo.png";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
-  { icon: Users, label: "Employers", path: "/admin/employers" },
+  { icon: Users, label: "Job Seekers", path: "/admin/job-seekers" },
+  { icon: Briefcase, label: "Employers", path: "/admin/employers" },
   { icon: CreditCard, label: "Employee Plans", path: "/admin/employee-plans" },
   { icon: CreditCard, label: "Employer Plans", path: "/admin/employer-plans" },
   { icon: BarChart3, label: "Reports", path: "/admin/reports" },

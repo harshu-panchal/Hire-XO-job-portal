@@ -39,6 +39,7 @@ const VehicleSchema: Schema = new Schema({
     duration: { type: String },
     urgency: { type: String, enum: ["Immediate", "Within Week", "Flexible"] },
     images: [{ type: String }],
+    status: { type: String, enum: ["Active", "Inactive"], default: "Active" }
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
 // Optimize resource queries by user

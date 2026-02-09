@@ -10,12 +10,13 @@ export const createJobSchema = Joi.object({
     location: Joi.string().min(2).max(100).required(),
     description: Joi.string().min(10).required(),
     requirements: Joi.array().items(Joi.string()).min(1).required(),
-    salary: Joi.object({
-        min: Joi.number().min(0).required(),
-        max: Joi.number().min(Joi.ref('min')).required(),
-        currency: Joi.string().default('INR')
-    }).required(),
+    salary: Joi.string().optional(),
+    minSalary: Joi.number().min(0).required(),
+    maxSalary: Joi.number().min(Joi.ref('minSalary')).required(),
     type: Joi.string().valid('Full-time', 'Part-time', 'Contract', 'Internship').required(),
+    category: Joi.string().required(),
+    experience: Joi.number().min(0).optional(),
+    vacancies: Joi.number().min(1).optional(),
     experienceLevel: Joi.string().valid('Entry', 'Mid', 'Senior').optional(),
     skills: Joi.array().items(Joi.string()).optional(),
     deadline: Joi.date().greater('now').optional()

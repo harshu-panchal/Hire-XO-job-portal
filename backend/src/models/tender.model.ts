@@ -20,6 +20,7 @@ export interface ITender extends Document {
     urgency?: "Immediate" | "Within Week" | "Flexible";
     postedAt: Date;
     documents?: string[];
+    status?: "Active" | "Inactive";
 }
 
 const TenderSchema: Schema = new Schema({
@@ -41,6 +42,7 @@ const TenderSchema: Schema = new Schema({
     duration: { type: String },
     urgency: { type: String, enum: ["Immediate", "Within Week", "Flexible"] },
     documents: [{ type: String }],
+    status: { type: String, enum: ["Active", "Inactive"], default: "Active" }
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
 // Optimize resource queries by user

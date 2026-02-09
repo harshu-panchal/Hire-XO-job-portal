@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import { motion, type Variants } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../store/useAuthStore";
+import { adminService, type SystemStats } from "../../../services/adminService";
+import { toast } from "sonner";
 import {
   LineChart,
   Line,
@@ -20,17 +23,8 @@ import {
   TrendingUp,
   ArrowUpRight,
   MoreHorizontal,
+  Loader2
 } from "lucide-react";
-
-const revenueData = [
-  { name: "Jan", value: 3200 },
-  { name: "Feb", value: 4500 },
-  { name: "Mar", value: 4100 },
-  { name: "Apr", value: 5800 },
-  { name: "May", value: 4900 },
-  { name: "Jun", value: 6500 },
-  { name: "Jul", value: 7200 },
-];
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -49,16 +43,34 @@ const itemVariants: Variants = {
   },
 } as const;
 
-const recentActivity = [
-  { id: 1, action: "New employer registered", user: "Acme Corp", time: "2 min ago" },
-  { id: 2, action: "Plan upgraded to Premium", user: "John Doe", time: "15 min ago" },
-  { id: 3, action: "New job posting created", user: "TechStart Inc", time: "1 hour ago" },
-  { id: 4, action: "Payment received", user: "Global HR", time: "2 hours ago" },
-];
-
 export default function Dashboard() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const [stats, setStats] = useState<SystemStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await adminService.getSystemStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard stats:", error);
+        toast.error("Failed to load dashboard data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -84,7 +96,7 @@ export default function Dashboard() {
       >
         <StatCard
           title="Total Users"
-          value="12,459"
+          value={stats?.users.total.toLocaleString() || "0"}
           change="+12.5%"
           icon={Users}
           iconBg="bg-blue-100"
@@ -92,7 +104,7 @@ export default function Dashboard() {
         />
         <StatCard
           title="Active Jobs"
-          value="3,842"
+          value={stats?.jobs.active.toLocaleString() || "0"}
           change="+8.2%"
           icon={Briefcase}
           iconBg="bg-green-100"
@@ -100,15 +112,15 @@ export default function Dashboard() {
         />
         <StatCard
           title="Revenue"
-          value="₹4.2L"
+          value={`₹${stats?.revenue.total.toLocaleString() || "0"}`}
           change="+18.7%"
           icon={DollarSign}
           iconBg="bg-purple-100"
           iconColor="text-purple-600"
         />
         <StatCard
-          title="Subscriptions"
-          value="1,284"
+          title="Resources"
+          value={stats?.resources.total.toLocaleString() || "0"}
           change="+5.4%"
           icon={CreditCard}
           iconBg="bg-orange-100"
@@ -137,7 +149,7 @@ export default function Dashboard() {
           </div>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData}>
+              <AreaChart data={stats?.charts?.revenue || []}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
@@ -179,7 +191,7 @@ export default function Dashboard() {
             <button className="text-sm text-primary font-medium hover:underline">View all</button>
           </div>
           <div className="space-y-4">
-            {recentActivity.map((item) => (
+            {stats?.recentActivity?.map((item) => (
               <div
                 key={item.id}
                 className="flex items-start gap-3 pb-4 border-b border-slate-100 last:border-0 last:pb-0"
@@ -192,10 +204,13 @@ export default function Dashboard() {
                   <p className="text-xs text-slate-500">{item.user}</p>
                 </div>
                 <span className="text-xs text-slate-400 whitespace-nowrap">
-                  {item.time}
+                  {new Date(item.time).toLocaleDateString()}
                 </span>
               </div>
             ))}
+            {(!stats?.recentActivity || stats.recentActivity.length === 0) && (
+              <p className="text-sm text-slate-500 text-center py-4">No recent activity</p>
+            )}
           </div>
         </motion.div>
       </div>
@@ -207,7 +222,7 @@ export default function Dashboard() {
       >
         <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <QuickAction label="Manage Users" icon={Users} onClick={() => navigate("/admin/users")} />
+          <QuickAction label="Manage Users" icon={Users} onClick={() => navigate("/admin/employers")} />
           <QuickAction
             label="Account Settings"
             icon={CreditCard}
@@ -219,9 +234,9 @@ export default function Dashboard() {
             onClick={() => navigate("/admin/reports")}
           />
           <QuickAction
-            label="Manage Jobs"
+            label="Manage Resources"
             icon={Briefcase}
-            onClick={() => navigate("/admin/jobs")}
+            onClick={() => navigate("/admin/resources")}
           />
         </div>
       </motion.div>
@@ -236,6 +251,7 @@ function StatCard({
   icon: Icon,
   iconBg,
   iconColor,
+  onClick
 }: {
   title: string;
   value: string;
@@ -243,9 +259,10 @@ function StatCard({
   icon: any;
   iconBg: string;
   iconColor: string;
+  onClick?: () => void;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6">
+    <div className="bg-white rounded-xl border border-slate-200 p-6" onClick={onClick}>
       <div className="flex items-start justify-between">
         <div className={`p-3 rounded-lg ${iconBg}`}>
           <Icon className={`w-5 h-5 ${iconColor}`} />

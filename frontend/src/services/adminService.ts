@@ -7,11 +7,42 @@ import apiClient, { getErrorMessage } from "../lib/apiConfig";
 import type { User, SubscriptionPlan, Certificate } from "../types";
 
 export interface SystemStats {
-  totalUsers: number;
-  totalJobs: number;
-  totalApplications: number;
-  totalRevenue: number;
-  [key: string]: any;
+  users: {
+    total: number;
+    byRole: { [key: string]: number };
+  };
+  jobs: {
+    total: number;
+    active: number;
+  };
+  applications: {
+    total: number;
+    jobs: number;
+    resources: number;
+  };
+  revenue: {
+    total: number;
+  };
+  resources: {
+    total: number;
+    [key: string]: number;
+  };
+  charts: {
+    revenue: { name: string; value: number }[];
+    userGrowth: { name: string; users: number }[];
+  };
+  recentActivity: {
+    id: string;
+    action: string;
+    user: string;
+    time: string;
+    type: string;
+  }[];
+  topEmployers: {
+    name: string;
+    jobs: number;
+    hires: number;
+  }[];
 }
 
 export interface UserFilters {
@@ -63,11 +94,37 @@ export const adminService = {
   },
 
   /**
+   * Update user details
+   */
+  async updateUser(id: string, userData: Partial<User>): Promise<{ message: string; data: User }> {
+    try {
+      const response = await apiClient.put(`/admin/users/${id}`, userData);
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  /**
    * Get system statistics
    */
   async getSystemStats(): Promise<SystemStats> {
     try {
-      const response = await apiClient.get<SystemStats>("/admin/stats");
+      const response = await apiClient.get<any>("/admin/stats");
+      return response.data.stats;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  /**
+   * Get all subscription plans
+   */
+  async getPlans(type?: string): Promise<SubscriptionPlan[]> {
+    try {
+      const response = await apiClient.get<SubscriptionPlan[]>("/subscriptions/plans", {
+        params: { type },
+      });
       return response.data;
     } catch (error) {
       throw new Error(getErrorMessage(error));
@@ -118,10 +175,10 @@ export const adminService = {
   /**
    * Get all certificates
    */
-  async getAllCertificates(): Promise<Certificate[]> {
+  async getAllCertificates(params?: { status?: string; page?: number; limit?: number }): Promise<Certificate[]> {
     try {
-      const response = await apiClient.get<Certificate[]>("/admin/certificates");
-      return response.data;
+      const response = await apiClient.get<any>("/admin/certificates", { params });
+      return response.data.data; // Backend returns wrapped response with pagination
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }
@@ -142,12 +199,60 @@ export const adminService = {
   /**
    * Reject certificate
    */
-  async rejectCertificate(id: string): Promise<{ message: string }> {
+  async rejectCertificate(id: string, reason: string): Promise<{ message: string }> {
     try {
-      const response = await apiClient.patch(`/admin/certificates/${id}/reject`);
+      const response = await apiClient.patch(`/admin/certificates/${id}/reject`, { reason });
       return response.data;
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }
   },
+
+  /**
+   * Get resources by category
+   */
+  async getResources(category: string, params?: any): Promise<any> {
+    try {
+      const response = await apiClient.get(`/admin/resources/${category}`, { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  /**
+   * Update resource
+   */
+  async updateResource(category: string, id: string, data: any): Promise<any> {
+    try {
+      const response = await apiClient.put(`/admin/resources/${category}/${id}`, data);
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  /**
+   * Delete resource
+   */
+  async deleteResource(category: string, id: string): Promise<any> {
+    try {
+      const response = await apiClient.delete(`/admin/resources/${category}/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  /**
+   * Get all transactions
+   */
+  async getAllTransactions(params?: any): Promise<any> {
+    try {
+      const response = await apiClient.get<any>("/admin/transactions", { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  }
 };

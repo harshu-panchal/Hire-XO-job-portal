@@ -37,6 +37,9 @@ const Settings = () => {
     experience: Array.isArray(userProfile?.profile?.experience)
       ? userProfile.profile.experience
       : [],
+    education: Array.isArray(userProfile?.profile?.education)
+      ? userProfile.profile.education
+      : [],
   });
 
   // Sync form when user profile loads
@@ -50,6 +53,9 @@ const Settings = () => {
         skills: userProfile.profile?.skills?.join(", ") || "",
         experience: Array.isArray(userProfile.profile?.experience)
           ? userProfile.profile.experience
+          : [],
+        education: Array.isArray(userProfile.profile?.education)
+          ? userProfile.profile.education
           : [],
       });
 
@@ -104,6 +110,7 @@ const Settings = () => {
             .map((s) => s.trim())
             .filter((s) => s !== ""),
           experience: form.experience,
+          education: form.education,
           preferences: {
             notifications: pushEnabled,
           },
@@ -136,6 +143,27 @@ const Settings = () => {
     setForm((f) => ({
       ...f,
       experience: f.experience.map((exp, i) => (i === index ? { ...exp, [field]: value } : exp)),
+    }));
+  };
+
+  const handleAddEducation = () => {
+    setForm((f) => ({
+      ...f,
+      education: [...f.education, { school: "", degree: "", period: "" }],
+    }));
+  };
+
+  const handleRemoveEducation = (index: number) => {
+    setForm((f) => ({
+      ...f,
+      education: f.education.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleEducationChange = (index: number, field: string, value: string) => {
+    setForm((f) => ({
+      ...f,
+      education: f.education.map((edu, i) => (i === index ? { ...edu, [field]: value } : edu)),
     }));
   };
 
@@ -322,6 +350,61 @@ const Settings = () => {
                         value={exp.period}
                         placeholder="Period"
                         onChange={(e) => handleExperienceChange(index, "period", e.target.value)}
+                        className="w-24 bg-transparent text-[11px] font-bold text-slate-400 focus:outline-none text-right uppercase tracking-widest placeholder:text-slate-400"
+                      />
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            {/* Education Array Editor */}
+            <div className="space-y-4 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  Education
+                </label>
+                <button
+                  type="button"
+                  onClick={handleAddEducation}
+                  className="flex items-center gap-1 text-[10px] font-black text-primary uppercase tracking-widest active:scale-95 transition-all"
+                >
+                  <Plus className="size-3" />
+                  Add New
+                </button>
+              </div>
+              {Array.isArray(form.education) &&
+                form.education.map((edu: any, index: number) => (
+                  <div
+                    key={index}
+                    className="relative group p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-3"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveEducation(index)}
+                      className="absolute -top-2 -right-2 size-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-lg active:scale-90"
+                    >
+                      <Trash2 className="size-3" />
+                    </button>
+                    <input
+                      type="text"
+                      value={edu.degree}
+                      placeholder="Degree / Major"
+                      onChange={(e) => handleEducationChange(index, "degree", e.target.value)}
+                      className="w-full bg-transparent text-sm font-black focus:outline-none placeholder:text-slate-400"
+                    />
+                    <div className="flex gap-4">
+                      <input
+                        type="text"
+                        value={edu.school}
+                        placeholder="School / University"
+                        onChange={(e) => handleEducationChange(index, "school", e.target.value)}
+                        className="flex-1 bg-transparent text-[11px] font-bold text-primary focus:outline-none uppercase tracking-widest placeholder:text-slate-400"
+                      />
+                      <input
+                        type="text"
+                        value={edu.period}
+                        placeholder="Year"
+                        onChange={(e) => handleEducationChange(index, "period", e.target.value)}
                         className="w-24 bg-transparent text-[11px] font-bold text-slate-400 focus:outline-none text-right uppercase tracking-widest placeholder:text-slate-400"
                       />
                     </div>
