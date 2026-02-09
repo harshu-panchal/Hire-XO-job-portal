@@ -52,6 +52,7 @@ const EmployeeLayout = () => {
 
           <Link
             to="/post"
+            onClick={(e) => handleProtectedNavigation("/post", e)}
             className={`flex flex-col items-center gap-1 min-w-[3.5rem] transition-all duration-200 active:scale-90 ${isActive("/post") ? "text-primary" : "text-slate-400"
               }`}
           >
@@ -87,7 +88,6 @@ const EmployeeLayout = () => {
 
           <Link
             to="/payments"
-            onClick={(e) => handleProtectedNavigation("/payments", e)}
             className={`flex flex-col items-center gap-1 min-w-[3.5rem] transition-all duration-200 active:scale-90 ${isActive("/payments") ? "text-primary" : "text-slate-400"
               }`}
           >

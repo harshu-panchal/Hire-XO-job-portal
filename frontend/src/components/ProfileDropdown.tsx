@@ -101,7 +101,7 @@ export const ProfileDropdown = ({ loginPath = "/login/employee" }: ProfileDropdo
 
                                     {/* Promotions Link - Only for Employer/Recruiter if needed, but here simple link */}
                                     <Link
-                                        to="/employer/promotions"
+                                        to={user?.role === 'employee' ? '/payments' : '/employer/promotions'}
                                         onClick={() => setIsOpen(false)}
                                         className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-all group"
                                     >

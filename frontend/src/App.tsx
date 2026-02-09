@@ -266,6 +266,8 @@ function App() {
           <Route path="/jobs/:id" element={<JobDetails />} />
           <Route path="/employee/resources" element={<ResourcesList />} />
           <Route path="/employee/resources/:id" element={<ResourceDetails />} />
+          <Route path="/subscriptions" element={<Subscriptions />} />
+          <Route path="/payments" element={<Subscriptions />} />
           <Route path="/style-guide" element={<StyleGuide />} />
 
           {/* Protected Employee Sub-Routes */}
@@ -276,10 +278,8 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="/subscriptions" element={<Subscriptions />} />
-            <Route path="/payments" element={<Subscriptions />} />
             <Route path="/certificates" element={<Certificates />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/employee/profile" element={<Profile />} />
             <Route path="/my-applications" element={<MyApplications />} />
             <Route path="/saved-jobs" element={<SavedJobs />} />
             <Route path="/settings" element={<Settings />} />
