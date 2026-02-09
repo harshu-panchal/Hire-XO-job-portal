@@ -21,7 +21,7 @@ export const registerSchema = Joi.object({
     education: Joi.alternatives().try(Joi.string(), Joi.array()).optional(),
     age: Joi.number().min(16).max(120).optional(),
     experience: Joi.alternatives().try(Joi.string(), Joi.number(), Joi.array()).optional(),
-    interestedCompanies: Joi.array().items(Joi.string()).optional(),
+    interestedCompanies: Joi.array().items(Joi.string()).single().optional(),
     cv: Joi.any().optional(), // File upload
     profilePhoto: Joi.any().optional(), // File upload
 
@@ -51,7 +51,7 @@ export const updateProfileSchema = Joi.object({
     about: Joi.string().optional(),
     location: Joi.string().optional(),
     address: Joi.string().optional(),
-    skills: Joi.array().items(Joi.string()).optional(),
+    skills: Joi.array().items(Joi.string()).single().optional(),
     experience: Joi.array().optional(),
     education: Joi.array().optional()
 });

@@ -50,6 +50,9 @@ export const authService = {
       Object.entries(data).forEach(([key, value]) => {
         if (value instanceof File) {
           formData.append(key, value);
+        } else if (Array.isArray(value)) {
+          // Handle arrays (like interestedCompanies) by appending each item
+          value.forEach((item) => formData.append(key, String(item)));
         } else if (value !== null && value !== undefined) {
           // Convert non-string values (like numbers) to string
           formData.append(key, String(value));
