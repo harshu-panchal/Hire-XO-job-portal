@@ -67,8 +67,21 @@ export class PostController {
             }
 
             // Map posts to scrub info if necessary
-            const scrubbedPosts = posts.map(post => {
+            const scrubbedPosts = posts.map((post: any) => {
                 const postObj = post.toObject();
+                // Check if author exists (handle orphan posts)
+                if (!postObj.userId) {
+                    return {
+                        ...postObj,
+                        userId: {
+                            _id: '000000000000000000000000', // Dummy 24-char hex ID
+                            name: 'Deleted User',
+                            role: 'unknown',
+                            profilePhoto: null
+                        }
+                    };
+                }
+
                 const author = postObj.userId as any;
 
                 // Protect employee contact info from unsubscribed employers
