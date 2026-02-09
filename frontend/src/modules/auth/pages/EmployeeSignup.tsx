@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { EmployeeSignupData } from "@/types";
+import { getErrorMessage } from "@/lib/apiConfig";
 
 const EmployeeSignup = () => {
   const navigate = useNavigate();
@@ -68,10 +69,7 @@ const EmployeeSignup = () => {
         setError("Please fill in all required fields");
         return;
       }
-      if (formData.age < 18 || formData.age > 100) {
-        setError("Please enter a valid age (18-100)");
-        return;
-      }
+      // Age validation removed - backend handles it with more reasonable limits (16-120)
     }
 
     setCurrentStep(currentStep + 1);
@@ -131,7 +129,9 @@ const EmployeeSignup = () => {
       await signup(signupData, "employee");
       navigate("/jobs");
     } catch (err: any) {
-      setError(err.message || "Failed to create account. Please try again.");
+      // Use helper to get actual error message from backend
+      const errorMsg = getErrorMessage(err);
+      setError(errorMsg);
     }
   };
 
@@ -171,11 +171,10 @@ const EmployeeSignup = () => {
           {[1, 2, 3].map((step) => (
             <div
               key={step}
-              className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
-                step <= currentStep
-                  ? "bg-gradient-to-r from-primary to-purple-600 shadow-[0_0_10px_rgba(124,58,237,0.5)]"
-                  : "bg-slate-200"
-              }`}
+              className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step <= currentStep
+                ? "bg-gradient-to-r from-primary to-purple-600 shadow-[0_0_10px_rgba(124,58,237,0.5)]"
+                : "bg-slate-200"
+                }`}
             />
           ))}
         </div>

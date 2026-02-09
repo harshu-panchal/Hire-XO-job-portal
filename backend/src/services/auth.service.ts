@@ -4,6 +4,7 @@ import User, { IUser } from '../models/user.model';
 import JobSeeker from '../models/job-seeker.model';
 import Recruiter from '../models/recruiter.model';
 import ResourceProfile from '../models/resource-profile.model';
+import { BadRequestError, UnauthorizedError, NotFoundError, ConflictError } from '../utils/errors';
 
 export class AuthService {
     private secretKey = process.env.JWT_SECRET || 'secret';
@@ -13,7 +14,7 @@ export class AuthService {
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            throw new Error('User already exists');
+            throw new ConflictError('An account with this email already exists');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -126,7 +127,7 @@ export class AuthService {
         const user = await User.findOne({ email }).select('+password');
 
         if (!user) {
-            throw new Error('Invalid credentials');
+            throw new UnauthorizedError('Invalid email or password');
         }
 
         // Check password
@@ -134,7 +135,7 @@ export class AuthService {
         const isMatch = await bcrypt.compare(password, user.password as string);
 
         if (!isMatch) {
-            throw new Error('Invalid credentials');
+            throw new UnauthorizedError('Invalid email or password');
         }
 
         let profile;
@@ -185,7 +186,7 @@ export class AuthService {
     public async getCurrentUser(userId: string) {
         const user = await User.findById(userId);
         if (!user) {
-            throw new Error('User not found');
+            throw new NotFoundError('User not found');
         }
 
         let profile;
@@ -280,7 +281,7 @@ export class AuthService {
 
         const isMatch = await bcrypt.compare(oldPassword, user.password as string);
         if (!isMatch) {
-            throw new Error('Current password is incorrect');
+            throw new UnauthorizedError('Current password is incorrect');
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -292,7 +293,7 @@ export class AuthService {
     public async forgotPassword(email: string) {
         const user = await User.findOne({ email });
         if (!user) {
-            throw new Error('User with this email does not exist');
+            throw new NotFoundError('User with this email does not exist');
         }
 
         // Generate reset token
@@ -324,7 +325,7 @@ export class AuthService {
         });
 
         if (!user) {
-            throw new Error('Password reset token is invalid or has expired');
+            throw new BadRequestError('Password reset token is invalid or has expired');
         }
 
         // Hash new password

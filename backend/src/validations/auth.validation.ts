@@ -1,19 +1,43 @@
 import Joi from 'joi';
 
 export const registerSchema = Joi.object({
+    // Required fields for all users
     name: Joi.string().min(2).max(50).required(),
     email: Joi.string().email().required(),
-    password: Joi.string().min(6).max(100).required(),
+    password: Joi.string().min(6).max(128).required(),
     role: Joi.string().valid('employee', 'employer', 'resource', 'admin').default('employee'),
-    // Updated fields to match frontend
+
+    // Common optional fields
     username: Joi.string().optional(),
     phoneNumber: Joi.string().optional(),
+    phone: Joi.string().optional(), // Backward compatibility
+
+    // Employer-specific fields
     company: Joi.string().optional(),
-    experience: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
-    // Keep these for backward compatibility if needed, or remove if strictly cleaning up
-    phone: Joi.string().optional(),
-    companyName: Joi.string().optional()
-}).unknown(true);
+    companyName: Joi.string().optional(),
+    companyLogo: Joi.any().optional(), // File upload
+
+    // Employee-specific fields
+    education: Joi.alternatives().try(Joi.string(), Joi.array()).optional(),
+    age: Joi.number().min(16).max(120).optional(),
+    experience: Joi.alternatives().try(Joi.string(), Joi.number(), Joi.array()).optional(),
+    interestedCompanies: Joi.array().items(Joi.string()).optional(),
+    cv: Joi.any().optional(), // File upload
+    profilePhoto: Joi.any().optional(), // File upload
+
+    // Resource-specific fields
+    organizationName: Joi.string().optional(),
+    category: Joi.string().optional(),
+    investorType: Joi.string().optional(),
+    tenderType: Joi.string().optional(),
+    equipmentType: Joi.string().optional(),
+    machineryType: Joi.string().optional(),
+    pmcType: Joi.string().optional(),
+    csmType: Joi.string().optional(),
+    logisticsType: Joi.string().optional(),
+    vehicleType: Joi.string().optional()
+});
+// Note: Removed .unknown(true) for security - all fields must be explicitly defined
 
 export const loginSchema = Joi.object({
     email: Joi.string().email().required(),
@@ -30,4 +54,5 @@ export const updateProfileSchema = Joi.object({
     skills: Joi.array().items(Joi.string()).optional(),
     experience: Joi.array().optional(),
     education: Joi.array().optional()
-}).unknown(true);
+});
+// Note: Removed .unknown(true) for security

@@ -1,7 +1,11 @@
 import Joi from 'joi';
 
 export const createJobSchema = Joi.object({
-    title: Joi.string().min(5).max(100).required(),
+    title: Joi.string().min(2).max(100).required().messages({
+        'string.min': 'Job title must be at least 2 characters',
+        'string.max': 'Job title cannot exceed 100 characters',
+        'any.required': 'Job title is required'
+    }),
     company: Joi.string().min(2).max(100).optional(), // Can be auto-filled from user profile
     location: Joi.string().min(2).max(100).required(),
     description: Joi.string().min(10).required(),
@@ -18,7 +22,10 @@ export const createJobSchema = Joi.object({
 });
 
 export const updateJobSchema = Joi.object({
-    title: Joi.string().min(5).max(100).optional(),
+    title: Joi.string().min(2).max(100).optional().messages({
+        'string.min': 'Job title must be at least 2 characters',
+        'string.max': 'Job title cannot exceed 100 characters'
+    }),
     company: Joi.string().min(2).max(100).optional(),
     location: Joi.string().min(2).max(100).optional(),
     description: Joi.string().min(10).optional(),

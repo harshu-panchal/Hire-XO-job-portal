@@ -9,11 +9,15 @@ export const validate = (schema: Joi.ObjectSchema) => {
         });
 
         if (error) {
-            const errorMessage = error.details.map((details) => details.message).join(', ');
+            // Transform Joi errors to standard format: { message, errors: [{field, message}] }
+            const errors = error.details.map((detail: any) => ({
+                field: detail.path.join('.'), // e.g., "email" or "salary.min"
+                message: detail.message.replace(/"/g, '') // Remove quotes from Joi messages
+            }));
+
             res.status(400).json({
-                message: errorMessage,
-                code: 'VALIDATION_ERROR',
-                details: error.details
+                message: 'Validation failed',
+                errors
             });
             return;
         }
