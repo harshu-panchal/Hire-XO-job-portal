@@ -25,6 +25,7 @@ const EmployerPromotions = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            if (!user) return;
             try {
                 setIsLoading(true);
                 // Fetch Promotions
@@ -34,11 +35,11 @@ const EmployerPromotions = () => {
 
                 // Fetch Posts (Filter by user)
                 const { data: postsData } = await postService.getAllPosts(1, 100);
-                const userPosts = postsData.filter((p: any) => p.userId._id === user?.id);
+                const userPosts = postsData.filter((p: any) => p.userId?._id === user?.id);
                 setMyPosts(userPosts);
 
                 // Fetch Jobs
-                if (user?.role === 'recruiter' || user?.role === 'employer') {
+                if (user.role === 'recruiter' || user.role === 'employer') {
                     const jobs = await jobService.getMyListings();
                     setMyJobs(jobs);
                 }
@@ -50,7 +51,7 @@ const EmployerPromotions = () => {
             }
         };
 
-        if (user) fetchData();
+        fetchData();
     }, [user]);
 
     const handleCreatePromotion = async () => {
@@ -70,7 +71,7 @@ const EmployerPromotions = () => {
             toast.success("Promotion created successfully! Your ad is now active.");
             setShowPaymentModal(false);
             setSelectedResource(null);
-            setBudget(100);
+            setBudget(100); // Reset budget
 
             // Refresh data
             const data = await promotionService.getMyPromotions();
@@ -149,7 +150,7 @@ const EmployerPromotions = () => {
                         </div>
                         <div>
                             <h2 className="text-lg font-black text-slate-900">Create New Ad</h2>
-                            <p className="text-xs font-medium text-slate-500">Boost visibility by 200%</p>
+                            <p className="text-xs font-medium text-slate-500">Boost visibility</p>
                         </div>
                     </div>
 
@@ -193,9 +194,29 @@ const EmployerPromotions = () => {
                                     </button>
                                 ))}
 
-                                {myJobs.length === 0 && myPosts.length === 0 && (
+                                {myJobs.length === 0 && myPosts.length === 0 && !isLoading && (
                                     <div className="text-center py-8 text-slate-400 text-sm font-medium bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                                        No active jobs or posts found.
+                                        <p className="mb-2">No active jobs or posts found.</p>
+                                        <div className="flex gap-4 justify-center">
+                                            <button
+                                                onClick={() => navigate('/employer/post-job')}
+                                                className="text-primary font-bold hover:underline"
+                                            >
+                                                Post Job
+                                            </button>
+                                            <button
+                                                onClick={() => navigate('/post')}
+                                                className="text-primary font-bold hover:underline"
+                                            >
+                                                Create Post
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {isLoading && (
+                                    <div className="p-4 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">
+                                        Loading resources...
                                     </div>
                                 )}
                             </div>
@@ -238,7 +259,11 @@ const EmployerPromotions = () => {
                 <div className="space-y-4">
                     <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 pl-2">Recent Promotions</h3>
 
-                    {promotions.length > 0 ? (
+                    {isLoading ? (
+                        <div className="text-center py-10 text-slate-400 text-sm font-medium">
+                            Loading promotions...
+                        </div>
+                    ) : promotions.length > 0 ? (
                         promotions.map(promo => (
                             <div key={promo._id} className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
                                 <div>
@@ -264,7 +289,7 @@ const EmployerPromotions = () => {
                 </div>
             </div>
 
-            {/* Payment Modal (Mock) */}
+            {/* Payment Modal */}
             {showPaymentModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-5">
                     <div className="bg-white w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">

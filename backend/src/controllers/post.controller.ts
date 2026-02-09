@@ -84,6 +84,8 @@ export class PostController {
 
                 const author = postObj.userId as any;
 
+                if (!author) return postObj;
+
                 // Protect employee contact info from unsubscribed employers
                 const isRequesterUnsubscribedEmployer = !hasActiveSubscription && (requesterRole === 'employer' || requesterRole === 'recruiter');
                 const isAuthorEmployee = author.role === 'employee';

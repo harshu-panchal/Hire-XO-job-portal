@@ -23,7 +23,7 @@ const Post = () => {
         try {
             setIsLoading(true);
             const { data: postsData } = await postService.getAllPosts();
-            setPosts(postsData);
+            setPosts(postsData.filter((post: any) => post.userId));
         } catch (error) {
             console.error("Failed to fetch posts:", error);
         } finally {
@@ -255,14 +255,14 @@ const Post = () => {
                                             {post.userId.profilePhoto ? (
                                                 <img src={post.userId.profilePhoto} alt="" className="w-full h-full object-cover" />
                                             ) : (
-                                                <span className="font-bold text-slate-600">{post.userId.name[0]}</span>
+                                                <span className="font-bold text-slate-600">{post.userId.name?.[0] || "?"}</span>
                                             )}
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-slate-900 text-sm leading-tight flex items-center gap-2">
-                                                {post.userId.name}
+                                                {post.userId.name || "Unknown User"}
                                                 <span className="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded-full uppercase tracking-wider font-black">
-                                                    {post.userId.role}
+                                                    {post.userId.role || "Member"}
                                                 </span>
                                             </h3>
                                             <p className="text-xs text-slate-500 font-medium">

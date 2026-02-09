@@ -15,6 +15,10 @@ export interface Job {
   responsibilities: string[];
   benefits: string[];
   category: string;
+  minSalary?: number;
+  maxSalary?: number;
+  experience?: number;
+  vacancies?: number;
 }
 
 export interface SubscriptionPlan {
