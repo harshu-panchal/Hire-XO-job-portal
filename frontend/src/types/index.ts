@@ -95,7 +95,7 @@ export interface EmployerSignupData {
   company: string;
   phoneNumber: string;
   email: string;
-  companyLogo: File;
+  companyLogo?: File | null;
   experience: number;
   password: string;
 }
