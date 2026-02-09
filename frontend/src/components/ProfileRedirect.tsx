@@ -45,7 +45,7 @@ const ProfileRedirect = () => {
     };
 
     const redirectPaths: Record<string, string> = {
-        employee: "/profile",
+        employee: "/employee/profile",
         employer: "/employer/profile",
         admin: "/admin/settings",
         resource: getResourceProfilePath(user),
