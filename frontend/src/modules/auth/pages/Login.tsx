@@ -79,7 +79,7 @@ const Login = () => {
 
   const getResourceRedirectPath = (u: any) => {
     if (!u) return "/";
-    
+
     // Explicit mappings for backend roles
     const pathMap: Record<string, string> = {
       employee: "/jobs",
@@ -183,17 +183,28 @@ const Login = () => {
       const updatedUser = useAuthStore.getState().user;
 
       // Handle Role Mismatch
-      if (updatedUser && updatedUser.role !== currentRole) {
-        const actual = roleConfig[updatedUser.role as string]?.title || updatedUser.role;
-        const target = roleConfig[currentRole]?.title || currentRole;
+      if (updatedUser) {
+        // Normalize roles for comparison
+        const normalizeRole = (r: string) => {
+          if (r === 'recruiter' || r === 'employer') return 'employer';
+          if (r === 'job-seeker' || r === 'employee') return 'employee';
+          return r;
+        };
 
-        // Set state to show the mismatch UI
-        setRoleMismatch({
-          actual,
-          target,
-          user: updatedUser,
-        });
-        return; // Stop auto-redirect
+        const normalizedUserRole = normalizeRole(updatedUser.role as string);
+        const normalizedTargetRole = normalizeRole(currentRole);
+
+        if (normalizedUserRole !== normalizedTargetRole) {
+          const actual = roleConfig[updatedUser.role as string]?.title || updatedUser.role;
+          const target = roleConfig[currentRole]?.title || currentRole;
+
+          setRoleMismatch({
+            actual,
+            target,
+            user: updatedUser,
+          });
+          return;
+        }
       }
 
       // If roles match, proceed to dashboard
