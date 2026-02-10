@@ -205,7 +205,7 @@ const EmployerPromotions = () => {
                                                 Post Job
                                             </button>
                                             <button
-                                                onClick={() => navigate('/post')}
+                                                onClick={() => navigate('/employer/community')}
                                                 className="text-primary font-bold hover:underline"
                                             >
                                                 Create Post

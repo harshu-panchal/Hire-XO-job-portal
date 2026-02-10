@@ -42,6 +42,16 @@ const Login = () => {
       iconBg: "bg-blue-500/10 text-blue-600",
       icon: Building2,
     },
+    // Alias for backend 'recruiter' role
+    recruiter: {
+      title: "Employer",
+      subtitle: "Welcome back, hiring manager!",
+      signupPath: "/signup/employer",
+      redirectPath: "/employer",
+      accent: "from-blue-500 to-cyan-600",
+      iconBg: "bg-blue-500/10 text-blue-600",
+      icon: Building2,
+    },
     resource: {
       title: "Resource Partner",
       subtitle: "Welcome back, partner!",
@@ -69,13 +79,22 @@ const Login = () => {
 
   const getResourceRedirectPath = (u: any) => {
     if (!u) return "/";
+    
+    // Explicit mappings for backend roles
+    const pathMap: Record<string, string> = {
+      employee: "/jobs",
+      "job-seeker": "/jobs", // Backend role for employee
+      employer: "/employer",
+      recruiter: "/employer", // Backend role for employer
+      admin: "/admin",
+    };
+
+    if (pathMap[u.role]) {
+      return pathMap[u.role];
+    }
+
     if (u.role !== "resource") {
-      const pathMap: Record<string, string> = {
-        employee: "/jobs",
-        employer: "/employer",
-        admin: "/admin",
-      };
-      return pathMap[u.role] || "/";
+      return "/";
     }
 
     const profile = u.profile;

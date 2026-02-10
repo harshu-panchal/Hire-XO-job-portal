@@ -337,7 +337,7 @@ const EmployerDashboard = () => {
               Recent Talent Feed
             </h2>
             <Link
-              to="/post"
+              to="/employer/community"
               className="text-[10px] font-black text-primary uppercase tracking-widest active:scale-95 transition-transform"
             >
               Go to Feed

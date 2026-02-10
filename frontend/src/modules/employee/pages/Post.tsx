@@ -316,7 +316,7 @@ const Post = () => {
                                         {post.userId.isContactHidden && (
                                             <div className="mt-3 flex items-center gap-3">
                                                 <Link
-                                                    to="/employer/subscription"
+                                                    to={user?.role === 'employee' ? '/payments' : '/employer/subscription'}
                                                     className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-lg text-[10px] font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
                                                 >
                                                     <Lock className="w-3 h-3" />
@@ -380,7 +380,7 @@ const Post = () => {
                                         {post.userId.isContactHidden && (
                                             <div className="w-full pt-2 mt-2 border-t border-slate-200/50">
                                                 <Link
-                                                    to="/employer/subscription"
+                                                    to={user?.role === 'employee' ? '/payments' : '/employer/subscription'}
                                                     className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-primary hover:text-primary/80 transition-colors"
                                                 >
                                                     <Lock className="w-3 h-3" />
