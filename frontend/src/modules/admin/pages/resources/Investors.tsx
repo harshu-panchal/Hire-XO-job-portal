@@ -80,7 +80,7 @@ export default function Investors() {
         title: item.title,
         description: item.description,
         location: item.location,
-        contact: item.userId?.phone || "N/A", // User model might not have phone exposed or populated fully
+        contact: item.userId?.phoneNumber || "N/A", // User model might not have phone exposed or populated fully
         email: item.userId?.email || "N/A",
         budget: item.investmentAmount,
         amountNeeded: item.investmentAmount,
@@ -180,8 +180,8 @@ export default function Investors() {
               setSearchTerm("");
             }}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === "invest"
-                ? "bg-primary text-white shadow-sm"
-                : "text-slate-600 hover:bg-slate-50"
+              ? "bg-primary text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-50"
               }`}
           >
             Ready to Invest
@@ -192,8 +192,8 @@ export default function Investors() {
               setSearchTerm("");
             }}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === "seek"
-                ? "bg-primary text-white shadow-sm"
-                : "text-slate-600 hover:bg-slate-50"
+              ? "bg-primary text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-50"
               }`}
           >
             Need Investment
@@ -274,8 +274,8 @@ export default function Investors() {
               </div>
               <span
                 className={`px-2.5 py-1 rounded-full text-xs font-medium ${item.status === "Active" || item.status === "Funded"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-slate-100 text-slate-600"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-slate-100 text-slate-600"
                   }`}
               >
                 {item.status}

@@ -14,6 +14,9 @@ import CSM from '../models/csm.model';
 import Logistics from '../models/logistics.model';
 import Vehicle from '../models/vehicle.model';
 import Transaction from '../models/transaction.model';
+import bcrypt from 'bcryptjs';
+import JobSeeker from '../models/job-seeker.model';
+import Recruiter from '../models/recruiter.model';
 
 export class AdminController {
     /**
@@ -27,8 +30,14 @@ export class AdminController {
             const query: any = {};
 
             // Filter by role
-            if (role && ['job-seeker', 'recruiter', 'resource', 'admin'].includes(role as string)) {
-                query.role = role;
+            if (role && ['job-seeker', 'recruiter', 'resource', 'admin', 'employee', 'employer'].includes(role as string)) {
+                if (role === 'recruiter' || role === 'employer') {
+                    query.role = { $in: ['recruiter', 'employer'] };
+                } else if (role === 'job-seeker' || role === 'employee') {
+                    query.role = { $in: ['job-seeker', 'employee'] };
+                } else {
+                    query.role = role;
+                }
             }
 
             // Filter by status (if we add status field)
@@ -173,6 +182,81 @@ export class AdminController {
             res.status(500).json({
                 success: false,
                 message: 'Failed to update user',
+                error: error.message
+            });
+        }
+    };
+
+    /**
+     * Create a new user (admin only)
+     * POST /api/admin/users
+     */
+    public createUser = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { name, email, password, role, phoneNumber, company, status } = req.body;
+
+            // Basic validation
+            if (!name || !email || !role) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Name, email, and role are required'
+                });
+                return;
+            }
+
+            // Check if user exists
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                res.status(409).json({
+                    success: false,
+                    message: 'User with this email already exists'
+                });
+                return;
+            }
+
+            // Hash password (default to 123456 if not provided)
+            const passwordToHash = password || '123456';
+            const hashedPassword = await bcrypt.hash(passwordToHash, 10);
+
+            // Create user
+            const newUser = await User.create({
+                name,
+                email,
+                password: hashedPassword,
+                role,
+                phoneNumber,
+                status: status || 'active',
+                profile: {
+                    company: company
+                }
+            });
+
+            // Create associated profile based on role
+            if (role === 'job-seeker' || role === 'employee') {
+                await JobSeeker.create({
+                    userId: newUser._id
+                });
+            } else if (role === 'recruiter' || role === 'employer') {
+                await Recruiter.create({
+                    userId: newUser._id,
+                    company: company || 'Company Name'
+                });
+            }
+
+            // Return success
+            const userResponse = newUser.toObject();
+            delete userResponse.password;
+
+            res.status(201).json({
+                success: true,
+                message: 'User created successfully',
+                data: userResponse
+            });
+
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to create user',
                 error: error.message
             });
         }
@@ -327,8 +411,8 @@ export class AdminController {
                     users: {
                         total: userStats.reduce((sum, item) => sum + item.count, 0),
                         byRole: {
-                            'job-seeker': usersByRole['job-seeker'] || 0,
-                            'recruiter': usersByRole['recruiter'] || 0,
+                            'job-seeker': (usersByRole['job-seeker'] || 0) + (usersByRole['employee'] || 0),
+                            'recruiter': (usersByRole['recruiter'] || 0) + (usersByRole['employer'] || 0),
                             'resource': usersByRole['resource'] || 0,
                             'admin': usersByRole['admin'] || 0
                         }

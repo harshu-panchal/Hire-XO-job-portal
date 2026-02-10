@@ -45,19 +45,32 @@ export interface SystemStats {
   }[];
 }
 
+export interface PaginatedResponse<T> {
+  success: boolean;
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 export interface UserFilters {
   role?: string;
   status?: string;
   search?: string;
+  page?: number;
+  limit?: number;
 }
 
 export const adminService = {
   /**
-   * Get all users
+   * Get all users with pagination
    */
-  async getUsers(filters?: UserFilters): Promise<User[]> {
+  async getUsers(filters?: UserFilters): Promise<PaginatedResponse<User>> {
     try {
-      const response = await apiClient.get<User[]>("/admin/users", {
+      const response = await apiClient.get<PaginatedResponse<User>>("/admin/users", {
         params: filters,
       });
       return response.data;
@@ -106,6 +119,18 @@ export const adminService = {
   },
 
   /**
+   * Create new user
+   */
+  async createUser(userData: any): Promise<{ message: string; data: User }> {
+    try {
+      const response = await apiClient.post("/admin/users", userData);
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  /**
    * Get system statistics
    */
   async getSystemStats(): Promise<SystemStats> {
@@ -139,7 +164,10 @@ export const adminService = {
   ): Promise<{ message: string; plan: SubscriptionPlan }> {
     try {
       const response = await apiClient.post("/admin/plans", planData);
-      return response.data;
+      return {
+        message: response.data.message,
+        plan: response.data.data
+      };
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }
@@ -154,7 +182,10 @@ export const adminService = {
   ): Promise<{ message: string; plan: SubscriptionPlan }> {
     try {
       const response = await apiClient.put(`/admin/plans/${id}`, planData);
-      return response.data;
+      return {
+        message: response.data.message,
+        plan: response.data.data
+      };
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }

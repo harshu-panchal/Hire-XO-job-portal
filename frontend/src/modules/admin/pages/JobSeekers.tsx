@@ -41,12 +41,18 @@ export default function JobSeekers() {
     const [isSaving, setIsSaving] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
+    const [page, setPage] = useState(1);
+    const [limit] = useState(10);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalUsers, setTotalUsers] = useState(0);
+
     // Simple debounce implementation if hook doesn't exist
     const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(searchTerm);
+            setPage(1); // Reset to page 1 on search
         }, 500);
         return () => clearTimeout(timer);
     }, [searchTerm]);
@@ -54,8 +60,16 @@ export default function JobSeekers() {
     const fetchJobSeekers = async () => {
         setIsLoading(true);
         try {
-            const data = await adminService.getUsers({ role: 'job-seeker', search: debouncedSearch, status: statusFilter });
-            setJobSeekers(data);
+            const response = await adminService.getUsers({
+                role: 'employee',
+                search: debouncedSearch,
+                status: statusFilter,
+                page,
+                limit
+            });
+            setJobSeekers(response.data);
+            setTotalPages(response.pagination.pages);
+            setTotalUsers(response.pagination.total);
         } catch (error) {
             console.error("Failed to fetch job seekers:", error);
             toast.error("Failed to fetch job seekers");
@@ -66,7 +80,7 @@ export default function JobSeekers() {
 
     useEffect(() => {
         fetchJobSeekers();
-    }, [debouncedSearch, statusFilter]);
+    }, [debouncedSearch, statusFilter, page]); // Dependency array updated
 
     const handleDelete = async (id: string | undefined) => {
         if (!id) return;
@@ -117,7 +131,15 @@ export default function JobSeekers() {
                 toast.success("User updated successfully");
                 fetchJobSeekers();
             } else {
-                toast.error("Adding new users directly is not supported yet.");
+                await adminService.createUser({
+                    name: formData.name,
+                    email: formData.email,
+                    phoneNumber: formData.phoneNumber,
+                    // status: formData.status || "active", // Backend currently forces active
+                    role: "employee"
+                });
+                toast.success("User created successfully");
+                fetchJobSeekers();
             }
             setShowModal(false);
         } catch (error) {
@@ -172,19 +194,19 @@ export default function JobSeekers() {
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <p className="text-sm text-slate-500">Total Shown</p>
+                    <p className="text-sm text-slate-500">Total Users</p>
                     <p className="text-2xl font-bold text-slate-900 mt-1">
-                        {jobSeekers.length}
+                        {totalUsers}
                     </p>
                 </div>
                 <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <p className="text-sm text-slate-500">Active</p>
+                    <p className="text-sm text-slate-500">Active (Visible)</p>
                     <p className="text-2xl font-bold text-green-600 mt-1">
                         {jobSeekers.filter((u) => u.status === "active").length}
                     </p>
                 </div>
                 <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <p className="text-sm text-slate-500">Inactive/Banned</p>
+                    <p className="text-sm text-slate-500">Inactive (Visible)</p>
                     <p className="text-2xl font-bold text-slate-400 mt-1">
                         {jobSeekers.filter((u) => u.status !== "active").length}
                     </p>
@@ -399,6 +421,35 @@ export default function JobSeekers() {
                                     </button>
                                 </div>
                             </form>
+                            {/* Pagination Controls */}
+                            {totalUsers > 0 && (
+                                <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-slate-200">
+                                    <div className="flex items-center text-sm text-slate-500">
+                                        Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
+                                        <span className="font-medium mx-1">{Math.min(page * limit, totalUsers)}</span> of{" "}
+                                        <span className="font-medium mx-1">{totalUsers}</span> users
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                                            disabled={page === 1}
+                                            className="px-3 py-1 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            Previous
+                                        </button>
+                                        <span className="text-sm text-slate-600">
+                                            Page {page} of {totalPages}
+                                        </span>
+                                        <button
+                                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                            disabled={page === totalPages}
+                                            className="px-3 py-1 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </motion.div>
                     </>
                 )}

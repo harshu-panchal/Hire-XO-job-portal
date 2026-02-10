@@ -46,6 +46,21 @@ export class ApplicationController {
                 resume: resumeUrl,
                 additionalDocuments: documentUrls
             });
+
+            // Notify Admins
+            try {
+                const { notifyAdmins } = require('../utils/notifyAdmins');
+                const user = (req as any).user;
+                await notifyAdmins(
+                    'New Job Application',
+                    `${user?.name || 'A user'} applied for a job`,
+                    'info',
+                    jobId,
+                    'job_application'
+                );
+            } catch (err) {
+                console.error('Notification error:', err);
+            }
             res.status(201).json({
                 success: true,
                 message: 'Application submitted successfully',
@@ -88,6 +103,21 @@ export class ApplicationController {
                     proposalDocuments: documentUrls
                 }
             );
+
+            // Notify Admins
+            try {
+                const { notifyAdmins } = require('../utils/notifyAdmins');
+                const user = (req as any).user;
+                await notifyAdmins(
+                    'New Resource Application',
+                    `${user?.name || 'A user'} applied for ${resourceType} ${resourceId}`,
+                    'info',
+                    resourceId as string,
+                    'resource_application'
+                );
+            } catch (err) {
+                console.error('Notification error:', err);
+            }
             res.status(201).json({
                 success: true,
                 message: 'Application submitted successfully',

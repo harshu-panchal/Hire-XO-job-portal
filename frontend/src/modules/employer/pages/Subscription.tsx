@@ -16,10 +16,8 @@ const Subscription = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const data = await subscriptionService.getAllPlans();
-        // Specifically remove only the 2nd, 3rd, and 4th options as requested
-        // This keeps the 1st option and any main hiring plans that appear later
-        setPlans(data.filter((_, index) => index === 0 || index >= 4));
+        const data = await subscriptionService.getAllPlans('employer');
+        setPlans(data);
       } catch (error: any) {
         console.error("Failed to fetch plans:", error);
         toast.error("Failed to load plans");

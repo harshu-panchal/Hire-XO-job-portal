@@ -33,6 +33,25 @@ export class ResourceFactoryController<T extends Document> {
                 postedAt: new Date()
             });
 
+            // Notify Admins
+            try {
+                const { notifyAdmins } = require('../utils/notifyAdmins');
+                const isJob = this.resourceName === 'Job';
+                const relatedType = isJob ? 'new_job' : 'new_resource';
+                const itemTitle = (newItem as any).title || (newItem as any).name || this.resourceName;
+                const companyName = user?.profile?.company || user?.name || 'Someone';
+
+                await notifyAdmins(
+                    `New ${this.resourceName} Posted`,
+                    `New ${this.resourceName.toLowerCase()} "${itemTitle}" posted by ${companyName}`,
+                    'info',
+                    (newItem as any)._id,
+                    relatedType
+                );
+            } catch (err) {
+                console.error('Notification error:', err);
+            }
+
             res.status(201).json({ success: true, message: `${this.resourceName} created successfully`, data: newItem });
         } catch (error: any) {
             next(error);

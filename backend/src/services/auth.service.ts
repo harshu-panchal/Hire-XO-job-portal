@@ -28,6 +28,9 @@ export class AuthService {
                 role,
                 phoneNumber: userData.phoneNumber,
                 profilePhoto: userData.profilePhoto?.name || userData.profilePhoto, // Handle File object or string
+                profile: {
+                    company: userData.company || userData.companyName // For employers/recruiters
+                }
             });
 
             let profile;

@@ -59,7 +59,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
         name: item.title || item.company || item.name || "Unnamed Resource",
         description: item.description || "No description",
         location: item.location || "Unknown Location",
-        contact: item.userId?.phone || "N/A",
+        contact: item.userId?.phoneNumber || "N/A",
         email: item.userId?.email || "N/A",
         status: item.status || "Active",
         userId: item.userId,
@@ -228,8 +228,8 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
               </div>
               <span
                 className={`px-2.5 py-1 rounded-full text-xs font-medium ${item.status === "Active"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-slate-100 text-slate-600"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-slate-100 text-slate-600"
                   }`}
               >
                 {item.status}

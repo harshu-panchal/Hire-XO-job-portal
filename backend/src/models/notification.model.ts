@@ -7,7 +7,7 @@ export interface INotification extends Document {
     type: 'info' | 'success' | 'warning' | 'error';
     read: boolean;
     relatedId?: string;
-    relatedType?: 'job_application' | 'resource_application';
+    relatedType?: 'job_application' | 'resource_application' | 'new_job' | 'new_resource' | 'new_user';
     createdAt: Date;
 }
 
@@ -18,7 +18,7 @@ const NotificationSchema: Schema = new Schema({
     type: { type: String, enum: ['info', 'success', 'warning', 'error'], default: 'info' },
     read: { type: Boolean, default: false },
     relatedId: { type: String },
-    relatedType: { type: String, enum: ['job_application', 'resource_application'] },
+    relatedType: { type: String, enum: ['job_application', 'resource_application', 'new_job', 'new_resource', 'new_user'] },
 }, { timestamps: true });
 
 // Optimize notification queries by user

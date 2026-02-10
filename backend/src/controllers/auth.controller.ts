@@ -46,6 +46,23 @@ export class AuthController {
             }
 
             const result = await this.authService.signup(userData);
+
+            // Notify Admins
+            try {
+                const { notifyAdmins } = require('../utils/notifyAdmins');
+                const user = (result as any).user;
+                const role = user.role || 'user';
+                await notifyAdmins(
+                    'New User Registered',
+                    `New ${role} registered: ${user.name} (${user.email})`,
+                    'info',
+                    user._id,
+                    'new_user'
+                );
+            } catch (err) {
+                console.error('Notification error:', err);
+            }
+
             res.status(201).json({ message: 'User registered successfully', ...result });
         } catch (error: any) {
             next(error);
