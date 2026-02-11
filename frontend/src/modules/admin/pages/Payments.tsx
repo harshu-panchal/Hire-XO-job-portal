@@ -54,23 +54,32 @@ export default function Payments() {
   const [completedCount, setCompletedCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
 
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Simple debounce implementation
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to page 1 on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      // In a real app, we might want to fetch stats separately or compute from a larger dataset
-      // For now, we fetch a list. If the list is paginated, these stats might only reflect the current page
-      // unless the backend returns totals.
-      // AdminController currently returns pagination total count, but not "sum of amounts" unless we ask.
-      // But getSystemStats does return total revenue. 
-      // We can use the data we fetch to display the list.
-      // For the top cards, we might want to use values from getSystemStats?
-      // Or just compute from the fetched list for now (which is limited by pagination).
-      // Let's rely on what we have or fetch all for stats?
-      // Fetching all for stats is heavy.
-      // I'll fetch 'getSystemStats' independently for the "Total Revenue" card if I want accuracy.
-      // But `Payments` page usually implies showing the list.
+      const response = await adminService.getAllTransactions({
+        search: debouncedSearch,
+        status: statusFilter || undefined,
+        page,
+        limit
+      });
 
-      const response = await adminService.getAllTransactions({ limit: 100 }); // Fetch more for better initial view
       const data = response.data.map((t: any) => ({
         _id: t._id,
         user: t.userId?.name || "Unknown",
@@ -83,7 +92,13 @@ export default function Payments() {
       }));
       setPayments(data);
 
-      // Calculate specific stats from this chunk or use global stats if available
+      if (response.pagination) {
+        setTotalPages(response.pagination.pages);
+        setTotalItems(response.pagination.total);
+      }
+
+      // Stats - for accuracy, ideally stats should come from a separate API or the pagination response should include them
+      // But for now, we'll use what we have or just simplify the card stats
       const completed = data.filter((p: any) => p.status === 'completed');
       setCompletedCount(completed.length);
       setPendingCount(data.filter((p: any) => p.status === 'pending').length);
@@ -99,7 +114,7 @@ export default function Payments() {
 
   useEffect(() => {
     fetchPayments();
-  }, []);
+  }, [debouncedSearch, statusFilter, page]);
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -277,7 +292,7 @@ export default function Payments() {
               </tr>
             </thead>
             <tbody>
-              {filteredPayments.map((payment) => (
+              {payments.map((payment) => (
                 <tr
                   key={payment._id}
                   className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors"
@@ -295,7 +310,7 @@ export default function Payments() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-sm text-slate-600">
-                      {payment.plan}
+                      {payment.plan || "N/A"}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -327,10 +342,40 @@ export default function Payments() {
           </table>
         </div>
 
-        {filteredPayments.length === 0 && (
+        {payments.length === 0 && (
           <div className="py-12 text-center">
             <CreditCard className="w-12 h-12 text-slate-300 mx-auto mb-4" />
             <p className="text-slate-500">No payments found</p>
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {totalItems > 0 && (
+          <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-slate-200">
+            <div className="flex items-center text-sm text-slate-500">
+              Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
+              <span className="font-medium mx-1">{Math.min(page * limit, totalItems)}</span> of{" "}
+              <span className="font-medium mx-1">{totalItems}</span> transactions
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
+              </button>
+              <span className="text-sm font-medium text-slate-700 px-4">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </motion.div>

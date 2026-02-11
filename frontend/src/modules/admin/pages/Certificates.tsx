@@ -47,12 +47,35 @@ export default function Certificates() {
   const [rejectionReason, setRejectionReason] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Simple debounce implementation
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to page 1 on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const fetchCertificates = async () => {
     setIsLoading(true);
     try {
-      // Fetching with high limit for now to support client-side search
-      const data = await adminService.getAllCertificates({ limit: 1000 });
-      setCertificates(data);
+      const response = await adminService.getAllCertificates({
+        search: debouncedSearch,
+        page,
+        limit
+      });
+      setCertificates(response.data);
+      if (response.pagination) {
+        setTotalPages(response.pagination.pages);
+        setTotalItems(response.pagination.total);
+      }
     } catch (error) {
       console.error("Failed to fetch certificates:", error);
       toast.error("Failed to fetch certificates");
@@ -63,13 +86,9 @@ export default function Certificates() {
 
   useEffect(() => {
     fetchCertificates();
-  }, []);
+  }, [debouncedSearch, page]);
 
-  const filteredCertificates = certificates.filter(
-    (c) =>
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (typeof c.userId === 'object' && c.userId?.name.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+
 
   const handleApprove = async (id: string) => {
     if (window.confirm("Are you sure you want to approve this certificate?")) {
@@ -204,7 +223,7 @@ export default function Certificates() {
           variants={itemVariants}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {filteredCertificates.map((cert) => (
+          {certificates.map((cert) => (
             <div
               key={cert._id}
               className="bg-white rounded-xl border border-slate-200 p-6 relative overflow-hidden"
@@ -298,10 +317,40 @@ export default function Certificates() {
         </motion.div>
       )}
 
-      {!isLoading && filteredCertificates.length === 0 && (
+      {!isLoading && certificates.length === 0 && (
         <div className="py-12 text-center bg-white rounded-xl border border-slate-200">
           <Shield className="w-12 h-12 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-500">No certificates found</p>
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {totalItems > 0 && (
+        <div className="flex items-center justify-between px-6 py-4 bg-white border border-slate-200 rounded-xl mt-6">
+          <div className="flex items-center text-sm text-slate-500">
+            Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
+            <span className="font-medium mx-1">{Math.min(page * limit, totalItems)}</span> of{" "}
+            <span className="font-medium mx-1">{totalItems}</span> certificates
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-sm font-medium text-slate-700 px-4">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 

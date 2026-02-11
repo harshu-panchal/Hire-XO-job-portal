@@ -49,34 +49,56 @@ export default function PMC() {
   const [activeTab, setActiveTab] = useState<"offer" | "hire">("offer");
   const [data, setData] = useState<PMCItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<PMCItem | null>(null);
   const [formData, setFormData] = useState<Partial<PMCItem>>({});
 
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to page 1 on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const fetchResources = async () => {
     setLoading(true);
     try {
-      const allResources = await adminService.getResources("pmc");
+      const response = await adminService.getResources("pmc", {
+        search: debouncedSearch,
+        page,
+        limit
+      });
       const targetType = activeTab === "offer" ? "offer-pmc-services" : "hire-pmc";
 
-      const filtered = allResources.data.filter((item: any) => item.pmcType === targetType);
-
-      const mapped = filtered.map((item: any) => ({
-        _id: item._id,
-        title: item.title,
-        company: item.company,
-        description: item.description,
-        location: item.location,
-        contact: item.userId?.phoneNumber || "N/A",
-        email: item.userId?.email || "N/A",
-        projectExperience: item.projectExperience,
-        pmcType: item.pmcType,
-        status: item.status || "Active",
-        userId: item.userId
-      }));
+      const mapped = response.data
+        .map((item: any) => ({
+          _id: item._id,
+          title: item.title,
+          company: item.company,
+          description: item.description,
+          location: item.location,
+          contact: item.userId?.phoneNumber || "N/A",
+          email: item.userId?.email || "N/A",
+          projectExperience: item.projectExperience,
+          pmcType: item.pmcType,
+          status: item.status || "Active",
+          userId: item.userId
+        }))
+        .filter((item: any) => item.pmcType === targetType);
 
       setData(mapped);
+      if (response.pagination) {
+        setTotalPages(response.pagination.pages);
+        setTotalItems(response.pagination.total);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to load PMC records");
@@ -87,17 +109,10 @@ export default function PMC() {
 
   useEffect(() => {
     fetchResources();
-  }, [activeTab]);
+  }, [activeTab, debouncedSearch, page]);
 
-  const filteredData = data.filter(
-    (item) =>
-      (item.company?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (item.title?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (item.location?.toLowerCase() || "").includes(searchTerm.toLowerCase())
-  );
-
-  const activeCount = filteredData.filter((i) => i.status === "Active").length;
-  const totalCount = filteredData.length;
+  const activeCount = data.filter((i) => i.status === "Active").length;
+  const totalCount = totalItems;
 
   const handleOpenModal = (item?: PMCItem) => {
     if (item) {
@@ -215,7 +230,7 @@ export default function PMC() {
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredData.map((item) => (
+        {data.map((item) => (
           <div key={item._id} className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col h-full">
             <div className="flex items-start justify-between mb-4">
               <div className="p-3 rounded-lg bg-primary/10">
@@ -252,10 +267,40 @@ export default function PMC() {
         ))}
       </motion.div>
 
-      {filteredData.length === 0 && (
+      {data.length === 0 && (
         <div className="py-12 text-center bg-white rounded-xl border border-slate-200">
           <Briefcase className="w-12 h-12 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-500">No records found</p>
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {totalItems > 0 && (
+        <div className="flex items-center justify-between px-6 py-4 bg-white border border-slate-200 rounded-xl mt-6">
+          <div className="flex items-center text-sm text-slate-500">
+            Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
+            <span className="font-medium mx-1">{Math.min(page * limit, totalItems)}</span> of{" "}
+            <span className="font-medium mx-1">{totalItems}</span> records
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-sm font-medium text-slate-700 px-4">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 

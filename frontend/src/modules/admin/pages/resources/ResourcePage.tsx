@@ -43,6 +43,11 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
   const [items, setItems] = useState<ResourceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<ResourceItem | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -50,10 +55,23 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
 
   const category = title.toLowerCase();
 
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to page 1 on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const fetchResources = async () => {
     setLoading(true);
     try {
-      const response = await adminService.getResources(category);
+      const response = await adminService.getResources(category, {
+        search: debouncedSearch,
+        page,
+        limit
+      });
       const mapped = response.data.map((item: any) => ({
         _id: item._id,
         name: item.title || item.company || item.name || "Unnamed Resource",
@@ -66,6 +84,10 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
         ...item // Keep original fields for editing if needed
       }));
       setItems(mapped);
+      if (response.pagination) {
+        setTotalPages(response.pagination.pages);
+        setTotalItems(response.pagination.total);
+      }
     } catch (error) {
       console.error(error);
       toast.error(`Failed to load ${title}`);
@@ -76,14 +98,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
 
   useEffect(() => {
     fetchResources();
-  }, [category]);
-
-  const filteredItems = items.filter(
-    (i) =>
-      (i.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (i.location?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (i.description?.toLowerCase() || "").includes(searchTerm.toLowerCase())
-  );
+  }, [category, debouncedSearch, page]);
 
   const openModal = (item?: ResourceItem) => {
     if (item) {
@@ -217,7 +232,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
         variants={itemVariants}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        {filteredItems.map((item) => (
+        {items.map((item) => (
           <div
             key={item._id}
             className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col h-full"
@@ -277,10 +292,40 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
         ))}
       </motion.div>
 
-      {filteredItems.length === 0 && (
+      {items.length === 0 && (
         <div className="py-12 text-center bg-white rounded-xl border border-slate-200">
           <Icon className="w-12 h-12 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-500">No results found</p>
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {totalItems > 0 && (
+        <div className="flex items-center justify-between px-6 py-4 bg-white border border-slate-200 rounded-xl mt-6">
+          <div className="flex items-center text-sm text-slate-500">
+            Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
+            <span className="font-medium mx-1">{Math.min(page * limit, totalItems)}</span> of{" "}
+            <span className="font-medium mx-1">{totalItems}</span> records
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-sm font-medium text-slate-700 px-4">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 
@@ -349,33 +394,6 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
-                {/* Contact and Email are usually from User, so we make them read-only or hidden in edit if we can't change User */}
-                {/*
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                      Contact
-                    </label>
-                    <input
-                      type="tel"
-                      value={formState.contact || ""}
-                      readOnly
-                      className="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-sm text-slate-500 cursor-not-allowed"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={formState.email || ""}
-                      readOnly
-                      className="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-sm text-slate-500 cursor-not-allowed"
-                    />
-                  </div>
-                </div>
-                */}
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Status

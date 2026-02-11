@@ -68,12 +68,27 @@ export const applicationService = {
   /**
    * Get my applications
    */
-  async getMyApplications(): Promise<{ jobs: Application[]; resources: Application[] }> {
+  async getMyApplications(page: number = 1, limit: number = 20): Promise<{
+    jobs: Application[];
+    resources: Application[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    }
+  }> {
     try {
-      const response = await apiClient.get<{ success: boolean; data: { jobs: any[]; resources: any[] } }>(
-        "/applications/my-applications"
-      );
-      const { jobs = [], resources = [] } = response.data.data || {};
+      const response = await apiClient.get<{
+        success: boolean;
+        jobs: any[];
+        resources: any[];
+        pagination: any;
+      }>("/applications/my-applications", {
+        params: { page, limit }
+      });
+
+      const { jobs = [], resources = [], pagination } = response.data;
 
       return {
         jobs: jobs.map((app: any) => ({
@@ -84,6 +99,7 @@ export const applicationService = {
           ...app,
           id: app.id || app._id,
         })),
+        pagination
       };
     } catch (error) {
       throw new Error(getErrorMessage(error));
@@ -173,6 +189,19 @@ export const applicationService = {
         status,
         type,
       });
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+  /**
+   * Withdraw/Delete application
+   */
+  async deleteApplication(applicationId: string): Promise<{ message: string }> {
+    try {
+      const response = await apiClient.delete<{ success: boolean; message: string }>(
+        `/applications/${applicationId}`
+      );
       return response.data;
     } catch (error) {
       throw new Error(getErrorMessage(error));

@@ -60,35 +60,59 @@ export default function Investors() {
   // Form States
   const [formData, setFormData] = useState<Partial<InvestorItem>>({});
 
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Simple debounce implementation
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to page 1 on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const fetchResources = async () => {
     setLoading(true);
     try {
-      // Filter by investorType based on tab
-      const type = activeTab === "invest" ? "want-to-invest" : "want-investment";
-
-      const allResources = await adminService.getResources("investors");
-
-      // Filter active tab
-      const filtered = allResources.data.filter((item: any) =>
-        activeTab === "invest" ? (item.investorType === "want-to-invest") : (item.investorType === "want-investment")
-      );
+      const response = await adminService.getResources("investors", {
+        search: debouncedSearch,
+        page,
+        limit
+      });
 
       // Map to UI model
-      const mapped = filtered.map((item: any) => ({
+      const mapped = response.data.map((item: any) => ({
         _id: item._id,
         name: item.company,
         title: item.title,
         description: item.description,
         location: item.location,
-        contact: item.userId?.phoneNumber || "N/A", // User model might not have phone exposed or populated fully
+        contact: item.userId?.phoneNumber || "N/A",
         email: item.userId?.email || "N/A",
         budget: item.investmentAmount,
         amountNeeded: item.investmentAmount,
         status: item.status || "Active",
-        userId: item.userId
+        userId: item.userId,
+        investorType: item.investorType
       }));
 
-      setData(mapped);
+      // Filter by investorType based on tab (since backend search might return mixed if categories share words)
+      // Actually, it's better if we filter in the fetch or if we just display the tab's data.
+      // Ideally backend should handle investorType filter too.
+      const filtered = mapped.filter((item: any) =>
+        activeTab === "invest" ? (item.investorType === "want-to-invest") : (item.investorType === "want-investment")
+      );
+
+      setData(filtered);
+      if (response.pagination) {
+        setTotalPages(response.pagination.pages);
+        setTotalItems(response.pagination.total);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to load investors");
@@ -99,18 +123,10 @@ export default function Investors() {
 
   useEffect(() => {
     fetchResources();
-  }, [activeTab]);
+  }, [activeTab, debouncedSearch, page]);
 
-  // Client-side search filtering
-  const filteredData = data.filter(
-    (item) =>
-      (item.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (item.title?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (item.location?.toLowerCase() || "").includes(searchTerm.toLowerCase())
-  );
-
-  const activeCount = filteredData.filter((i) => i.status === "Active").length;
-  const totalCount = filteredData.length;
+  const activeCount = data.filter((i) => i.status === "Active").length;
+  const totalCount = data.length;
 
   const handleOpenModal = (item?: InvestorItem) => {
     if (item) {
@@ -263,7 +279,7 @@ export default function Investors() {
         variants={itemVariants}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        {filteredData.map((item) => (
+        {data.map((item) => (
           <div
             key={item._id}
             className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col h-full"
@@ -329,10 +345,40 @@ export default function Investors() {
       </motion.div>
 
       {/* Empty State */}
-      {filteredData.length === 0 && (
+      {!loading && data.length === 0 && (
         <div className="py-12 text-center bg-white rounded-xl border border-slate-200">
           <DollarSign className="w-12 h-12 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-500">No results found</p>
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {totalItems > 0 && (
+        <div className="flex items-center justify-between px-6 py-4 bg-white border border-slate-200 rounded-xl mt-6">
+          <div className="flex items-center text-sm text-slate-500">
+            Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
+            <span className="font-medium mx-1">{Math.min(page * limit, totalItems)}</span> of{" "}
+            <span className="font-medium mx-1">{totalItems}</span> items
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-sm font-medium text-slate-700 px-4">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 

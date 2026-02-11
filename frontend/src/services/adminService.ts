@@ -206,10 +206,10 @@ export const adminService = {
   /**
    * Get all certificates
    */
-  async getAllCertificates(params?: { status?: string; page?: number; limit?: number }): Promise<Certificate[]> {
+  async getAllCertificates(params?: { status?: string; search?: string; page?: number; limit?: number }): Promise<PaginatedResponse<Certificate>> {
     try {
-      const response = await apiClient.get<any>("/admin/certificates", { params });
-      return response.data.data; // Backend returns wrapped response with pagination
+      const response = await apiClient.get<PaginatedResponse<Certificate>>("/admin/certificates", { params });
+      return response.data;
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }

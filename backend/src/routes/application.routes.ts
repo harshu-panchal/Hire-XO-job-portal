@@ -15,5 +15,6 @@ router.get('/jobs/:jobId/applications', authenticateToken, applicationController
 router.get('/resources/:resourceType/:resourceId/applications', authenticateToken, applicationController.getResourceApplications);
 router.get('/resources/received', authenticateToken, applicationController.getReceivedResourceApplications);
 router.put('/:applicationId/status', authenticateToken, applicationController.updateApplicationStatus);
+router.delete('/:applicationId', authenticateToken, applicationController.deleteApplication);
 
 export default router;

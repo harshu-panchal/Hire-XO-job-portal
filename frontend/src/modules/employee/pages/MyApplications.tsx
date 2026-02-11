@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 
 const MyApplications = () => {
   const navigate = useNavigate();
-  const { applications, fetchMyApplications, isLoading } = useEmployeeStore();
+  const { applications, fetchMyApplications, withdrawApplication, isLoading, hasMore, loadMoreApplications } = useEmployeeStore();
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -19,28 +19,28 @@ const MyApplications = () => {
   // Combine and format
   const formattedJobs = Array.isArray(jobApplications)
     ? jobApplications.map((app: any) => ({
-        id: app.id,
-        title: app.jobId?.title || "Unknown Job",
-        company: app.jobId?.company || "Unknown Company",
-        companyLogo: app.jobId?.companyLogo, // Assuming populated
-        location: app.jobId?.location || "N/A",
-        postedAt: app.jobId?.postedAt ? new Date(app.jobId.postedAt).toLocaleDateString() : "N/A",
-        appType: "Job",
-        status: app.status,
-      }))
+      id: app.id,
+      title: app.jobId?.title || "Unknown Job",
+      company: app.jobId?.company || "Unknown Company",
+      companyLogo: app.jobId?.companyLogo, // Assuming populated
+      location: app.jobId?.location || "N/A",
+      postedAt: app.jobId?.postedAt ? new Date(app.jobId.postedAt).toLocaleDateString() : "N/A",
+      appType: "Job",
+      status: app.status,
+    }))
     : [];
 
   const formattedResources = Array.isArray(resourceApplications)
     ? resourceApplications.map((app: any) => ({
-        id: app.id,
-        title: app.resourceId?.title || app.resourceId?.name || "Resource Application",
-        company: "Resource", // Resource doesn't always have company
-        companyLogo: null,
-        location: app.resourceId?.location || "N/A",
-        postedAt: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
-        appType: "Resource",
-        status: app.status,
-      }))
+      id: app.id,
+      title: app.resourceId?.title || app.resourceId?.name || "Resource Application",
+      company: "Resource", // Resource doesn't always have company
+      companyLogo: null,
+      location: app.resourceId?.location || "N/A",
+      postedAt: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+      appType: "Resource",
+      status: app.status,
+    }))
     : [];
 
   const allApplications = [...formattedJobs, ...formattedResources].filter(
@@ -117,21 +117,35 @@ const MyApplications = () => {
                           {app.company}
                         </p>
                         <span
-                          className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${
-                            app.appType === "Job"
-                              ? "bg-blue-500/10 text-blue-500"
-                              : "bg-purple-500/10 text-purple-500"
-                          }`}
+                          className={`px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest ${app.appType === "Job"
+                            ? "bg-blue-500/10 text-blue-500"
+                            : "bg-purple-500/10 text-purple-500"
+                            }`}
                         >
                           {app.appType}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div
-                    className={`px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-current/10`}
-                  >
-                    {app.status || "Applied"}
+                  <div className="flex flex-col items-end gap-2">
+                    <div
+                      className={`px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-current/10`}
+                    >
+                      {app.status || "Applied"}
+                    </div>
+                    {(app.status === "Pending" || !app.status) && (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (window.confirm("Are you sure you want to withdraw this application?")) {
+                            withdrawApplication(app.id);
+                          }
+                        }}
+                        className="text-[9px] font-black text-red-500 uppercase tracking-widest hover:underline active:scale-95 transition-all"
+                      >
+                        Withdraw
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -147,6 +161,18 @@ const MyApplications = () => {
                 </div>
               </div>
             ))
+          )}
+
+          {!isLoading && allApplications.length > 0 && hasMore && (
+            <div className="pt-4 pb-8 flex justify-center">
+              <button
+                onClick={() => loadMoreApplications()}
+                disabled={isLoading}
+                className="px-8 py-4 rounded-2xl bg-white border-2 border-slate-100 text-primary font-black text-xs uppercase tracking-widest hover:border-primary/20 active:scale-95 transition-all disabled:opacity-50"
+              >
+                {isLoading ? "Loading..." : "Load More"}
+              </button>
+            </div>
           )}
 
           {!isLoading && allApplications.length === 0 && (

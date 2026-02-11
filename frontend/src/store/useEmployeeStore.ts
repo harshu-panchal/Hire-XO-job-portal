@@ -8,7 +8,16 @@ import type { Job, Certificate } from "../types";
 interface EmployeeState {
   jobs: Job[];
   savedJobs: string[];
-  applications: { jobs: any[]; resources: any[] };
+  applications: {
+    jobs: any[];
+    resources: any[];
+    pagination?: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    }
+  };
   certificates: Certificate[];
   isLoading: boolean;
   error: string | null;
@@ -16,6 +25,7 @@ interface EmployeeState {
     search: string;
     type: string;
   };
+  hasMore: boolean;
 
   // Job Actions
   fetchJobs: (filters?: any) => Promise<void>;
@@ -27,7 +37,9 @@ interface EmployeeState {
 
   // Application Actions
   applyToJob: (jobId: string, applicationData: any) => Promise<void>;
-  fetchMyApplications: () => Promise<void>;
+  fetchMyApplications: (page?: number) => Promise<void>;
+  loadMoreApplications: () => Promise<void>;
+  withdrawApplication: (applicationId: string) => Promise<void>;
 
   // Certificate Actions
   uploadCertificate: (certificateData: FormData) => Promise<void>;
@@ -49,6 +61,7 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     search: "",
     type: "all",
   },
+  hasMore: false,
 
   setSearch: (search: string) => {
     set((state) => ({
@@ -135,16 +148,66 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     }
   },
 
-  fetchMyApplications: async () => {
+  fetchMyApplications: async (page: number = 1) => {
     set({ isLoading: true, error: null });
     try {
-      const applications = await applicationService.getMyApplications();
-      set({ applications, isLoading: false });
+      const response = await applicationService.getMyApplications(page, 10);
+      set({
+        applications: response,
+        isLoading: false,
+        hasMore: response.pagination.page < response.pagination.pages
+      });
     } catch (error: any) {
       set({
         error: error.message || "Failed to fetch applications",
         isLoading: false,
       });
+    }
+  },
+
+  loadMoreApplications: async () => {
+    const { applications, isLoading, hasMore } = get();
+    if (isLoading || !hasMore || !applications.pagination) return;
+
+    const nextPage = applications.pagination.page + 1;
+    set({ isLoading: true });
+    try {
+      const response = await applicationService.getMyApplications(nextPage, 10);
+      set({
+        applications: {
+          jobs: [...applications.jobs, ...response.jobs],
+          resources: [...applications.resources, ...response.resources],
+          pagination: response.pagination
+        },
+        isLoading: false,
+        hasMore: response.pagination.page < response.pagination.pages
+      });
+    } catch (error: any) {
+      set({
+        error: error.message || "Failed to load more applications",
+        isLoading: false,
+      });
+    }
+  },
+
+  withdrawApplication: async (applicationId: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      await applicationService.deleteApplication(applicationId);
+      set((state) => ({
+        applications: {
+          ...state.applications,
+          jobs: state.applications.jobs.filter((app) => (app.id || app._id) !== applicationId),
+          resources: state.applications.resources.filter((app) => (app.id || app._id) !== applicationId),
+        },
+        isLoading: false,
+      }));
+    } catch (error: any) {
+      set({
+        error: error.message || "Failed to withdraw application",
+        isLoading: false,
+      });
+      throw error;
     }
   },
 

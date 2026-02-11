@@ -46,13 +46,14 @@ const EmployerDashboard = () => {
         ]);
 
         setStats({
-          activeJobs: myJobs.length || statsData.activeJobs || 0,
-          totalApplications: statsData.totalApplications || 0,
+          activeJobs: (Array.isArray(myJobs) ? myJobs.length : 0) || statsData?.activeJobs || 0,
+          totalApplications: statsData?.totalApplications || 0,
           interviews: 0,
         });
 
-        // Format applications
-        const formattedApps = appsData.slice(0, 5).map((app: any) => ({
+        // Format applications safely
+        const appsArray = Array.isArray(appsData) ? appsData : (appsData as any)?.data || [];
+        const formattedApps = appsArray.slice(0, 5).map((app: any) => ({
           id: app.id || app._id,
           name: app.applicantId?.name || "Unknown Candidate",
           role: app.jobId?.title || "Unknown Role",
@@ -61,8 +62,10 @@ const EmployerDashboard = () => {
           avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase(),
         }));
         setRecentApplications(formattedApps);
-        const { data } = await postService.getAllPosts(1, 10);
-        setRecentPosts(data.slice(0, 3));
+
+        // Safely set recent posts from postData
+        const postsArray = postsData?.data || (Array.isArray(postsData) ? postsData : []);
+        setRecentPosts(postsArray.slice(0, 3));
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {

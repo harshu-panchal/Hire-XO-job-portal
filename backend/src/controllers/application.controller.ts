@@ -136,8 +136,11 @@ export class ApplicationController {
                 return;
             }
 
-            const applications = await this.applicationService.getMyApplications(userId);
-            res.status(200).json({ success: true, data: applications });
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+
+            const result = await this.applicationService.getMyApplications(userId, page, limit);
+            res.status(200).json({ success: true, ...result });
         } catch (error: any) {
             next(error);
         }
@@ -284,6 +287,23 @@ export class ApplicationController {
                 message: 'Application status updated',
                 application
             });
+        } catch (error: any) {
+            next(error);
+        }
+    };
+
+    public deleteApplication = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            const { applicationId } = req.params;
+
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            await this.applicationService.deleteApplication(applicationId, userId);
+            res.status(200).json({ success: true, message: 'Application withdrawn successfully' });
         } catch (error: any) {
             next(error);
         }

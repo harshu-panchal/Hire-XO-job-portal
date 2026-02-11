@@ -156,26 +156,41 @@ export class ApplicationService {
         return application;
     }
 
-    // Get user's applications
-    public async getMyApplications(userId: string) {
-        const jobApplications = await JobApplication.find({ applicantId: userId })
-            .populate('jobId')
-            .sort({ appliedAt: -1 });
+    // Get user's applications with pagination
+    public async getMyApplications(userId: string, page: number = 1, limit: number = 20) {
+        const skip = (page - 1) * limit;
 
-        const resourceApplications = await ResourceApplication.find({ applicantId: userId })
-            .populate('resourceId')
-            .sort({ appliedAt: -1 });
+        const [jobApplications, resourceApplications, totalJobs, totalResources] = await Promise.all([
+            JobApplication.find({ applicantId: userId })
+                .populate('jobId')
+                .sort({ appliedAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            ResourceApplication.find({ applicantId: userId })
+                .populate('resourceId')
+                .sort({ appliedAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            JobApplication.countDocuments({ applicantId: userId }),
+            ResourceApplication.countDocuments({ applicantId: userId })
+        ]);
 
         return {
             jobs: jobApplications,
-            resources: resourceApplications
+            resources: resourceApplications,
+            pagination: {
+                page,
+                limit,
+                total: totalJobs + totalResources,
+                pages: Math.ceil(Math.max(totalJobs, totalResources) / limit)
+            }
         };
     }
 
     // Get applications for a specific job (for job owner)
     public async getJobApplications(jobId: string, ownerId: string, page: number = 1, limit: number = 20) {
-        // Check subscription status
-        const isSubscribed = await this.checkUserSubscription(ownerId);
+        // Check if user can view unmasked data
+        const canViewData = await this.canViewUnmaskedData(ownerId);
 
         // Verify ownership
         const job = await Job.findById(jobId);
@@ -199,7 +214,7 @@ export class ApplicationService {
         const total = await JobApplication.countDocuments({ jobId });
 
         let data = applications;
-        if (!isSubscribed) {
+        if (!canViewData) {
             data = applications.map(app => this.maskApplicationData(app));
         }
 
@@ -216,8 +231,8 @@ export class ApplicationService {
 
     // Get all applications received for jobs posted by the user (Recruiter Dashboard)
     public async getReceivedApplications(userId: string, page: number = 1, limit: number = 20) {
-        // Check subscription status
-        const isSubscribed = await this.checkUserSubscription(userId);
+        // Check if user can view unmasked data
+        const canViewData = await this.canViewUnmaskedData(userId);
 
         // Find all jobs posted by the user
         const jobs = await Job.find({ userId });
@@ -237,7 +252,7 @@ export class ApplicationService {
         const total = await JobApplication.countDocuments({ jobId: { $in: jobIds } });
 
         let data = applications;
-        if (!isSubscribed) {
+        if (!canViewData) {
             data = applications.map(app => this.maskApplicationData(app));
         }
 
@@ -302,8 +317,8 @@ export class ApplicationService {
         const resources = await ResourceModel.find({ userId });
         const resourceIds = resources.map((r: any) => r._id);
 
-        // Check subscription status
-        const isSubscribed = await this.checkUserSubscription(userId);
+        // Check if user can view unmasked data
+        const canViewData = await this.canViewUnmaskedData(userId);
 
         const skip = (page - 1) * limit;
 
@@ -319,7 +334,7 @@ export class ApplicationService {
         const total = await ResourceApplication.countDocuments({ resourceId: { $in: resourceIds } });
 
         let data = applications;
-        if (!isSubscribed) {
+        if (!canViewData) {
             data = applications.map(app => this.maskApplicationData(app));
         }
 
@@ -336,8 +351,8 @@ export class ApplicationService {
 
     // Get applications for a specific resource (for resource owner)
     public async getResourceApplications(resourceId: string, resourceType: string, ownerId: string, page: number = 1, limit: number = 20) {
-        // Check subscription status
-        const isSubscribed = await this.checkUserSubscription(ownerId);
+        // Check if user can view unmasked data
+        const canViewData = await this.canViewUnmaskedData(ownerId);
 
         const modelMap: any = {
             'Investor': Investor,
@@ -377,7 +392,7 @@ export class ApplicationService {
         const total = await ResourceApplication.countDocuments({ resourceId, resourceType });
 
         let data = applications;
-        if (!isSubscribed) {
+        if (!canViewData) {
             data = applications.map(app => this.maskApplicationData(app));
         }
 
@@ -390,6 +405,30 @@ export class ApplicationService {
                 pages: Math.ceil(total / limit)
             }
         };
+    }
+
+    // Delete/Withdraw application
+    public async deleteApplication(applicationId: string, userId: string): Promise<void> {
+        // Try searching in JobApplications first
+        let application = await JobApplication.findById(applicationId);
+        let Model: any = JobApplication;
+
+        if (!application) {
+            // Try searching in ResourceApplications
+            application = await ResourceApplication.findById(applicationId) as any;
+            Model = ResourceApplication;
+        }
+
+        if (!application) {
+            throw new Error('Application not found');
+        }
+
+        // Check ownership (only the applicant can withdraw)
+        if (application.applicantId.toString() !== userId) {
+            throw new Error('You are not authorized to withdraw this application');
+        }
+
+        await Model.findByIdAndDelete(applicationId);
     }
 
     // Update application status
@@ -513,6 +552,17 @@ export class ApplicationService {
                 }
 
                 applicant.profile.bio = "Upgrade to a PRO subscription to view this candidate's full profile, experience history, and contact details.";
+
+                // Mask additional sensitive fields
+                applicant.profile.skills = [];
+                applicant.profile.linkedinUrl = '';
+                applicant.profile.githubUrl = '';
+                applicant.profile.twitterUrl = '';
+                applicant.profile.location = '********';
+                applicant.profile.age = undefined;
+                applicant.profile.jobTitle = '********';
+                applicant.profile.company = '********';
+                applicant.profile.organizationName = '********';
             }
 
             // Mask application message
@@ -532,15 +582,23 @@ export class ApplicationService {
             if (application.additionalDocuments) {
                 application.additionalDocuments = [];
             }
+            if (application.proposalDocuments) {
+                application.proposalDocuments = [];
+            }
         }
         return application;
     }
 
-    // Helper to check if a user has an active subscription
-    private async checkUserSubscription(userId: string): Promise<boolean> {
+    // Helper to check if a user can view unmasked application data
+    // Admins and users with active PRO subscriptions are exempt from masking
+    private async canViewUnmaskedData(userId: string): Promise<boolean> {
         const user = await User.findById(userId);
         if (!user) return false;
 
+        // Admins can see everything
+        if (user.role === 'admin') return true;
+
+        // Check for active subscription
         if (!user.activeSubscriptionId || !user.subscriptionExpiry) {
             return false;
         }

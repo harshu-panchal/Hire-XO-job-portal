@@ -565,6 +565,8 @@ export class AdminController {
     public getResources = async (req: Request, res: Response): Promise<void> => {
         try {
             const { category } = req.params;
+            const { page = '1', limit = '20', search } = req.query;
+
             const modelMap: any = {
                 'investors': Investor,
                 'tenders': Tender,
@@ -582,8 +584,40 @@ export class AdminController {
                 return;
             }
 
-            const items = await Model.find().populate('userId', 'name email phoneNumber');
-            res.status(200).json({ success: true, data: items });
+            const pageNum = parseInt(page as string);
+            const limitNum = parseInt(limit as string);
+            const skip = (pageNum - 1) * limitNum;
+
+            const query: any = {};
+            if (search) {
+                // Generic search across common fields
+                query.$or = [
+                    { company: { $regex: search as string, $options: 'i' } },
+                    { title: { $regex: search as string, $options: 'i' } },
+                    { location: { $regex: search as string, $options: 'i' } },
+                    { description: { $regex: search as string, $options: 'i' } }
+                ];
+            }
+
+            const [items, total] = await Promise.all([
+                Model.find(query)
+                    .populate('userId', 'name email phoneNumber')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limitNum),
+                Model.countDocuments(query)
+            ]);
+
+            res.status(200).json({
+                success: true,
+                data: items,
+                pagination: {
+                    page: pageNum,
+                    limit: limitNum,
+                    total,
+                    pages: Math.ceil(total / limitNum)
+                }
+            });
         } catch (error: any) {
             res.status(500).json({ success: false, message: error.message });
         }

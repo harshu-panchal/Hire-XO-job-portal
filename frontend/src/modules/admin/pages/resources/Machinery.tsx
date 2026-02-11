@@ -55,15 +55,35 @@ export default function Machinery() {
   const [formData, setFormData] = useState<Partial<MachineryItem>>({});
   const [machineryTypesString, setMachineryTypesString] = useState("");
 
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Simple debounce implementation
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to page 1 on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const fetchResources = async () => {
     setLoading(true);
     try {
-      const allResources = await adminService.getResources("machinery");
+      const response = await adminService.getResources("machinery", {
+        search: debouncedSearch,
+        page,
+        limit
+      });
+
       const targetType = activeTab === "provide" ? "provide-machinery" : "need-machinery";
 
-      const filtered = allResources.data.filter((item: any) => item.machineryType === targetType);
-
-      const mapped = filtered.map((item: any) => ({
+      // Map and filter
+      const mapped = response.data.map((item: any) => ({
         _id: item._id,
         title: item.title,
         company: item.company,
@@ -77,7 +97,13 @@ export default function Machinery() {
         userId: item.userId
       }));
 
-      setData(mapped);
+      const filtered = mapped.filter((item: any) => item.machineryType === targetType);
+
+      setData(filtered);
+      if (response.pagination) {
+        setTotalPages(response.pagination.pages);
+        setTotalItems(response.pagination.total);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to load machinery records");
@@ -88,17 +114,10 @@ export default function Machinery() {
 
   useEffect(() => {
     fetchResources();
-  }, [activeTab]);
+  }, [activeTab, debouncedSearch, page]);
 
-  const filteredData = data.filter(
-    (item) =>
-      (item.company?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (item.title?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (item.location?.toLowerCase() || "").includes(searchTerm.toLowerCase())
-  );
-
-  const activeCount = filteredData.filter((i) => i.status === "Active").length;
-  const totalCount = filteredData.length;
+  const activeCount = data.filter((i) => i.status === "Active").length;
+  const totalCount = data.length;
 
   const handleOpenModal = (item?: MachineryItem) => {
     if (item) {
@@ -217,7 +236,7 @@ export default function Machinery() {
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredData.map((item) => (
+        {data.map((item) => (
           <div key={item._id} className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col h-full">
             <div className="flex items-start justify-between mb-4">
               <div className="p-3 rounded-lg bg-primary/10">
@@ -254,13 +273,45 @@ export default function Machinery() {
         ))}
       </motion.div>
 
-      {filteredData.length === 0 && (
+      {/* Empty State */}
+      {!loading && data.length === 0 && (
         <div className="py-12 text-center bg-white rounded-xl border border-slate-200">
           <Truck className="w-12 h-12 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-500">No records found</p>
         </div>
       )}
 
+      {/* Pagination Controls */}
+      {totalItems > 0 && (
+        <div className="flex items-center justify-between px-6 py-4 bg-white border border-slate-200 rounded-xl mt-6">
+          <div className="flex items-center text-sm text-slate-500">
+            Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
+            <span className="font-medium mx-1">{Math.min(page * limit, totalItems)}</span> of{" "}
+            <span className="font-medium mx-1">{totalItems}</span> items
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-sm font-medium text-slate-700 px-4">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal */}
       <AnimatePresence>
         {showModal && (
           <>

@@ -319,6 +319,36 @@ export default function JobSeekers() {
                         <p className="text-slate-500">No job seekers found</p>
                     </div>
                 )}
+
+                {/* Pagination Controls */}
+                {totalUsers > 0 && (
+                    <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-slate-200">
+                        <div className="flex items-center text-sm text-slate-500">
+                            Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
+                            <span className="font-medium mx-1">{Math.min(page * limit, totalUsers)}</span> of{" "}
+                            <span className="font-medium mx-1">{totalUsers}</span> users
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                Previous
+                            </button>
+                            <span className="text-sm font-medium text-slate-700 px-4">
+                                Page {page} of {totalPages}
+                            </span>
+                            <button
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                                className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Add/Edit Modal */}
@@ -421,35 +451,6 @@ export default function JobSeekers() {
                                     </button>
                                 </div>
                             </form>
-                            {/* Pagination Controls */}
-                            {totalUsers > 0 && (
-                                <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-slate-200">
-                                    <div className="flex items-center text-sm text-slate-500">
-                                        Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
-                                        <span className="font-medium mx-1">{Math.min(page * limit, totalUsers)}</span> of{" "}
-                                        <span className="font-medium mx-1">{totalUsers}</span> users
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => setPage(p => Math.max(1, p - 1))}
-                                            disabled={page === 1}
-                                            className="px-3 py-1 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            Previous
-                                        </button>
-                                        <span className="text-sm text-slate-600">
-                                            Page {page} of {totalPages}
-                                        </span>
-                                        <button
-                                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                                            disabled={page === totalPages}
-                                            className="px-3 py-1 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            Next
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
                         </motion.div>
                     </>
                 )}
