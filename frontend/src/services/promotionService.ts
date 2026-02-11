@@ -9,6 +9,7 @@ export interface Promotion {
     status: 'Active' | 'Completed' | 'Paused';
     startDate: string;
     endDate?: string;
+    planId?: any; // Populated plan data
 }
 
 export interface PromotionStats {
@@ -21,13 +22,13 @@ export const promotionService = {
     async createPromotion(
         resourceId: string,
         resourceType: 'Job' | 'Post',
-        budget: number
+        planId: string
     ): Promise<Promotion> {
         try {
             const response = await apiClient.post<{ promotion: Promotion }>("/promotions", {
                 resourceId,
                 resourceType,
-                budget
+                planId
             });
             return response.data.promotion;
         } catch (error) {

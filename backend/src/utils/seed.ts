@@ -1,9 +1,11 @@
 import SubscriptionPlan from '../models/subscription-plan.model';
+import PromotionPlan from '../models/promotion-plan.model';
 
 export const seedPlans = async () => {
     try {
-        const count = await SubscriptionPlan.countDocuments();
-        if (count === 0) {
+        // Seed subscription plans
+        const subCount = await SubscriptionPlan.countDocuments();
+        if (subCount === 0) {
             console.log('Seeding subscription plans...');
             await SubscriptionPlan.create({
                 name: 'Pro Employer',
@@ -20,7 +22,72 @@ export const seedPlans = async () => {
             });
             console.log('Subscription plans seeded successfully');
         }
+
+        // Seed promotion plans
+        const promoCount = await PromotionPlan.countDocuments();
+        if (promoCount === 0) {
+            console.log('Seeding promotion plans...');
+
+            await PromotionPlan.create([
+                {
+                    name: '7 Days',
+                    price: 999,
+                    duration: 7,
+                    estimatedReachMin: 500,
+                    estimatedReachMax: 800,
+                    priority: 3, // Lower priority
+                    features: [
+                        'Featured listing for 7 days',
+                        'Priority in search results',
+                        '3x more visibility',
+                        'Highlighted with badge',
+                        'Email support'
+                    ],
+                    isMostPopular: false,
+                    isActive: true
+                },
+                {
+                    name: '15 Days',
+                    price: 1799,
+                    duration: 15,
+                    estimatedReachMin: 1200,
+                    estimatedReachMax: 1800,
+                    priority: 5, // Medium priority
+                    features: [
+                        'Featured listing for 15 days',
+                        'Top of search results',
+                        '5x more visibility',
+                        'Premium highlight badge',
+                        'Priority support',
+                        'Analytics dashboard'
+                    ],
+                    isMostPopular: true,
+                    isActive: true
+                },
+                {
+                    name: '30 Days',
+                    price: 2999,
+                    duration: 30,
+                    estimatedReachMin: 2500,
+                    estimatedReachMax: 3500,
+                    priority: 10, // Highest priority
+                    features: [
+                        'Featured listing for 30 days',
+                        'Guaranteed top position',
+                        '10x more visibility',
+                        'Premium+ highlight badge',
+                        '24/7 Priority support',
+                        'Advanced analytics',
+                        'Dedicated account manager'
+                    ],
+                    isMostPopular: false,
+                    isActive: true
+                }
+            ]);
+
+            console.log('Promotion plans seeded successfully');
+        }
     } catch (error) {
-        console.error('Error seeding subscription plans:', error);
+        console.error('Error seeding plans:', error);
     }
 };

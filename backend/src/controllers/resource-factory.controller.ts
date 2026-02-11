@@ -67,7 +67,10 @@ export class ResourceFactoryController<T extends Document> {
 
     public async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            // Build query filters
+            // Import promotion sorting utility
+            const { PromotionSortingUtil } = require('../utils/promotion-sorting.util');
+
+            // Build query filters (ADDITIVE - preserve existing logic)
             const query: any = {};
 
             // Search by keyword (title, description, company)
@@ -106,36 +109,27 @@ export class ResourceFactoryController<T extends Document> {
                 }
             }
 
-
-            // Sorting
-            let sortOption: any = { createdAt: -1 }; // Default: newest first
-            if (req.query.sort === 'oldest') {
-                sortOption = { createdAt: 1 };
-            } else if (req.query.sort === 'title') {
-                sortOption = { title: 1 };
-            }
-
             // Pagination
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 20;
-            const skip = (page - 1) * limit;
 
-            const items = await this.model.find(query)
-                .sort(sortOption)
-                .skip(skip)
-                .limit(limit);
+            // User sort preference
+            const userSort = req.query.sort as string;
 
-            const total = await this.model.countDocuments(query);
+            // Execute promotion-aware query
+            const result = await PromotionSortingUtil.executePromotionAwareQuery(
+                this.model,
+                this.resourceName, // 'Job' or other resource type
+                query,
+                page,
+                limit,
+                userSort
+            );
 
             res.status(200).json({
                 success: true,
-                data: items,
-                pagination: {
-                    page,
-                    limit,
-                    total,
-                    pages: Math.ceil(total / limit)
-                }
+                data: result.items,
+                pagination: result.pagination
             });
         } catch (error: any) {
             next(error);
