@@ -261,7 +261,7 @@ const ResourcePlans = () => {
                         { id: "home", label: "Home", icon: Home, path: "/" },
                         { id: "profile", label: "Profile", icon: User, path: "/profile" },
                         { id: "payment", label: "Payment", icon: CreditCard, path: "/resource-plans" },
-                        { id: "faq", label: "FAQ", icon: HelpCircle, path: "/faq" },
+                        { id: "faq", label: "FAQ", icon: HelpCircle, path: "/resource-plans/faq" },
                     ].map((item) => {
                         const Icon = item.icon;
                         const isActive = location.pathname === item.path;
