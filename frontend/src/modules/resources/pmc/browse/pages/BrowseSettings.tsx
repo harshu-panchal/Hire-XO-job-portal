@@ -48,20 +48,6 @@ const BrowseSettings = () => {
                 </div>
               </button>
 
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
-                <div className="flex items-center gap-4">
-                  <div className="size-11 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center">
-                    <Moon className="size-5" />
-                  </div>
-                  <span className="font-black text-[12px] uppercase tracking-widest">
-                    Appearance
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-black text-slate-400 uppercase">System</span>
-                  <ChevronRight className="size-5 text-slate-300" />
-                </div>
-              </button>
 
               <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
                 <div className="flex items-center gap-4">

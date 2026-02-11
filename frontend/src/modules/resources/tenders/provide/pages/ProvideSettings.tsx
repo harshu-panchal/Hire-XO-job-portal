@@ -7,8 +7,6 @@ import {
   LifeBuoy,
   LogOut,
   ChevronRight,
-  Moon,
-  Sun,
   Key,
   Users,
   Clock,
@@ -58,13 +56,11 @@ const ProvideSettings = () => {
   // Toggles
   const [bidAlerts, setBidAlerts] = useState(true);
   const [extensionEnabled, setExtensionEnabled] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Modals
   const [showAPIModal, setShowAPIModal] = useState(false);
   const [showPersonnelModal, setShowPersonnelModal] = useState(false);
   const [showSecurityModal, setShowSecurityModal] = useState(false);
-  const [showThemeModal, setShowThemeModal] = useState(false);
   const [showBillingModal, setShowBillingModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
 
@@ -87,21 +83,6 @@ const ProvideSettings = () => {
   // Theme
   const [selectedTheme, setSelectedTheme] = useState("Default");
 
-  // Check dark mode
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark");
-    setIsDarkMode(isDark);
-  }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    if (newMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
 
   const copyToClipboard = (text: string, id: number) => {
     navigator.clipboard.writeText(text);
@@ -185,33 +166,6 @@ const ProvideSettings = () => {
         </div>
       </div>
 
-      {/* Appearance Section */}
-      <div className="space-y-4">
-        <h2 className="px-1 text-xs font-black uppercase tracking-[0.2em] text-slate-400">
-          Personalization
-        </h2>
-        <div className="space-y-3">
-          <SettingItem
-            icon={Palette}
-            label="Theme Settings"
-            description="Customize dashboard appearance"
-            onClick={() => setShowThemeModal(true)}
-          />
-          <SettingItem
-            icon={isDarkMode ? Moon : Sun}
-            label={isDarkMode ? "Dark Mode" : "Light Mode"}
-            description="Switch between light and dark"
-            onClick={toggleDarkMode}
-            action={
-              <div
-                className={`px-3 py-1 rounded-full text-xs font-black ${isDarkMode ? "bg-indigo-600/10 text-indigo-600" : "bg-amber-500/10 text-amber-600"}`}
-              >
-                {isDarkMode ? "ON" : "OFF"}
-              </div>
-            }
-          />
-        </div>
-      </div>
 
       {/* Support & Billing */}
       <div className="space-y-4">
@@ -436,41 +390,6 @@ const ProvideSettings = () => {
         </div>
       )}
 
-      {/* Theme Modal */}
-      {showThemeModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-slate-200 dark:border-white/10 shadow-2xl">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-black">Theme Settings</h3>
-              <button
-                onClick={() => setShowThemeModal(false)}
-                className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-            <div className="space-y-2">
-              {["Default", "Ocean Blue", "Forest Green", "Sunset Orange"].map((theme) => (
-                <button
-                  key={theme}
-                  onClick={() => {
-                    setSelectedTheme(theme);
-                    setShowThemeModal(false);
-                  }}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
-                    selectedTheme === theme
-                      ? "bg-indigo-50 dark:bg-indigo-950/20 border-2 border-indigo-600"
-                      : "bg-slate-50 dark:bg-slate-800 border-2 border-transparent hover:bg-slate-100 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  <span className="text-sm font-black">{theme}</span>
-                  {selectedTheme === theme && <Check className="size-5 text-indigo-600" />}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Billing Modal */}
       {showBillingModal && (

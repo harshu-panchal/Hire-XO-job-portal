@@ -74,18 +74,6 @@ const RentSettings = () => {
               </button>
             }
           />
-          <SettingItem
-            icon={Moon}
-            label="Dark Appearance"
-            description="Adjust the interface vibe"
-            action={
-              <button
-              >
-                <div
-                />
-              </button>
-            }
-          />
         </div>
       </div>
 

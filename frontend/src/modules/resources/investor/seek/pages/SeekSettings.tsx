@@ -1,8 +1,6 @@
 import {
   Bell,
   Lock,
-  Moon,
-  Sun,
   Globe,
   HelpCircle,
   LogOut,
@@ -30,9 +28,6 @@ const SeekSettings = () => {
   // Privacy settings
   const [publicProfile, setPublicProfile] = useState(true);
 
-  // Dark mode
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
   // Modals
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [show2FAModal, setShow2FAModal] = useState(false);
@@ -50,21 +45,6 @@ const SeekSettings = () => {
   // 2FA
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
 
-  // Check initial dark mode
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark");
-    setIsDarkMode(isDark);
-  }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    if (newMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
 
   const handlePasswordChange = () => {
     if (newPassword !== confirmPassword) {
@@ -188,33 +168,6 @@ const SeekSettings = () => {
         </div>
       </div>
 
-      {/* Appearance */}
-      <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
-        <h2 className="text-xl font-black tracking-tight mb-4">Appearance</h2>
-        <button
-          onClick={toggleDarkMode}
-          className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 transition-all"
-        >
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
-              {isDarkMode ? (
-                <Moon className="size-5 text-slate-600 dark:text-slate-300" />
-              ) : (
-                <Sun className="size-5 text-slate-600" />
-              )}
-            </div>
-            <div className="text-left">
-              <p className="text-sm font-black">{isDarkMode ? "Dark Mode" : "Light Mode"}</p>
-              <p className="text-xs text-slate-500">Toggle dark/light theme</p>
-            </div>
-          </div>
-          <div
-            className={`px-3 py-1 rounded-full text-xs font-black ${isDarkMode ? "bg-primary/10 text-primary" : "bg-amber-500/10 text-amber-600"}`}
-          >
-            {isDarkMode ? "ON" : "OFF"}
-          </div>
-        </button>
-      </div>
 
       {/* Account & Security */}
       <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
@@ -459,11 +412,10 @@ const SeekSettings = () => {
               </button>
               <button
                 onClick={toggle2FA}
-                className={`flex-1 px-4 py-3 rounded-xl font-black text-sm uppercase tracking-widest active:scale-95 transition-all ${
-                  is2FAEnabled
+                className={`flex-1 px-4 py-3 rounded-xl font-black text-sm uppercase tracking-widest active:scale-95 transition-all ${is2FAEnabled
                     ? "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20"
                     : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-600/20"
-                }`}
+                  }`}
               >
                 {is2FAEnabled ? "Disable" : "Enable"}
               </button>
@@ -493,11 +445,10 @@ const SeekSettings = () => {
                     setSelectedLanguage(lang);
                     setShowLanguageModal(false);
                   }}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
-                    selectedLanguage === lang
+                  className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${selectedLanguage === lang
                       ? "bg-primary/10 border-2 border-primary"
                       : "bg-slate-50 dark:bg-slate-800 border-2 border-transparent hover:bg-slate-100 dark:hover:bg-slate-700"
-                  }`}
+                    }`}
                 >
                   <span className="text-sm font-black">{lang}</span>
                   {selectedLanguage === lang && <Check className="size-5 text-primary" />}
