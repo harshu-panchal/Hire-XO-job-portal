@@ -147,7 +147,7 @@ const EmployerLayout = () => {
           </Link>
 
           <Link
-            to={isAuthenticated ? "/employer/subscription" : "/login/employer"}
+            to="/employer/subscription"
             className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${isActive("/employer/subscription") ? "text-primary" : "text-slate-400"
               }`}
           >

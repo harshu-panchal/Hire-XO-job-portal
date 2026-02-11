@@ -19,27 +19,15 @@ export class SubscriptionService {
         return { balance: user.walletBalance || 0 };
     }
 
-    // Recharge wallet
+    // Recharge wallet (Delegates to Transaction-aware service)
     public async rechargeWallet(userId: string, amount: number) {
-        if (amount <= 0) {
-            throw new Error('Amount must be greater than 0');
-        }
-
-        const user = await User.findById(userId);
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        const currentBalance = user.walletBalance || 0;
-        const newBalance = currentBalance + amount;
-
-        await User.findByIdAndUpdate(userId, { walletBalance: newBalance });
+        const { WalletService } = require('./wallet.service');
+        const walletService = new WalletService();
+        const result = await walletService.topUp(userId, amount);
 
         return {
             message: 'Wallet recharged successfully',
-            previousBalance: currentBalance,
-            amountAdded: amount,
-            newBalance: newBalance
+            newBalance: result.balance
         };
     }
 
@@ -70,11 +58,37 @@ export class SubscriptionService {
 
         // Deduct from wallet and update subscription
         const newBalance = currentBalance - plan.price;
-        await User.findByIdAndUpdate(userId, {
-            walletBalance: newBalance,
-            activeSubscriptionId: plan._id,
-            subscriptionExpiry: expiryDate
-        });
+
+        const mongoose = require('mongoose');
+        const session = await mongoose.startSession();
+        session.startTransaction();
+
+        try {
+            // Update user
+            await User.findByIdAndUpdate(userId, {
+                walletBalance: newBalance,
+                activeSubscriptionId: plan._id,
+                subscriptionExpiry: expiryDate
+            }, { session });
+
+            // Record transaction
+            const Transaction = require('../models/transaction.model').default;
+            await Transaction.create([{
+                userId,
+                type: 'deduction',
+                amount: plan.price,
+                description: `Purchase: ${plan.name} (${plan.durationDays} days)`,
+                status: 'completed',
+                createdAt: new Date()
+            }], { session });
+
+            await session.commitTransaction();
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            session.endSession();
+        }
 
         return {
             message: 'Subscription purchased successfully',

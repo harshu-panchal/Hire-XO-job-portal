@@ -320,6 +320,8 @@ function App() {
         <Route element={<EmployerLayout />}>
           <Route path="/employer" element={<EmployerDashboard />} />
 
+          <Route path="/employer/subscription" element={<Subscription />} />
+
           {/* Protected Employer Sub-Routes */}
           <Route
             element={
@@ -332,7 +334,6 @@ function App() {
             <Route path="/employer/post-job" element={<PostJob />} />
             <Route path="/employer/applications" element={<ManageApplications />} />
             <Route path="/employer/settings" element={<EmployerSettings />} />
-            <Route path="/employer/subscription" element={<Subscription />} />
             <Route path="/employer/profile" element={<EmployerProfile />} />
             <Route path="/employer/company" element={<EmployerCompany />} />
             <Route path="/employer/wallet" element={<EmployerWallet />} />

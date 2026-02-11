@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   ShieldCheck,
   Zap,
+  Crown,
+  Shield,
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { userService } from "@/services/userService";
@@ -21,7 +23,8 @@ import { formatDistanceToNow } from "date-fns";
 
 const EmployerDashboard = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, checkSubscription } = useAuthStore();
+  const isSubscribed = checkSubscription();
   const [stats, setStats] = useState({
     activeJobs: 0,
     totalApplications: 0,
@@ -214,15 +217,27 @@ const EmployerDashboard = () => {
     <div className="py-6 space-y-8 select-none pb-24">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
-        <div className="space-y-1">
+        <div className="flex items-center gap-2">
           <h1 className="text-3xl font-black tracking-tighter">
             Employer <br />
             <span className="text-primary">Dashboard</span>
           </h1>
-          <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
-            Manage your hiring pipeline
-          </p>
+          {isSubscribed && (
+            <div className="mt-6 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center gap-1.5 shadow-sm shadow-amber-500/5">
+              <Crown className="size-3 text-amber-500 fill-amber-500/20" />
+              <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">PRO</span>
+            </div>
+          )}
+          {!isSubscribed && (
+            <div className="mt-6 px-3 py-1 bg-slate-100 border border-slate-200 rounded-full flex items-center gap-1.5">
+              <Shield className="size-3 text-slate-400" />
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">FREE</span>
+            </div>
+          )}
         </div>
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
+          Manage your hiring pipeline
+        </p>
         <Link
           to="/employer/post-job"
           className="size-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-xl shadow-primary/20 active:scale-90 transition-all"

@@ -13,7 +13,7 @@ interface PlanSelectionProps {
 
 const PlanSelection = ({ onPlanSelected, onBack }: PlanSelectionProps) => {
     const navigate = useNavigate();
-    const { purchaseSubscription, user } = useAuthStore();
+    const { purchaseSubscription, user, isAuthenticated } = useAuthStore();
     const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
     const [isLoadingPlans, setIsLoadingPlans] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -39,6 +39,12 @@ const PlanSelection = ({ onPlanSelected, onBack }: PlanSelectionProps) => {
         : false;
 
     const handleSelectPlan = async (plan: SubscriptionPlan) => {
+        if (!isAuthenticated) {
+            toast.info("Please login to choose a plan");
+            navigate("/login/employer");
+            return;
+        }
+
         // If it's the free plan or user is already subscribed, just proceed
         if (plan.price === 0 || plan.name.toLowerCase().includes("free")) {
             onPlanSelected();
@@ -132,8 +138,8 @@ const PlanSelection = ({ onPlanSelected, onBack }: PlanSelectionProps) => {
                             <div
                                 key={plan.id || (plan as any)._id}
                                 className={`bg-white rounded-[2.5rem] border-2 p-6 relative overflow-hidden transition-all ${isRecommended
-                                        ? "border-primary/30 shadow-lg shadow-primary/10"
-                                        : "border-slate-200"
+                                    ? "border-primary/30 shadow-lg shadow-primary/10"
+                                    : "border-slate-200"
                                     }`}
                             >
                                 {isRecommended && (
@@ -189,8 +195,8 @@ const PlanSelection = ({ onPlanSelected, onBack }: PlanSelectionProps) => {
                                         onClick={() => handleSelectPlan(plan)}
                                         disabled={isProcessing}
                                         className={`w-full h-14 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100 ${isRecommended
-                                                ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                                : "bg-slate-900 text-white"
+                                            ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                            : "bg-slate-900 text-white"
                                             }`}
                                     >
                                         {isProcessing ? (

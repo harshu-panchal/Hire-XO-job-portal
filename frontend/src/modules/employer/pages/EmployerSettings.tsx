@@ -19,7 +19,8 @@ import { toast } from "sonner";
 
 const EmployerSettings = () => {
   const navigate = useNavigate();
-  const { logout, user, updateProfile } = useAuthStore();
+  const { logout, user, updateProfile, checkSubscription } = useAuthStore();
+  const isSubscribed = checkSubscription();
   const { t, i18n } = useTranslation();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [language, setLanguage] = useState(localStorage.getItem("app-language") || "English");
@@ -71,6 +72,7 @@ const EmployerSettings = () => {
           icon: CreditCard,
           color: "text-amber-500",
           bg: "bg-amber-500/10",
+          value: isSubscribed ? "PRO" : "FREE",
           routeKey: "Subscription Plan",
         },
       ],

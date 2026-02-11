@@ -29,7 +29,8 @@ export interface SubscriptionPlan {
   durationDays: number;
   description: string;
   features: string[];
-  type: 'job-seeker' | 'employer';
+  type: 'job-seeker' | 'employer' | 'resource';
+  isActive?: boolean;
 }
 
 export interface Certificate {
@@ -101,6 +102,7 @@ export interface User {
   phoneNumber?: string;
   profilePhoto?: string;
   activeSubscriptionId?: string;
+  subscriptionExpiry?: string | Date;
   status?: "active" | "suspended" | "banned";
   bookmarks?: string[];
 }

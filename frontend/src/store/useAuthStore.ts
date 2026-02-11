@@ -177,9 +177,10 @@ export const useAuthStore = create<AuthState>()(
 
       checkSubscription: () => {
         const { user } = get();
-        if (!user?.profile.subscriptionExpiry) return false;
+        // Backend stores subscriptionExpiry at root level of user document
+        if (!user?.subscriptionExpiry) return false;
 
-        const expiryDate = new Date(user.profile.subscriptionExpiry);
+        const expiryDate = new Date(user.subscriptionExpiry);
         const now = new Date();
         return expiryDate > now;
       },

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, ShieldCheck, Briefcase, Users, ChevronLeft, Loader2, Star, Zap, Globe, Package, Cpu, Hammer, Truck, Ship, Car, Box } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ShieldCheck, Zap, Crown, Shield, XCircle, Star, Package, Globe, Hammer, Cpu, Briefcase, Ship, Car, Box, Loader2 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 import { subscriptionService } from "@/services/subscriptionService";
 import type { SubscriptionPlan } from "@/types";
-import { Home, User, CreditCard, HelpCircle, LogOut } from "lucide-react";
+import { Home, User, CreditCard, HelpCircle } from "lucide-react";
 
 const ResourcePlans = () => {
     const navigate = useNavigate();
@@ -55,26 +55,31 @@ const ResourcePlans = () => {
         }
     };
 
-    const getPlanIcon = (name: string) => {
-        const n = name.toLowerCase();
-        if (n.includes("verification")) return <ShieldCheck className="h-6 w-6 text-purple-600" />;
-        if (n.includes("tender")) return <Package className="h-6 w-6 text-blue-500" />;
-        if (n.includes("investor")) return <Globe className="h-6 w-6 text-emerald-500" />;
-        if (n.includes("equipment")) return <Hammer className="h-6 w-6 text-orange-500" />;
-        if (n.includes("machinery")) return <Cpu className="h-6 w-6 text-slate-600" />;
-        if (n.includes("pmc")) return <Briefcase className="h-6 w-6 text-cyan-600" />;
-        if (n.includes("csm")) return <Star className="h-6 w-6 text-amber-500" />;
-        if (n.includes("logistics")) return <Ship className="h-6 w-6 text-blue-700" />;
-        if (n.includes("vehicles")) return <Car className="h-6 w-6 text-red-500" />;
-        if (n.includes("all resources")) return <Zap className="h-6 w-6 text-indigo-600" />;
-        return <Box className="h-6 w-6 text-slate-400" />;
+    const getPlanIcon = (planName: string) => {
+        const name = planName.toLowerCase();
+        if (name.includes("verification")) return ShieldCheck;
+        if (name.includes("tender")) return Package;
+        if (name.includes("investor")) return Globe;
+        if (name.includes("equipment")) return Hammer;
+        if (name.includes("machinery")) return Cpu;
+        if (name.includes("pmc")) return Briefcase;
+        if (name.includes("csm")) return Star;
+        if (name.includes("logistics")) return Ship;
+        if (name.includes("vehicles")) return Car;
+        if (name.includes("all resources")) return Zap;
+        return Box;
     };
 
-    const getPlanColor = (name: string) => {
-        const n = name.toLowerCase();
-        if (n.includes("verification")) return "from-purple-500 to-indigo-600";
-        if (n.includes("all resources")) return "from-blue-600 to-indigo-700";
-        return "from-sky-400 to-blue-500";
+    const getPlanColor = (index: number) => {
+        const colors = [
+            { bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-500/20", gradient: "from-blue-500/20 to-blue-500/5" },
+            { bg: "bg-purple-500/10", text: "text-purple-500", border: "border-purple-500/20", gradient: "from-purple-500/20 to-purple-500/5" },
+            { bg: "bg-emerald-500/10", text: "text-emerald-500", border: "border-emerald-500/20", gradient: "from-emerald-500/20 to-emerald-500/5" },
+            { bg: "bg-amber-500/10", text: "text-amber-500", border: "border-amber-500/20", gradient: "from-amber-500/20 to-amber-500/5" },
+            { bg: "bg-indigo-500/10", text: "text-indigo-500", border: "border-indigo-500/20", gradient: "from-indigo-500/20 to-indigo-500/5" },
+            { bg: "bg-rose-500/10", text: "text-rose-500", border: "border-rose-500/20", gradient: "from-rose-500/20 to-rose-500/5" },
+        ];
+        return colors[index % colors.length];
     };
 
     if (isLoading) {
@@ -87,97 +92,166 @@ const ResourcePlans = () => {
     }
 
     return (
-        <div className="py-8 space-y-8 select-none bg-slate-50 min-h-screen pb-24">
-            <div className="flex items-center gap-4 px-4 max-w-5xl mx-auto">
+        <div className="pb-32 select-none">
+            {/* Header */}
+            <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
                 <button
                     onClick={() => navigate(-1)}
-                    className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all shadow-sm"
+                    className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
                 >
-                    <ChevronLeft className="size-6 text-slate-600" />
+                    <ChevronLeft className="size-6" />
                 </button>
-                <div className="space-y-1">
-                    <h1 className="text-2xl font-black tracking-tight leading-tight text-slate-900">
-                        Resource <span className="text-primary">Subscription Plans</span>
+                <h2 className="text-sm font-black uppercase tracking-widest text-slate-900">Resource Plans</h2>
+                <div className="size-11" />
+            </div>
+
+            <div className="mt-6 space-y-6 px-4">
+                {/* Title */}
+                <div className="text-center space-y-2">
+                    <h1 className="text-3xl font-black tracking-tighter">
+                        Find the <span className="text-primary">Right Resource Plan</span>
                     </h1>
-                    <p className="text-slate-500 font-bold text-[10px] uppercase tracking-widest">
+                    <p className="text-slate-500 text-xs font-black uppercase tracking-widest">
                         Choose a plan to grow your business
                     </p>
                 </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 max-w-5xl mx-auto">
-                {plans.length === 0 ? (
-                    <div className="col-span-full text-center py-12 bg-white rounded-3xl border border-dashed border-slate-300">
-                        <p className="text-slate-500 font-medium">No resource plans available at the moment.</p>
-                    </div>
-                ) : (
-                    plans.map((plan) => {
-                        const planId = plan._id || plan.id;
-                        const isSpecial = plan.name.toLowerCase().includes("verification") || plan.name.toLowerCase().includes("all resources");
-                        const isActive = activePlanId === planId;
-                        const colorGradient = getPlanColor(plan.name);
+                {/* Plans Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {plans.length === 0 ? (
+                        <div className="col-span-full flex flex-col items-center justify-center py-20 px-6 text-center bg-white rounded-[2.5rem] border-2 border-dashed border-slate-200">
+                            <Box className="size-12 text-slate-200 mb-4" />
+                            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">No plans available at the moment</p>
+                        </div>
+                    ) : (
+                        plans.map((plan, index) => {
+                            const planId = plan._id || plan.id;
+                            const Icon = getPlanIcon(plan.name);
+                            const colors = getPlanColor(index);
+                            const isActive = activePlanId === planId;
 
-                        return (
-                            <div
-                                key={planId}
-                                className={`relative flex flex-col rounded-[2.5rem] overflow-hidden border bg-white transition-all duration-300 hover:shadow-xl group ${isActive ? "ring-2 ring-primary border-primary" : "border-slate-100"}`}
-                            >
-                                {/* Dynamic Header based on UI inspiration */}
-                                <div className={`h-40 w-full bg-gradient-to-br ${colorGradient} p-8 flex flex-col items-center justify-center text-center relative`}>
-                                    <div className="absolute top-0 left-0 w-full h-full bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <div className="size-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-4 border border-white/30 shadow-inner">
-                                        <div className="size-12 rounded-full bg-white shadow-sm flex items-center justify-center">
-                                            {getPlanIcon(plan.name)}
+                            // Badges based on keywords
+                            const isSpecial = plan.name.toLowerCase().includes("verification") || plan.name.toLowerCase().includes("all resources");
+                            const isPopular = plan.description.toLowerCase().includes("popular") || plan.name.toLowerCase().includes("all resources");
+                            const isBestValue = plan.description.toLowerCase().includes("best value") || plan.name.toLowerCase().includes("verification");
+
+                            return (
+                                <div
+                                    key={planId}
+                                    className={`bg-white rounded-[2.5rem] border-2 p-6 relative overflow-hidden transition-all hover:shadow-lg flex flex-col ${isActive
+                                        ? "border-primary shadow-lg shadow-primary/10"
+                                        : isPopular || isBestValue
+                                            ? "border-primary/30 shadow-lg shadow-primary/10"
+                                            : "border-slate-100"
+                                        }`}
+                                >
+                                    {/* Background Gradient */}
+                                    <div className={`absolute top-0 right-0 w-48 h-48 bg-gradient-to-br ${colors.gradient} rounded-full blur-3xl opacity-50 -z-0`}></div>
+
+                                    {(isPopular || isBestValue) && (
+                                        <div className={`absolute top-0 right-0 ${isPopular ? "bg-blue-500" : "bg-primary"} text-white text-[9px] font-black uppercase tracking-widest py-1.5 px-3 rounded-bl-2xl z-20 shadow-lg`}>
+                                            {isPopular ? "Most Popular" : "Best Value"}
                                         </div>
-                                    </div>
-                                    <h3 className="text-white font-black text-xl leading-none mb-2">{plan.name}</h3>
-                                    <div className="flex items-baseline text-white">
-                                        <span className="text-3xl font-black">₹{plan.price}</span>
-                                        <span className="text-xs font-bold opacity-80 ml-1">/{plan.durationDays === 30 ? 'Month' : `${plan.durationDays} Days`}</span>
-                                    </div>
-                                </div>
+                                    )}
 
-                                <div className="p-8 flex-1 flex flex-col">
-                                    <div className="space-y-4 mb-8 flex-1">
-                                        {plan.features.map((feature, idx) => (
-                                            <div key={idx} className="flex items-start gap-3">
-                                                <div className="shrink-0 mt-1">
-                                                    {feature.toLowerCase().includes("not included") ? (
-                                                        <div className="size-4 rounded-full bg-red-50 flex items-center justify-center border border-red-100">
-                                                            <span className="text-red-500 font-black text-[10px]">×</span>
-                                                        </div>
-                                                    ) : (
-                                                        <CheckCircle className="size-4 text-emerald-500" />
-                                                    )}
+                                    {isActive && (
+                                        <div className="absolute top-0 left-0 bg-emerald-500 text-white text-[9px] font-black uppercase tracking-widest py-1.5 px-3 rounded-br-2xl z-20 shadow-lg flex items-center gap-1.5">
+                                            <CheckCircle2 className="size-3" />
+                                            Active Plan
+                                        </div>
+                                    )}
+
+                                    <div className="space-y-4 relative z-10 flex-1 flex flex-col">
+                                        {/* Plan Header */}
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`size-14 rounded-2xl ${colors.bg} flex items-center justify-center ${colors.text} shadow-lg`}>
+                                                    <Icon className="size-7" />
                                                 </div>
-                                                <span className={`text-sm font-medium leading-tight ${feature.toLowerCase().includes("not included") ? "text-slate-400 line-through decoration-slate-300" : "text-slate-600"}`}>
-                                                    {feature}
-                                                </span>
+                                                <div>
+                                                    <h3 className="text-xl font-black tracking-tight leading-tight max-w-[200px]">{plan.name}</h3>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 min-h-[1rem]">
+                                                        {plan.isActive ? "Instant Activation" : "Manual Verification"}
+                                                    </p>
+                                                </div>
                                             </div>
-                                        ))}
-                                    </div>
+                                        </div>
 
-                                    <button
-                                        onClick={() => handlePurchase(plan)}
-                                        className={`w-full py-4 rounded-2xl text-sm font-black uppercase tracking-[0.1em] transition-all active:scale-95 shadow-lg ${isActive
-                                            ? "bg-slate-100 text-slate-400 shadow-none cursor-default border border-slate-200"
-                                            : isSpecial
-                                                ? `bg-gradient-to-r ${colorGradient} text-white hover:brightness-110 shadow-blue-500/20`
-                                                : "bg-sky-500 text-white hover:bg-sky-600 shadow-sky-500/20"
-                                            }`}
-                                        disabled={isActive || isProcessing === planId}
-                                    >
-                                        {isActive
-                                            ? "Active Plan"
-                                            : isProcessing === planId
-                                                ? "Processing..."
-                                                : plan.name.toLowerCase().includes("verification") ? "Get Verified" : "Subscribe Now"}
-                                    </button>
+                                        {/* Price */}
+                                        <div className="flex items-baseline gap-1 mt-2">
+                                            <span className="text-4xl font-black text-slate-900">
+                                                ₹{plan.price}
+                                            </span>
+                                            <span className="text-sm font-bold text-slate-400">
+                                                / {plan.durationDays === 30 ? 'Month' : `${plan.durationDays} Days`}
+                                            </span>
+                                        </div>
+
+                                        <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase tracking-widest">
+                                            {plan.description}
+                                        </p>
+
+                                        {/* Features */}
+                                        <ul className="space-y-3 pt-2 flex-1">
+                                            {plan.features.map((feature, i) => {
+                                                const isNotIncluded = feature.toLowerCase().includes("not included");
+
+                                                return (
+                                                    <li key={i} className="flex items-start gap-3">
+                                                        <div className={`size-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isNotIncluded ? "bg-red-500/10" : "bg-green-500/10"}`}>
+                                                            {isNotIncluded ? (
+                                                                <XCircle className="size-3 text-red-500" />
+                                                            ) : (
+                                                                <CheckCircle2 className="size-3 text-green-500" />
+                                                            )}
+                                                        </div>
+                                                        <span className={`text-sm font-bold leading-relaxed ${isNotIncluded ? "text-slate-400 line-through decoration-slate-400/50" : "text-slate-600"}`}>
+                                                            {feature}
+                                                        </span>
+                                                    </li>
+                                                )
+                                            })}
+                                        </ul>
+
+                                        {/* Select Button */}
+                                        <button
+                                            onClick={() => handlePurchase(plan)}
+                                            disabled={isActive || isProcessing === planId}
+                                            className={`w-full h-14 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-95 disabled:opacity-70 disabled:active:scale-100 mt-6 border-2 ${isActive
+                                                ? "bg-slate-100 border-slate-100 text-slate-400 cursor-default"
+                                                : isPopular || isBestValue
+                                                    ? "bg-primary border-primary text-white shadow-lg shadow-primary/20"
+                                                    : plan.name.toLowerCase().includes("verification")
+                                                        ? "bg-white border-slate-900 text-slate-900 hover:bg-slate-50"
+                                                        : "bg-slate-900 border-slate-900 text-white"
+                                                }`}
+                                        >
+                                            {isProcessing === planId ? (
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <div className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                                    Processing...
+                                                </div>
+                                            ) : isActive ? (
+                                                "Current Plan"
+                                            ) : plan.name.toLowerCase().includes("verification") ? (
+                                                "Verify Now"
+                                            ) : (
+                                                "Subscribe Now"
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })
-                )}
+                            );
+                        })
+                    )}
+                </div>
+
+                {/* Info Note */}
+                <div className="bg-blue-50 border border-blue-100 rounded-[2rem] p-6 text-center">
+                    <p className="text-[10px] font-black text-blue-600 leading-relaxed uppercase tracking-widest">
+                        💡 Grow your resource reach and visibility. Upgrade anytime to unlock more features!
+                    </p>
+                </div>
             </div>
 
             {/* Modern Bottom Navigation - Consistent with ResourceCategories */}
