@@ -1,5 +1,7 @@
 import Promotion from '../models/promotion.model';
 import User from '../models/user.model';
+import Job from '../models/job.model';
+import Post from '../models/post.model';
 
 export class PromotionService {
     // Create a new promotion
@@ -9,6 +11,23 @@ export class PromotionService {
         resourceType: 'Job' | 'Post',
         budget: number
     ) {
+        // 1. Verify Ownership
+        if (resourceType === 'Job') {
+            const job = await Job.findById(resourceId);
+            if (!job) throw new Error('Job not found');
+            if (job.userId.toString() !== userId) {
+                throw new Error('You can only promote your own jobs');
+            }
+        } else if (resourceType === 'Post') {
+            const post = await Post.findById(resourceId);
+            if (!post) throw new Error('Post not found');
+            if (post.userId.toString() !== userId) {
+                throw new Error('You can only promote your own posts');
+            }
+        } else {
+            throw new Error('Invalid resource type');
+        }
+
         // Simple logic: 1 unit of currency = 1.5 estimated reach (average)
         const minReach = budget * 1.5;
         const maxReach = budget * 2.5;

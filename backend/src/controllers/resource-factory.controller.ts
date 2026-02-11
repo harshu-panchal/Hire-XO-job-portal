@@ -1,18 +1,25 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { Model, Document } from 'mongoose';
 
 export class ResourceFactoryController<T extends Document> {
-    private model: Model<T>;
-    private resourceName: string;
-    private fileFields: string[];
+    protected model: Model<T>;
+    protected resourceName: string;
+    protected fileFields: string[];
 
     constructor(model: Model<T>, resourceName: string, fileFields: string[] = []) {
         this.model = model;
         this.resourceName = resourceName;
         this.fileFields = fileFields;
+
+        this.create = this.create.bind(this);
+        this.getAll = this.getAll.bind(this);
+        this.getById = this.getById.bind(this);
+        this.getMyListings = this.getMyListings.bind(this);
+        this.update = this.update.bind(this);
+        this.delete = this.delete.bind(this);
     }
 
-    public create = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             // Assume user is attached to req by auth middleware
             const userId = (req as any).user?.id || req.body.userId;
@@ -56,9 +63,9 @@ export class ResourceFactoryController<T extends Document> {
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 
-    public getAll = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             // Build query filters
             const query: any = {};
@@ -133,9 +140,9 @@ export class ResourceFactoryController<T extends Document> {
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 
-    public getById = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const item = await this.model.findById(req.params.id);
             if (!item) {
@@ -146,9 +153,9 @@ export class ResourceFactoryController<T extends Document> {
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 
-    public getMyListings = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async getMyListings(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = (req as any).user?.id || req.query.userId;
             if (!userId) {
@@ -180,9 +187,9 @@ export class ResourceFactoryController<T extends Document> {
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 
-    public update = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async update(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = (req as any).user?.id;
 
@@ -210,9 +217,9 @@ export class ResourceFactoryController<T extends Document> {
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 
-    public delete = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = (req as any).user?.id;
 
@@ -262,5 +269,6 @@ export class ResourceFactoryController<T extends Document> {
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 }
+

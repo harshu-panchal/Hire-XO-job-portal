@@ -28,7 +28,7 @@ export class UserController {
 
             let totalApplications = 0;
 
-            if (user.role === 'recruiter') {
+            if (user.role === 'employer') {
                 // For Recruiters: Count applications received for their posted jobs
                 const myJobs = await Job.find({ userId });
                 const jobIds = myJobs.map(j => j._id);

@@ -85,21 +85,14 @@ export class ApplicationService {
             proposalDocuments?: string[];
         }
     ) {
-        // Get the appropriate model
-        const modelMap: any = {
-            'Investor': Investor,
-            'Tender': Tender,
-            'Equipment': Equipment,
-            'Machinery': Machinery,
-            'PMC': PMC,
-            'CSM': CSM,
-            'Logistics': Logistics,
-            'Vehicle': Vehicle
-        };
+        const normalizedResourceType = this.getNormalizedResourceType(resourceType);
+        if (!normalizedResourceType) {
+            throw new Error(`Invalid resource type: ${resourceType}`);
+        }
 
-        const ResourceModel = modelMap[resourceType];
+        const ResourceModel = this.getResourceModel(normalizedResourceType);
         if (!ResourceModel) {
-            throw new Error('Invalid resource type');
+            throw new Error(`Invalid resource type: ${resourceType}`);
         }
 
         // Check if resource exists
@@ -117,7 +110,7 @@ export class ApplicationService {
         const existingApplication = await ResourceApplication.findOne({
             applicantId,
             resourceId,
-            resourceType
+            resourceType: normalizedResourceType
         });
         if (existingApplication) {
             throw new Error('You have already applied to this resource');
@@ -127,7 +120,7 @@ export class ApplicationService {
         const application = await ResourceApplication.create({
             applicantId,
             resourceId,
-            resourceType,
+            resourceType: normalizedResourceType,
             message: data.message,
             bidAmount: data.bidAmount,
             coverLetter: data.coverLetter,
@@ -269,39 +262,11 @@ export class ApplicationService {
 
     // Get all applications received for resources posted by the user
     public async getReceivedResourceApplications(userId: string, category: string, page: number = 1, limit: number = 20) {
-        // Map category to model
-        const modelMap: any = {
-            'investor': Investor,
-            'tenders': Tender,
-            'equipments': Equipment,
-            'machinery': Machinery,
-            'pmc': PMC,
-            'csm': CSM,
-            'logistics': Logistics,
-            'vehicles': Vehicle
-        };
-
-        const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
-
-        // Better map:
-        const refinedMap: any = {
-            'investor': Investor,
-            'investors': Investor,
-            'tender': Tender,
-            'tenders': Tender,
-            'equipment': Equipment,
-            'equipments': Equipment,
-            'machinery': Machinery,
-            'pmc': PMC,
-            'csm': CSM,
-            'logistics': Logistics,
-            'vehicle': Vehicle,
-            'vehicles': Vehicle
-        };
-
-        const ResourceModel = refinedMap[category.toLowerCase()];
+        const ResourceModel = this.getResourceModel(category);
 
         if (!ResourceModel) {
+            // Return empty if invalid category, or throw error? 
+            // Returning empty is safer for dashboard
             return {
                 data: [],
                 pagination: {
@@ -354,20 +319,9 @@ export class ApplicationService {
         // Check if user can view unmasked data
         const canViewData = await this.canViewUnmaskedData(ownerId);
 
-        const modelMap: any = {
-            'Investor': Investor,
-            'Tender': Tender,
-            'Equipment': Equipment,
-            'Machinery': Machinery,
-            'PMC': PMC,
-            'CSM': CSM,
-            'Logistics': Logistics,
-            'Vehicle': Vehicle
-        };
-
-        const ResourceModel = modelMap[resourceType];
+        const ResourceModel = this.getResourceModel(resourceType);
         if (!ResourceModel) {
-            throw new Error('Invalid resource type');
+            throw new Error(`Invalid resource type: ${resourceType}`);
         }
 
         // Verify ownership
@@ -476,18 +430,10 @@ export class ApplicationService {
             }
 
             // Verify ownership through resource
-            const modelMap: any = {
-                'Investor': Investor,
-                'Tender': Tender,
-                'Equipment': Equipment,
-                'Machinery': Machinery,
-                'PMC': PMC,
-                'CSM': CSM,
-                'Logistics': Logistics,
-                'Vehicle': Vehicle
-            };
-
-            const ResourceModel = modelMap[application.resourceType];
+            const ResourceModel = this.getResourceModel(application.resourceType);
+            if (!ResourceModel) {
+                throw new Error('Invalid resource type in application');
+            }
             const resource = await ResourceModel.findById(application.resourceId);
 
             if (!resource || resource.userId.toString() !== userId) {
@@ -605,6 +551,49 @@ export class ApplicationService {
 
         const now = new Date();
         return user.subscriptionExpiry > now;
+    }
+
+    // Helper to get normalized resource type string (singular, capitalized)
+    private getNormalizedResourceType(type: string): string | null {
+        if (!type) return null;
+
+        const normalized = type.toLowerCase().trim();
+
+        const map: { [key: string]: string } = {
+            'investor': 'Investor',
+            'investors': 'Investor',
+            'tender': 'Tender',
+            'tenders': 'Tender',
+            'equipment': 'Equipment',
+            'equipments': 'Equipment',
+            'machinery': 'Machinery',
+            'pmc': 'PMC',
+            'csm': 'CSM',
+            'logistics': 'Logistics',
+            'vehicle': 'Vehicle',
+            'vehicles': 'Vehicle'
+        };
+
+        return map[normalized] || null;
+    }
+
+    // Helper to get Resource Model from type string (handles singular/plural/case-insensitive)
+    private getResourceModel(type: string): any {
+        const normalized = this.getNormalizedResourceType(type);
+        if (!normalized) return null;
+
+        const map: any = {
+            'Investor': Investor,
+            'Tender': Tender,
+            'Equipment': Equipment,
+            'Machinery': Machinery,
+            'PMC': PMC,
+            'CSM': CSM,
+            'Logistics': Logistics,
+            'Vehicle': Vehicle
+        };
+
+        return map[normalized] || null;
     }
 }
 

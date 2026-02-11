@@ -33,6 +33,7 @@ const mainItems = [
 const financialItems = [
   { icon: CreditCard, label: "Employee Plans", path: "/admin/employee-plans" },
   { icon: CreditCard, label: "Employer Plans", path: "/admin/employer-plans" },
+  { icon: Layers, label: "Resource Plans", path: "/admin/resource-plans" },
   { icon: DollarSign, label: "Payments", path: "/admin/payments" },
 ];
 

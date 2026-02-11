@@ -32,6 +32,7 @@ interface EmployeeState {
   getJobById: (id: string) => Promise<Job | undefined>;
   saveJob: (jobId: string) => Promise<void>;
   unsaveJob: (jobId: string) => Promise<void>;
+  setSavedJobs: (jobIds: string[]) => void;
   setSearch: (search: string) => void;
   setType: (type: string) => void;
 
@@ -67,6 +68,10 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     set((state) => ({
       filters: { ...state.filters, search },
     }));
+  },
+
+  setSavedJobs: (jobIds: string[]) => {
+    set({ savedJobs: jobIds });
   },
 
   setType: (type: string) => {

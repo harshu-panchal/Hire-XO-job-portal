@@ -16,6 +16,7 @@ const EmployerPromotions = () => {
     const [myPosts, setMyPosts] = useState<Post[]>([]);
     const [myJobs, setMyJobs] = useState<Job[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
 
     // Form State
@@ -23,34 +24,36 @@ const EmployerPromotions = () => {
     const [budget, setBudget] = useState<number>(100); // Default 100
     const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!user) return;
-            try {
-                setIsLoading(true);
-                // Fetch Promotions
-                const data = await promotionService.getMyPromotions();
-                setStats(data.stats);
-                setPromotions(data.promotions);
+    const fetchData = async () => {
+        if (!user) return;
+        try {
+            setIsLoading(true);
+            setError(null);
+            // Fetch Promotions
+            const data = await promotionService.getMyPromotions();
+            setStats(data.stats);
+            setPromotions(data.promotions);
 
-                // Fetch Posts (Filter by user)
-                const { data: postsData } = await postService.getAllPosts(1, 100);
-                const userPosts = postsData.filter((p: any) => p.userId?._id === user?.id);
-                setMyPosts(userPosts);
+            // Fetch Posts (Filter by user)
+            const { data: postsData } = await postService.getAllPosts(1, 100);
+            const userPosts = postsData.filter((p: any) => p.userId?._id === user?.id);
+            setMyPosts(userPosts);
 
-                // Fetch Jobs
-                if (user.role === 'recruiter' || user.role === 'employer') {
-                    const jobs = await jobService.getMyListings();
-                    setMyJobs(jobs);
-                }
-            } catch (error) {
-                console.error("Failed to load promotion data", error);
-                toast.error("Failed to load dashboard");
-            } finally {
-                setIsLoading(false);
+            // Fetch Jobs
+            if (user.role === 'employer') {
+                const jobs = await jobService.getMyListings();
+                setMyJobs(jobs);
             }
-        };
+        } catch (error) {
+            console.error("Failed to load promotion data", error);
+            setError("Failed to load promotions. Please try again.");
+            toast.error("Failed to load dashboard");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchData();
     }, [user]);
 
@@ -108,37 +111,51 @@ const EmployerPromotions = () => {
 
             <div className="px-5 mt-6 space-y-8 max-w-2xl mx-auto">
                 {/* Stats Cards */}
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between h-32 relative overflow-hidden group">
-                        <div className="absolute right-0 top-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
-                            <TrendingUp className="size-16" />
-                        </div>
-                        <div className="size-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
-                            <Users className="size-5" />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Reach</p>
-                            <h3 className="text-xl font-black text-slate-900 leading-tight">
-                                {stats?.totalReach || "0"}
-                            </h3>
-                        </div>
+                {error ? (
+                    <div className="bg-red-50 p-6 rounded-3xl border border-red-100 text-center">
+                        <AlertCircle className="size-10 text-red-400 mx-auto mb-3" />
+                        <h3 className="text-red-900 font-bold mb-2">Error Loading Data</h3>
+                        <p className="text-red-600 text-sm mb-4">{error}</p>
+                        <button
+                            onClick={fetchData}
+                            className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-red-50 transition-colors"
+                        >
+                            Retry
+                        </button>
                     </div>
+                ) : (
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between h-32 relative overflow-hidden group">
+                            <div className="absolute right-0 top-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <TrendingUp className="size-16" />
+                            </div>
+                            <div className="size-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
+                                <Users className="size-5" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Reach</p>
+                                <h3 className="text-xl font-black text-slate-900 leading-tight">
+                                    {isLoading ? "..." : (stats?.totalReach || "0")}
+                                </h3>
+                            </div>
+                        </div>
 
-                    <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between h-32 relative overflow-hidden group">
-                        <div className="absolute right-0 top-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
-                            <DollarSign className="size-16" />
-                        </div>
-                        <div className="size-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-2">
-                            <DollarSign className="size-5" />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Spent</p>
-                            <h3 className="text-xl font-black text-slate-900 leading-tight">
-                                ₹{stats?.totalSpent || "0"}
-                            </h3>
+                        <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between h-32 relative overflow-hidden group">
+                            <div className="absolute right-0 top-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <DollarSign className="size-16" />
+                            </div>
+                            <div className="size-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-2">
+                                <DollarSign className="size-5" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Spent</p>
+                                <h3 className="text-xl font-black text-slate-900 leading-tight">
+                                    {isLoading ? "..." : `₹${stats?.totalSpent || "0"}`}
+                                </h3>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 {/* Create New Ad Section */}
                 <div className="bg-white rounded-[2.5rem] p-6 shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">

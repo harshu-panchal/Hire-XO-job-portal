@@ -38,56 +38,56 @@ export const uploadService = {
    * Upload tender document
    */
   async uploadTenderDocument(file: File): Promise<UploadResponse> {
-    return this.uploadFile(file, "/upload/tender-document", "tender-document");
+    return this.uploadFile(file, "/upload/tender-document", "document");
   },
 
   /**
    * Upload equipment image
    */
   async uploadEquipmentImage(file: File): Promise<UploadResponse> {
-    return this.uploadFile(file, "/upload/equipment-image", "equipment-image");
+    return this.uploadFile(file, "/upload/equipment-image", "image");
   },
 
   /**
    * Upload machinery image
    */
   async uploadMachineryImage(file: File): Promise<UploadResponse> {
-    return this.uploadFile(file, "/upload/machinery-image", "machinery-image");
+    return this.uploadFile(file, "/upload/machinery-image", "image");
   },
 
   /**
    * Upload vehicle image
    */
   async uploadVehicleImage(file: File): Promise<UploadResponse> {
-    return this.uploadFile(file, "/upload/vehicle-image", "vehicle-image");
+    return this.uploadFile(file, "/upload/vehicle-image", "image");
   },
 
   /**
    * Upload logistics image
    */
   async uploadLogisticsImage(file: File): Promise<UploadResponse> {
-    return this.uploadFile(file, "/upload/logistics-image", "logistics-image");
+    return this.uploadFile(file, "/upload/logistics-image", "image");
   },
 
   /**
    * Upload PMC image
    */
   async uploadPMCImage(file: File): Promise<UploadResponse> {
-    return this.uploadFile(file, "/upload/pmc-image", "pmc-image");
+    return this.uploadFile(file, "/upload/pmc-image", "image");
   },
 
   /**
    * Upload CSM image
    */
   async uploadCSMImage(file: File): Promise<UploadResponse> {
-    return this.uploadFile(file, "/upload/csm-image", "csm-image");
+    return this.uploadFile(file, "/upload/csm-image", "image");
   },
 
   /**
    * Upload investor image
    */
   async uploadInvestorImage(file: File): Promise<UploadResponse> {
-    return this.uploadFile(file, "/upload/investor-image", "investor-image");
+    return this.uploadFile(file, "/upload/investor-image", "image");
   },
 
   /**

@@ -78,7 +78,7 @@ export interface Resource {
 }
 
 // Missing types
-export type UserRole = "employee" | "employer" | "resource" | "admin" | "recruiter";
+export type UserRole = "employee" | "employer" | "resource" | "admin";
 export type InvestorType = string;
 export type TenderType = string;
 export type EquipmentType = string;
@@ -99,9 +99,10 @@ export interface User {
   walletBalance?: number;
   createdAt: string;
   phoneNumber?: string;
-  profilePhoto?: string; // Added to fix build
-  activeSubscriptionId?: string; // Added to fix build
+  profilePhoto?: string;
+  activeSubscriptionId?: string;
   status?: "active" | "suspended" | "banned";
+  bookmarks?: string[];
 }
 
 export interface EmployerSignupData {
@@ -161,6 +162,7 @@ export interface UserProfile {
   activeSubscriptionId?: string;
   walletBalance?: number;
   subscriptionExpiry?: string | null;
+  bookmarks?: string[];
   // Additional fields for different roles
   phoneNumber?: string;
   location?: string;

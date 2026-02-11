@@ -178,9 +178,9 @@ export class AuthService {
         }
 
         let profile;
-        if (user.role === 'job-seeker' || user.role === 'employee') {
+        if (user.role === 'employee') {
             profile = await JobSeeker.findOne({ userId: user._id });
-        } else if (user.role === 'recruiter' || user.role === 'employer') {
+        } else if (user.role === 'employer') {
             profile = await Recruiter.findOne({ userId: user._id });
         } else if (user.role === 'resource') {
             profile = await ResourceProfile.findOne({ userId: user._id });
@@ -229,9 +229,9 @@ export class AuthService {
         }
 
         let profile;
-        if (user.role === 'job-seeker' || user.role === 'employee') {
+        if (user.role === 'employee') {
             profile = await JobSeeker.findOne({ userId: user._id });
-        } else if (user.role === 'recruiter' || user.role === 'employer') {
+        } else if (user.role === 'employer') {
             profile = await Recruiter.findOne({ userId: user._id });
         } else if (user.role === 'resource') {
             profile = await ResourceProfile.findOne({ userId: user._id });
@@ -277,7 +277,7 @@ export class AuthService {
 
         // Update role-specific profile
         let profile;
-        if (user.role === 'job-seeker' || user.role === 'employee') {
+        if (user.role === 'employee') {
             const profileUpdates: any = {};
             if (updateData.education) profileUpdates.education = updateData.education;
             if (updateData.age) profileUpdates.age = updateData.age;
@@ -290,7 +290,7 @@ export class AuthService {
                 profileUpdates,
                 { new: true }
             );
-        } else if (user.role === 'recruiter' || user.role === 'employer') {
+        } else if (user.role === 'employer') {
             const profileUpdates: any = {};
             if (updateData.company) profileUpdates.company = updateData.company;
             if (updateData.companyLogo) profileUpdates.companyLogo = updateData.companyLogo;

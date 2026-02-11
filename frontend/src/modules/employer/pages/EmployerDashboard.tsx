@@ -30,49 +30,53 @@ const EmployerDashboard = () => {
   const [recentApplications, setRecentApplications] = useState<any[]>([]);
   const [recentPosts, setRecentPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      const [statsData, appsData, myJobs, postsData] = await Promise.all([
+        userService.getDashboardStats(),
+        applicationService.getReceivedApplications(),
+        jobService.getMyListings(),
+        postService.getAllPosts(),
+      ]);
+
+      setStats({
+        activeJobs: (Array.isArray(myJobs) ? myJobs.length : 0) || statsData?.activeJobs || 0,
+        totalApplications: statsData?.totalApplications || 0,
+        interviews: 0,
+      });
+
+      // Format applications safely
+      const appsArray = Array.isArray(appsData) ? appsData : (appsData as any)?.data || [];
+      const formattedApps = appsArray.slice(0, 5).map((app: any) => ({
+        id: app.id || app._id,
+        name: app.applicantId?.name || "Unknown Candidate",
+        role: app.jobId?.title || "Unknown Role",
+        status: app.status,
+        time: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+        avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase(),
+      }));
+      setRecentApplications(formattedApps);
+
+      // Safely set recent posts from postData
+      const postsArray = postsData?.data || (Array.isArray(postsData) ? postsData : []);
+      setRecentPosts(postsArray.slice(0, 3));
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+      setError("Failed to load dashboard data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!isAuthenticated) {
-        setLoading(false);
-        return;
-      }
-      try {
-        const [statsData, appsData, myJobs, postsData] = await Promise.all([
-          userService.getDashboardStats(),
-          applicationService.getReceivedApplications(),
-          jobService.getMyListings(),
-          postService.getAllPosts(),
-        ]);
-
-        setStats({
-          activeJobs: (Array.isArray(myJobs) ? myJobs.length : 0) || statsData?.activeJobs || 0,
-          totalApplications: statsData?.totalApplications || 0,
-          interviews: 0,
-        });
-
-        // Format applications safely
-        const appsArray = Array.isArray(appsData) ? appsData : (appsData as any)?.data || [];
-        const formattedApps = appsArray.slice(0, 5).map((app: any) => ({
-          id: app.id || app._id,
-          name: app.applicantId?.name || "Unknown Candidate",
-          role: app.jobId?.title || "Unknown Role",
-          status: app.status,
-          time: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
-          avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase(),
-        }));
-        setRecentApplications(formattedApps);
-
-        // Safely set recent posts from postData
-        const postsArray = postsData?.data || (Array.isArray(postsData) ? postsData : []);
-        setRecentPosts(postsArray.slice(0, 3));
-      } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [isAuthenticated]);
 
@@ -108,6 +112,20 @@ const EmployerDashboard = () => {
         <div className="text-sm font-black uppercase tracking-widest text-slate-400">
           Loading Dashboard...
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-10 text-center">
+        <div className="text-red-500 font-bold mb-4">{error}</div>
+        <button
+          onClick={fetchData}
+          className="px-4 py-2 bg-primary text-white rounded-lg font-bold"
+        >
+          Retry
+        </button>
       </div>
     );
   }

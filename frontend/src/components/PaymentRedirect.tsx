@@ -5,14 +5,14 @@ const PaymentRedirect = () => {
     const { user, isAuthenticated } = useAuthStore();
 
     if (!isAuthenticated || !user) {
-        return <Navigate to="/login/employee" replace />;
+        return <Navigate to="/resource-plans" replace />;
     }
 
     const redirectPaths: Record<string, string> = {
         employee: "/subscriptions",
         employer: "/employer/subscription",
         admin: "/admin/payments",
-        resource: "/investor/browse/dashboard", // Resources might not have a universal payment page yet, or it's dashboard
+        resource: "/resource-plans",
     };
 
     return <Navigate to={redirectPaths[user.role] || "/"} replace />;

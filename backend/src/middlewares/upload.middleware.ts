@@ -29,8 +29,8 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
     const extname = path.extname(file.originalname).toLowerCase();
     const mimetype = file.mimetype;
 
-    if (file.fieldname === 'cv' || file.fieldname === 'resume' || file.fieldname === 'additionalDocuments' || file.fieldname === 'certificate' || file.fieldname === 'tender-document') {
-        // CV, Resume, Certificates and Tender Documents: Accept PDFs and Word docs
+    if (file.fieldname === 'cv' || file.fieldname === 'resume' || file.fieldname === 'additionalDocuments' || file.fieldname === 'certificate' || file.fieldname === 'document') {
+        // CV, Resume, Certificates and Generic Documents: Accept PDFs and Word docs
         if (allowedDocTypes.test(extname) && (
             mimetype === 'application/pdf' ||
             mimetype === 'application/msword' ||
@@ -54,6 +54,13 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
         } else {
             cb(new Error('Invalid file type. Allowed: Images, PDF, Word docs'));
         }
+    } else if (file.fieldname === 'image') {
+        // Standardized Resource images
+        if (allowedImageTypes.test(extname) && mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed for resource images'));
+        }
     } else if (
         file.fieldname === 'equipment-image' ||
         file.fieldname === 'machinery-image' ||
@@ -64,7 +71,7 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
         file.fieldname === 'investor-image' ||
         file.fieldname === 'resource-image'
     ) {
-        // Resource images
+        // Legacy support / Specific naming if needed (redirecting to image logic basically)
         if (allowedImageTypes.test(extname) && mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
@@ -99,19 +106,19 @@ const uploadDoc = multer({
 // Export instances for specific use cases
 export const uploadProfilePhoto = uploadImage.single('profilePhoto');
 export const uploadCompanyLogo = uploadImage.single('companyLogo');
-export const uploadResourceImage = uploadImage.single('resource-image');
-export const uploadEquipmentImage = uploadImage.single('equipment-image');
-export const uploadMachineryImage = uploadImage.single('machinery-image');
-export const uploadVehicleImage = uploadImage.single('vehicle-image');
-export const uploadLogisticsImage = uploadImage.single('logistics-image');
-export const uploadPMCImage = uploadImage.single('pmc-image');
-export const uploadCSMImage = uploadImage.single('csm-image');
-export const uploadInvestorImage = uploadImage.single('investor-image');
+export const uploadResourceImage = uploadImage.single('image');
+export const uploadEquipmentImage = uploadImage.single('image');
+export const uploadMachineryImage = uploadImage.single('image');
+export const uploadVehicleImage = uploadImage.single('image');
+export const uploadLogisticsImage = uploadImage.single('image');
+export const uploadPMCImage = uploadImage.single('image');
+export const uploadCSMImage = uploadImage.single('image');
+export const uploadInvestorImage = uploadImage.single('image');
 
 // Documents and Mixed
 export const uploadCV = uploadDoc.single('cv');
 export const uploadCertificate = uploadDoc.single('certificate');
-export const uploadTenderDocument = uploadDoc.single('tender-document');
+export const uploadTenderDocument = uploadDoc.single('document');
 export const uploadPostMedia = uploadDoc.single('file'); // Posts can be images or docs
 
 export const uploadApplication = uploadDoc.fields([

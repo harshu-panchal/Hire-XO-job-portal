@@ -389,7 +389,7 @@ export class AdminController {
             let activities = [
                 ...recentUsers.map(u => ({
                     id: u._id,
-                    action: `New ${u.role === 'recruiter' ? 'Employer' : 'Job Seeker'} Registration`,
+                    action: `New ${u.role === 'employer' ? 'Employer' : 'Job Seeker'} Registration`,
                     user: u.name,
                     time: u.createdAt
                 })),
