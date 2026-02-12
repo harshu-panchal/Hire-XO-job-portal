@@ -22,7 +22,7 @@ router.delete(
 router.post(
     '/send',
     authenticateToken,
-    requireRole(['admin']),
+    requireRole('admin'),
     notificationController.sendNotification
 );
 
@@ -30,7 +30,7 @@ router.post(
 router.post(
     '/send-bulk',
     authenticateToken,
-    requireRole(['admin']),
+    requireRole('admin'),
     notificationController.sendBulkNotification
 );
 
