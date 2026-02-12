@@ -1,18 +1,50 @@
 import express from 'express';
 import * as notificationController from '../controllers/notificationController';
+import { NotificationController } from '../controllers/notification.controller';
 import { authenticateToken, requireRole } from '../middlewares/auth.middleware';
 
 const router = express.Router();
+const crudController = new NotificationController();
 
-// Save FCM token (authenticated users only)
+// CRUD Operations (authenticated users only)
+router.get(
+    '/',
+    authenticateToken,
+    crudController.getNotifications
+);
+
+router.put(
+    '/:notificationId/read',
+    authenticateToken,
+    crudController.markAsRead
+);
+
+router.put(
+    '/mark-all-read',
+    authenticateToken,
+    crudController.markAllAsRead
+);
+
+router.delete(
+    '/:notificationId',
+    authenticateToken,
+    crudController.deleteNotification
+);
+
+router.get(
+    '/stream',
+    authenticateToken,
+    crudController.streamNotifications
+);
+
+// FCM token Management (authenticated users only)
 router.post(
     '/save-token',
     authenticateToken,
     notificationController.saveToken
 );
 
-// Remove FCM token (authenticated users only)
-router.delete(
+router.post(
     '/remove-token',
     authenticateToken,
     notificationController.removeToken

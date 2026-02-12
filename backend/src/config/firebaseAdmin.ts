@@ -6,8 +6,16 @@ import fs from 'fs';
 const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH ||
     path.join(__dirname, '../../config/serviceAccountKey.json');
 
+// Convert to absolute path for consistent behavior between fs and require
+const absolutePath = path.resolve(process.cwd(), serviceAccountPath);
+
+// Initialize Firebase Admin only if credentials file exists
 // Initialize Firebase Admin
 let firebaseAdmin: admin.app.App | null = null;
+
+if (fs.existsSync(absolutePath)) {
+    try {
+        const serviceAccount = JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
 
 try {
     let serviceAccount: any;
