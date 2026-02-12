@@ -4,7 +4,7 @@ export interface IUser extends Document {
     name: string;
     email: string;
     password?: string;
-    role: 'job-seeker' | 'recruiter' | 'resource' | 'admin' | 'employee' | 'employer';
+    role: 'employee' | 'employer' | 'resource' | 'admin';
     phoneNumber?: string;
     profilePhoto?: string;
     interviewSuccessRate?: number;
@@ -44,6 +44,7 @@ export interface IUser extends Document {
     deletedAt?: Date;
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
+    fcmTokens?: string[];
     createdAt: Date;
 }
 
@@ -51,7 +52,7 @@ const UserSchema: Schema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ['job-seeker', 'recruiter', 'resource', 'admin', 'employee', 'employer'], required: true },
+    role: { type: String, enum: ['employee', 'employer', 'resource', 'admin'], required: true },
     phoneNumber: { type: String },
     profilePhoto: { type: String },
     interviewSuccessRate: { type: Number, default: 0 },
@@ -101,6 +102,7 @@ const UserSchema: Schema = new Schema({
     deletedAt: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
+    fcmTokens: [{ type: String }],
 }, { timestamps: true });
 
 // Cascade delete profiles when a user is deleted

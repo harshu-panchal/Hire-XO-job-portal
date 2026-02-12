@@ -10,6 +10,7 @@
     "skipLibCheck": true
   },
   "exclude": [
-    "verify_auth_supertest.ts"
+    "verify_auth_supertest.ts",
+    "scripts"
   ]
 }

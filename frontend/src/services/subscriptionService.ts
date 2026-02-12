@@ -20,9 +20,11 @@ export const subscriptionService = {
   /**
    * Get all subscription plans
    */
-  async getAllPlans(): Promise<SubscriptionPlan[]> {
+  async getAllPlans(type?: string): Promise<SubscriptionPlan[]> {
     try {
-      const response = await apiClient.get<SubscriptionPlan[]>("/subscriptions/plans");
+      const response = await apiClient.get<SubscriptionPlan[]>("/subscriptions/plans", {
+        params: { type },
+      });
       return response.data;
     } catch (error) {
       throw new Error(getErrorMessage(error));

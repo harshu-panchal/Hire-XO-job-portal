@@ -1,66 +1,38 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, User, Menu, Sun, Moon, Search, CheckCircle, Clock, Star, Info } from "lucide-react";
+import { Bell, User, Menu, Search, CheckCircle, Star, Info, AlertTriangle, XCircle } from "lucide-react";
 import { useAuthStore } from "../../../store/useAuthStore";
+import { useAdminNotifications } from "../../../hooks/useAdminNotifications";
 
 interface AdminHeaderProps {
   title: string;
   onMenuClick: () => void;
 }
 
-const NOTIFICATIONS_DATA = [
-  {
-    id: 1,
-    title: "New Employer Registered",
-    description: "TechCorp India has joined the platform.",
-    time: "5m ago",
-    type: "success",
-    icon: CheckCircle,
-    unread: true,
-  },
-  {
-    id: 2,
-    title: "Payment Received",
-    description: "Payment for Business Plan received from InnovateTech.",
-    time: "1h ago",
-    type: "info",
-    icon: Star,
-    unread: true,
-  },
-  {
-    id: 3,
-    title: "System Update",
-    description: "System maintenance scheduled for tonight at 2 AM.",
-    time: "4h ago",
-    type: "warning",
-    icon: Info,
-    unread: false,
-  },
-  {
-    id: 4,
-    title: "Job Posted",
-    description: "StartupHub posted a new Senior Developer role.",
-    time: "Yesterday",
-    type: "success",
-    icon: Clock,
-    unread: false,
-  },
-];
-
 export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
   const { user } = useAuthStore();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState(NOTIFICATIONS_DATA);
 
-  const unreadCount = notifications.filter((n) => n.unread).length;
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useAdminNotifications();
 
-  const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
+  const getIcon = (type: string) => {
+    switch (type) {
+      case 'success': return CheckCircle;
+      case 'warning': return AlertTriangle;
+      case 'error': return XCircle;
+      case 'info':
+      default: return Info;
+    }
   };
 
-  const handleMarkRead = (id: number) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)));
+  const getTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const diff = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    if (diff < 60) return "Just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
   };
 
   return (
@@ -97,7 +69,7 @@ export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
           whileTap={{ scale: 0.95 }}
           className="p-2.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-900 transition-all"
         >
-          
+          {/* Placeholder for future action button */}
         </motion.button>
 
         <div className="relative">
@@ -105,11 +77,10 @@ export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowNotifications(!showNotifications)}
-            className={`p-2.5 rounded-lg border transition-all relative ${
-              showNotifications
+            className={`p-2.5 rounded-lg border transition-all relative ${showNotifications
                 ? "bg-primary/10 border-primary text-primary"
                 : "bg-slate-100 border-slate-200 text-slate-600 hover:text-slate-900"
-            }`}
+              }`}
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
@@ -137,7 +108,7 @@ export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
                     <h3 className="font-semibold text-slate-900">Notifications</h3>
                     {unreadCount > 0 && (
                       <button
-                        onClick={handleMarkAllRead}
+                        onClick={markAllAsRead}
                         className="text-xs text-primary hover:underline font-medium"
                       >
                         Mark all read
@@ -145,41 +116,51 @@ export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
                     )}
                   </div>
                   <div className="max-h-[70vh] overflow-y-auto">
-                    {notifications.map((notif) => (
-                      <div
-                        key={notif.id}
-                        onClick={() => handleMarkRead(notif.id)}
-                        className={`p-4 flex gap-4 hover:bg-slate-50 transition-colors cursor-pointer border-b border-slate-100 last:border-0 ${notif.unread ? "bg-primary/5" : ""}`}
-                      >
-                        <div
-                          className={`p-2 rounded-lg h-fit ${
-                            notif.type === "success"
-                              ? "bg-green-100 text-green-600"
-                              : notif.type === "info"
-                                ? "bg-blue-100 text-blue-600"
-                                : "bg-yellow-100 text-yellow-600"
-                          }`}
-                        >
-                          <notif.icon className="w-4 h-4" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className={`text-sm leading-tight mb-1 ${notif.unread ? "font-bold text-slate-900" : "font-medium text-slate-700"}`}
+                    {notifications && notifications.length > 0 ? (
+                      notifications.map((notif) => {
+                        const Icon = getIcon(notif.type);
+                        return (
+                          <div
+                            key={notif._id}
+                            onClick={() => !notif.read && markAsRead(notif._id)}
+                            className={`p-4 flex gap-4 hover:bg-slate-50 transition-colors cursor-pointer border-b border-slate-100 last:border-0 ${!notif.read ? "bg-primary/5" : ""}`}
                           >
-                            {notif.title}
-                          </p>
-                          <p className="text-xs text-slate-500 mb-1 line-clamp-2">
-                            {notif.description}
-                          </p>
-                          <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                            {notif.time}
-                          </p>
-                        </div>
-                        {notif.unread && (
-                          <div className="w-2 h-2 bg-primary rounded-full shrink-0 mt-2"></div>
-                        )}
+                            <div
+                              className={`p-2 rounded-lg h-fit ${notif.type === "success"
+                                  ? "bg-green-100 text-green-600"
+                                  : notif.type === "warning"
+                                    ? "bg-yellow-100 text-yellow-600"
+                                    : notif.type === "error"
+                                      ? "bg-red-100 text-red-600"
+                                      : "bg-blue-100 text-blue-600"
+                                }`}
+                            >
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p
+                                className={`text-sm leading-tight mb-1 ${!notif.read ? "font-bold text-slate-900" : "font-medium text-slate-700"}`}
+                              >
+                                {notif.title}
+                              </p>
+                              <p className="text-xs text-slate-500 mb-1 line-clamp-2">
+                                {notif.message}
+                              </p>
+                              <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                                {getTimeAgo(notif.createdAt)}
+                              </p>
+                            </div>
+                            {!notif.read && (
+                              <div className="w-2 h-2 bg-primary rounded-full shrink-0 mt-2"></div>
+                            )}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="p-8 text-center text-slate-500 text-sm">
+                        No notifications
                       </div>
-                    ))}
+                    )}
                   </div>
                   <button className="w-full p-3 text-center text-sm font-medium text-slate-500 border-t border-slate-100 hover:bg-slate-50 transition-colors">
                     See all notifications

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { AdminSidebar } from "../modules/admin/components/AdminSidebar";
 import { AdminHeader } from "../modules/admin/components/AdminHeader";
-import { Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 export default function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -86,16 +85,7 @@ export default function AdminLayout() {
           </AnimatePresence>
         </main>
 
-        {/* Mobile Bottom Nav */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-center z-40">
-          <button
-            onClick={() => setIsSidebarOpen(true)}
-            className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg font-medium text-sm"
-          >
-            <Menu className="w-5 h-5" />
-            Menu
-          </button>
-        </div>
+
       </div>
     </div>
   );

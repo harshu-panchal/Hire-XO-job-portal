@@ -1,0 +1,6 @@
+# ====================
+# SERVICE ACCOUNT KEY
+# ====================
+# Add this to your .gitignore file to prevent accidental commits
+src/config/serviceAccountKey.json
+config/serviceAccountKey.json

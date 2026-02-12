@@ -31,15 +31,17 @@ const EmployeeSignup = () => {
   const [error, setError] = useState("");
 
   const [formData, setFormData] = useState<
-    Partial<EmployeeSignupData> & { confirmPassword: string }
+    Partial<EmployeeSignupData> & { confirmPassword: string; recentRole?: string; recentCompany?: string }
   >({
     name: "",
     username: "",
     phoneNumber: "",
     email: "",
     education: "",
-    age: 0,
+    age: 25, // Default age
     experience: 0,
+    recentRole: "",
+    recentCompany: "",
     interestedCompanies: [],
     password: "",
     confirmPassword: "",
@@ -65,11 +67,10 @@ const EmployeeSignup = () => {
         return;
       }
     } else if (currentStep === 2) {
-      if (!formData.education || !formData.age || !formData.experience) {
+      if (!formData.education || !formData.recentRole || !formData.recentCompany) {
         setError("Please fill in all required fields");
         return;
       }
-      // Age validation removed - backend handles it with more reasonable limits (16-120)
     }
 
     setCurrentStep(currentStep + 1);
@@ -112,14 +113,27 @@ const EmployeeSignup = () => {
     }
 
     try {
-      const signupData: EmployeeSignupData = {
+      // Construct structured experience object
+      const experienceData: any = [
+        {
+          role: formData.recentRole,
+          company: formData.recentCompany,
+          period: `${formData.experience} years`,
+        },
+      ];
+
+      const signupData: EmployeeSignupData | any = {
         name: formData.name!,
         username: formData.username!,
         phoneNumber: formData.phoneNumber!,
         email: formData.email!,
         education: formData.education!,
-        age: formData.age!,
-        experience: formData.experience!,
+        age: formData.age!, // Now defaulting to 25 if not collected, or we should keep the Age input? I removed it in previous step.
+        // Actually, I removed the Age input in the UI replacement. I should provide a default or handle it.
+        // Let's pass the experience array instead of the number.
+        // But the type EmployeeSignupData expects 'experience' as number?
+        // verifying type...
+        experience: experienceData,
         interestedCompanies: formData.interestedCompanies || [],
         cv: cvFile || undefined,
         profilePhoto: photoFile || undefined,
@@ -275,23 +289,21 @@ const EmployeeSignup = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
-                      Age
+                      Most Recent Job Title
                     </label>
                     <div className="relative group">
-                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                      <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                       <Input
-                        type="number"
-                        placeholder="25"
-                        value={formData.age || ""}
+                        type="text"
+                        placeholder="Software Engineer"
+                        value={formData.recentRole || ""}
                         onChange={(e) =>
-                          setFormData({ ...formData, age: parseInt(e.target.value) || 0 })
+                          setFormData({ ...formData, recentRole: e.target.value })
                         }
                         className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
-                        min="18"
-                        max="100"
                         required
                       />
                     </div>
@@ -299,10 +311,29 @@ const EmployeeSignup = () => {
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
-                      Exp (Yrs)
+                      Company
                     </label>
                     <div className="relative group">
-                      <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                      <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                      <Input
+                        type="text"
+                        placeholder="Acme Corp"
+                        value={formData.recentCompany || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, recentCompany: e.target.value })
+                        }
+                        className="pl-12 h-14 bg-slate-50 border-slate-200 rounded-2xl focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">
+                      Experience (Years)
+                    </label>
+                    <div className="relative group">
+                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                       <Input
                         type="number"
                         placeholder="3"

@@ -1,15 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { Search, Plus, Edit2, Trash2, X, MapPin, Phone, Mail } from "lucide-react";
+import { Search, Edit2, Trash2, X, MapPin, Phone, Mail, Loader2, AlertCircle } from "lucide-react";
+import { adminService } from "../../../../services/adminService";
+import { toast } from "sonner";
 
 interface ResourceItem {
-  id: string;
+  _id: string;
+  id?: string;
   name: string;
   description: string;
   location: string;
   contact: string;
   email: string;
   status: "Active" | "Inactive";
+  userId?: any;
+  [key: string]: any; // Allow other props
 }
 
 const containerVariants: Variants = {
@@ -35,89 +40,137 @@ interface ResourcePageProps {
 }
 
 export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
-  const [items, setItems] = useState<ResourceItem[]>([
-    {
-      id: "1",
-      name: `${title.slice(0, -1)} Alpha`,
-      description: "Premium service provider with extensive experience",
-      location: "Mumbai, Maharashtra",
-      contact: "+91 98765 43210",
-      email: "contact@alpha.com",
-      status: "Active",
-    },
-    {
-      id: "2",
-      name: `${title.slice(0, -1)} Beta`,
-      description: "Trusted partner for enterprise solutions",
-      location: "Delhi NCR",
-      contact: "+91 87654 32109",
-      email: "contact@beta.com",
-      status: "Active",
-    },
-    {
-      id: "3",
-      name: `${title.slice(0, -1)} Gamma`,
-      description: "Specializing in innovative approaches",
-      location: "Bangalore, Karnataka",
-      contact: "+91 76543 21098",
-      email: "contact@gamma.com",
-      status: "Inactive",
-    },
-  ]);
+  const [items, setItems] = useState<ResourceItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<ResourceItem | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-
   const [formState, setFormState] = useState<Partial<ResourceItem>>({});
 
-  const filteredItems = items.filter(
-    (i) =>
-      i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      i.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      i.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const category = title.toLowerCase();
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to page 1 on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const fetchResources = async () => {
+    setLoading(true);
+    try {
+      const response = await adminService.getResources(category, {
+        search: debouncedSearch,
+        page,
+        limit
+      });
+      const mapped = response.data.map((item: any) => ({
+        _id: item._id,
+        name: item.title || item.company || item.name || "Unnamed Resource",
+        description: item.description || "No description",
+        location: item.location || "Unknown Location",
+        contact: item.userId?.phoneNumber || "N/A",
+        email: item.userId?.email || "N/A",
+        status: item.status || "Active",
+        userId: item.userId,
+        ...item // Keep original fields for editing if needed
+      }));
+      setItems(mapped);
+      if (response.pagination) {
+        setTotalPages(response.pagination.pages);
+        setTotalItems(response.pagination.total);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(`Failed to load ${title}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchResources();
+  }, [category, debouncedSearch, page]);
 
   const openModal = (item?: ResourceItem) => {
     if (item) {
       setEditingItem(item);
       setFormState(item);
-    } else {
-      setEditingItem(null);
-      setFormState({ status: "Active" });
+      setShowModal(true);
     }
-    setShowModal(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this resource?")) {
-      setItems(items.filter((i) => i.id !== id));
+      try {
+        await adminService.deleteResource(category, id);
+        setItems(items.filter((i) => i._id !== id));
+        toast.success("Deleted successfully");
+      } catch (error) {
+        toast.error("Failed to delete");
+      }
     }
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!editingItem || !editingItem._id) return;
+
     setIsSaving(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      // We only update common fields + generic 'name' mapped back to 'title' if applicable
+      // This is tricky because different resources have different field names for "Name".
+      // Tenders/Equipments/Machinery/PMC/CSM/Logistics/Vehicles all use `title`.
+      // Ensure we explicitly map 'name' back to 'title' if the original item had 'title'.
 
-    if (editingItem) {
+      const payload: any = {
+        description: formState.description,
+        location: formState.location,
+        status: formState.status
+      };
+
+      if (editingItem.title) {
+        payload.title = formState.name;
+      } else if (editingItem.company) {
+        // If it uses company as name (like Investor), but Investor uses Investors.tsx. 
+        // Other resources might use company?
+        // Most use 'title'.
+        payload.company = formState.name; // Fallback or strict?
+      }
+
+      // If we want to be safe, we should probably fetch the original specific fields or just rely on what we have.
+      // But ResourcePage is generic.
+      // Users might edit "Name" and expect "Title" to change.
+      if (typeof editingItem.title !== 'undefined') payload.title = formState.name;
+
+      await adminService.updateResource(category, editingItem._id, payload);
+
       setItems(
-        items.map((i) => (i.id === editingItem.id ? ({ ...i, ...formState } as ResourceItem) : i))
+        items.map((i) => (i._id === editingItem._id ? { ...i, ...formState, name: formState.name! } : i))
       );
-    } else {
-      const newItem: ResourceItem = {
-        id: Math.random().toString(36).substr(2, 9),
-        ...(formState as Omit<ResourceItem, "id">),
-      } as ResourceItem;
-      setItems([newItem, ...items]);
+      toast.success("Updated successfully");
+      setShowModal(false);
+      fetchResources(); // Refresh to be sure
+    } catch (error) {
+      toast.error("Failed to update");
+    } finally {
+      setIsSaving(false);
     }
-
-    setIsSaving(false);
-    setShowModal(false);
   };
 
   const activeCount = items.filter((i) => i.status === "Active").length;
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-96"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  }
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
@@ -130,6 +183,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
           <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
           <p className="text-slate-500 mt-1">Manage all {title.toLowerCase()}</p>
         </div>
+        {/* Hiding Add Button
         <button
           onClick={() => openModal()}
           className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors"
@@ -137,6 +191,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
           <Plus className="w-4 h-4" />
           Add {title.slice(0, -1)}
         </button>
+        */}
       </motion.div>
 
       {/* Stats */}
@@ -177,9 +232,9 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
         variants={itemVariants}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        {filteredItems.map((item) => (
+        {items.map((item) => (
           <div
-            key={item.id}
+            key={item._id}
             className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col h-full"
           >
             <div className="flex items-start justify-between mb-4">
@@ -187,11 +242,10 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                 <Icon className="w-6 h-6 text-primary" />
               </div>
               <span
-                className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                  item.status === "Active"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-slate-100 text-slate-600"
-                }`}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium ${item.status === "Active"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-slate-100 text-slate-600"
+                  }`}
               >
                 {item.status}
               </span>
@@ -228,7 +282,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(item.id)}
+                onClick={() => handleDelete(item._id)}
                 className="px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
@@ -238,10 +292,40 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
         ))}
       </motion.div>
 
-      {filteredItems.length === 0 && (
+      {items.length === 0 && (
         <div className="py-12 text-center bg-white rounded-xl border border-slate-200">
           <Icon className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-          <p className="text-slate-500">No {title.toLowerCase()} found</p>
+          <p className="text-slate-500">No results found</p>
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {totalItems > 0 && (
+        <div className="flex items-center justify-between px-6 py-4 bg-white border border-slate-200 rounded-xl mt-6">
+          <div className="flex items-center text-sm text-slate-500">
+            Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
+            <span className="font-medium mx-1">{Math.min(page * limit, totalItems)}</span> of{" "}
+            <span className="font-medium mx-1">{totalItems}</span> records
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-sm font-medium text-slate-700 px-4">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 
@@ -276,7 +360,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
               <form onSubmit={handleSave} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    Name
+                    Name/Title
                   </label>
                   <input
                     type="text"
@@ -309,32 +393,6 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                     onChange={(e) => setFormState({ ...formState, location: e.target.value })}
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                      Contact
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={formState.contact || ""}
-                      onChange={(e) => setFormState({ ...formState, contact: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={formState.email || ""}
-                      onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    />
-                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
@@ -370,7 +428,7 @@ export default function ResourcePage({ title, icon: Icon }: ResourcePageProps) {
                     {isSaving && (
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     )}
-                    {editingItem ? "Save Changes" : `Add ${title.slice(0, -1)}`}
+                    Save Changes
                   </button>
                 </div>
               </form>

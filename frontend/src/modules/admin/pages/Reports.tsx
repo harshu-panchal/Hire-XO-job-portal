@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion, type Variants } from "framer-motion";
 import {
   LineChart,
   Line,
@@ -21,37 +20,17 @@ import {
   DollarSign,
   Briefcase,
   FileText,
+  Boxes,
+  ExternalLink,
+  ChevronRight,
+  TrendingDown,
+  Loader2
 } from "lucide-react";
 import { adminService, type SystemStats } from "@/services/adminService";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
-const monthlyData = [
-  { name: "Jan", users: 1200, revenue: 32000, jobs: 450 },
-  { name: "Feb", users: 1400, revenue: 45000, jobs: 520 },
-  { name: "Mar", users: 1100, revenue: 41000, jobs: 480 },
-  { name: "Apr", users: 1800, revenue: 58000, jobs: 620 },
-  { name: "May", users: 1600, revenue: 49000, jobs: 550 },
-  { name: "Jun", users: 2100, revenue: 65000, jobs: 720 },
-];
-
-const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
-
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-} as const;
-
-const itemVariants: Variants = {
-  hidden: { y: 20, opacity: 0 },
-  show: {
-    y: 0,
-    opacity: 1,
-    transition: { type: "spring", stiffness: 300, damping: 25 },
-  },
-} as const;
+const PIE_COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#06B6D4", "#F43F5E"];
 
 export default function Reports() {
   const [isExporting, setIsExporting] = useState(false);
@@ -79,8 +58,19 @@ export default function Reports() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // Simple CSV generation
-    const headers = ["Month", "Users", "Revenue", "Jobs"];
-    const rows = monthlyData.map((d) => [d.name, d.users, d.revenue, d.jobs]);
+    const headers = ["Month", "Users", "Revenue"];
+    const rows = (stats?.charts.revenue || []).map((d, i) => {
+      const userGrowth = stats?.charts.userGrowth[i]?.users || 0;
+      return [d.name, userGrowth, d.value];
+    });
+
+    // Fallback if no data
+    if (rows.length === 0) {
+      toast.error("No data to export");
+      setIsExporting(false);
+      return;
+    }
+
     const csvContent = [headers, ...rows].map((e) => e.join(",")).join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -96,28 +86,44 @@ export default function Reports() {
     setIsExporting(false);
   };
 
-  const pieData = stats ? [
-    { name: "Employees", value: stats.users.byRole["job-seeker"] || 0 },
+  const roleDistributionData = stats ? [
+    { name: "Job Seekers", value: stats.users.byRole["job-seeker"] || 0 },
     { name: "Employers", value: stats.users.byRole["recruiter"] || 0 },
     { name: "Resources", value: stats.users.byRole["resource"] || 0 },
     { name: "Admins", value: stats.users.byRole["admin"] || 0 },
   ].filter(d => d.value > 0) : [];
 
+  const resourceDistributionData = stats ? [
+    { name: "Investors", value: (stats.resources as any).investors || 0 },
+    { name: "Tenders", value: (stats.resources as any).tenders || 0 },
+    { name: "Equipments", value: (stats.resources as any).equipments || 0 },
+    { name: "Machinery", value: (stats.resources as any).machinery || 0 },
+    { name: "PMC", value: (stats.resources as any).pmc || 0 },
+    { name: "CSM", value: (stats.resources as any).csm || 0 },
+    { name: "Logistics", value: (stats.resources as any).logistics || 0 },
+    { name: "Vehicles", value: (stats.resources as any).vehicles || 0 },
+  ].filter(d => d.value > 0) : [];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-24">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
-      <motion.div
-        variants={itemVariants}
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-      >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Reports</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">Platform Analytics</h1>
           <p className="text-slate-500 mt-1">
-            View analytics and generate reports
+            Comprehensive overview of platform performance and growth
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <select className="px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+          <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
             <option>Last 30 days</option>
             <option>Last 90 days</option>
             <option>This Year</option>
@@ -125,228 +131,280 @@ export default function Reports() {
           <button
             onClick={handleExport}
             disabled={isExporting}
-            className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
-            {isExporting ? (
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <Download className="w-4 h-4" />
-            )}
+            {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
             {isExporting ? "Exporting..." : "Export"}
           </button>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Quick Stats */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Quick Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Users"
-          value={isLoading ? "..." : stats?.users.total.toLocaleString() || "0"}
-          change="+12.5%"
+          title="Total Registered Users"
+          value={stats?.users.total.toLocaleString() || "0"}
+          trend="+12%"
+          trendType="up"
           icon={Users}
+          color="blue"
         />
         <StatCard
-          title="Active Jobs"
-          value={isLoading ? "..." : stats?.jobs.active.toLocaleString() || "0"}
-          change="+8.2%"
+          title="Active Job Listings"
+          value={stats?.jobs.active.toLocaleString() || "0"}
+          trend="+8%"
+          trendType="up"
           icon={Briefcase}
+          color="green"
         />
         <StatCard
-          title="Total Revenue"
-          value={isLoading ? "..." : `₹${stats?.revenue.total.toLocaleString() || "0"}`}
-          change="+18.7%"
+          title="Total Platform Revenue"
+          value={`₹${stats?.revenue.total.toLocaleString() || "0"}`}
+          trend="+18%"
+          trendType="up"
           icon={DollarSign}
+          color="purple"
         />
         <StatCard
           title="Total Applications"
-          value={isLoading ? "..." : stats?.applications.total.toLocaleString() || "0"}
-          change="+5.4%"
+          value={stats?.applications.total.toLocaleString() || "0"}
+          trend="+5%"
+          trendType="up"
           icon={FileText}
+          color="orange"
         />
-      </motion.div>
+      </div>
 
-      {/* Charts Row */}
+      {/* Main Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Growth Chart */}
-        <motion.div
-          variants={itemVariants}
-          className="bg-white rounded-xl border border-slate-200 p-6"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">User Growth</h3>
-              <p className="text-sm text-slate-500">
-                Monthly new user registrations
-              </p>
-            </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-slate-900 font-display">User Growth</h3>
+            <p className="text-sm text-slate-500">Monthly new registrations trend</p>
           </div>
-          <div className="h-[280px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:opacity-10" />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-                <YAxis stroke="#94a3b8" fontSize={12} />
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <LineChart data={stats?.charts.userGrowth || []}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1e293b",
+                    backgroundColor: "#0f172a",
                     border: "none",
                     borderRadius: "8px",
                     color: "#fff",
                   }}
+                  itemStyle={{ color: "#3b82f6" }}
                 />
                 <Line
                   type="monotone"
                   dataKey="users"
-                  stroke="#3B82F6"
-                  strokeWidth={2}
-                  dot={{ fill: "#3B82F6" }}
+                  stroke="#3b82f6"
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: "#3b82f6", strokeWidth: 2, stroke: "#fff" }}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </motion.div>
+        </div>
 
         {/* Revenue Chart */}
-        <motion.div
-          variants={itemVariants}
-          className="bg-white rounded-xl border border-slate-200 p-6"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Revenue</h3>
-              <p className="text-sm text-slate-500">Monthly revenue in INR</p>
-            </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-slate-900 font-display">Revenue Performance</h3>
+            <p className="text-sm text-slate-500">Platform earnings in INR</p>
           </div>
-          <div className="h-[280px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:opacity-10" />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-                <YAxis stroke="#94a3b8" fontSize={12} />
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <BarChart data={stats?.charts.revenue || []}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip
+                  cursor={{ fill: '#f1f5f9' }}
                   contentStyle={{
-                    backgroundColor: "#1e293b",
+                    backgroundColor: "#0f172a",
                     border: "none",
                     borderRadius: "8px",
                     color: "#fff",
                   }}
                 />
-                <Bar dataKey="revenue" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" name="Revenue" fill="#10b981" radius={[4, 4, 0, 0]} barSize={40} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </motion.div>
+        </div>
       </div>
 
-      {/* Bottom Row */}
+      {/* Distribution Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* User Distribution */}
-        <motion.div
-          variants={itemVariants}
-          className="bg-white rounded-xl border border-slate-200 p-6"
-        >
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">
-            User Distribution
-          </h3>
-          <div className="h-[200px] flex items-center justify-center">
-            {isLoading ? (
-              <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-900 mb-6 font-display">User Distribution</h3>
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <PieChart>
+                <Pie
+                  data={roleDistributionData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {roleDistributionData.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4">
-            {pieData.map((item, index) => (
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            {roleDistributionData.map((item, index) => (
               <div key={item.name} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                <span className="text-xs text-slate-600">{item.name} ({item.value})</span>
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-slate-500 truncate">{item.name}</p>
+                  <p className="text-sm font-semibold text-slate-900">{item.value}</p>
+                </div>
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        {/* Top Performing */}
-        <motion.div
-          variants={itemVariants}
-          className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6"
-        >
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">
-            Top Employers
-          </h3>
-          <div className="space-y-4">
-            {[
-              { name: "TechCorp India", jobs: 45, hires: 32 },
-              { name: "InnovateTech", jobs: 38, hires: 28 },
-              { name: "GlobalHR Solutions", jobs: 32, hires: 24 },
-              { name: "StartupHub", jobs: 28, hires: 18 },
-            ].map((employer, index) => (
-              <div
-                key={employer.name}
-                className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
-                    {index + 1}
-                  </span>
-                  <span className="font-medium text-slate-900">
-                    {employer.name}
-                  </span>
+        {/* Resource Distribution */}
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-900 mb-6 font-display">Specialized Resources</h3>
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <PieChart>
+                <Pie
+                  data={resourceDistributionData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  {resourceDistributionData.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={PIE_COLORS[(index + 3) % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-6 space-y-3">
+            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+              <div className="flex items-center gap-2">
+                <Boxes className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-slate-700">Total Resources</span>
+              </div>
+              <span className="text-sm font-bold text-slate-900">{stats?.resources.total}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {resourceDistributionData.slice(0, 4).map((item, index) => (
+                <div key={item.name} className="flex items-center justify-between text-xs p-2 border border-slate-100 rounded-md">
+                  <span className="text-slate-500">{item.name}</span>
+                  <span className="font-semibold">{item.value}</span>
                 </div>
-                <div className="flex items-center gap-6 text-sm">
-                  <span className="text-slate-500">{employer.jobs} jobs</span>
-                  <span className="text-green-600 font-medium">
-                    {employer.hires} hires
-                  </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Top Performers / Quick Reports */}
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4 font-display">Shortcuts & Export</h3>
+          <div className="space-y-4">
+            <Link
+              to="/admin/payments"
+              className="flex items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-primary/30 hover:bg-primary/5 transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-green-100 text-green-600 group-hover:bg-primary group-hover:text-white transition-colors">
+                  <DollarSign className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Transaction Reports</p>
+                  <p className="text-xs text-slate-500">Detailed financial history</p>
                 </div>
               </div>
-            ))}
+              <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-primary" />
+            </Link>
+
+            <div className="p-4 rounded-xl border border-slate-100 space-y-3">
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Top Employers</p>
+              <div className="space-y-3">
+                {(stats?.topEmployers || []).map((employer, idx) => (
+                  <div key={idx} className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-700 truncate mr-2">{employer.name}</span>
+                    <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-bold">{employer.jobs} Jobs</span>
+                  </div>
+                ))}
+                {(!stats?.topEmployers || stats.topEmployers.length === 0) && (
+                  <p className="text-xs text-slate-500 italic">No employer data available</p>
+                )}
+              </div>
+            </div>
+
+            <button
+              onClick={handleExport}
+              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-500 hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all"
+            >
+              <FileText className="w-5 h-5" />
+              <span className="text-sm font-semibold">Generate Monthly PDF</span>
+            </button>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 function StatCard({
   title,
   value,
-  change,
+  trend,
+  trendType,
   icon: Icon,
+  color,
 }: {
   title: string;
   value: string;
-  change: string;
+  trend: string;
+  trendType: "up" | "down";
   icon: any;
+  color: "blue" | "green" | "purple" | "orange";
 }) {
+  const colorMap = {
+    blue: "bg-blue-50 text-blue-600",
+    green: "bg-emerald-50 text-emerald-600",
+    purple: "bg-purple-50 text-purple-600",
+    orange: "bg-orange-50 text-orange-600",
+  };
+
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <div className="flex items-center justify-between mb-3">
-        <div className="p-2 rounded-lg bg-primary/10">
-          <Icon className="w-5 h-5 text-primary" />
+    <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-4">
+        <div className={`p-2.5 rounded-xl ${colorMap[color]}`}>
+          <Icon className="w-5 h-5" />
         </div>
-        <span className="text-xs font-medium text-green-600 flex items-center gap-1">
-          <TrendingUp className="w-3 h-3" />
-          {change}
-        </span>
+        <div className={`flex items-center gap-1 text-xs font-bold ${trendType === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
+          {trendType === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+          {trend}
+        </div>
       </div>
-      <p className="text-2xl font-bold text-slate-900">{value}</p>
-      <p className="text-sm text-slate-500 mt-1">{title}</p>
+      <div>
+        <p className="text-2xl font-bold text-slate-900 tracking-tight">{value}</p>
+        <p className="text-sm font-medium text-slate-500 mt-0.5">{title}</p>
+      </div>
     </div>
   );
 }

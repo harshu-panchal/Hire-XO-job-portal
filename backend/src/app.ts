@@ -26,6 +26,7 @@ import notificationRoutes from './routes/notification.routes';
 import postRoutes from './routes/post.routes';
 import interviewRoutes from './routes/interview.routes';
 import promotionRoutes from './routes/promotion.routes';
+import promotionPlanRoutes from './routes/promotion-plan.routes';
 import walletRoutes from './routes/wallet.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
@@ -34,6 +35,7 @@ import { errorHandler } from './middlewares/error.middleware';
 const app = express();
 
 // Security Middleware
+app.set('trust proxy', 1); // Trust first proxy (essential for rate limiting behind proxy)
 app.use(helmet());
 app.use(cors({
     // origin: https://hire-xo-job-portal.vercel.app/
@@ -54,11 +56,16 @@ const limiter = rateLimit({
     message: { message: 'Too many requests from this IP, please try again after 15 minutes' }
 });
 
+
+
+// Apply rate limiter to all API routes
+app.use('/api/', limiter);
+
 app.use('/api/promotions', promotionRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/interviews', interviewRoutes);
-app.use('/api/', limiter);
+// app.use('/api/', limiter); // Removed: moved up
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -79,6 +86,7 @@ app.use('/api/certificates', certificateRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/promotion-plans', promotionPlanRoutes);
 app.use('/api/wallet', walletRoutes);
 
 // Serve static files from uploads directory

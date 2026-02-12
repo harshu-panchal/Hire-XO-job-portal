@@ -5,9 +5,30 @@ import Notification from '../models/notification.model';
 import User from '../models/user.model';
 import { notificationEmitter } from '../utils/notificationEmitter';
 import mongoose from 'mongoose';
+import Job from '../models/job.model';
 
 export class InterviewService {
     public createInterview = async (data: any): Promise<IInterview> => {
+        // 1. Verify Applicant exists
+        const applicant = await User.findById(data.applicantId);
+        if (!applicant) {
+            throw new Error('Applicant not found');
+        }
+
+        // 2. Verify Job Ownership (if linked to a job)
+        if (data.jobId) {
+            const job = await Job.findById(data.jobId);
+            if (!job) {
+                throw new Error('Job not found');
+            }
+            if (job.userId.toString() !== data.employerId) {
+                throw new Error('You can only schedule interviews for your own jobs');
+            }
+        }
+
+        // 3. Verify Resource Ownership (if linked to a resource) - optional based on schema but good practice
+        // For now, focusing on Job as per plan.
+
         const interview = await Interview.create(data);
 
         // Notify Applicant

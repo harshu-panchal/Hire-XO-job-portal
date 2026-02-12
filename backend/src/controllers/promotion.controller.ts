@@ -1,41 +1,38 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import Promotion from '../models/promotion.model';
+import { PromotionService } from '../services/promotion.service';
 
 export class PromotionController {
+    private promotionService: PromotionService;
 
-    // Create a new promotion
+    constructor() {
+        this.promotionService = new PromotionService();
+    }
+
+    // Create a new promotion with plan-based logic
     public createPromotion = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const userId = req.user?.id;
-            const { resourceId, resourceType, budget } = req.body;
+            const { resourceId, resourceType, planId } = req.body;
 
             if (!userId) {
                 res.status(401).json({ message: 'Unauthorized' });
                 return;
             }
 
-            if (!resourceId || !resourceType || !budget) {
-                res.status(400).json({ message: 'Missing required fields' });
+            if (!resourceId || !resourceType || !planId) {
+                res.status(400).json({ message: 'Missing required fields: resourceId, resourceType, planId' });
                 return;
             }
 
-            // Pricing logic: 1 unit budget = ~1.5 - 2 reach
-            const minReach = Math.floor(budget * 1.5);
-            const maxReach = Math.floor(budget * 2.5);
-            const estimatedReach = `${minReach} - ${maxReach}`;
-
-            const promotion = await Promotion.create({
+            const promotion = await this.promotionService.createPromotion(
                 userId,
                 resourceId,
                 resourceType,
-                budget,
-                estimatedReach,
-                status: 'Active',
-                startDate: new Date()
-            });
+                planId
+            );
 
-            // Simulate immediate effect
             res.status(201).json({
                 message: 'Promotion created successfully',
                 promotion
@@ -54,11 +51,8 @@ export class PromotionController {
                 return;
             }
 
-            const promotions = await Promotion.find({ userId }).sort({ createdAt: -1 });
-
-            // Calculate total stats
-            const totalSpent = promotions.reduce((acc, curr) => acc + curr.budget, 0);
-            const activeCount = promotions.filter(c => c.status === 'Active').length;
+            const promotions = await this.promotionService.getMyPromotions(userId);
+            const stats = await this.promotionService.getPromotionStats(userId);
 
             // Calculate total estimated reach
             let totalMinReach = 0;
@@ -77,8 +71,8 @@ export class PromotionController {
             res.status(200).json({
                 promotions,
                 stats: {
-                    totalSpent,
-                    activeCount,
+                    totalSpent: stats.totalSpent,
+                    activeCount: stats.activePromotions,
                     totalReach: `${totalMinReach} - ${totalMaxReach}`
                 }
             });

@@ -19,7 +19,8 @@ export const requireRole = (...allowedRoles: string[]) => {
     };
 };
 
-export const requireJobSeeker = requireRole('job-seeker');
-export const requireRecruiter = requireRole('recruiter');
+export const requireEmployee = requireRole('employee');
+export const requireEmployer = requireRole('employer');
 export const requireResource = requireRole('resource');
-export const requireRecruiterOrResource = requireRole('recruiter', 'resource');
+export const requireRecruiterOrResource = requireRole('employer', 'resource');
+

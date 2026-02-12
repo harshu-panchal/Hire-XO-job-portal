@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   ShieldCheck,
   Zap,
+  Crown,
+  Shield,
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { userService } from "@/services/userService";
@@ -21,7 +23,8 @@ import { formatDistanceToNow } from "date-fns";
 
 const EmployerDashboard = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, checkSubscription } = useAuthStore();
+  const isSubscribed = checkSubscription();
   const [stats, setStats] = useState({
     activeJobs: 0,
     totalApplications: 0,
@@ -30,46 +33,53 @@ const EmployerDashboard = () => {
   const [recentApplications, setRecentApplications] = useState<any[]>([]);
   const [recentPosts, setRecentPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      const [statsData, appsData, myJobs, postsData] = await Promise.all([
+        userService.getDashboardStats(),
+        applicationService.getReceivedApplications(),
+        jobService.getMyListings(),
+        postService.getAllPosts(),
+      ]);
+
+      setStats({
+        activeJobs: (Array.isArray(myJobs) ? myJobs.length : 0) || statsData?.activeJobs || 0,
+        totalApplications: statsData?.totalApplications || 0,
+        interviews: 0,
+      });
+
+      // Format applications safely
+      const appsArray = Array.isArray(appsData) ? appsData : (appsData as any)?.data || [];
+      const formattedApps = appsArray.slice(0, 5).map((app: any) => ({
+        id: app.id || app._id,
+        name: app.applicantId?.name || "Unknown Candidate",
+        role: app.jobId?.title || "Unknown Role",
+        status: app.status,
+        time: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+        avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase(),
+      }));
+      setRecentApplications(formattedApps);
+
+      // Safely set recent posts from postData
+      const postsArray = postsData?.data || (Array.isArray(postsData) ? postsData : []);
+      setRecentPosts(postsArray.slice(0, 3));
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+      setError("Failed to load dashboard data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!isAuthenticated) {
-        setLoading(false);
-        return;
-      }
-      try {
-        const [statsData, appsData, myJobs, postsData] = await Promise.all([
-          userService.getDashboardStats(),
-          applicationService.getReceivedApplications(),
-          jobService.getMyListings(),
-          postService.getAllPosts(),
-        ]);
-
-        setStats({
-          activeJobs: myJobs.length || statsData.activeJobs || 0,
-          totalApplications: statsData.totalApplications || 0,
-          interviews: 0,
-        });
-
-        // Format applications
-        const formattedApps = appsData.slice(0, 5).map((app: any) => ({
-          id: app.id || app._id,
-          name: app.applicantId?.name || "Unknown Candidate",
-          role: app.jobId?.title || "Unknown Role",
-          status: app.status,
-          time: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
-          avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase(),
-        }));
-        setRecentApplications(formattedApps);
-        const { data } = await postService.getAllPosts(1, 10);
-        setRecentPosts(data.slice(0, 3));
-      } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [isAuthenticated]);
 
@@ -105,6 +115,20 @@ const EmployerDashboard = () => {
         <div className="text-sm font-black uppercase tracking-widest text-slate-400">
           Loading Dashboard...
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-10 text-center">
+        <div className="text-red-500 font-bold mb-4">{error}</div>
+        <button
+          onClick={fetchData}
+          className="px-4 py-2 bg-primary text-white rounded-lg font-bold"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -193,15 +217,27 @@ const EmployerDashboard = () => {
     <div className="py-6 space-y-8 select-none pb-24">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
-        <div className="space-y-1">
+        <div className="flex items-center gap-2">
           <h1 className="text-3xl font-black tracking-tighter">
             Employer <br />
             <span className="text-primary">Dashboard</span>
           </h1>
-          <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
-            Manage your hiring pipeline
-          </p>
+          {isSubscribed && (
+            <div className="mt-6 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center gap-1.5 shadow-sm shadow-amber-500/5">
+              <Crown className="size-3 text-amber-500 fill-amber-500/20" />
+              <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">PRO</span>
+            </div>
+          )}
+          {!isSubscribed && (
+            <div className="mt-6 px-3 py-1 bg-slate-100 border border-slate-200 rounded-full flex items-center gap-1.5">
+              <Shield className="size-3 text-slate-400" />
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">FREE</span>
+            </div>
+          )}
         </div>
+        <p className="text-slate-500 font-black text-[10px] uppercase tracking-widest">
+          Manage your hiring pipeline
+        </p>
         <Link
           to="/employer/post-job"
           className="size-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-xl shadow-primary/20 active:scale-90 transition-all"
@@ -337,7 +373,7 @@ const EmployerDashboard = () => {
               Recent Talent Feed
             </h2>
             <Link
-              to="/post"
+              to="/employer/community"
               className="text-[10px] font-black text-primary uppercase tracking-widest active:scale-95 transition-transform"
             >
               Go to Feed

@@ -28,19 +28,58 @@ export class AuthService {
                 role,
                 phoneNumber: userData.phoneNumber,
                 profilePhoto: userData.profilePhoto?.name || userData.profilePhoto, // Handle File object or string
+                profile: {
+                    company: userData.company || userData.companyName // For employers/recruiters
+                }
             });
 
             let profile;
 
             if (role === 'job-seeker' || role === 'employee') {
                 // Handle potentially string inputs from frontend (especially in signup FormData)
-                const education = typeof profileData.education === 'string'
-                    ? [{ degree: profileData.education }]
-                    : profileData.education;
+                // Helper to parse potentially JSON-stringified array items from FormData
+                const parseComplexField = (field: any) => {
+                    if (typeof field === 'string') {
+                        try {
+                            const parsed = JSON.parse(field);
+                            return Array.isArray(parsed) ? parsed : [parsed];
+                        } catch (e) {
+                            return [{ degree: field }]; // Fallback for simple string education
+                        }
+                    } else if (Array.isArray(field)) {
+                        return field.map(item => {
+                            if (typeof item === 'string') {
+                                try { return JSON.parse(item); } catch (e) { return item; }
+                            }
+                            return item;
+                        });
+                    }
+                    return field;
+                };
 
-                const experience = typeof profileData.experience === 'string' || typeof profileData.experience === 'number'
-                    ? [{ role: String(profileData.experience) + ' years' }]
-                    : profileData.experience;
+                const parseExperience = (field: any) => {
+                    if (typeof field === 'string') {
+                        try {
+                            const parsed = JSON.parse(field);
+                            return Array.isArray(parsed) ? parsed : [parsed];
+                        } catch (e) { // Logic for simple string/number input
+                            return [{ role: String(field) + ' years' }];
+                        }
+                    } else if (typeof field === 'number') {
+                        return [{ role: String(field) + ' years' }];
+                    } else if (Array.isArray(field)) {
+                        return field.map(item => {
+                            if (typeof item === 'string') {
+                                try { return JSON.parse(item); } catch (e) { return item; }
+                            }
+                            return item;
+                        });
+                    }
+                    return field;
+                };
+
+                const education = parseComplexField(profileData.education);
+                const experience = parseExperience(profileData.experience);
 
                 profile = await JobSeeker.create({
                     userId: newUser._id,
@@ -139,9 +178,9 @@ export class AuthService {
         }
 
         let profile;
-        if (user.role === 'job-seeker' || user.role === 'employee') {
+        if (user.role === 'employee') {
             profile = await JobSeeker.findOne({ userId: user._id });
-        } else if (user.role === 'recruiter' || user.role === 'employer') {
+        } else if (user.role === 'employer') {
             profile = await Recruiter.findOne({ userId: user._id });
         } else if (user.role === 'resource') {
             profile = await ResourceProfile.findOne({ userId: user._id });
@@ -190,9 +229,9 @@ export class AuthService {
         }
 
         let profile;
-        if (user.role === 'job-seeker' || user.role === 'employee') {
+        if (user.role === 'employee') {
             profile = await JobSeeker.findOne({ userId: user._id });
-        } else if (user.role === 'recruiter' || user.role === 'employer') {
+        } else if (user.role === 'employer') {
             profile = await Recruiter.findOne({ userId: user._id });
         } else if (user.role === 'resource') {
             profile = await ResourceProfile.findOne({ userId: user._id });
@@ -238,7 +277,7 @@ export class AuthService {
 
         // Update role-specific profile
         let profile;
-        if (user.role === 'job-seeker' || user.role === 'employee') {
+        if (user.role === 'employee') {
             const profileUpdates: any = {};
             if (updateData.education) profileUpdates.education = updateData.education;
             if (updateData.age) profileUpdates.age = updateData.age;
@@ -251,7 +290,7 @@ export class AuthService {
                 profileUpdates,
                 { new: true }
             );
-        } else if (user.role === 'recruiter' || user.role === 'employer') {
+        } else if (user.role === 'employer') {
             const profileUpdates: any = {};
             if (updateData.company) profileUpdates.company = updateData.company;
             if (updateData.companyLogo) profileUpdates.companyLogo = updateData.companyLogo;

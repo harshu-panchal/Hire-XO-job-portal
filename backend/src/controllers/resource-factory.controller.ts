@@ -1,18 +1,25 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { Model, Document } from 'mongoose';
 
 export class ResourceFactoryController<T extends Document> {
-    private model: Model<T>;
-    private resourceName: string;
-    private fileFields: string[];
+    protected model: Model<T>;
+    protected resourceName: string;
+    protected fileFields: string[];
 
     constructor(model: Model<T>, resourceName: string, fileFields: string[] = []) {
         this.model = model;
         this.resourceName = resourceName;
         this.fileFields = fileFields;
+
+        this.create = this.create.bind(this);
+        this.getAll = this.getAll.bind(this);
+        this.getById = this.getById.bind(this);
+        this.getMyListings = this.getMyListings.bind(this);
+        this.update = this.update.bind(this);
+        this.delete = this.delete.bind(this);
     }
 
-    public create = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             // Assume user is attached to req by auth middleware
             const userId = (req as any).user?.id || req.body.userId;
@@ -33,15 +40,37 @@ export class ResourceFactoryController<T extends Document> {
                 postedAt: new Date()
             });
 
+            // Notify Admins
+            try {
+                const { notifyAdmins } = require('../utils/notifyAdmins');
+                const isJob = this.resourceName === 'Job';
+                const relatedType = isJob ? 'new_job' : 'new_resource';
+                const itemTitle = (newItem as any).title || (newItem as any).name || this.resourceName;
+                const companyName = user?.profile?.company || user?.name || 'Someone';
+
+                await notifyAdmins(
+                    `New ${this.resourceName} Posted`,
+                    `New ${this.resourceName.toLowerCase()} "${itemTitle}" posted by ${companyName}`,
+                    'info',
+                    (newItem as any)._id,
+                    relatedType
+                );
+            } catch (err) {
+                console.error('Notification error:', err);
+            }
+
             res.status(201).json({ success: true, message: `${this.resourceName} created successfully`, data: newItem });
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 
-    public getAll = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            // Build query filters
+            // Import promotion sorting utility
+            const { PromotionSortingUtil } = require('../utils/promotion-sorting.util');
+
+            // Build query filters (ADDITIVE - preserve existing logic)
             const query: any = {};
 
             // Search by keyword (title, description, company)
@@ -80,43 +109,34 @@ export class ResourceFactoryController<T extends Document> {
                 }
             }
 
-
-            // Sorting
-            let sortOption: any = { createdAt: -1 }; // Default: newest first
-            if (req.query.sort === 'oldest') {
-                sortOption = { createdAt: 1 };
-            } else if (req.query.sort === 'title') {
-                sortOption = { title: 1 };
-            }
-
             // Pagination
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 20;
-            const skip = (page - 1) * limit;
 
-            const items = await this.model.find(query)
-                .sort(sortOption)
-                .skip(skip)
-                .limit(limit);
+            // User sort preference
+            const userSort = req.query.sort as string;
 
-            const total = await this.model.countDocuments(query);
+            // Execute promotion-aware query
+            const result = await PromotionSortingUtil.executePromotionAwareQuery(
+                this.model,
+                this.resourceName, // 'Job' or other resource type
+                query,
+                page,
+                limit,
+                userSort
+            );
 
             res.status(200).json({
                 success: true,
-                data: items,
-                pagination: {
-                    page,
-                    limit,
-                    total,
-                    pages: Math.ceil(total / limit)
-                }
+                data: result.items,
+                pagination: result.pagination
             });
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 
-    public getById = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const item = await this.model.findById(req.params.id);
             if (!item) {
@@ -127,9 +147,9 @@ export class ResourceFactoryController<T extends Document> {
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 
-    public getMyListings = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async getMyListings(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = (req as any).user?.id || req.query.userId;
             if (!userId) {
@@ -161,9 +181,9 @@ export class ResourceFactoryController<T extends Document> {
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 
-    public update = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async update(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = (req as any).user?.id;
 
@@ -191,9 +211,9 @@ export class ResourceFactoryController<T extends Document> {
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 
-    public delete = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
+    public async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = (req as any).user?.id;
 
@@ -243,5 +263,6 @@ export class ResourceFactoryController<T extends Document> {
         } catch (error: any) {
             next(error);
         }
-    };
+    }
 }
+

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 const Subscription = () => {
   const navigate = useNavigate();
-  const { purchaseSubscription, user, isLoading: isAuthLoading } = useAuthStore();
+  const { purchaseSubscription, user, isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [isLoadingPlans, setIsLoadingPlans] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -16,7 +16,7 @@ const Subscription = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const data = await subscriptionService.getAllPlans();
+        const data = await subscriptionService.getAllPlans('employer');
         setPlans(data);
       } catch (error: any) {
         console.error("Failed to fetch plans:", error);
@@ -53,6 +53,12 @@ const Subscription = () => {
   };
 
   const handleSelectPlan = async (plan: SubscriptionPlan) => {
+    if (!isAuthenticated) {
+      toast.info("Please login to choose a plan");
+      navigate("/login/employer");
+      return;
+    }
+
     // If it's the free plan, just navigate back
     const isFree = plan.price === 0 || plan.name.toLowerCase().includes("free");
     if (isFree) {

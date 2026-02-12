@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import { authService } from "../services/authService";
 import { userService } from "../services/userService";
 import { subscriptionService } from "../services/subscriptionService";
+import { initializeNotifications } from "../lib/notifications";
 import type { User, UserRole, LoginCredentials, SignupData } from "../types";
 
 interface AuthState {
@@ -43,6 +44,11 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: null,
           });
+
+          // Initialize push notifications after successful login
+          initializeNotifications().catch(err =>
+            console.error('Failed to initialize notifications:', err)
+          );
         } catch (error: any) {
           set({
             isLoading: false,
@@ -64,6 +70,11 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: null,
           });
+
+          // Initialize push notifications after successful signup
+          initializeNotifications().catch(err =>
+            console.error('Failed to initialize notifications:', err)
+          );
         } catch (error: any) {
           set({
             isLoading: false,
@@ -177,9 +188,10 @@ export const useAuthStore = create<AuthState>()(
 
       checkSubscription: () => {
         const { user } = get();
-        if (!user?.profile.subscriptionExpiry) return false;
+        // Backend stores subscriptionExpiry at root level of user document
+        if (!user?.subscriptionExpiry) return false;
 
-        const expiryDate = new Date(user.profile.subscriptionExpiry);
+        const expiryDate = new Date(user.subscriptionExpiry);
         const now = new Date();
         return expiryDate > now;
       },

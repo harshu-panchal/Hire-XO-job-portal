@@ -140,11 +140,29 @@ export class CertificateController {
      */
     public getAllCertificates = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
-            const { status, page = '1', limit = '20' } = req.query;
+            const { status, search, page = '1', limit = '20' } = req.query;
 
             const query: any = {};
             if (status && ['pending', 'approved', 'rejected'].includes(status as string)) {
                 query.verificationStatus = status;
+            }
+
+            if (search) {
+                const searchStr = search as string;
+                // We need to find users that match the search string first
+                const User = require('../models/user.model').default;
+                const users = await User.find({
+                    $or: [
+                        { name: { $regex: searchStr, $options: 'i' } },
+                        { email: { $regex: searchStr, $options: 'i' } }
+                    ]
+                }).select('_id');
+                const userIds = users.map((u: any) => u._id);
+
+                query.$or = [
+                    { name: { $regex: searchStr, $options: 'i' } },
+                    { userId: { $in: userIds } }
+                ];
             }
 
             const pageNum = parseInt(page as string);

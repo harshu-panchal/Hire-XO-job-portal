@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProfileRedirect from "./components/ProfileRedirect";
 import PaymentRedirect from "./components/PaymentRedirect";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useEmployeeStore } from "@/store/useEmployeeStore";
 import ErrorBoundary from "./components/ErrorBoundary";
 
 // Layouts
@@ -63,11 +65,15 @@ import EmployerPromotions from "./modules/employer/pages/EmployerPromotions";
 // Other Pages
 import StyleGuide from "./modules/resources/pages/StyleGuide";
 
+import ResourcePlans from "./modules/resources/pages/ResourcePlans";
+import ResourceFAQ from "./modules/resources/pages/ResourceFAQ";
 // Admin Pages
 import AdminDashboard from "./modules/admin/pages/Dashboard";
 import Employers from "./modules/admin/pages/Employers";
+import JobSeekers from "./modules/admin/pages/JobSeekers";
 import EmployeePlans from "./modules/admin/pages/EmployeePlans";
 import EmployerPlans from "./modules/admin/pages/EmployerPlans";
+import ResourcePlansAdmin from "./modules/admin/pages/ResourcePlansAdmin";
 import Payments from "./modules/admin/pages/Payments";
 import AdminCertificates from "./modules/admin/pages/Certificates";
 import AdminReports from "./modules/admin/pages/Reports";
@@ -234,7 +240,17 @@ const InterviewsRedirect = () => {
   return <Navigate to="/" replace />;
 };
 
+
 function App() {
+  const { user } = useAuthStore();
+  const { setSavedJobs } = useEmployeeStore();
+
+  useEffect(() => {
+    if (user?.bookmarks) {
+      setSavedJobs(user.bookmarks);
+    }
+  }, [user, setSavedJobs]);
+
   return (
     <ErrorBoundary>
       <Routes>
@@ -258,7 +274,10 @@ function App() {
         <Route path="/resources/vehicles" element={<VehicleOptions />} />
         <Route path="/signup/resource/:category" element={<ResourceSignup />} />
         <Route path="/profile" element={<ProfileRedirect />} />
-        <Route path="/subscriptions" element={<PaymentRedirect />} />
+
+
+        <Route path="/resource-plans" element={<ResourcePlans />} />
+        <Route path="/resource-plans/faq" element={<ResourceFAQ />} />
 
         {/* Employee Routes - Mixed Public/Protected */}
         <Route element={<EmployeeLayout />}>
@@ -303,6 +322,8 @@ function App() {
         <Route element={<EmployerLayout />}>
           <Route path="/employer" element={<EmployerDashboard />} />
 
+          <Route path="/employer/subscription" element={<Subscription />} />
+
           {/* Protected Employer Sub-Routes */}
           <Route
             element={
@@ -315,7 +336,6 @@ function App() {
             <Route path="/employer/post-job" element={<PostJob />} />
             <Route path="/employer/applications" element={<ManageApplications />} />
             <Route path="/employer/settings" element={<EmployerSettings />} />
-            <Route path="/employer/subscription" element={<Subscription />} />
             <Route path="/employer/profile" element={<EmployerProfile />} />
             <Route path="/employer/company" element={<EmployerCompany />} />
             <Route path="/employer/wallet" element={<EmployerWallet />} />
@@ -329,6 +349,7 @@ function App() {
             <Route path="/employer/security" element={<EmployerSecurity />} />
             <Route path="/employer/promotions" element={<EmployerPromotions />} />
             <Route path="/employer/interviews" element={<Interviews />} />
+            <Route path="/employer/community" element={<Post />} />
             <Route path="/employer/faq" element={<FAQ />} />
           </Route>
         </Route>
@@ -650,8 +671,10 @@ function App() {
         >
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/employers" element={<Employers />} />
+          <Route path="/admin/job-seekers" element={<JobSeekers />} />
           <Route path="/admin/employee-plans" element={<EmployeePlans />} />
           <Route path="/admin/employer-plans" element={<EmployerPlans />} />
+          <Route path="/admin/resource-plans" element={<ResourcePlansAdmin />} />
           <Route path="/admin/payments" element={<Payments />} />
           <Route path="/admin/certificates" element={<AdminCertificates />} />
           <Route path="/admin/reports" element={<AdminReports />} />

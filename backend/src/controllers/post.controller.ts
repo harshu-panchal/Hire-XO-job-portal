@@ -38,19 +38,30 @@ export class PostController {
         }
     };
 
+
     public getAll = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
+            // Import promotion sorting utility
+            const { PromotionSortingUtil } = require('../utils/promotion-sorting.util');
+
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 20;
-            const skip = (page - 1) * limit;
 
-            const posts = await Post.find()
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(limit)
-                .populate('userId', 'name role profilePhoto email phoneNumber subscriptionExpiry profile');
+            // Execute promotion-aware query for posts
+            const result = await PromotionSortingUtil.executePromotionAwareQuery(
+                Post,
+                'Post', // Resource type
+                {}, // No additional filters for posts
+                page,
+                limit
+            );
 
-            const total = await Post.countDocuments();
+            // Populate user data manually after aggregation
+            // Cast to unknown then any[] to fix TypeScript issue with Post.populate
+            const populatedPosts = (await Post.populate(result.items, {
+                path: 'userId',
+                select: 'name role profilePhoto email phoneNumber subscriptionExpiry profile'
+            })) as unknown as any[];
 
             // Business Logic: If the requester is an employer, 
             // check if they have an active subscription before showing contact info
@@ -67,8 +78,8 @@ export class PostController {
             }
 
             // Map posts to scrub info if necessary
-            const scrubbedPosts = posts.map((post: any) => {
-                const postObj = post.toObject();
+            const scrubbedPosts = populatedPosts.map((post: any) => {
+                const postObj = typeof post.toObject === 'function' ? post.toObject() : post;
                 // Check if author exists (handle orphan posts)
                 if (!postObj.userId) {
                     return {
@@ -115,12 +126,7 @@ export class PostController {
 
             res.status(200).json({
                 data: scrubbedPosts,
-                pagination: {
-                    total,
-                    page,
-                    limit,
-                    pages: Math.ceil(total / limit)
-                }
+                pagination: result.pagination
             });
         } catch (error: any) {
             console.error('Error fetching posts:', error);
@@ -128,39 +134,45 @@ export class PostController {
         }
     };
 
-    public like = async (req: AuthRequest, res: Response): Promise<void> => {
+    public getById = async (req: Request, res: Response): Promise<void> => {
         try {
-            const userId = req.user?.id;
-            if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
+            const post = await Post.findById(req.params.id).populate('userId', 'name role profilePhoto');
+            if (!post) {
+                res.status(404).json({ message: 'Post not found' });
                 return;
             }
+            res.status(200).json({ data: post });
+        } catch (error: any) {
+            console.error('Error fetching post:', error);
+            res.status(500).json({ message: 'Failed to fetch post', error: error.message });
+        }
+    };
 
-            const post = await Post.findById(req.params.id);
+    public update = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            const postId = req.params.id;
+
+            const post = await Post.findById(postId);
             if (!post) {
                 res.status(404).json({ message: 'Post not found' });
                 return;
             }
 
-            const userIdObj = new (require('mongoose').Types.ObjectId)(userId);
-            const likeIndex = post.likes.indexOf(userIdObj);
-
-            if (likeIndex > -1) {
-                // Unlike
-                post.likes.splice(likeIndex, 1);
-            } else {
-                // Like
-                post.likes.push(userIdObj);
+            if (post.userId.toString() !== userId) {
+                res.status(403).json({ message: 'You can only update your own posts' });
+                return;
             }
 
-            await post.save();
-            res.status(200).json({ message: 'Success', likes: post.likes.length });
+            const updatedPost = await Post.findByIdAndUpdate(postId, req.body, { new: true });
+            res.status(200).json({ message: 'Post updated successfully', data: updatedPost });
         } catch (error: any) {
-            res.status(500).json({ message: 'Failed to like/unlike', error: error.message });
+            console.error('Error updating post:', error);
+            res.status(500).json({ message: 'Failed to update post', error: error.message });
         }
     };
 
-    public delete = async (req: AuthRequest, res: Response): Promise<void> => {
+    public like = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const userId = req.user?.id;
             const postId = req.params.id;
@@ -171,14 +183,48 @@ export class PostController {
             }
 
             const post = await Post.findById(postId);
-
             if (!post) {
                 res.status(404).json({ message: 'Post not found' });
                 return;
             }
 
-            // Check ownership - only owner or admin can delete
-            if (post.userId.toString() !== userId && req.user?.role !== 'admin') {
+            // Toggle like - handle ObjectId array
+            const likes = (post.likes || []) as any[];
+            const likeIndex = likes.findIndex((id: any) => id.toString() === userId);
+
+            if (likeIndex > -1) {
+                // Unlike
+                likes.splice(likeIndex, 1);
+            } else {
+                // Like
+                likes.push(userId as any);
+            }
+
+            post.likes = likes as any;
+            await post.save();
+
+            res.status(200).json({
+                message: likeIndex > -1 ? 'Post unliked' : 'Post liked',
+                data: { likes: post.likes.length }
+            });
+        } catch (error: any) {
+            console.error('Error liking post:', error);
+            res.status(500).json({ message: 'Failed to like post', error: error.message });
+        }
+    };
+
+    public delete = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            const postId = req.params.id;
+
+            const post = await Post.findById(postId);
+            if (!post) {
+                res.status(404).json({ message: 'Post not found' });
+                return;
+            }
+
+            if (post.userId.toString() !== userId) {
                 res.status(403).json({ message: 'You can only delete your own posts' });
                 return;
             }
@@ -190,6 +236,4 @@ export class PostController {
             res.status(500).json({ message: 'Failed to delete post', error: error.message });
         }
     };
-
-
 }

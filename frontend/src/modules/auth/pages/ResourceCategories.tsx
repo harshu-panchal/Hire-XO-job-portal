@@ -133,8 +133,8 @@ const ResourceCategories = () => {
   const navItems = [
     { id: "home", label: "Home", icon: Home, path: "/" },
     { id: "profile", label: "Profile", icon: User, path: "/profile" },
-    { id: "payment", label: "Payment", icon: CreditCard, path: "/subscriptions" },
-    { id: "faq", label: "FAQ", icon: HelpCircle, path: "/faq" },
+    { id: "payment", label: "Payment", icon: CreditCard, path: "/resource-plans" },
+    { id: "faq", label: "FAQ", icon: HelpCircle, path: "/resource-plans/faq" },
   ];
 
   return (
@@ -239,7 +239,7 @@ const ResourceCategories = () => {
               <button
                 key={item.id}
                 onClick={() => {
-                  if (!isAuthenticated && (item.path === "/profile" || item.path === "/subscriptions")) {
+                  if (!isAuthenticated && item.path === "/profile") {
                     // Check if we should send to signup or login
                     // User requested "if account is not created it should ask for resource signup"
                     // Default to Login, which links to Signup. 

@@ -85,21 +85,14 @@ export class ApplicationService {
             proposalDocuments?: string[];
         }
     ) {
-        // Get the appropriate model
-        const modelMap: any = {
-            'Investor': Investor,
-            'Tender': Tender,
-            'Equipment': Equipment,
-            'Machinery': Machinery,
-            'PMC': PMC,
-            'CSM': CSM,
-            'Logistics': Logistics,
-            'Vehicle': Vehicle
-        };
+        const normalizedResourceType = this.getNormalizedResourceType(resourceType);
+        if (!normalizedResourceType) {
+            throw new Error(`Invalid resource type: ${resourceType}`);
+        }
 
-        const ResourceModel = modelMap[resourceType];
+        const ResourceModel = this.getResourceModel(normalizedResourceType);
         if (!ResourceModel) {
-            throw new Error('Invalid resource type');
+            throw new Error(`Invalid resource type: ${resourceType}`);
         }
 
         // Check if resource exists
@@ -117,7 +110,7 @@ export class ApplicationService {
         const existingApplication = await ResourceApplication.findOne({
             applicantId,
             resourceId,
-            resourceType
+            resourceType: normalizedResourceType
         });
         if (existingApplication) {
             throw new Error('You have already applied to this resource');
@@ -127,7 +120,7 @@ export class ApplicationService {
         const application = await ResourceApplication.create({
             applicantId,
             resourceId,
-            resourceType,
+            resourceType: normalizedResourceType,
             message: data.message,
             bidAmount: data.bidAmount,
             coverLetter: data.coverLetter,
@@ -156,26 +149,41 @@ export class ApplicationService {
         return application;
     }
 
-    // Get user's applications
-    public async getMyApplications(userId: string) {
-        const jobApplications = await JobApplication.find({ applicantId: userId })
-            .populate('jobId')
-            .sort({ appliedAt: -1 });
+    // Get user's applications with pagination
+    public async getMyApplications(userId: string, page: number = 1, limit: number = 20) {
+        const skip = (page - 1) * limit;
 
-        const resourceApplications = await ResourceApplication.find({ applicantId: userId })
-            .populate('resourceId')
-            .sort({ appliedAt: -1 });
+        const [jobApplications, resourceApplications, totalJobs, totalResources] = await Promise.all([
+            JobApplication.find({ applicantId: userId })
+                .populate('jobId')
+                .sort({ appliedAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            ResourceApplication.find({ applicantId: userId })
+                .populate('resourceId')
+                .sort({ appliedAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            JobApplication.countDocuments({ applicantId: userId }),
+            ResourceApplication.countDocuments({ applicantId: userId })
+        ]);
 
         return {
             jobs: jobApplications,
-            resources: resourceApplications
+            resources: resourceApplications,
+            pagination: {
+                page,
+                limit,
+                total: totalJobs + totalResources,
+                pages: Math.ceil(Math.max(totalJobs, totalResources) / limit)
+            }
         };
     }
 
     // Get applications for a specific job (for job owner)
     public async getJobApplications(jobId: string, ownerId: string, page: number = 1, limit: number = 20) {
-        // Check subscription status
-        const isSubscribed = await this.checkUserSubscription(ownerId);
+        // Check if user can view unmasked data
+        const canViewData = await this.canViewUnmaskedData(ownerId);
 
         // Verify ownership
         const job = await Job.findById(jobId);
@@ -199,7 +207,7 @@ export class ApplicationService {
         const total = await JobApplication.countDocuments({ jobId });
 
         let data = applications;
-        if (!isSubscribed) {
+        if (!canViewData) {
             data = applications.map(app => this.maskApplicationData(app));
         }
 
@@ -216,8 +224,8 @@ export class ApplicationService {
 
     // Get all applications received for jobs posted by the user (Recruiter Dashboard)
     public async getReceivedApplications(userId: string, page: number = 1, limit: number = 20) {
-        // Check subscription status
-        const isSubscribed = await this.checkUserSubscription(userId);
+        // Check if user can view unmasked data
+        const canViewData = await this.canViewUnmaskedData(userId);
 
         // Find all jobs posted by the user
         const jobs = await Job.find({ userId });
@@ -237,7 +245,7 @@ export class ApplicationService {
         const total = await JobApplication.countDocuments({ jobId: { $in: jobIds } });
 
         let data = applications;
-        if (!isSubscribed) {
+        if (!canViewData) {
             data = applications.map(app => this.maskApplicationData(app));
         }
 
@@ -254,39 +262,11 @@ export class ApplicationService {
 
     // Get all applications received for resources posted by the user
     public async getReceivedResourceApplications(userId: string, category: string, page: number = 1, limit: number = 20) {
-        // Map category to model
-        const modelMap: any = {
-            'investor': Investor,
-            'tenders': Tender,
-            'equipments': Equipment,
-            'machinery': Machinery,
-            'pmc': PMC,
-            'csm': CSM,
-            'logistics': Logistics,
-            'vehicles': Vehicle
-        };
-
-        const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
-
-        // Better map:
-        const refinedMap: any = {
-            'investor': Investor,
-            'investors': Investor,
-            'tender': Tender,
-            'tenders': Tender,
-            'equipment': Equipment,
-            'equipments': Equipment,
-            'machinery': Machinery,
-            'pmc': PMC,
-            'csm': CSM,
-            'logistics': Logistics,
-            'vehicle': Vehicle,
-            'vehicles': Vehicle
-        };
-
-        const ResourceModel = refinedMap[category.toLowerCase()];
+        const ResourceModel = this.getResourceModel(category);
 
         if (!ResourceModel) {
+            // Return empty if invalid category, or throw error? 
+            // Returning empty is safer for dashboard
             return {
                 data: [],
                 pagination: {
@@ -302,8 +282,8 @@ export class ApplicationService {
         const resources = await ResourceModel.find({ userId });
         const resourceIds = resources.map((r: any) => r._id);
 
-        // Check subscription status
-        const isSubscribed = await this.checkUserSubscription(userId);
+        // Check if user can view unmasked data
+        const canViewData = await this.canViewUnmaskedData(userId);
 
         const skip = (page - 1) * limit;
 
@@ -319,7 +299,7 @@ export class ApplicationService {
         const total = await ResourceApplication.countDocuments({ resourceId: { $in: resourceIds } });
 
         let data = applications;
-        if (!isSubscribed) {
+        if (!canViewData) {
             data = applications.map(app => this.maskApplicationData(app));
         }
 
@@ -336,23 +316,12 @@ export class ApplicationService {
 
     // Get applications for a specific resource (for resource owner)
     public async getResourceApplications(resourceId: string, resourceType: string, ownerId: string, page: number = 1, limit: number = 20) {
-        // Check subscription status
-        const isSubscribed = await this.checkUserSubscription(ownerId);
+        // Check if user can view unmasked data
+        const canViewData = await this.canViewUnmaskedData(ownerId);
 
-        const modelMap: any = {
-            'Investor': Investor,
-            'Tender': Tender,
-            'Equipment': Equipment,
-            'Machinery': Machinery,
-            'PMC': PMC,
-            'CSM': CSM,
-            'Logistics': Logistics,
-            'Vehicle': Vehicle
-        };
-
-        const ResourceModel = modelMap[resourceType];
+        const ResourceModel = this.getResourceModel(resourceType);
         if (!ResourceModel) {
-            throw new Error('Invalid resource type');
+            throw new Error(`Invalid resource type: ${resourceType}`);
         }
 
         // Verify ownership
@@ -377,7 +346,7 @@ export class ApplicationService {
         const total = await ResourceApplication.countDocuments({ resourceId, resourceType });
 
         let data = applications;
-        if (!isSubscribed) {
+        if (!canViewData) {
             data = applications.map(app => this.maskApplicationData(app));
         }
 
@@ -390,6 +359,30 @@ export class ApplicationService {
                 pages: Math.ceil(total / limit)
             }
         };
+    }
+
+    // Delete/Withdraw application
+    public async deleteApplication(applicationId: string, userId: string): Promise<void> {
+        // Try searching in JobApplications first
+        let application = await JobApplication.findById(applicationId);
+        let Model: any = JobApplication;
+
+        if (!application) {
+            // Try searching in ResourceApplications
+            application = await ResourceApplication.findById(applicationId) as any;
+            Model = ResourceApplication;
+        }
+
+        if (!application) {
+            throw new Error('Application not found');
+        }
+
+        // Check ownership (only the applicant can withdraw)
+        if (application.applicantId.toString() !== userId) {
+            throw new Error('You are not authorized to withdraw this application');
+        }
+
+        await Model.findByIdAndDelete(applicationId);
     }
 
     // Update application status
@@ -437,18 +430,10 @@ export class ApplicationService {
             }
 
             // Verify ownership through resource
-            const modelMap: any = {
-                'Investor': Investor,
-                'Tender': Tender,
-                'Equipment': Equipment,
-                'Machinery': Machinery,
-                'PMC': PMC,
-                'CSM': CSM,
-                'Logistics': Logistics,
-                'Vehicle': Vehicle
-            };
-
-            const ResourceModel = modelMap[application.resourceType];
+            const ResourceModel = this.getResourceModel(application.resourceType);
+            if (!ResourceModel) {
+                throw new Error('Invalid resource type in application');
+            }
             const resource = await ResourceModel.findById(application.resourceId);
 
             if (!resource || resource.userId.toString() !== userId) {
@@ -513,6 +498,17 @@ export class ApplicationService {
                 }
 
                 applicant.profile.bio = "Upgrade to a PRO subscription to view this candidate's full profile, experience history, and contact details.";
+
+                // Mask additional sensitive fields
+                applicant.profile.skills = [];
+                applicant.profile.linkedinUrl = '';
+                applicant.profile.githubUrl = '';
+                applicant.profile.twitterUrl = '';
+                applicant.profile.location = '********';
+                applicant.profile.age = undefined;
+                applicant.profile.jobTitle = '********';
+                applicant.profile.company = '********';
+                applicant.profile.organizationName = '********';
             }
 
             // Mask application message
@@ -532,21 +528,72 @@ export class ApplicationService {
             if (application.additionalDocuments) {
                 application.additionalDocuments = [];
             }
+            if (application.proposalDocuments) {
+                application.proposalDocuments = [];
+            }
         }
         return application;
     }
 
-    // Helper to check if a user has an active subscription
-    private async checkUserSubscription(userId: string): Promise<boolean> {
+    // Helper to check if a user can view unmasked application data
+    // Admins and users with active PRO subscriptions are exempt from masking
+    private async canViewUnmaskedData(userId: string): Promise<boolean> {
         const user = await User.findById(userId);
         if (!user) return false;
 
+        // Admins can see everything
+        if (user.role === 'admin') return true;
+
+        // Check for active subscription
         if (!user.activeSubscriptionId || !user.subscriptionExpiry) {
             return false;
         }
 
         const now = new Date();
         return user.subscriptionExpiry > now;
+    }
+
+    // Helper to get normalized resource type string (singular, capitalized)
+    private getNormalizedResourceType(type: string): string | null {
+        if (!type) return null;
+
+        const normalized = type.toLowerCase().trim();
+
+        const map: { [key: string]: string } = {
+            'investor': 'Investor',
+            'investors': 'Investor',
+            'tender': 'Tender',
+            'tenders': 'Tender',
+            'equipment': 'Equipment',
+            'equipments': 'Equipment',
+            'machinery': 'Machinery',
+            'pmc': 'PMC',
+            'csm': 'CSM',
+            'logistics': 'Logistics',
+            'vehicle': 'Vehicle',
+            'vehicles': 'Vehicle'
+        };
+
+        return map[normalized] || null;
+    }
+
+    // Helper to get Resource Model from type string (handles singular/plural/case-insensitive)
+    private getResourceModel(type: string): any {
+        const normalized = this.getNormalizedResourceType(type);
+        if (!normalized) return null;
+
+        const map: any = {
+            'Investor': Investor,
+            'Tender': Tender,
+            'Equipment': Equipment,
+            'Machinery': Machinery,
+            'PMC': PMC,
+            'CSM': CSM,
+            'Logistics': Logistics,
+            'Vehicle': Vehicle
+        };
+
+        return map[normalized] || null;
     }
 }
 

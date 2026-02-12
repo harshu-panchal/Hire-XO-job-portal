@@ -11,7 +11,8 @@ export class SubscriptionController {
 
     public getAllPlans = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
-            const plans = await this.subscriptionService.getAllPlans();
+            const { type } = req.query;
+            const plans = await this.subscriptionService.getAllPlans(type as string);
             res.status(200).json(plans);
         } catch (error: any) {
             next(error);
@@ -98,7 +99,7 @@ export class SubscriptionController {
      */
     public createPlan = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
-            const { name, price, durationDays, description, features } = req.body;
+            const { name, price, durationDays, description, features, type } = req.body;
 
             if (!name || !price || !durationDays || !description) {
                 res.status(400).json({
@@ -113,7 +114,8 @@ export class SubscriptionController {
                 price,
                 durationDays,
                 description,
-                features: features || []
+                features: features || [],
+                type: type || 'employer' // Default to employer if not specified
             });
 
             res.status(201).json({

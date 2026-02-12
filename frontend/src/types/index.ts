@@ -23,20 +23,31 @@ export interface Job {
 
 export interface SubscriptionPlan {
   id: string;
+  _id?: string; // MongoDB ID
   name: string;
   price: number;
   durationDays: number;
   description: string;
   features: string[];
+  type: 'job-seeker' | 'employer' | 'resource';
+  isActive?: boolean;
 }
 
 export interface Certificate {
   id: string;
+  _id?: string; // MongoDB ID
   name: string;
   issueDate: string;
   expiryDate: string;
   successRate: number;
   status: "Active" | "Expired";
+  verificationStatus?: "pending" | "approved" | "rejected";
+  userId?: { // Populated field
+    _id: string;
+    name: string;
+    email: string;
+  } | string;
+  documentUrl?: string; // For the document link
 }
 
 export type ResourceCategory =
@@ -68,7 +79,7 @@ export interface Resource {
 }
 
 // Missing types
-export type UserRole = "employee" | "employer" | "resource" | "admin" | "recruiter";
+export type UserRole = "employee" | "employer" | "resource" | "admin";
 export type InvestorType = string;
 export type TenderType = string;
 export type EquipmentType = string;
@@ -89,8 +100,11 @@ export interface User {
   walletBalance?: number;
   createdAt: string;
   phoneNumber?: string;
-  profilePhoto?: string; // Added to fix build
-  activeSubscriptionId?: string; // Added to fix build
+  profilePhoto?: string;
+  activeSubscriptionId?: string;
+  subscriptionExpiry?: string | Date;
+  status?: "active" | "suspended" | "banned";
+  bookmarks?: string[];
 }
 
 export interface EmployerSignupData {
@@ -150,6 +164,7 @@ export interface UserProfile {
   activeSubscriptionId?: string;
   walletBalance?: number;
   subscriptionExpiry?: string | null;
+  bookmarks?: string[];
   // Additional fields for different roles
   phoneNumber?: string;
   location?: string;

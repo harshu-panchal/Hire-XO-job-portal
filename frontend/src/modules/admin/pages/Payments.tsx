@@ -1,81 +1,29 @@
-import { useState } from "react";
-import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, type Variants } from "framer-motion";
 import {
   Search,
   Download,
   DollarSign,
-  TrendingUp,
-  Users,
   CreditCard,
   CheckCircle,
   XCircle,
   Clock,
   Eye,
+  Loader2
 } from "lucide-react";
+import { adminService } from "../../../services/adminService";
+import { toast } from "sonner";
 
 interface Payment {
-  id: string;
+  _id: string;
   user: string;
   email: string;
   plan: string;
   amount: number;
-  status: "Completed" | "Pending" | "Failed";
+  status: "completed" | "pending" | "failed";
   date: string;
   method: string;
 }
-
-const paymentsData: Payment[] = [
-  {
-    id: "PAY001",
-    user: "Rahul Sharma",
-    email: "rahul@techcorp.in",
-    plan: "Professional",
-    amount: 599,
-    status: "Completed",
-    date: "Jan 30, 2024",
-    method: "UPI",
-  },
-  {
-    id: "PAY002",
-    user: "Priya Patel",
-    email: "priya@innovate.com",
-    plan: "Business",
-    amount: 4999,
-    status: "Completed",
-    date: "Jan 29, 2024",
-    method: "Card",
-  },
-  {
-    id: "PAY003",
-    user: "Amit Kumar",
-    email: "amit@startup.io",
-    plan: "Basic",
-    amount: 299,
-    status: "Pending",
-    date: "Jan 29, 2024",
-    method: "UPI",
-  },
-  {
-    id: "PAY004",
-    user: "Sneha Gupta",
-    email: "sneha@globalhr.com",
-    plan: "Enterprise",
-    amount: 9999,
-    status: "Completed",
-    date: "Jan 28, 2024",
-    method: "Bank Transfer",
-  },
-  {
-    id: "PAY005",
-    user: "Vikram Singh",
-    email: "vikram@company.in",
-    plan: "Professional",
-    amount: 599,
-    status: "Failed",
-    date: "Jan 28, 2024",
-    method: "Card",
-  },
-];
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -95,27 +43,95 @@ const itemVariants: Variants = {
 } as const;
 
 export default function Payments() {
-  const [payments] = useState(paymentsData);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [isExporting, setIsExporting] = useState(false);
 
+  // Stats
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
+  // Simple debounce implementation
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1); // Reset to page 1 on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const fetchPayments = async () => {
+    setLoading(true);
+    try {
+      const response = await adminService.getAllTransactions({
+        search: debouncedSearch,
+        status: statusFilter || undefined,
+        page,
+        limit
+      });
+
+      const data = response.data.map((t: any) => ({
+        _id: t._id,
+        user: t.userId?.name || "Unknown",
+        email: t.userId?.email || "N/A",
+        plan: t.description || "N/A",
+        amount: t.amount,
+        status: t.status,
+        date: new Date(t.createdAt).toLocaleDateString(),
+        method: "Wallet" // Default for now
+      }));
+      setPayments(data);
+
+      if (response.pagination) {
+        setTotalPages(response.pagination.pages);
+        setTotalItems(response.pagination.total);
+      }
+
+      // Stats - for accuracy, ideally stats should come from a separate API or the pagination response should include them
+      // But for now, we'll use what we have or just simplify the card stats
+      const completed = data.filter((p: any) => p.status === 'completed');
+      setCompletedCount(completed.length);
+      setPendingCount(data.filter((p: any) => p.status === 'pending').length);
+      setTotalRevenue(completed.reduce((acc: number, curr: any) => acc + curr.amount, 0));
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load payments");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPayments();
+  }, [debouncedSearch, statusFilter, page]);
+
   const handleExport = async () => {
     setIsExporting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const headers = [
       "Transaction ID",
       "User",
       "Email",
-      "Plan",
+      "Description",
       "Amount",
       "Status",
       "Date",
       "Method",
     ];
     const rows = payments.map((p) => [
-      p.id,
+      p._id,
       p.user,
       p.email,
       p.plan,
@@ -142,16 +158,14 @@ export default function Payments() {
   const filteredPayments = payments.filter((p) => {
     const matchesSearch =
       p.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.id.toLowerCase().includes(searchTerm.toLowerCase());
+      p._id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = !statusFilter || p.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  const totalRevenue = payments
-    .filter((p) => p.status === "Completed")
-    .reduce((acc, p) => acc + p.amount, 0);
-  const completedCount = payments.filter((p) => p.status === "Completed").length;
-  const pendingCount = payments.filter((p) => p.status === "Pending").length;
+  if (loading) {
+    return <div className="flex justify-center items-center h-96"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  }
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
@@ -191,7 +205,7 @@ export default function Payments() {
           <p className="text-2xl font-bold text-slate-900">
             ₹{totalRevenue.toLocaleString()}
           </p>
-          <p className="text-sm text-slate-500 mt-1">Total Revenue</p>
+          <p className="text-sm text-slate-500 mt-1">Total Revenue (Visible)</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
@@ -242,9 +256,9 @@ export default function Payments() {
           className="px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
         >
           <option value="">All Status</option>
-          <option value="Completed">Completed</option>
-          <option value="Pending">Pending</option>
-          <option value="Failed">Failed</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
         </select>
       </motion.div>
 
@@ -264,7 +278,7 @@ export default function Payments() {
                   User
                 </th>
                 <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Plan
+                  Description
                 </th>
                 <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Amount
@@ -275,20 +289,17 @@ export default function Payments() {
                 <th className="text-left px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Actions
-                </th>
               </tr>
             </thead>
             <tbody>
-              {filteredPayments.map((payment) => (
+              {payments.map((payment) => (
                 <tr
-                  key={payment.id}
+                  key={payment._id}
                   className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors"
                 >
                   <td className="px-6 py-4">
                     <span className="font-mono text-sm font-medium text-slate-900">
-                      {payment.id}
+                      {payment._id.slice(-6)}...
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -299,7 +310,7 @@ export default function Payments() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-sm text-slate-600">
-                      {payment.plan}
+                      {payment.plan || "N/A"}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -309,27 +320,21 @@ export default function Payments() {
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                        payment.status === "Completed"
-                          ? "bg-green-100 text-green-700"
-                          : payment.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-red-100 text-red-700"
-                      }`}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${payment.status === "completed"
+                        ? "bg-green-100 text-green-700"
+                        : payment.status === "pending"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-red-100 text-red-700"
+                        }`}
                     >
-                      {payment.status === "Completed" && <CheckCircle className="w-3 h-3" />}
-                      {payment.status === "Pending" && <Clock className="w-3 h-3" />}
-                      {payment.status === "Failed" && <XCircle className="w-3 h-3" />}
-                      {payment.status}
+                      {payment.status === "completed" && <CheckCircle className="w-3 h-3" />}
+                      {payment.status === "pending" && <Clock className="w-3 h-3" />}
+                      {payment.status === "failed" && <XCircle className="w-3 h-3" />}
+                      <span className="capitalize">{payment.status}</span>
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">
                     {payment.date}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-                      <Eye className="w-4 h-4 text-slate-500" />
-                    </button>
                   </td>
                 </tr>
               ))}
@@ -337,10 +342,40 @@ export default function Payments() {
           </table>
         </div>
 
-        {filteredPayments.length === 0 && (
+        {payments.length === 0 && (
           <div className="py-12 text-center">
             <CreditCard className="w-12 h-12 text-slate-300 mx-auto mb-4" />
             <p className="text-slate-500">No payments found</p>
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {totalItems > 0 && (
+          <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-slate-200">
+            <div className="flex items-center text-sm text-slate-500">
+              Showing <span className="font-medium mx-1">{(page - 1) * limit + 1}</span> to{" "}
+              <span className="font-medium mx-1">{Math.min(page * limit, totalItems)}</span> of{" "}
+              <span className="font-medium mx-1">{totalItems}</span> transactions
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
+              </button>
+              <span className="text-sm font-medium text-slate-700 px-4">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </motion.div>
