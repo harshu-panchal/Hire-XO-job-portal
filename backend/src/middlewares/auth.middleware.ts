@@ -17,8 +17,6 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     const authHeader = req.headers['authorization'];
     if (authHeader) {
         token = authHeader.split(' ')[1];
-    } else if (req.query.token) {
-        token = req.query.token as string;
     }
 
     if (!token) {
@@ -58,7 +56,7 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     }
 };
 
-export const optionalAuthenticate = (req: AuthRequest, res: Response, next: NextFunction): void => {
+export const optionalAuthenticate = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -69,9 +67,25 @@ export const optionalAuthenticate = (req: AuthRequest, res: Response, next: Next
 
     try {
         const decoded = jwt.verify(token, config.JWT_SECRET) as { id: string; email: string; role: string };
-        req.user = decoded;
+
+        // Load user from DB and ensure active status, mirroring authenticateToken checks,
+        // but treat failures as anonymous instead of blocking the request.
+        const User = require('../models/user.model').default;
+        const user = await User.findById(decoded.id).select('status role email').lean();
+
+        if (!user || user.status !== 'active') {
+            // User missing or not active: behave as if unauthenticated
+            next();
+            return;
+        }
+
+        req.user = {
+            id: user._id.toString(),
+            email: user.email,
+            role: user.role
+        };
     } catch (error) {
-        // Token invalid, but don't block the request
+        // Token invalid/expired: behave as unauthenticated without throwing
     }
 
     next();
@@ -138,6 +152,7 @@ export const checkSubscription = async (req: AuthRequest, res: Response, next: N
         } else {
             // Expired or no subscription
             res.status(403).json({
+                success: false,
                 message: 'Active subscription required to access this feature.',
                 code: 'SUBSCRIPTION_EXPIRED'
             });

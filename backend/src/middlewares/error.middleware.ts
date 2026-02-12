@@ -20,6 +20,29 @@ export const errorHandler = (
         message = err.message;
     }
 
+    // Handle Multer upload validation errors from fileFilter
+    if (err.isUploadValidationError) {
+        statusCode = 400;
+        message = err.message || 'Invalid upload';
+
+        const errors = [
+            {
+                field: 'file',
+                message
+            }
+        ];
+
+        if (process.env.NODE_ENV !== 'test') {
+            console.error(`[Error] ${statusCode} - ${message}`);
+        }
+
+        return res.status(statusCode).json({
+            success: false,
+            message,
+            errors
+        });
+    }
+
     // Handle Mongoose Validation Error
     if (err.name === 'ValidationError') {
         statusCode = 400;
@@ -37,6 +60,7 @@ export const errorHandler = (
         }
 
         return res.status(statusCode).json({
+            success: false,
             message,
             errors
         });
@@ -69,6 +93,7 @@ export const errorHandler = (
 
     // Return standardized error format
     res.status(statusCode).json({
+        success: false,
         message,
         errors: [] // Empty array for non-validation errors
     });
