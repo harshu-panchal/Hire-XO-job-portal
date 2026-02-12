@@ -32,3 +32,6 @@ dist-ssr
 .env.local
 .env.production
 .env.development
+
+# Firebase service account credentials
+*firebase-adminsdk*.json
