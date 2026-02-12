@@ -6,26 +6,41 @@ import fs from 'fs';
 const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH ||
     path.join(__dirname, '../../config/serviceAccountKey.json');
 
-// Initialize Firebase Admin only if credentials file exists
+// Initialize Firebase Admin
 let firebaseAdmin: admin.app.App | null = null;
 
-if (fs.existsSync(serviceAccountPath)) {
-    try {
-        const serviceAccount = require(serviceAccountPath);
+try {
+    let serviceAccount: any;
 
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        // Try parsing from environment variable first
+        try {
+            serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+            console.log('Using Firebase credentials from environment variable');
+        } catch (parseError) {
+            console.error('Error parsing FIREBASE_SERVICE_ACCOUNT env variable:', parseError);
+        }
+    }
+
+    if (!serviceAccount && fs.existsSync(serviceAccountPath)) {
+        // Fallback to service account key file
+        serviceAccount = require(serviceAccountPath);
+        console.log('Using Firebase credentials from file:', serviceAccountPath);
+    }
+
+    if (serviceAccount) {
         firebaseAdmin = admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
         });
-
         console.log('Firebase Admin SDK initialized successfully');
-    } catch (error) {
-        console.error('Error initializing Firebase Admin SDK:', error);
+    } else {
+        console.warn(
+            'Firebase credentials not found (no env variable or file). Push notifications will not work. ' +
+            `Looked for file at: ${serviceAccountPath}`
+        );
     }
-} else {
-    console.warn(
-        'Firebase service account key not found. Push notifications will not work. ' +
-        `Please add serviceAccountKey.json to: ${serviceAccountPath}`
-    );
+} catch (error) {
+    console.error('Error initializing Firebase Admin SDK:', error);
 }
 
 export default admin;
