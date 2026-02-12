@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middlewares/auth.middleware';
+import { AuditService } from '../services/audit.service';
 import User from '../models/user.model';
 import Job from '../models/job.model';
 import JobApplication from '../models/job-application.model';
@@ -122,7 +123,16 @@ export class AdminController {
                 { new: true }
             ).select('-password');
 
-            // TODO: Add audit log entry here
+            // Audit Log
+            if ((req as AuthRequest).user) {
+                await AuditService.logAction(
+                    (req as AuthRequest).user!.id,
+                    'UPDATE_USER_STATUS',
+                    'User',
+                    id,
+                    { status, reason }
+                );
+            }
 
             res.status(200).json({
                 success: true,
@@ -172,6 +182,17 @@ export class AdminController {
             }
 
             await user.save();
+
+            // Audit Log
+            if ((req as AuthRequest).user) {
+                await AuditService.logAction(
+                    (req as AuthRequest).user!.id,
+                    'UPDATE_USER_DETAILS',
+                    'User',
+                    id,
+                    { name, email }
+                );
+            }
 
             res.status(200).json({
                 success: true,
@@ -252,6 +273,17 @@ export class AdminController {
                 message: 'User created successfully',
                 data: userResponse
             });
+
+            // Audit Log
+            if ((req as AuthRequest).user) {
+                await AuditService.logAction(
+                    (req as AuthRequest).user!.id,
+                    'CREATE_USER',
+                    'User',
+                    newUser._id.toString(),
+                    { email: newUser.email, role: newUser.role }
+                );
+            }
 
         } catch (error: any) {
             res.status(500).json({
@@ -688,6 +720,17 @@ export class AdminController {
             if (!item) {
                 res.status(404).json({ success: false, message: 'Resource not found' });
                 return;
+            }
+
+            // Audit Log
+            if ((req as AuthRequest).user) {
+                await AuditService.logAction(
+                    (req as AuthRequest).user!.id,
+                    'DELETE_RESOURCE',
+                    category,
+                    id,
+                    { category }
+                );
             }
 
             res.status(200).json({ success: true, message: 'Resource deleted successfully' });

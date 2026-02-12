@@ -5,9 +5,10 @@ import JobSeeker from '../models/job-seeker.model';
 import Recruiter from '../models/recruiter.model';
 import ResourceProfile from '../models/resource-profile.model';
 import { BadRequestError, UnauthorizedError, NotFoundError, ConflictError } from '../utils/errors';
+import { config } from '../config/env.config';
 
 export class AuthService {
-    private secretKey = process.env.JWT_SECRET || 'secret';
+    private secretKey = config.JWT_SECRET;
 
     public async signup(userData: any) {
         const { email, password, role, ...profileData } = userData;
