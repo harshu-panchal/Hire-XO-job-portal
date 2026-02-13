@@ -1,30 +1,42 @@
+import { useEffect, useMemo, useState } from "react";
 import { Briefcase, Calendar, ChevronRight, Clock, Star } from "lucide-react";
+import { applicationService } from "@/services/applicationService";
 
 const MyRentals = () => {
-  const rentals = [
-    {
-      id: 1,
-      partnerName: "Elite Wheels",
-      vehicleName: "Range Rover Sport 2024",
-      status: "Active",
-      startDate: "Jan 28, 2026",
-      bookedOn: "Jan 26, 2026",
-      rating: null,
-      image: "E",
-      color: "from-cyan-500 to-teal-600",
-    },
-    {
-      id: 2,
-      partnerName: "Go Electric",
-      vehicleName: "Tesla Model 3",
-      status: "Completed",
-      startDate: "Jan 10, 2026",
-      bookedOn: "Jan 05, 2026",
-      rating: 5.0,
-      image: "G",
-      color: "from-teal-500 to-cyan-600",
-    },
-  ];
+  const [rentals, setRentals] = useState<any[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const apps: any = await applicationService.getMyApplications();
+        const mapped = (apps.resources || [])
+          .filter((app: any) => {
+            const category = (app.resourceId?.category || "").toLowerCase();
+            const type = (app.resourceType || "").toLowerCase();
+            return category.includes("vehicle") || type.includes("vehicle");
+          })
+          .map((app: any, idx: number) => ({
+            id: app.id,
+            partnerName: app.resourceId?.company || "Vehicle Provider",
+            vehicleName: app.resourceId?.title || "Vehicle Rental",
+            status: app.status === "Rejected" ? "Completed" : "Active",
+            startDate: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+            bookedOn: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+            rating: null,
+            image: (app.resourceId?.title || "V").charAt(0).toUpperCase(),
+            color:
+              idx % 2 === 0 ? "from-cyan-500 to-teal-600" : "from-teal-500 to-cyan-600",
+          }));
+        setRentals(mapped);
+      } catch (error) {
+        setRentals([]);
+      }
+    };
+    load();
+  }, []);
+
+  const activeCount = rentals.filter((r) => r.status === "Active").length;
+  const totalCount = rentals.length;
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -42,7 +54,7 @@ const MyRentals = () => {
           <div className="size-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
             <Clock className="size-5" />
           </div>
-          <p className="text-2xl font-black italic">01</p>
+          <p className="text-2xl font-black italic">{String(activeCount).padStart(2, "0")}</p>
           <p className="text-[9px] font-black uppercase tracking-widest opacity-80">
             Active Booking
           </p>
@@ -51,7 +63,7 @@ const MyRentals = () => {
           <div className="size-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
             <Briefcase className="size-5" />
           </div>
-          <p className="text-2xl font-black italic">08</p>
+          <p className="text-2xl font-black italic">{String(totalCount).padStart(2, "0")}</p>
           <p className="text-[9px] font-black uppercase tracking-widest opacity-80">Total Hires</p>
         </div>
       </div>
@@ -123,6 +135,11 @@ const MyRentals = () => {
               </button>
             </div>
           ))}
+          {rentals.length === 0 && (
+            <div className="text-center p-6 text-[10px] font-black uppercase tracking-widest text-slate-400 border border-dashed border-slate-200 rounded-2xl">
+              No bookings found
+            </div>
+          )}
         </div>
       </div>
     </div>

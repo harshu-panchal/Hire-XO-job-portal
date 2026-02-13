@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import {
   Eye,
   MessageSquare,
@@ -12,14 +13,28 @@ import { useCSMStore } from "@/store/useCSMStore";
 import { useNavigate } from "react-router-dom";
 
 const MyServices = () => {
-  const { myServices, deleteService } = useCSMStore();
+  const { myServices, myInquiries, deleteService, fetchMyServices, fetchInquiries } = useCSMStore();
   const navigate = useNavigate();
+  const hasFetched = useRef(false);
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    fetchMyServices();
+    fetchInquiries();
+  }, [fetchMyServices, fetchInquiries]);
 
   const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this listing?")) {
       deleteService(id);
     }
   };
+
+  const getInquiryCount = (serviceId: string) =>
+    myInquiries.filter((inq: any) => {
+      const resourceId = inq.resourceId?._id || inq.resourceId;
+      return resourceId === serviceId;
+    }).length;
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -75,7 +90,7 @@ const MyServices = () => {
             <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400 mb-6 px-1">
               <span className="text-rose-600 italic">#{service.category}</span>
               <div className="size-1 rounded-full bg-slate-200" />
-              <span>Posted {service.postedDate}</span>
+              <span>Posted {service.postedDate || (service.postedAt ? new Date(service.postedAt).toLocaleDateString() : "Recently")}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
@@ -87,7 +102,7 @@ const MyServices = () => {
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Views
                   </p>
-                  <p className="text-xs font-black italic">{service.views}</p>
+                  <p className="text-xs font-black italic">{service.views || 0}</p>
                 </div>
               </div>
               <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-3">
@@ -98,7 +113,7 @@ const MyServices = () => {
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Leads
                   </p>
-                  <p className="text-xs font-black italic">{service.inquiries}</p>
+                  <p className="text-xs font-black italic">{getInquiryCount(service.id)}</p>
                 </div>
               </div>
             </div>

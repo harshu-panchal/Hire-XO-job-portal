@@ -1,12 +1,20 @@
 import { Search, Phone, Mail, ArrowLeft } from "lucide-react";
 import { useCSMStore } from "@/store/useCSMStore";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Inquiries = () => {
-  const { myInquiries } = useCSMStore();
+  const { myInquiries, fetchMyServices, fetchInquiries } = useCSMStore();
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const hasFetched = useRef(false);
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    fetchMyServices();
+    fetchInquiries();
+  }, [fetchMyServices, fetchInquiries]);
 
   const filteredInquiries = myInquiries.filter(
     (inq) =>
@@ -75,13 +83,13 @@ const Inquiries = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
                     <a
-                      href={`tel:+910000000000`}
+                      href={inquiry.phone ? `tel:${inquiry.phone}` : undefined}
                       className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-rose-600 transition-colors border border-slate-100"
                     >
                       <Phone className="size-4" />
                     </a>
                     <a
-                      href={`mailto:contact@example.com`}
+                      href={inquiry.email ? `mailto:${inquiry.email}` : undefined}
                       className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-rose-600 transition-colors border border-slate-100"
                     >
                       <Mail className="size-4" />

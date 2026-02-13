@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface Device {
   id: number;
@@ -61,22 +62,22 @@ const ProvideSettings = () => {
 
   const handlePinChange = () => {
     if (pinData.newPin !== pinData.confirmPin) {
-      alert("New PIN and confirmation don't match!");
+      toast.error("New PIN and confirmation don't match!");
       return;
     }
     if (pinData.newPin.length < 4) {
-      alert("PIN must be at least 4 digits!");
+      toast.error("PIN must be at least 4 digits!");
       return;
     }
-    alert("Security PIN updated successfully!");
+    toast.success("Security PIN updated successfully!");
     setShowPinModal(false);
     setPinData({ currentPin: "", newPin: "", confirmPin: "" });
   };
 
   const handleRemoveDevice = (deviceId: number) => {
     if (confirm("Are you sure you want to remove this device?")) {
-      setDevices(devices.filter((d) => d.id !== deviceId));
-      alert("Device removed successfully!");
+      setDevices((prev) => prev.filter((d) => d.id !== deviceId));
+      toast.success("Device removed successfully!");
     }
   };
 
@@ -289,7 +290,7 @@ const ProvideSettings = () => {
             <button
               onClick={() => {
                 setShowNotificationModal(false);
-                alert("Notification settings saved!");
+                toast.success("Notification settings saved!");
               }}
               className="w-full mt-6 px-4 py-3 rounded-xl bg-blue-600 text-white font-black text-sm uppercase tracking-widest hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-600/20"
             >
@@ -357,7 +358,7 @@ const ProvideSettings = () => {
             <button
               onClick={() => {
                 setShowVisibilityModal(false);
-                alert("Visibility settings saved!");
+                toast.success("Visibility settings saved!");
               }}
               className="w-full px-4 py-3 rounded-xl bg-emerald-600 text-white font-black text-sm uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-600/20"
             >

@@ -1,28 +1,31 @@
 import { useState, useRef } from "react";
 import { ArrowLeft, Upload, CheckCircle2, ChevronRight, DollarSign, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { resourceService } from "@/services/resourceService";
 import { uploadService } from "@/services/uploadService";
 import { toast } from "sonner";
 
 const PostMachine = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const existingMachine = (location.state as any)?.machine;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    title: "",
-    category: "Concrete Mixers",
-    brand: "",
-    year: "",
-    hoursUsed: "",
-    compensation: "",
-    description: "",
-    location: "India", // Default or collected
+    title: existingMachine?.title || "",
+    category: existingMachine?.machineryTypes?.[0] || "Concrete Mixers",
+    brand: existingMachine?.brand || "",
+    year: existingMachine?.year || "",
+    hoursUsed: existingMachine?.hoursUsed || "",
+    compensation: existingMachine?.compensation || "",
+    description: existingMachine?.description || "",
+    location: existingMachine?.location || "India", // Default or collected
   });
 
   const [files, setFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>(existingMachine?.images || []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -39,6 +42,10 @@ const PostMachine = () => {
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages(existingImages.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -67,13 +74,22 @@ const PostMachine = () => {
         ...formData,
         category: "Machinery" as any,
         machineryTypes: [formData.category], // Store sub-category
-        images: imageUrls,
+        images: [...existingImages, ...imageUrls],
         postedAt: new Date().toISOString(),
         type: "Sale", // Machinery sell sub-module
       };
 
-      await resourceService.create("machinery", payload);
-      toast.success("Machinery listed successfully!");
+      if (existingMachine?.id || existingMachine?._id) {
+        await resourceService.update(
+          "machinery",
+          existingMachine.id || existingMachine._id,
+          payload
+        );
+        toast.success("Machinery updated successfully!");
+      } else {
+        await resourceService.create("machinery", payload);
+        toast.success("Machinery listed successfully!");
+      }
       navigate("/machinery/sell/dashboard");
     } catch (error: any) {
       console.error("Failed to save machinery", error);
@@ -197,6 +213,27 @@ const PostMachine = () => {
 
             {files.length > 0 && (
               <div className="grid grid-cols-2 gap-3">
+                {existingImages.map((image, index) => (
+                  <div
+                    key={`existing-${index}`}
+                    className="relative group aspect-square rounded-2xl overflow-hidden border border-slate-100 shadow-sm"
+                  >
+                    <img
+                      src={image}
+                      className="w-full h-full object-cover"
+                      alt="existing"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeExistingImage(index);
+                      }}
+                      className="absolute top-2 right-2 size-7 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+                ))}
                 {files.map((file, index) => (
                   <div
                     key={index}
@@ -211,6 +248,31 @@ const PostMachine = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         removeFile(index);
+                      }}
+                      className="absolute top-2 right-2 size-7 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {existingImages.length > 0 && files.length === 0 && (
+              <div className="grid grid-cols-2 gap-3">
+                {existingImages.map((image, index) => (
+                  <div
+                    key={`existing-only-${index}`}
+                    className="relative group aspect-square rounded-2xl overflow-hidden border border-slate-100 shadow-sm"
+                  >
+                    <img
+                      src={image}
+                      className="w-full h-full object-cover"
+                      alt="existing"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeExistingImage(index);
                       }}
                       className="absolute top-2 right-2 size-7 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
                     >

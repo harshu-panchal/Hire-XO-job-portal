@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Eye,
   MessageSquare,
@@ -6,108 +6,54 @@ import {
   Edit3,
   Trash2,
   Car,
-  X,
-  Copy,
-  Archive,
-  MapPin,
-  Calendar,
-  DollarSign,
-  Users,
-  CheckCircle,
   Plus,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-interface Vehicle {
-  id: number;
-  title: string;
-  category: string;
-  views: number;
-  inquiries: number;
-  status: string;
-  postedDate: string;
-  price: string;
-  description?: string;
-  location?: string;
-  capacity?: string;
-  features?: string[];
-}
+import { resourceService } from "@/services/resourceService";
+import { applicationService } from "@/services/applicationService";
 
 const MyVehicles = () => {
   const navigate = useNavigate();
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [inquiries, setInquiries] = useState<any[]>([]);
+  const fetchedRef = useRef(false);
 
-  const [vehicles, setVehicles] = useState<Vehicle[]>([
-    {
-      id: 1,
-      title: "2023 Tesla Model 3 Long Range",
-      category: "Electric",
-      views: 120,
-      inquiries: 5,
-      status: "Active",
-      postedDate: "Jan 10, 2026",
-      price: "₹4,500/day",
-      description:
-        "Premium electric sedan with autopilot, perfect for business travel and daily commutes. Fully charged and maintained.",
-      location: "Mumbai, Maharashtra",
-      capacity: "5 Passengers",
-      features: ["Autopilot", "Premium Sound", "Leather Seats", "Supercharging"],
-    },
-    {
-      id: 2,
-      title: "Tata Ace Delivery Van",
-      category: "Commercial",
-      views: 350,
-      inquiries: 18,
-      status: "Active",
-      postedDate: "Jan 18, 2026",
-      price: "₹1,800/day",
-      description:
-        "Reliable commercial vehicle for deliveries and logistics. Well-maintained with regular servicing.",
-      location: "Pune, Maharashtra",
-      capacity: "750 kg Load",
-      features: ["GPS Tracking", "Cargo Space", "Fuel Efficient", "Driver Available"],
-    },
-  ]);
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
 
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [showMenuModal, setShowMenuModal] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+    const load = async () => {
+      try {
+        const [myVehicles, myInquiries] = await Promise.all([
+          resourceService.getMyListings("vehicles"),
+          applicationService.getReceivedResourceApplications("vehicles"),
+        ]);
+        setVehicles(myVehicles || []);
+        setInquiries(myInquiries || []);
+      } catch (error) {
+        setVehicles([]);
+        setInquiries([]);
+      }
+    };
 
-  const handleView = (vehicle: Vehicle) => {
-    setSelectedVehicle(vehicle);
-    setShowViewModal(true);
-  };
+    load();
+  }, []);
 
-  const handleMenu = (vehicle: Vehicle) => {
-    setSelectedVehicle(vehicle);
-    setShowMenuModal(true);
-  };
-
-  const handleEdit = (vehicle: Vehicle) => {
-    // Navigate to edit page with vehicle data
+  const handleEdit = (vehicle: any) => {
     navigate("/vehicles/provide/post", { state: { vehicle } });
   };
 
-  const handleDelete = (vehicleId: number) => {
-    if (confirm("Are you sure you want to delete this vehicle listing?")) {
-      setVehicles(vehicles.filter((v) => v.id !== vehicleId));
-      setShowMenuModal(false);
-      alert("Vehicle deleted successfully!");
+  const handleDelete = async (vehicleId: string) => {
+    try {
+      await resourceService.delete("vehicles", vehicleId);
+      setVehicles((prev) => prev.filter((v) => v.id !== vehicleId));
+    } catch (error) {
+      // keep page state unchanged
     }
   };
 
-  const handleArchive = (vehicleId: number) => {
-    if (confirm("Are you sure you want to archive this vehicle?")) {
-      setVehicles(vehicles.filter((v) => v.id !== vehicleId));
-      setShowMenuModal(false);
-      alert("Vehicle archived successfully!");
-    }
-  };
-
-  const handleCopyId = (vehicleId: number) => {
-    navigator.clipboard.writeText(`VEH-${vehicleId.toString().padStart(4, "0")}`);
-    alert("Vehicle ID copied to clipboard!");
-  };
+  const getInquiryCount = (vehicleId: string) =>
+    inquiries.filter((inq: any) => (inq.resourceId?._id || inq.resourceId) === vehicleId).length;
 
   const handleAddNew = () => {
     navigate("/vehicles/provide/post");
@@ -136,7 +82,7 @@ const MyVehicles = () => {
             Total Views
           </p>
           <p className="text-2xl font-black text-emerald-600">
-            {vehicles.reduce((sum, v) => sum + v.views, 0)}
+            {vehicles.reduce((sum, v) => sum + (v.views || 0), 0)}
           </p>
         </div>
         <div className="bg-orange-50 p-4 rounded-2xl border border-orange-200">
@@ -144,7 +90,7 @@ const MyVehicles = () => {
             Total Leads
           </p>
           <p className="text-2xl font-black text-orange-600">
-            {vehicles.reduce((sum, v) => sum + v.inquiries, 0)}
+            {inquiries.length}
           </p>
         </div>
       </div>
@@ -163,18 +109,15 @@ const MyVehicles = () => {
                 </div>
                 <div
                   className={`px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest ${
-                    vehicle.status === "Active"
+                    (vehicle.status || "Active") === "Active"
                       ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
                       : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
                   }`}
                 >
-                  {vehicle.status}
+                  {vehicle.status || "Active"}
                 </div>
               </div>
-              <button
-                onClick={() => handleMenu(vehicle)}
-                className="size-10 rounded-full hover:bg-slate-50 flex items-center justify-center text-slate-400 transition-colors"
-              >
+              <button className="size-10 rounded-full hover:bg-slate-50 flex items-center justify-center text-slate-400 transition-colors">
                 <MoreVertical className="size-5" />
               </button>
             </div>
@@ -184,11 +127,13 @@ const MyVehicles = () => {
             </h3>
 
             <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400 mb-6 px-1">
-              <span className="text-blue-600 italic">#{vehicle.category}</span>
+              <span className="text-blue-600 italic">#{vehicle.category || "Vehicles"}</span>
               <div className="size-1 rounded-full bg-slate-200" />
-              <span>{vehicle.price}</span>
+              <span>{vehicle.compensation || "N/A"}</span>
               <div className="size-1 rounded-full bg-slate-200" />
-              <span>Posted {vehicle.postedDate}</span>
+              <span>
+                Posted {vehicle.postedAt ? new Date(vehicle.postedAt).toLocaleDateString() : "Recently"}
+              </span>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
@@ -200,7 +145,7 @@ const MyVehicles = () => {
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Views
                   </p>
-                  <p className="text-xs font-black italic">{vehicle.views}</p>
+                  <p className="text-xs font-black italic">{vehicle.views || 0}</p>
                 </div>
               </div>
               <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-3">
@@ -211,14 +156,14 @@ const MyVehicles = () => {
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Leads
                   </p>
-                  <p className="text-xs font-black italic">{vehicle.inquiries}</p>
+                  <p className="text-xs font-black italic">{getInquiryCount(vehicle.id)}</p>
                 </div>
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <button
-                onClick={() => handleView(vehicle)}
+                onClick={() => navigate("/vehicles/provide/inquiries")}
                 className="h-12 rounded-2xl bg-blue-500/10 text-blue-600 border border-blue-500/10 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-blue-500/20 active:scale-95 transition-all"
               >
                 <Eye className="size-3.5" />
@@ -241,6 +186,13 @@ const MyVehicles = () => {
             </div>
           </div>
         ))}
+        {vehicles.length === 0 && (
+          <div className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">
+              No vehicles listed yet
+            </p>
+          </div>
+        )}
       </div>
 
       <button
@@ -250,271 +202,6 @@ const MyVehicles = () => {
         <Plus className="size-4" />
         List New Vehicle
       </button>
-
-      {/* View Vehicle Modal */}
-      {showViewModal && selectedVehicle && (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setShowViewModal(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-3xl p-6 max-w-2xl w-full border border-slate-200 shadow-2xl max-h-[85vh] overflow-y-auto"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-2xl font-black">Vehicle Details</h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  VEH-{selectedVehicle.id.toString().padStart(4, "0")}
-                </p>
-              </div>
-              <button
-                onClick={() => setShowViewModal(false)}
-                className="size-10 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
-              >
-                <X className="size-5" />
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              {/* Status Badge */}
-              <div
-                className={`inline-flex px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest ${
-                  selectedVehicle.status === "Active"
-                    ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
-                    : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
-                }`}
-              >
-                {selectedVehicle.status}
-              </div>
-
-              {/* Title */}
-              <div>
-                <h4 className="text-2xl font-black mb-2">{selectedVehicle.title}</h4>
-                <p className="text-sm text-slate-600">
-                  {selectedVehicle.description}
-                </p>
-              </div>
-
-              {/* Key Info Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-blue-50 rounded-2xl border border-blue-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <DollarSign className="size-4 text-blue-600" />
-                    <p className="text-xs font-black uppercase tracking-widest text-blue-600">
-                      Price
-                    </p>
-                  </div>
-                  <p className="text-lg font-black text-blue-600">{selectedVehicle.price}</p>
-                </div>
-
-                <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Eye className="size-4 text-emerald-600" />
-                    <p className="text-xs font-black uppercase tracking-widest text-emerald-600">
-                      Views
-                    </p>
-                  </div>
-                  <p className="text-lg font-black text-emerald-600">{selectedVehicle.views}</p>
-                </div>
-
-                <div className="p-4 bg-orange-50 rounded-2xl border border-orange-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <MessageSquare className="size-4 text-orange-600" />
-                    <p className="text-xs font-black uppercase tracking-widest text-orange-600">
-                      Inquiries
-                    </p>
-                  </div>
-                  <p className="text-lg font-black text-orange-600">{selectedVehicle.inquiries}</p>
-                </div>
-
-                <div className="p-4 bg-purple-50 rounded-2xl border border-purple-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="size-4 text-purple-600" />
-                    <p className="text-xs font-black uppercase tracking-widest text-purple-600">
-                      Posted
-                    </p>
-                  </div>
-                  <p className="text-sm font-black text-purple-600">{selectedVehicle.postedDate}</p>
-                </div>
-              </div>
-
-              {/* Additional Details */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <MapPin className="size-5 text-slate-400" />
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">
-                      Location
-                    </p>
-                    <p className="text-sm font-bold">{selectedVehicle.location}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <Users className="size-5 text-slate-400" />
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">
-                      Capacity
-                    </p>
-                    <p className="text-sm font-bold">{selectedVehicle.capacity}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <Car className="size-5 text-slate-400" />
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">
-                      Category
-                    </p>
-                    <p className="text-sm font-bold">{selectedVehicle.category}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Features */}
-              {selectedVehicle.features && selectedVehicle.features.length > 0 && (
-                <div>
-                  <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">
-                    Features
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedVehicle.features.map((feature, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-200"
-                      >
-                        <CheckCircle className="size-3 text-blue-600" />
-                        <span className="text-xs font-bold text-blue-600">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-3 mt-6 pt-6 border-t border-slate-200">
-              <button
-                onClick={() => {
-                  setShowViewModal(false);
-                  handleEdit(selectedVehicle);
-                }}
-                className="flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white font-black text-sm uppercase tracking-widest hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-600/20"
-              >
-                Edit Vehicle
-              </button>
-              <button
-                onClick={() => handleCopyId(selectedVehicle.id)}
-                className="px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-black text-sm uppercase tracking-widest hover:bg-slate-200 active:scale-95 transition-all flex items-center gap-2"
-              >
-                <Copy className="size-4" />
-                Copy ID
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Menu Modal */}
-      {showMenuModal && selectedVehicle && (
-        <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setShowMenuModal(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-3xl p-6 max-w-md w-full border border-slate-200 shadow-2xl"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-xl font-black">Vehicle Actions</h3>
-                <p className="text-xs text-slate-500 mt-1">{selectedVehicle.title}</p>
-              </div>
-              <button
-                onClick={() => setShowMenuModal(false)}
-                className="size-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-all"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => {
-                  setShowMenuModal(false);
-                  handleView(selectedVehicle);
-                }}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-blue-50 hover:bg-blue-100 transition-all group border border-blue-200"
-              >
-                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-blue-100 transition-all">
-                  <Eye className="size-5 text-blue-600" />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-black text-blue-600">View Details</p>
-                  <p className="text-xs text-blue-500">See full vehicle information</p>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowMenuModal(false);
-                  handleEdit(selectedVehicle);
-                }}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-all group border border-slate-200"
-              >
-                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-slate-100 transition-all">
-                  <Edit3 className="size-5 text-slate-600" />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-black">Edit Vehicle</p>
-                  <p className="text-xs text-slate-500">Update vehicle details</p>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleCopyId(selectedVehicle.id)}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-purple-50 hover:bg-purple-100 transition-all group border border-purple-200"
-              >
-                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-purple-100 transition-all">
-                  <Copy className="size-5 text-purple-600" />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-black text-purple-600">Copy Vehicle ID</p>
-                  <p className="text-xs text-purple-500">
-                    VEH-{selectedVehicle.id.toString().padStart(4, "0")}
-                  </p>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleArchive(selectedVehicle.id)}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-amber-50 hover:bg-amber-100 transition-all group border border-amber-200"
-              >
-                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-amber-100 transition-all">
-                  <Archive className="size-5 text-amber-600" />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-black text-amber-600">Archive Vehicle</p>
-                  <p className="text-xs text-amber-500">Move to archived listings</p>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleDelete(selectedVehicle.id)}
-                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-50 hover:bg-red-100 transition-all group border border-red-200"
-              >
-                <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-red-100 transition-all">
-                  <Trash2 className="size-5 text-red-600" />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-black text-red-600">Delete Vehicle</p>
-                  <p className="text-xs text-red-500">Permanently remove listing</p>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

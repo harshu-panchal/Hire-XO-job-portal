@@ -220,11 +220,11 @@ const BrowseSettings = () => {
       <div className="bg-white dark:bg-slate-900/50 rounded-[2rem] p-6 border border-slate-200 dark:border-white/10">
         <h2 className="text-xl font-black tracking-tight mb-4">Support</h2>
         <button
-          onClick={() =>
-            alert(
-              "Support ticket system coming soon! For urgent queries, contact support@hirexo.com"
-            )
-          }
+          onClick={() => {
+            window.location.href =
+              "mailto:support@hirexo.com?subject=Investor%20Support%20Request&body=Hi%20HireXO%20Support%2C";
+            toast.success("Opening support email");
+          }}
           className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 active:scale-95 transition-all"
         >
           <div className="flex items-center gap-3">

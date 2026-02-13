@@ -270,7 +270,12 @@ const MyInvestments = () => {
           </p>
         </div>
         <button
-          onClick={() => toast.info("Portfolio analytics coming soon!")}
+          onClick={() => {
+            const accepted = interests.filter((i) => i.status === "Accepted").length;
+            const pending = interests.filter((i) => i.status === "Pending").length;
+            toast.success(`Accepted: ${accepted}, Pending: ${pending}`);
+            setActiveTab("Accepted");
+          }}
           className="px-8 py-3 rounded-2xl bg-slate-100 text-[10px] font-black uppercase tracking-widest hover:bg-violet-600 hover:text-white transition-all shadow-sm active:scale-95"
         >
           Detailed Analysis

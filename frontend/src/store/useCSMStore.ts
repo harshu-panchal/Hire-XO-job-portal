@@ -27,7 +27,7 @@ interface CSMState {
   fetchMyServices: () => Promise<void>;
 
   // Inquiry Actions
-  fetchInquiries: (serviceId: string) => Promise<void>;
+  fetchInquiries: (serviceId?: string) => Promise<void>;
 
   // Filter Actions
   setSearch: (search: string) => void;
@@ -106,8 +106,12 @@ export const useCSMStore = create<CSMState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await resourceService.create("csm", serviceData);
+      const created = (response as any).data || (response as any).resource;
+      const normalized = created
+        ? { ...created, id: created.id || created._id }
+        : undefined;
       set((state) => ({
-        myServices: [...state.myServices, response.resource],
+        myServices: normalized ? [...state.myServices, normalized] : state.myServices,
         isLoading: false,
       }));
     } catch (error: any) {
@@ -123,8 +127,14 @@ export const useCSMStore = create<CSMState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await resourceService.update("csm", id, serviceData);
+      const updated = (response as any).data || (response as any).resource;
+      const normalized = updated
+        ? { ...updated, id: updated.id || updated._id || id }
+        : undefined;
       set((state) => ({
-        myServices: state.myServices.map((s) => (s.id === id ? response.resource : s)),
+        myServices: normalized
+          ? state.myServices.map((s) => (s.id === id ? normalized : s))
+          : state.myServices,
         isLoading: false,
       }));
     } catch (error: any) {
@@ -166,11 +176,54 @@ export const useCSMStore = create<CSMState>((set, get) => ({
     }
   },
 
-  fetchInquiries: async (serviceId: string) => {
+  fetchInquiries: async (serviceId?: string) => {
     set({ isLoading: true, error: null });
     try {
-      const inquiries = await applicationService.getResourceApplications("csm", serviceId);
-      set({ inquiries, isLoading: false });
+      const inquiries = serviceId
+        ? await applicationService.getResourceApplications("csm", serviceId)
+        : await applicationService.getReceivedResourceApplications("csm");
+
+      const gradientColors = [
+        "from-rose-500 to-pink-600",
+        "from-blue-500 to-cyan-600",
+        "from-indigo-500 to-violet-600",
+        "from-emerald-500 to-teal-600",
+      ];
+
+      const mappedInquiries = (Array.isArray(inquiries) ? inquiries : []).map((inquiry: any, index: number) => {
+        const applicant = inquiry.applicantId || {};
+        const name = applicant.name || "Unknown Applicant";
+        const status = inquiry.status === "Pending" ? "New" : inquiry.status || "New";
+        const appliedAt = inquiry.appliedAt ? new Date(inquiry.appliedAt) : null;
+        const role =
+          applicant.profile?.jobTitle ||
+          applicant.profile?.role ||
+          "Resource Applicant";
+
+        return {
+          ...inquiry,
+          id: inquiry.id || inquiry._id,
+          name,
+          role,
+          initial: String(name).charAt(0).toUpperCase() || "A",
+          color: gradientColors[index % gradientColors.length],
+          time: appliedAt ? appliedAt.toLocaleDateString() : "Recently",
+          message:
+            inquiry.message ||
+            inquiry.coverLetter ||
+            "Interested in your CSM service.",
+          status,
+          type: inquiry.resourceType || "CSM",
+          phone: applicant.phoneNumber || "",
+          email: applicant.email || "",
+        };
+      });
+
+      set({
+        inquiries,
+        myInquiries: mappedInquiries,
+        isLoading: false,
+      });
     } catch (error: any) {
       set({
         error: error.message || "Failed to fetch inquiries",

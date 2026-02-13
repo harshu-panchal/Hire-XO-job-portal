@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Upload,
   X,
@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import type { ResourceCategory } from "@/types";
 
 const PostFundingNeed = () => {
+  const DRAFT_STORAGE_KEY = "investor_funding_need_draft_v1";
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,6 +45,22 @@ const PostFundingNeed = () => {
 
   const [documents, setDocuments] = useState<{ name: string; url: string }[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw);
+      if (draft?.formData) {
+        setFormData((prev) => ({ ...prev, ...draft.formData }));
+      }
+      if (Array.isArray(draft?.documents)) {
+        setDocuments(draft.documents);
+      }
+    } catch (error) {
+      // ignore malformed drafts
+    }
+  }, []);
 
   const sectors = [
     "Technology",
@@ -92,6 +109,22 @@ const PostFundingNeed = () => {
 
   const removeDocument = (index: number) => {
     setDocuments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSaveDraft = () => {
+    try {
+      localStorage.setItem(
+        DRAFT_STORAGE_KEY,
+        JSON.stringify({
+          formData,
+          documents,
+          savedAt: new Date().toISOString(),
+        })
+      );
+      toast.success("Draft saved successfully");
+    } catch (error) {
+      toast.error("Failed to save draft");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,6 +179,7 @@ const PostFundingNeed = () => {
       };
 
       await resourceService.create("investors", payload);
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
 
       toast.success("Funding request posted successfully!");
       navigate("/investor/seek/my-requests");
@@ -486,7 +520,7 @@ const PostFundingNeed = () => {
         <div className="grid grid-cols-2 gap-4 pb-12">
           <button
             type="button"
-            onClick={() => toast.info("Drafts feature coming soon!")}
+            onClick={handleSaveDraft}
             className="py-5 rounded-[1.5rem] bg-slate-100 text-slate-600 font-black text-sm uppercase tracking-widest active:scale-95 transition-all"
           >
             Save Draft

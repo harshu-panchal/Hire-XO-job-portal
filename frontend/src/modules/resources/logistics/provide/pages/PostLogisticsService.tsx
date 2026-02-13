@@ -1,30 +1,35 @@
 import { useState, useRef } from "react";
 import { ArrowLeft, Truck, FileText, Camera, Plus, X, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { resourceService } from "@/services/resourceService";
 import { uploadService } from "@/services/uploadService";
 import { toast } from "sonner";
 
 const PostLogisticsService = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const existingService = (location.state as any)?.service;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    title: "",
-    company: "",
-    location: "",
-    compensation: "", // Using this for fleet size or cost per km? The model expects string.
-    type: "Service Provider",
-    description: "",
+    title: existingService?.title || "",
+    company: existingService?.company || "",
+    location: existingService?.location || "",
+    compensation: existingService?.compensation || "", // Using this for fleet size or cost per km? The model expects string.
+    type: existingService?.type || "Service Provider",
+    description: existingService?.description || "",
     category: "Logistics",
-    logisticsType: "provide-logistics",
-    serviceArea: "Pan-India",
-    urgency: "Immediate",
+    logisticsType: existingService?.logisticsType || "provide-logistics",
+    serviceArea: existingService?.serviceArea || "Pan-India",
+    urgency: existingService?.urgency || "Immediate",
   });
 
-  const [logisticsCategory, setLogisticsCategory] = useState("Heavy Haulage");
+  const [logisticsCategory, setLogisticsCategory] = useState(
+    existingService?.requirements?.[0] || "Heavy Haulage"
+  );
   const [files, setFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>(existingService?.images || []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -41,6 +46,10 @@ const PostLogisticsService = () => {
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages(existingImages.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -69,12 +78,21 @@ const PostLogisticsService = () => {
         ...formData,
         category: "Logistics" as any,
         requirements: [logisticsCategory], // Store sub-category
-        images: imageUrls,
+        images: [...existingImages, ...imageUrls],
         postedAt: new Date().toISOString(),
       };
 
-      await resourceService.create("logistics", payload);
-      toast.success("Logistics service listed successfully!");
+      if (existingService?.id || existingService?._id) {
+        await resourceService.update(
+          "logistics",
+          existingService.id || existingService._id,
+          payload
+        );
+        toast.success("Logistics service updated successfully!");
+      } else {
+        await resourceService.create("logistics", payload);
+        toast.success("Logistics service listed successfully!");
+      }
       navigate("/logistics/provide/dashboard");
     } catch (error: any) {
       console.error("Failed to save logistics service", error);
@@ -231,6 +249,24 @@ const PostLogisticsService = () => {
           />
 
           <div className="grid grid-cols-3 gap-3">
+            {existingImages.map((image, index) => (
+              <div
+                key={`existing-${index}`}
+                className="relative aspect-square rounded-2xl overflow-hidden border border-slate-100 shadow-sm"
+              >
+                <img
+                  src={image}
+                  className="w-full h-full object-cover"
+                  alt="existing"
+                />
+                <button
+                  onClick={() => removeExistingImage(index)}
+                  className="absolute top-1 right-1 size-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                >
+                  <X className="size-3" />
+                </button>
+              </div>
+            ))}
             {files.map((file, index) => (
               <div
                 key={index}

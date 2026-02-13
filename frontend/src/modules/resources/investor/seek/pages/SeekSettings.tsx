@@ -14,6 +14,7 @@ import {
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 const SeekSettings = () => {
   const navigate = useNavigate();
@@ -48,15 +49,15 @@ const SeekSettings = () => {
 
   const handlePasswordChange = () => {
     if (newPassword !== confirmPassword) {
-      alert("Passwords don't match!");
+      toast.error("Passwords don't match!");
       return;
     }
     if (newPassword.length < 8) {
-      alert("Password must be at least 8 characters!");
+      toast.error("Password must be at least 8 characters!");
       return;
     }
     // Simulate password change
-    alert("Password changed successfully!");
+    toast.success("Password changed successfully!");
     setShowPasswordModal(false);
     setCurrentPassword("");
     setNewPassword("");
@@ -66,7 +67,7 @@ const SeekSettings = () => {
   const toggle2FA = () => {
     setIs2FAEnabled(!is2FAEnabled);
     setShow2FAModal(false);
-    alert(is2FAEnabled ? "2FA disabled successfully!" : "2FA enabled successfully!");
+    toast.success(is2FAEnabled ? "2FA disabled successfully!" : "2FA enabled successfully!");
   };
 
   return (

@@ -12,8 +12,8 @@ import {
   User,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { applicationService, type Application } from "@/services/applicationService";
-import { useAuthStore } from "@/store/useAuthStore";
+import { applicationService } from "@/services/applicationService";
+import { toast } from "sonner";
 
 const InvestorInquiries = () => {
   const [filter, setFilter] = useState("all");
@@ -96,15 +96,19 @@ const InvestorInquiries = () => {
     setShowViewModal(true);
   };
 
-  const sendReply = () => {
-    if (replyMessage.trim() && selectedInquiry) {
-      // In a real app, this would send an email or internal message API call
-      alert(`Reply sent to ${selectedInquiry.investorEmail}`);
-      // Optimistically update status to 'replied' (Accepted in our mapping?)
-      // Or just close modal
+  const sendReply = async () => {
+    if (!replyMessage.trim() || !selectedInquiry) return;
+    try {
+      await applicationService.updateApplicationStatus(selectedInquiry.id, "Accepted", "resource");
+      setInquiries((prev) =>
+        prev.map((inq) => (inq.id === selectedInquiry.id ? { ...inq, status: "accepted" } : inq))
+      );
+      toast.success(`Reply sent to ${selectedInquiry.investorEmail}`);
       setShowReplyModal(false);
       setReplyMessage("");
       setSelectedInquiry(null);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send reply");
     }
   };
 

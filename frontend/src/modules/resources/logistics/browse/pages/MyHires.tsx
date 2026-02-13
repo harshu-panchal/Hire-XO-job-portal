@@ -1,30 +1,38 @@
+import { useEffect, useState } from "react";
 import { Briefcase, Calendar, ChevronRight, Clock, Star } from "lucide-react";
+import { applicationService } from "@/services/applicationService";
 
 const MyHires = () => {
-  const hires = [
-    {
-      id: 1,
-      firmName: "SwiftLoad Carriers",
-      loadName: "Steel Shipment - ID 245",
-      status: "Active",
-      startDate: "Jan 25, 2026",
-      hiredOn: "Jan 20, 2026",
-      rating: null,
-      image: "S",
-      color: "from-red-500 to-orange-600",
-    },
-    {
-      id: 2,
-      firmName: "BlueLine Express",
-      loadName: "Cement Goods - ID 182",
-      status: "Completed",
-      startDate: "Jan 01, 2026",
-      hiredOn: "Dec 25, 2025",
-      rating: 5.0,
-      image: "B",
-      color: "from-rose-500 to-red-600",
-    },
-  ];
+  const [hires, setHires] = useState<any[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const apps: any = await applicationService.getMyApplications();
+        const mapped = (apps.resources || [])
+          .filter((app: any) => {
+            const category = (app.resourceId?.category || "").toLowerCase();
+            const type = (app.resourceType || "").toLowerCase();
+            return category.includes("logistics") || type.includes("logistics");
+          })
+          .map((app: any, idx: number) => ({
+            id: app.id,
+            firmName: app.resourceId?.company || "Logistics Partner",
+            loadName: app.resourceId?.title || "Logistics Order",
+            status: app.status === "Rejected" ? "Completed" : "Active",
+            startDate: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+            hiredOn: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+            rating: null,
+            image: (app.resourceId?.company || "L").charAt(0).toUpperCase(),
+            color: idx % 2 === 0 ? "from-red-500 to-orange-600" : "from-rose-500 to-red-600",
+          }));
+        setHires(mapped);
+      } catch (error) {
+        setHires([]);
+      }
+    };
+    load();
+  }, []);
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -42,7 +50,9 @@ const MyHires = () => {
           <div className="size-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
             <Clock className="size-5" />
           </div>
-          <p className="text-2xl font-black italic">01</p>
+          <p className="text-2xl font-black italic">
+            {String(hires.filter((h) => h.status === "Active").length).padStart(2, "0")}
+          </p>
           <p className="text-[9px] font-black uppercase tracking-widest opacity-80">
             Active Shipments
           </p>
@@ -51,7 +61,7 @@ const MyHires = () => {
           <div className="size-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
             <Briefcase className="size-5" />
           </div>
-          <p className="text-2xl font-black italic">14</p>
+          <p className="text-2xl font-black italic">{String(hires.length).padStart(2, "0")}</p>
           <p className="text-[9px] font-black uppercase tracking-widest opacity-80">Total Orders</p>
         </div>
       </div>
@@ -103,16 +113,12 @@ const MyHires = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Star
-                    className={`size-4 ${hire.rating ? "text-amber-500 fill-amber-500" : "text-slate-300"}`}
-                  />
+                  <Star className="size-4 text-slate-300" />
                   <div>
                     <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                       Rating
                     </p>
-                    <p className="text-[10px] font-black">
-                      {hire.rating ? `${hire.rating}.0` : "Pending"}
-                    </p>
+                    <p className="text-[10px] font-black">Pending</p>
                   </div>
                 </div>
               </div>
@@ -123,6 +129,11 @@ const MyHires = () => {
               </button>
             </div>
           ))}
+          {hires.length === 0 && (
+            <div className="text-center p-6 text-[10px] font-black uppercase tracking-widest text-slate-400 border border-dashed border-slate-200 rounded-2xl">
+              No hires found
+            </div>
+          )}
         </div>
       </div>
     </div>

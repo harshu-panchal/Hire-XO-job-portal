@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface Device {
   id: number;
@@ -110,24 +111,24 @@ const ProvideSettings = () => {
     e.preventDefault();
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("New passwords don't match!");
+      toast.error("New passwords don't match!");
       return;
     }
 
     if (passwordData.newPassword.length < 8) {
-      alert("Password must be at least 8 characters long!");
+      toast.error("Password must be at least 8 characters long!");
       return;
     }
 
-    alert("Password changed successfully!");
+    toast.success("Password changed successfully!");
     setShowPasswordModal(false);
     setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
   };
 
   const handleRemoveDevice = (deviceId: number) => {
     if (confirm("Are you sure you want to remove this device?")) {
-      setDevices(devices.filter((d) => d.id !== deviceId));
-      alert("Device removed successfully!");
+      setDevices((prev) => prev.filter((d) => d.id !== deviceId));
+      toast.success("Device removed successfully!");
     }
   };
 

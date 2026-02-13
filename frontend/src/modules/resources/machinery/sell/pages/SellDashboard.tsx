@@ -37,7 +37,7 @@ const SellDashboard = () => {
 
         // Calculate Stats
         const totalValue = listings.reduce((acc: number, curr: any) => {
-          const val = parseFloat((curr.price || "0").replace(/[^0-9.]/g, ""));
+          const val = parseFloat((curr.compensation || curr.price || "0").replace(/[^0-9.]/g, ""));
           return acc + (isNaN(val) ? 0 : val);
         }, 0);
 
@@ -48,12 +48,12 @@ const SellDashboard = () => {
         });
 
         const inventory = listings.slice(0, 3).map((item: any) => ({
-          id: item._id,
+          id: item.id,
           name: item.title,
           status: item.status || "Live",
           views: (item.views || 0).toString(),
-          inquiries: bids.filter((b: any) => (b.resourceId?._id || b.resourceId) === item._id).length,
-          price: item.price
+          inquiries: bids.filter((b: any) => (b.resourceId?._id || b.resourceId) === item.id).length,
+          price: item.compensation || item.price || "N/A"
         }));
 
         setLiveInventory(inventory);
@@ -92,15 +92,18 @@ const SellDashboard = () => {
     },
   ];
 
-  const alerts = [
-    {
-      id: 1,
-      type: "Offer",
-      message: "New inquiry for listed Item",
-      time: "5m ago",
-      urgent: true,
-    },
-  ];
+  const alerts =
+    stats.buyerInterest > 0
+      ? [
+          {
+            id: 1,
+            type: "Offer",
+            message: "New inquiry on your machinery listing",
+            time: "Recently",
+            urgent: true,
+          },
+        ]
+      : [];
 
   if (loading && isAuthenticated) {
     return <div className="p-10 text-center animate-pulse">Loading Seller Console...</div>;

@@ -1,29 +1,34 @@
 import { useState, useRef } from "react";
 import { ArrowLeft, Building2, FileText, Camera, Plus, X, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { resourceService } from "@/services/resourceService";
 import { uploadService } from "@/services/uploadService";
 import { toast } from "sonner";
 
 const PostService = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const existingService = (location.state as any)?.service;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    title: "",
-    company: "",
-    location: "Remote / Pan-India",
-    compensation: "Project-based pricing",
-    type: "Consultancy",
-    description: "",
+    title: existingService?.title || "",
+    company: existingService?.company || "",
+    location: existingService?.location || "Remote / Pan-India",
+    compensation: existingService?.compensation || "Project-based pricing",
+    type: existingService?.type || "Consultancy",
+    description: existingService?.description || "",
     category: "PMC",
-    pmcType: "offer-pmc-services",
-    urgency: "Immediate",
+    pmcType: existingService?.pmcType || "offer-pmc-services",
+    urgency: existingService?.urgency || "Immediate",
   });
 
-  const [serviceCategory, setServiceCategory] = useState("Infrastructure Project Management");
+  const [serviceCategory, setServiceCategory] = useState(
+    existingService?.requirements?.[0] || "Infrastructure Project Management"
+  );
   const [files, setFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>(existingService?.images || []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -40,6 +45,10 @@ const PostService = () => {
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages(existingImages.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -68,12 +77,17 @@ const PostService = () => {
         ...formData,
         category: "PMC" as any,
         requirements: [serviceCategory], // Store sub-category
-        images: imageUrls,
+        images: [...existingImages, ...imageUrls],
         postedAt: new Date().toISOString(),
       };
 
-      await resourceService.create("pmc", payload);
-      toast.success("PMC service published successfully!");
+      if (existingService?.id || existingService?._id) {
+        await resourceService.update("pmc", existingService.id || existingService._id, payload);
+        toast.success("PMC service updated successfully!");
+      } else {
+        await resourceService.create("pmc", payload);
+        toast.success("PMC service published successfully!");
+      }
       navigate("/pmc/provide/dashboard");
     } catch (error: any) {
       console.error("Failed to save PMC service", error);
@@ -234,6 +248,24 @@ const PostService = () => {
           />
 
           <div className="grid grid-cols-3 gap-3">
+            {existingImages.map((image, index) => (
+              <div
+                key={`existing-${index}`}
+                className="relative aspect-square rounded-2xl overflow-hidden border border-slate-100 shadow-sm"
+              >
+                <img
+                  src={image}
+                  className="w-full h-full object-cover"
+                  alt="existing"
+                />
+                <button
+                  onClick={() => removeExistingImage(index)}
+                  className="absolute top-1 right-1 size-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                >
+                  <X className="size-3" />
+                </button>
+              </div>
+            ))}
             {files.map((file, index) => (
               <div
                 key={index}

@@ -1,9 +1,18 @@
+import { useEffect, useRef } from "react";
 import { TrendingUp, Eye, FileText, Star, PlusSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCSMStore } from "@/store/useCSMStore";
 
 const ProvideDashboard = () => {
-  const { myServices, myInquiries, stats } = useCSMStore();
+  const { myServices, myInquiries, stats, fetchMyServices, fetchInquiries } = useCSMStore();
+  const hasFetched = useRef(false);
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    fetchMyServices();
+    fetchInquiries();
+  }, [fetchMyServices, fetchInquiries]);
 
   // Derived stats
   const activeListingsCount = myServices.filter((s: any) => s.status === "Active").length;

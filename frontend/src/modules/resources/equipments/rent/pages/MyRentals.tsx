@@ -1,41 +1,39 @@
+import { useEffect, useMemo, useState } from "react";
 import { Calendar, Clock, ChevronRight, CheckCircle2, AlertCircle } from "lucide-react";
+import { applicationService } from "@/services/applicationService";
 
 const MyRentals = () => {
-  const rentals = [
-    {
-      id: "RNT-88219",
-      name: "Caterpillar 320 GC Excavator",
-      provider: "BuildRight Rentals",
-      status: "In Progress",
-      startDate: "12 Oct 2024",
-      endDate: "25 Oct 2024",
-      totalAmount: "₹2,40,500",
-      image:
-        "https://images.unsplash.com/photo-1579412691525-4c07da01ee7b?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-      id: "RNT-88102",
-      name: "JCB 3DX EcoXcellence",
-      provider: "Metro Infra Equipment",
-      status: "Scheduled",
-      startDate: "02 Nov 2024",
-      endDate: "10 Nov 2024",
-      totalAmount: "₹96,000",
-      image:
-        "https://images.unsplash.com/photo-1541625602330-2277a7c4354d?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-      id: "RNT-87940",
-      name: "Kirloskar 125kVA Generator",
-      provider: "PowerHouse Solutions",
-      status: "Completed",
-      startDate: "15 Sep 2024",
-      endDate: "20 Sep 2024",
-      totalAmount: "₹22,500",
-      image:
-        "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=400",
-    },
-  ];
+  const [rentals, setRentals] = useState<any[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const apps: any = await applicationService.getMyApplications();
+        const mapped = (apps.resources || [])
+          .filter((app: any) => {
+            const category = (app.resourceId?.category || "").toLowerCase();
+            const type = (app.resourceType || "").toLowerCase();
+            return category.includes("equipment") || type.includes("equipment");
+          })
+          .map((app: any) => ({
+            id: app.id,
+            name: app.resourceId?.title || "Equipment Rental",
+            provider: app.resourceId?.company || "Resource Provider",
+            status: app.status === "Rejected" ? "Completed" : "In Progress",
+            startDate: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+            endDate: app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : "N/A",
+            totalAmount: app.bidAmount ? `INR ${app.bidAmount}` : app.resourceId?.compensation || "N/A",
+            image:
+              app.resourceId?.images?.[0] ||
+              "https://images.unsplash.com/photo-1579412691525-4c07da01ee7b?auto=format&fit=crop&q=80&w=400",
+          }));
+        setRentals(mapped);
+      } catch (error) {
+        setRentals([]);
+      }
+    };
+    load();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -49,6 +47,16 @@ const MyRentals = () => {
         return "text-slate-500 bg-slate-100";
     }
   };
+
+  const totalSpent = useMemo(
+    () =>
+      rentals.reduce((sum, r) => {
+        const val = parseFloat((r.totalAmount || "0").toString().replace(/[^0-9.]/g, ""));
+        return sum + (isNaN(val) ? 0 : val);
+      }, 0),
+    [rentals]
+  );
+  const onRent = rentals.filter((r) => r.status === "In Progress").length;
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -64,11 +72,11 @@ const MyRentals = () => {
       <div className="p-1 px-1 flex gap-4 overflow-x-auto no-scrollbar">
         <div className="bg-emerald-600 text-white rounded-[2.5rem] p-6 shrink-0 w-48 shadow-xl shadow-emerald-500/20">
           <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Total Spent</p>
-          <p className="text-3xl font-black tracking-tighter italic">₹4.2L</p>
+          <p className="text-3xl font-black tracking-tighter italic">INR {Math.round(totalSpent)}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shrink-0 w-48 shadow-sm">
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">On Rent</p>
-          <p className="text-3xl font-black tracking-tighter">02</p>
+          <p className="text-3xl font-black tracking-tighter">{String(onRent).padStart(2, "0")}</p>
         </div>
       </div>
 
@@ -143,6 +151,11 @@ const MyRentals = () => {
               </div>
             </div>
           ))}
+          {rentals.length === 0 && (
+            <div className="text-center p-6 text-[10px] font-black uppercase tracking-widest text-slate-400 border border-dashed border-slate-200 rounded-2xl">
+              No rentals found
+            </div>
+          )}
         </div>
       </div>
     </div>

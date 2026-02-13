@@ -1,41 +1,49 @@
+import { useEffect, useRef, useState } from "react";
 import { MapPin, User, CheckCircle2, XCircle, MessageSquare, Clock } from "lucide-react";
+import { applicationService } from "@/services/applicationService";
 
 const RentalRequests = () => {
-  const requests = [
-    {
-      id: "REQ-9921",
-      equipment: "Caterpillar 320 GC",
-      tenant: "Acme Infra Projects",
-      location: "Mumbai, MH",
-      duration: "15 Days",
-      startDate: "20 Oct 2024",
-      amount: "₹2,77,500",
-      status: "Pending",
-      reliability: "4.9/5",
-    },
-    {
-      id: "REQ-9918",
-      equipment: "JCB 3DX EcoXcellence",
-      tenant: "Global Buildcon",
-      location: "Pune, MH",
-      duration: "5 Days",
-      startDate: "25 Oct 2024",
-      amount: "₹60,000",
-      status: "Pending",
-      reliability: "4.7/5",
-    },
-    {
-      id: "REQ-9902",
-      equipment: "Liebherr LTM 11200",
-      tenant: "Heavy Lift India",
-      location: "Gujarat",
-      duration: "30 Days",
-      startDate: "01 Nov 2024",
-      amount: "₹25,50,000",
-      status: "Under Review",
-      reliability: "5.0/5",
-    },
-  ];
+  const [requests, setRequests] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState("Pending");
+  const fetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    const load = async () => {
+      try {
+        const data = await applicationService.getReceivedResourceApplications("equipments");
+        setRequests(data || []);
+      } catch (error) {
+        setRequests([]);
+      }
+    };
+
+    load();
+  }, []);
+
+  const tabToStatus: Record<string, string> = {
+    Pending: "Pending",
+    Reviewing: "Pending",
+    Accepted: "Accepted",
+    Rejected: "Rejected",
+  };
+
+  const filteredRequests = requests.filter(
+    (req: any) => req.status === tabToStatus[activeTab]
+  );
+
+  const handleStatus = async (requestId: string, status: "Accepted" | "Rejected") => {
+    try {
+      await applicationService.updateApplicationStatus(requestId, status, "resource");
+      setRequests((prev) =>
+        prev.map((req: any) => (req.id === requestId ? { ...req, status } : req))
+      );
+    } catch (error) {
+      // keep current UI unchanged
+    }
+  };
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -49,11 +57,12 @@ const RentalRequests = () => {
 
       {/* Filter Tabs */}
       <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-        {["Pending", "Reviewing", "Accepted", "Rejected"].map((tab, idx) => (
+        {["Pending", "Reviewing", "Accepted", "Rejected"].map((tab) => (
           <button
             key={tab}
+            onClick={() => setActiveTab(tab)}
             className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
-              idx === 0
+              activeTab === tab
                 ? "bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-500/20"
                 : "bg-white text-slate-500 border-slate-200"
             }`}
@@ -65,14 +74,14 @@ const RentalRequests = () => {
 
       {/* Requests List */}
       <div className="space-y-6 pb-20">
-        {requests.map((req) => (
+        {filteredRequests.map((req: any) => (
           <div
-            key={req.id}
+            key={req.id || req._id}
             className="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-sm relative group"
           >
             {/* Status Ribbon */}
             <div className="absolute top-0 right-10 px-4 py-1 rounded-b-xl bg-amber-100 text-amber-600 text-[8px] font-black uppercase tracking-widest border border-t-0 border-amber-200">
-              {req.status}
+              {req.status || "Pending"}
             </div>
 
             <div className="p-6 space-y-6">
@@ -83,15 +92,15 @@ const RentalRequests = () => {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-base font-black tracking-tight leading-none mb-1 truncate">
-                    {req.tenant}
+                    {req.applicantId?.name || "Unknown Applicant"}
                   </h3>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase tracking-widest border border-emerald-100">
-                      Reliability: {req.reliability}
+                      Reliability: {req.applicantId?.rating || "N/A"}
                     </div>
                     <div className="size-1 rounded-full bg-slate-200" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                      {req.id}
+                      {req.id || req._id}
                     </span>
                   </div>
                 </div>
@@ -105,7 +114,7 @@ const RentalRequests = () => {
                     <p className="text-[8px] font-black uppercase tracking-widest">Duration</p>
                   </div>
                   <p className="text-xs font-black italic">
-                    {req.duration} ({req.startDate})
+                    {req.resourceId?.duration || "N/A"} ({req.appliedAt ? new Date(req.appliedAt).toLocaleDateString() : "N/A"})
                   </p>
                 </div>
                 <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100 space-y-1">
@@ -113,7 +122,7 @@ const RentalRequests = () => {
                     Net Revenue
                   </p>
                   <p className="text-sm font-black text-emerald-700 leading-none">
-                    {req.amount}
+                    {req.bidAmount ? `INR ${req.bidAmount}` : "N/A"}
                   </p>
                 </div>
               </div>
@@ -123,29 +132,42 @@ const RentalRequests = () => {
                 <div className="flex items-center gap-2">
                   <MapPin className="size-3" />
                   <span className="text-[10px] font-black uppercase tracking-widest">
-                    {req.location}
+                    {req.applicantId?.profile?.location || "N/A"}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-blue-600 font-black uppercase tracking-widest text-[9px]">
-                  {req.equipment}
+                  {req.resourceId?.title || "Equipment"}
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="flex gap-2">
-                <button className="flex-1 bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest py-4 rounded-2xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center justify-center gap-2">
+                <button
+                  onClick={() => handleStatus(req.id, "Accepted")}
+                  className="flex-1 bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest py-4 rounded-2xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                >
                   <CheckCircle2 className="size-3.5" /> Approve Rent
                 </button>
                 <button className="size-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center active:scale-95 transition-all shadow-xl">
                   <MessageSquare className="size-5" />
                 </button>
-                <button className="size-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center active:scale-90 transition-transform">
+                <button
+                  onClick={() => handleStatus(req.id, "Rejected")}
+                  className="size-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center active:scale-90 transition-transform"
+                >
                   <XCircle className="size-5" />
                 </button>
               </div>
             </div>
           </div>
         ))}
+        {filteredRequests.length === 0 && (
+          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">
+              No rental requests found
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
