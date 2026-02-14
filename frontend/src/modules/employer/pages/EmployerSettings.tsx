@@ -9,6 +9,7 @@ import {
   CreditCard,
   Globe,
   Wallet,
+  Award,
   Check,
   X,
 } from "lucide-react";
@@ -74,6 +75,13 @@ const EmployerSettings = () => {
           bg: "bg-amber-500/10",
           value: isSubscribed ? "PRO" : "FREE",
           routeKey: "Subscription Plan",
+        },
+        {
+          label: "Certificates",
+          icon: Award,
+          color: "text-indigo-500",
+          bg: "bg-indigo-500/10",
+          routeKey: "Certificates",
         },
       ],
     },
@@ -162,6 +170,7 @@ const EmployerSettings = () => {
                       "Company Details": "/employer/company",
                       "Wallet Balance": "/employer/wallet",
                       "Subscription Plan": "/employer/subscription",
+                      Certificates: "/employer/certificates",
                       Notifications: "/employer/settings/notifications",
                       "Security & Privacy": "/employer/security",
                     };

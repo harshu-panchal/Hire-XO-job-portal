@@ -5,7 +5,9 @@ import { toast } from "sonner";
 import { adminService } from "../../../services/adminService";
 import type { CertificateRequest } from "../../../types";
 import { getErrorMessage } from "../../../lib/apiConfig";
-import certificateTemplateImage from "../../../assets/emp.jpeg";
+import employeeTemplateImage from "../../../assets/emp.jpeg";
+import employerTemplateImage from "../../../assets/Employer.jpeg";
+import resourceTemplateImage from "../../../assets/Resource.jpeg";
 
 type TabType = "pending" | "issued" | "rejected";
 
@@ -154,6 +156,12 @@ const buildCertificateHtml = (
 const editorClass =
   "w-full bg-transparent border border-transparent text-center focus:outline-none focus:border-slate-300 focus:bg-white/60 rounded px-2";
 
+const getTemplateByRole = (role?: string) => {
+  if (role === "employer") return employerTemplateImage;
+  if (role === "resource") return resourceTemplateImage;
+  return employeeTemplateImage;
+};
+
 export default function Certificates() {
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedTab = (searchParams.get("tab") as TabType) || "pending";
@@ -168,7 +176,7 @@ export default function Certificates() {
   const [selected, setSelected] = useState<CertificateRequest | null>(null);
   const [certificateName, setCertificateName] = useState("");
   const [editor, setEditor] = useState<CertificateEditor>(defaultEditorState());
-  const [templateDataUrl, setTemplateDataUrl] = useState<string>(certificateTemplateImage);
+  const [templateDataUrl, setTemplateDataUrl] = useState<string>(employeeTemplateImage);
 
   const highlightedRequestId = searchParams.get("requestId");
 
@@ -193,11 +201,14 @@ export default function Certificates() {
     return () => clearTimeout(timer);
   }, [search]);
 
+  const selectedRole = selected?.userId?.role || selected?.role;
+  const selectedTemplateImage = getTemplateByRole(selectedRole);
+
   useEffect(() => {
     let mounted = true;
     const convertTemplateToDataUrl = async () => {
       try {
-        const res = await fetch(certificateTemplateImage);
+        const res = await fetch(selectedTemplateImage);
         const blob = await res.blob();
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -207,14 +218,16 @@ export default function Certificates() {
         };
         reader.readAsDataURL(blob);
       } catch {
-        // fallback keeps original asset URL
+        if (mounted) {
+          setTemplateDataUrl(selectedTemplateImage);
+        }
       }
     };
     convertTemplateToDataUrl();
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [selectedTemplateImage]);
 
   useEffect(() => {
     if (!selected) return;
@@ -364,7 +377,7 @@ export default function Certificates() {
             </p>
 
             <div className="relative w-full max-w-[1200px] mx-auto border border-slate-200 rounded-lg overflow-hidden shadow-sm">
-              <img src={certificateTemplateImage} alt="Certificate template" className="w-full h-auto block" />
+              <img src={selectedTemplateImage} alt="Certificate template" className="w-full h-auto block" />
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute left-[8%] top-[29.5%] w-[84%] pointer-events-auto">
                   <input className={`${editorClass} text-[clamp(14px,1.8vw,44px)] font-extrabold text-[#0c3a69] uppercase`} value={editor.title} onChange={(e) => setEditor((p) => ({ ...p, title: e.target.value }))} />

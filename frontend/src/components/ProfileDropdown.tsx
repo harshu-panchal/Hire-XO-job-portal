@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { User, LogOut, Settings, ChevronRight } from "lucide-react";
+import { User, LogOut, Settings, ChevronRight, Award } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -37,6 +37,10 @@ export const ProfileDropdown = ({ loginPath = "/login/employee" }: ProfileDropdo
         setIsOpen(false);
         navigate("/");
     };
+
+    const isEmployer = user?.role === "employer";
+    const settingsPath = isEmployer ? "/employer/settings" : "/settings";
+    const promotionsPath = user?.role === "employee" ? "/payments" : "/employer/promotions";
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -101,7 +105,7 @@ export const ProfileDropdown = ({ loginPath = "/login/employee" }: ProfileDropdo
 
                                     {/* Promotions Link - Only for Employer/Recruiter if needed, but here simple link */}
                                     <Link
-                                        to={user?.role === 'employee' ? '/payments' : '/employer/promotions'}
+                                        to={promotionsPath}
                                         onClick={() => setIsOpen(false)}
                                         className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-all group"
                                     >
@@ -115,8 +119,25 @@ export const ProfileDropdown = ({ loginPath = "/login/employee" }: ProfileDropdo
                                         <ChevronRight className="size-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
                                     </Link>
 
+                                    {isEmployer && (
+                                        <Link
+                                            to="/employer/certificates"
+                                            onClick={() => setIsOpen(false)}
+                                            className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-all group"
+                                        >
+                                            <div className="size-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
+                                                <Award className="size-5" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-bold text-slate-900 leading-none">Certificates</p>
+                                                <p className="text-[10px] text-slate-400 font-medium mt-1">View and download issued certificates</p>
+                                            </div>
+                                            <ChevronRight className="size-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
+                                        </Link>
+                                    )}
+
                                     <Link
-                                        to="/settings"
+                                        to={settingsPath}
                                         onClick={() => setIsOpen(false)}
                                         className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-all group"
                                     >

@@ -103,7 +103,8 @@ export class EmailService {
             console.log(`Plan: ${payload.planName}`);
             console.log(`Expiry: ${expiryLabel}`);
             if (payload.downloadLink) {
-                console.log(`Download: ${payload.downloadLink}`);
+                const preview = payload.downloadLink.slice(0, 80);
+                console.log(`Download: ${preview}... [truncated, length=${payload.downloadLink.length}]`);
             }
             console.log('------------------------------------');
         }

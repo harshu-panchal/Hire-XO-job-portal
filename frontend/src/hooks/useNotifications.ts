@@ -18,7 +18,7 @@ export interface UINotification {
 }
 
 export const useNotifications = () => {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const {
     notifications: apiNotifications,
     unreadCount,
@@ -120,13 +120,14 @@ export const useNotifications = () => {
     markRead(idStr);
 
     const notification = mapped.find((n) => n.id === idStr);
-    if (notification?.relatedId) {
-      if (notification.relatedType === "job_application") {
+    if (notification) {
+      if (notification.relatedType === "job_application" && notification.relatedId) {
         navigate(`/employer/applications?id=${notification.relatedId}`);
-      } else if (notification.relatedType === "resource_application") {
+      } else if (notification.relatedType === "resource_application" && notification.relatedId) {
         navigate(`/employer/applications?id=${notification.relatedId}`);
       } else if (notification.relatedType === "certificate_issued") {
-        navigate("/certificates");
+        const certificatePath = user?.role === "employer" ? "/employer/certificates" : "/certificates";
+        navigate(certificatePath);
       }
     }
   };

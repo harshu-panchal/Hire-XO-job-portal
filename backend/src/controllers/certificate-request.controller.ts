@@ -94,44 +94,4 @@ export class CertificateRequestController {
         }
     };
 
-    public getTemplates = async (req: AuthRequest, res: Response): Promise<void> => {
-        try {
-            const roleType = req.query.roleType as string | undefined;
-            const templates = await this.service.getActiveTemplates(roleType);
-            res.status(200).json({
-                success: true,
-                data: templates
-            });
-        } catch (error: any) {
-            res.status(500).json({
-                success: false,
-                message: error.message || 'Failed to fetch templates'
-            });
-        }
-    };
-
-    public createTemplate = async (req: AuthRequest, res: Response): Promise<void> => {
-        try {
-            const { name, roleType, htmlTemplate } = req.body;
-            if (!name || !htmlTemplate) {
-                res.status(400).json({
-                    success: false,
-                    message: 'name and htmlTemplate are required'
-                });
-                return;
-            }
-
-            const template = await this.service.createTemplate({ name, roleType, htmlTemplate });
-            res.status(201).json({
-                success: true,
-                message: 'Template created successfully',
-                data: template
-            });
-        } catch (error: any) {
-            res.status(400).json({
-                success: false,
-                message: error.message || 'Failed to create template'
-            });
-        }
-    };
 }
