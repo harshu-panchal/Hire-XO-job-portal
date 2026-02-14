@@ -11,130 +11,111 @@ import {
   Calendar,
   DollarSign,
 } from "lucide-react";
-import { useState } from "react";
-
-interface Inquiry {
-  id: number;
-  name: string;
-  role: string;
-  company?: string;
-  message: string;
-  time: string;
-  status: "New" | "Replied" | "Closed";
-  initial: string;
-  color: string;
-  phone?: string;
-  email?: string;
-  route?: string;
-  cargo?: string;
-  weight?: string;
-  date?: string;
-  budget?: string;
-}
+import { useEffect, useMemo, useRef, useState } from "react";
+import { applicationService } from "@/services/applicationService";
 
 const LogisticsInquiries = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | "New" | "Replied" | "Closed">("All");
-  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
-  const [inquiries, setInquiries] = useState<Inquiry[]>([
-    {
-      id: 1,
-      name: "Priya Verma",
-      role: "Supply Chain Manager",
-      company: "MetalWorks Industries",
-      message:
-        "Looking for 20-ton open truck for metal bars from Pune to Surat. Immediate requirement.",
-      time: "1h ago",
-      status: "New",
-      initial: "PV",
-      color: "from-orange-500 to-red-600",
-      phone: "+91 98765 43210",
-      email: "priya.verma@company.com",
-      route: "Pune → Surat",
-      cargo: "Metal Bars (Steel)",
-      weight: "20 Tons",
-      date: "Feb 5-7, 2026",
-      budget: "₹45,000 - ₹55,000",
-    },
-    {
-      id: 2,
-      name: "Sanjay Kumar",
-      role: "Wholesale Trader",
-      company: "BuildMart Supplies",
-      message:
-        "Need quote for 10 shipments of cement bags within Maharashtra. Recurring monthly load.",
-      time: "4h ago",
-      status: "Replied",
-      initial: "SK",
-      color: "from-red-500 to-orange-600",
-      phone: "+91 87654 32109",
-      email: "sanjay.k@business.com",
-      route: "Multiple locations in Maharashtra",
-      cargo: "Cement Bags (50kg each)",
-      weight: "15 Tons per shipment",
-      date: "Monthly recurring",
-      budget: "₹35,000 per shipment",
-    },
-    {
-      id: 3,
-      name: "Amit Patel",
-      role: "Logistics Coordinator",
-      company: "MediCare Pharmaceuticals",
-      message:
-        "Require temperature-controlled transport for pharmaceutical products. Delhi to Mumbai route.",
-      time: "1 day ago",
-      status: "New",
-      initial: "AP",
-      color: "from-blue-500 to-cyan-600",
-      phone: "+91 76543 21098",
-      email: "amit.patel@pharma.com",
-      route: "Delhi → Mumbai",
-      cargo: "Pharmaceutical Products (Temperature Sensitive)",
-      weight: "5 Tons",
-      date: "Feb 10, 2026",
-      budget: "₹80,000 - ₹1,00,000",
-    },
-  ]);
+  const [selectedInquiry, setSelectedInquiry] = useState<any | null>(null);
+  const [inquiries, setInquiries] = useState<any[]>([]);
+  const fetchedRef = useRef(false);
 
-  const filteredInquiries = inquiries.filter((inquiry) => {
-    const matchesSearch =
-      inquiry.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      inquiry.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      inquiry.message.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "All" || inquiry.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
 
-  const handleCall = (inquiry: Inquiry) => {
+    const load = async () => {
+      try {
+        const data = await applicationService.getReceivedResourceApplications("logistics");
+        const mapped = (data || []).map((inq: any, idx: number) => {
+          const name = inq.applicantId?.name || "Unknown";
+          return {
+            ...inq,
+            id: inq.id,
+            name,
+            role: inq.applicantId?.profile?.jobTitle || "Resource Applicant",
+            company: inq.applicantId?.profile?.company || "",
+            message: inq.message || inq.coverLetter || "Inquiry received",
+            time: inq.appliedAt ? new Date(inq.appliedAt).toLocaleDateString() : "Recently",
+            status:
+              inq.status === "Pending"
+                ? "New"
+                : inq.status === "Accepted"
+                  ? "Replied"
+                  : "Closed",
+            initial:
+              name
+                .split(" ")
+                .slice(0, 2)
+                .map((p: string) => p[0])
+                .join("")
+                .toUpperCase() || "NA",
+            color:
+              idx % 3 === 0
+                ? "from-orange-500 to-red-600"
+                : idx % 3 === 1
+                  ? "from-red-500 to-orange-600"
+                  : "from-blue-500 to-cyan-600",
+            phone: inq.applicantId?.phoneNumber,
+            email: inq.applicantId?.email,
+            route: inq.resourceId?.location || "N/A",
+            cargo: inq.resourceId?.title || "Logistics",
+            weight: inq.resourceId?.compensation || "N/A",
+            date: inq.resourceId?.duration || "N/A",
+            budget: inq.bidAmount ? `INR ${inq.bidAmount}` : "N/A",
+          };
+        });
+        setInquiries(mapped);
+      } catch (error) {
+        setInquiries([]);
+      }
+    };
+
+    load();
+  }, []);
+
+  const filteredInquiries = useMemo(
+    () =>
+      inquiries.filter((inquiry) => {
+        const matchesSearch =
+          inquiry.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          inquiry.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          inquiry.message.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesStatus = statusFilter === "All" || inquiry.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      }),
+    [inquiries, searchQuery, statusFilter]
+  );
+
+  const handleCall = (inquiry: any) => {
     if (inquiry.phone) {
-      alert(
-        `Calling ${inquiry.name} at ${inquiry.phone}\n\nIn a real app, this would initiate a call or copy the number to clipboard.`
-      );
-    } else {
-      alert("Phone number not available");
+      window.location.href = `tel:${inquiry.phone}`;
     }
   };
 
-  const handleEmail = (inquiry: Inquiry) => {
+  const handleEmail = (inquiry: any) => {
     if (inquiry.email) {
-      alert(
-        `Opening email to ${inquiry.name} (${inquiry.email})\n\nIn a real app, this would open your email client with a pre-filled message.`
-      );
-    } else {
-      alert("Email address not available");
+      window.location.href = `mailto:${inquiry.email}`;
     }
   };
 
-  const handleMarkAsReplied = (id: number) => {
-    setInquiries(
-      inquiries.map((inq) => (inq.id === id ? { ...inq, status: "Replied" as const } : inq))
-    );
+  const handleMarkAsReplied = async (id: string) => {
+    try {
+      await applicationService.updateApplicationStatus(id, "Accepted", "resource");
+      setInquiries((prev) => prev.map((inq) => (inq.id === id ? { ...inq, status: "Replied" } : inq)));
+    } catch (error) {
+      // keep state unchanged
+    }
   };
 
-  const handleMarkAsClosed = (id: number) => {
-    setInquiries(
-      inquiries.map((inq) => (inq.id === id ? { ...inq, status: "Closed" as const } : inq))
-    );
+  const handleMarkAsClosed = async (id: string) => {
+    try {
+      await applicationService.updateApplicationStatus(id, "Rejected", "resource");
+      setInquiries((prev) => prev.map((inq) => (inq.id === id ? { ...inq, status: "Closed" } : inq)));
+    } catch (error) {
+      // keep state unchanged
+    }
   };
 
   const statusCounts = {
@@ -229,14 +210,20 @@ const LogisticsInquiries = () => {
                   <div className="flex items-center justify-between gap-3 flex-wrap">
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleCall(inquiry)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCall(inquiry);
+                        }}
                         className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-all border border-slate-100 active:scale-90"
                         title="Call"
                       >
                         <Phone className="size-4" />
                       </button>
                       <button
-                        onClick={() => handleEmail(inquiry)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEmail(inquiry);
+                        }}
                         className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-all border border-slate-100 active:scale-90"
                         title="Email"
                       >
@@ -244,7 +231,10 @@ const LogisticsInquiries = () => {
                       </button>
                       {inquiry.status === "New" && (
                         <button
-                          onClick={() => handleMarkAsReplied(inquiry.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMarkAsReplied(inquiry.id);
+                          }}
                           className="px-3 py-1.5 rounded-xl bg-emerald-50 flex items-center gap-1.5 text-emerald-600 hover:bg-emerald-100 transition-all border border-emerald-100 active:scale-95"
                           title="Mark as Replied"
                         >
@@ -256,7 +246,10 @@ const LogisticsInquiries = () => {
                       )}
                       {inquiry.status === "Replied" && (
                         <button
-                          onClick={() => handleMarkAsClosed(inquiry.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMarkAsClosed(inquiry.id);
+                          }}
                           className="px-3 py-1.5 rounded-xl bg-slate-50 flex items-center gap-1.5 text-slate-600 hover:bg-slate-100 transition-all border border-slate-100 active:scale-95"
                           title="Mark as Closed"
                         >
@@ -330,25 +323,6 @@ const LogisticsInquiries = () => {
 
               {/* Content */}
               <div className="p-6 space-y-6">
-                {/* Status & Time */}
-                <div className="flex items-center justify-between">
-                  <div
-                    className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest ${
-                      selectedInquiry.status === "New"
-                        ? "bg-orange-600 text-white"
-                        : selectedInquiry.status === "Replied"
-                          ? "bg-blue-100 text-blue-600"
-                          : "bg-slate-100 text-slate-400"
-                    }`}
-                  >
-                    {selectedInquiry.status}
-                  </div>
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                    {selectedInquiry.time}
-                  </span>
-                </div>
-
-                {/* Message */}
                 <div className="bg-slate-50 rounded-2xl p-5">
                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
                     Inquiry Message
@@ -358,125 +332,45 @@ const LogisticsInquiries = () => {
                   </p>
                 </div>
 
-                {/* Shipment Details Grid */}
                 <div className="grid grid-cols-2 gap-4">
-                  {selectedInquiry.route && (
-                    <div className="bg-white rounded-2xl p-4 border border-slate-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <MapPin className="size-4 text-orange-600" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                          Route
-                        </span>
-                      </div>
-                      <p className="text-sm font-bold">{selectedInquiry.route}</p>
-                    </div>
-                  )}
-                  {selectedInquiry.cargo && (
-                    <div className="bg-white rounded-2xl p-4 border border-slate-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Package className="size-4 text-orange-600" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                          Cargo Type
-                        </span>
-                      </div>
-                      <p className="text-sm font-bold">{selectedInquiry.cargo}</p>
-                    </div>
-                  )}
-                  {selectedInquiry.weight && (
-                    <div className="bg-white rounded-2xl p-4 border border-slate-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Package className="size-4 text-orange-600" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                          Weight
-                        </span>
-                      </div>
-                      <p className="text-sm font-bold">{selectedInquiry.weight}</p>
-                    </div>
-                  )}
-                  {selectedInquiry.date && (
-                    <div className="bg-white rounded-2xl p-4 border border-slate-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Calendar className="size-4 text-orange-600" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                          Required Date
-                        </span>
-                      </div>
-                      <p className="text-sm font-bold">{selectedInquiry.date}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Budget */}
-                {selectedInquiry.budget && (
-                  <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-5 border border-orange-200">
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200">
                     <div className="flex items-center gap-2 mb-2">
-                      <DollarSign className="size-5 text-orange-600" />
-                      <span className="text-xs font-black uppercase tracking-widest text-orange-600">
+                      <MapPin className="size-4 text-orange-600" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        Route
+                      </span>
+                    </div>
+                    <p className="text-sm font-bold">{selectedInquiry.route}</p>
+                  </div>
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Package className="size-4 text-orange-600" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        Cargo Type
+                      </span>
+                    </div>
+                    <p className="text-sm font-bold">{selectedInquiry.cargo}</p>
+                  </div>
+                  <div className="bg-white rounded-2xl p-4 border border-slate-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="size-4 text-orange-600" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        Required Date
+                      </span>
+                    </div>
+                    <p className="text-sm font-bold">{selectedInquiry.date}</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-4 border border-orange-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <DollarSign className="size-4 text-orange-600" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-orange-600">
                         Budget Range
                       </span>
                     </div>
-                    <p className="text-2xl font-black text-orange-600">{selectedInquiry.budget}</p>
-                  </div>
-                )}
-
-                {/* Contact Information */}
-                <div className="bg-slate-50 rounded-2xl p-5">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">
-                    Contact Information
-                  </h3>
-                  <div className="space-y-3">
-                    {selectedInquiry.phone && (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="size-10 rounded-xl bg-white flex items-center justify-center">
-                            <Phone className="size-4 text-orange-600" />
-                          </div>
-                          <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                              Phone
-                            </p>
-                            <p className="text-sm font-bold">{selectedInquiry.phone}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCall(selectedInquiry);
-                          }}
-                          className="px-4 py-2 rounded-xl bg-orange-600 text-white text-xs font-black uppercase tracking-widest hover:bg-orange-700 transition-colors active:scale-95"
-                        >
-                          Call
-                        </button>
-                      </div>
-                    )}
-                    {selectedInquiry.email && (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="size-10 rounded-xl bg-white flex items-center justify-center">
-                            <Mail className="size-4 text-orange-600" />
-                          </div>
-                          <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                              Email
-                            </p>
-                            <p className="text-sm font-bold">{selectedInquiry.email}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEmail(selectedInquiry);
-                          }}
-                          className="px-4 py-2 rounded-xl bg-orange-600 text-white text-xs font-black uppercase tracking-widest hover:bg-orange-700 transition-colors active:scale-95"
-                        >
-                          Email
-                        </button>
-                      </div>
-                    )}
+                    <p className="text-sm font-bold text-orange-600">{selectedInquiry.budget}</p>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex gap-3">
                   {selectedInquiry.status === "New" && (
                     <button

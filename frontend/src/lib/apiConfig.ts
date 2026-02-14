@@ -47,6 +47,7 @@ apiClient.interceptors.response.use(
     // Handle different error scenarios
     if (error.response) {
       const status = error.response.status;
+      const data: any = error.response.data || {};
 
       switch (status) {
         case 400:
@@ -56,7 +57,7 @@ apiClient.interceptors.response.use(
           console.error("Bad Request:", errorMsg, errorDetails ? errorDetails : "");
           break;
 
-        case 401:
+        case 401: {
           // Unauthorized - token expired or invalid
           console.error("Unauthorized access - redirecting to login");
 
@@ -67,15 +68,48 @@ apiClient.interceptors.response.use(
 
           tokenManager.removeToken();
 
-          // Only redirect if not already on login page
+          // Determine appropriate login path based on user role, if available
+          const userFromToken = tokenManager.getUserFromToken();
+          let loginPath = "/";
+
+          if (userFromToken?.role) {
+            const role = userFromToken.role;
+            if (role === "employee") {
+              loginPath = "/login/employee";
+            } else if (role === "employer") {
+              loginPath = "/login/employer";
+            } else if (role === "resource") {
+              loginPath = "/login/resource";
+            } else if (role === "admin") {
+              loginPath = "/login/admin";
+            }
+          }
+
+          // Only redirect if not already on a login page
           if (!window.location.pathname.includes("/login")) {
-            window.location.href = "/";
+            window.location.href = loginPath;
           }
           break;
+        }
 
         case 403:
-          // Forbidden - insufficient permissions
-          console.error("Access forbidden - insufficient permissions");
+          // Forbidden - insufficient permissions or subscription issues
+          if (data.code === "SUBSCRIPTION_EXPIRED") {
+            console.error("Subscription expired - redirecting to subscription page");
+
+            const userFromToken = tokenManager.getUserFromToken();
+            let subscriptionPath = "/subscriptions";
+
+            if (userFromToken?.role === "employer") {
+              subscriptionPath = "/employer/subscription";
+            }
+
+            if (window.location.pathname !== subscriptionPath) {
+              window.location.href = subscriptionPath;
+            }
+          } else {
+            console.error("Access forbidden - insufficient permissions");
+          }
           break;
 
         case 404:

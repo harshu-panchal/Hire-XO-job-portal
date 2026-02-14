@@ -1,29 +1,37 @@
 import { useState, useRef } from "react";
 import { ArrowLeft, Upload, Plus, ChevronRight, MapPin, Trash2, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { resourceService } from "@/services/resourceService";
 import { uploadService } from "@/services/uploadService";
 import { toast } from "sonner";
 
 const PostEquipment = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const existingEquipment = (location.state as any)?.equipment;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    title: "",
-    category: "Excavators",
-    location: "",
-    description: "",
-    compensation: "",
-    type: "Rental",
-    equipmentType: "rent-out-equipment",
-    duration: "Per Day",
-    urgency: "Immediate",
+    title: existingEquipment?.title || "",
+    category:
+      existingEquipment?.equipmentType ||
+      existingEquipment?.category ||
+      "Excavators",
+    location: existingEquipment?.location || "",
+    description: existingEquipment?.description || "",
+    compensation: existingEquipment?.compensation || "",
+    type: existingEquipment?.type || "Rental",
+    equipmentType: existingEquipment?.equipmentType || "rent-out-equipment",
+    duration: existingEquipment?.duration || "Per Day",
+    urgency: existingEquipment?.urgency || "Immediate",
   });
 
   const [files, setFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>(
+    existingEquipment?.images || []
+  );
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -40,6 +48,10 @@ const PostEquipment = () => {
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages(existingImages.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -69,12 +81,17 @@ const PostEquipment = () => {
         category: "Equipments" as any,
         equipmentType: formData.category,
         equipmentTypes: [formData.category],
-        images: imageUrls,
+        images: [...existingImages, ...imageUrls],
         postedAt: new Date().toISOString(),
       };
 
-      await resourceService.create("equipments", payload);
-      toast.success("Equipment listed successfully!");
+      if (existingEquipment?.id || existingEquipment?._id) {
+        await resourceService.update("equipments", existingEquipment.id || existingEquipment._id, payload);
+        toast.success("Equipment updated successfully!");
+      } else {
+        await resourceService.create("equipments", payload);
+        toast.success("Equipment listed successfully!");
+      }
       navigate("/equipments/provide/dashboard");
     } catch (error: any) {
       console.error("Failed to save equipment", error);
@@ -274,6 +291,32 @@ const PostEquipment = () => {
                 Select Images
               </div>
             </div>
+
+            {existingImages.length > 0 && (
+              <div className="grid grid-cols-2 gap-3">
+                {existingImages.map((image, index) => (
+                  <div
+                    key={`existing-${index}`}
+                    className="relative group aspect-square rounded-2xl overflow-hidden border border-slate-100"
+                  >
+                    <img
+                      src={image}
+                      className="w-full h-full object-cover"
+                      alt="existing"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeExistingImage(index);
+                      }}
+                      className="absolute top-2 right-2 size-8 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {files.length > 0 && (
               <div className="grid grid-cols-2 gap-3">

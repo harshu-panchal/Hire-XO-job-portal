@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { config } from '../config/env.config';
 
 // Extend Express Request to include user
 export interface AuthRequest extends Request {
@@ -10,14 +11,12 @@ export interface AuthRequest extends Request {
     };
 }
 
-export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction): void => {
+export const authenticateToken = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     let token: string | undefined;
 
     const authHeader = req.headers['authorization'];
     if (authHeader) {
         token = authHeader.split(' ')[1];
-    } else if (req.query.token) {
-        token = req.query.token as string;
     }
 
     if (!token) {
@@ -26,10 +25,30 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
     }
 
     try {
-        const secretKey = process.env.JWT_SECRET || 'secret';
-        const decoded = jwt.verify(token, secretKey) as { id: string; email: string; role: string };
+        const decoded = jwt.verify(token, config.JWT_SECRET) as { id: string; email: string; role: string };
 
-        req.user = decoded;
+        // STEP 1 FIX: Verify user status in DB to prevent banned user bypass
+        const User = require('../models/user.model').default;
+        const user = await User.findById(decoded.id).select('status role email').lean();
+
+        if (!user) {
+            res.status(401).json({ message: 'User no longer exists' });
+            return;
+        }
+
+        if (user.status !== 'active') {
+            res.status(403).json({
+                message: `Your account is ${user.status}. Access denied.`,
+                code: 'USER_NOT_ACTIVE'
+            });
+            return;
+        }
+
+        req.user = {
+            id: user._id.toString(),
+            email: user.email,
+            role: user.role
+        };
         next();
     } catch (error) {
         res.status(403).json({ message: 'Invalid or expired token' });
@@ -37,7 +56,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
     }
 };
 
-export const optionalAuthenticate = (req: AuthRequest, res: Response, next: NextFunction): void => {
+export const optionalAuthenticate = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -47,11 +66,26 @@ export const optionalAuthenticate = (req: AuthRequest, res: Response, next: Next
     }
 
     try {
-        const secretKey = process.env.JWT_SECRET || 'secret';
-        const decoded = jwt.verify(token, secretKey) as { id: string; email: string; role: string };
-        req.user = decoded;
+        const decoded = jwt.verify(token, config.JWT_SECRET) as { id: string; email: string; role: string };
+
+        // Load user from DB and ensure active status, mirroring authenticateToken checks,
+        // but treat failures as anonymous instead of blocking the request.
+        const User = require('../models/user.model').default;
+        const user = await User.findById(decoded.id).select('status role email').lean();
+
+        if (!user || user.status !== 'active') {
+            // User missing or not active: behave as if unauthenticated
+            next();
+            return;
+        }
+
+        req.user = {
+            id: user._id.toString(),
+            email: user.email,
+            role: user.role
+        };
     } catch (error) {
-        // Token invalid, but don't block the request
+        // Token invalid/expired: behave as unauthenticated without throwing
     }
 
     next();
@@ -118,6 +152,7 @@ export const checkSubscription = async (req: AuthRequest, res: Response, next: N
         } else {
             // Expired or no subscription
             res.status(403).json({
+                success: false,
                 message: 'Active subscription required to access this feature.',
                 code: 'SUBSCRIPTION_EXPIRED'
             });

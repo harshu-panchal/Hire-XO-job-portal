@@ -1,82 +1,64 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, MapPin, Star, Building2, SlidersHorizontal, ChevronRight, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
+
+const PAGE_SIZE = 6;
 
 const EquipmentList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [page, setPage] = useState(1);
+  const [equipments, setEquipments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const fetchedRef = useRef(false);
 
-  const categories = [
-    "All",
-    "Excavators",
-    "Cranes",
-    "Generators",
-    "Loaders",
-    "Trucks",
-    "Compactors",
-  ];
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
 
-  const equipments = [
-    {
-      id: 1,
-      name: "Caterpillar 320 GC Excavator",
-      category: "Excavators",
-      provider: "BuildRight Rentals",
-      location: "Mumbai, MH",
-      price: "₹18,500",
-      unit: "day",
-      rating: 4.8,
-      status: "Available",
-      image:
-        "https://images.unsplash.com/photo-1579412691525-4c07da01ee7b?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-      id: 2,
-      name: "JCB 3DX EcoXcellence",
-      category: "Loaders",
-      provider: "Metro Infra Equipment",
-      location: "Pune, MH",
-      price: "₹12,000",
-      unit: "day",
-      rating: 4.9,
-      status: "Fast Filling",
-      image:
-        "https://images.unsplash.com/photo-1541625602330-2277a7c4354d?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-      id: 3,
-      name: "Liebherr LTM 11200 Crane",
-      category: "Cranes",
-      provider: "SkyHigh Heavy Lift",
-      location: "Gujarat",
-      price: "₹85,000",
-      unit: "day",
-      rating: 4.7,
-      status: "Available",
-      image:
-        "https://images.unsplash.com/photo-1573167101669-476636b96cea?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-      id: 4,
-      name: "Kirloskar 125kVA Generator",
-      category: "Generators",
-      provider: "PowerHouse Solutions",
-      location: "Mumbai, MH",
-      price: "₹4,500",
-      unit: "day",
-      rating: 4.6,
-      status: "Available",
-      image:
-        "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=400",
-    },
-  ];
+    const load = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const data = await resourceService.getAll("equipments");
+        setEquipments(data || []);
+      } catch (err: any) {
+        setError(err.message || "Failed to load equipments");
+        setEquipments([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredEquipments = equipments.filter(
-    (item) =>
-      (activeCategory === "All" || item.category === activeCategory) &&
-      (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.provider.toLowerCase().includes(searchQuery.toLowerCase()))
+    load();
+  }, []);
+
+  const categories = useMemo(() => {
+    const fromData = Array.from(
+      new Set((equipments || []).map((item) => item.category).filter(Boolean))
+    ) as string[];
+    return ["All", ...fromData];
+  }, [equipments]);
+
+  const filteredEquipments = useMemo(
+    () =>
+      equipments.filter(
+        (item) =>
+          (activeCategory === "All" || (item.category || "") === activeCategory) &&
+          ((item.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (item.company || "").toLowerCase().includes(searchQuery.toLowerCase()))
+      ),
+    [equipments, activeCategory, searchQuery]
   );
+
+  const totalPages = Math.max(1, Math.ceil(filteredEquipments.length / PAGE_SIZE));
+  const pagedEquipments = filteredEquipments.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, activeCategory]);
 
   return (
     <div className="py-6 space-y-6 select-none">
@@ -132,71 +114,89 @@ const EquipmentList = () => {
 
       {/* Results List */}
       <div className="space-y-5">
-        {filteredEquipments.map((item) => (
-          <Link
-            key={item.id}
-            to={`/equipments/rent/equipment/${item.id}`}
-            className="group block bg-white border border-slate-200 rounded-[2.5rem] p-5 hover:shadow-xl hover:shadow-black/5 transition-all relative overflow-hidden"
-          >
-            <div className="flex gap-5">
-              <div className="size-28 rounded-3xl overflow-hidden bg-slate-50 shrink-0 relative">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-white/90 backdrop-blur-sm text-[8px] font-black uppercase tracking-widest border border-slate-100">
-                  {item.category}
+        {loading && (
+          <div className="py-20 text-center space-y-4">
+            <p className="font-black tracking-tight text-lg">Loading gear...</p>
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="py-20 text-center space-y-4">
+            <p className="font-black tracking-tight text-lg">Could not load gear</p>
+            <p className="text-xs font-black uppercase tracking-widest text-slate-400">{error}</p>
+          </div>
+        )}
+
+        {!loading &&
+          !error &&
+          pagedEquipments.map((item) => (
+            <Link
+              key={item.id}
+              to={`/equipments/rent/equipment/${item.id}`}
+              className="group block bg-white border border-slate-200 rounded-[2.5rem] p-5 hover:shadow-xl hover:shadow-black/5 transition-all relative overflow-hidden"
+            >
+              <div className="flex gap-5">
+                <div className="size-28 rounded-3xl overflow-hidden bg-slate-50 shrink-0 relative">
+                  <img
+                    src={
+                      item.images?.[0] ||
+                      "https://images.unsplash.com/photo-1579412691525-4c07da01ee7b?auto=format&fit=crop&q=80&w=400"
+                    }
+                    alt={item.title}
+                    className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-white/90 backdrop-blur-sm text-[8px] font-black uppercase tracking-widest border border-slate-100">
+                    {item.category || "Equipments"}
+                  </div>
                 </div>
-              </div>
-              <div className="flex-1 space-y-2 py-0.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
-                    <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[9px] font-black uppercase tracking-widest">
-                      {item.status}
+                <div className="flex-1 space-y-2 py-0.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+                      <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[9px] font-black uppercase tracking-widest">
+                        {item.status || "Available"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Star className="size-3 text-amber-400 fill-amber-400" />
+                      <span className="text-[10px] font-black">{item.rating || 4.8}</span>
+                    </div>
+                  </div>
+                  <h3 className="text-base font-black tracking-tight leading-tight group-hover:text-emerald-600 transition-colors">
+                    {item.title}
+                  </h3>
+                  <div className="flex items-center gap-1.5 opacity-60">
+                    <Building2 className="size-3" />
+                    <span className="text-[9px] font-black uppercase tracking-widest truncate">
+                      {item.company || "Resource Provider"}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="size-3 text-amber-400 fill-amber-400" />
-                    <span className="text-[10px] font-black">{item.rating}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
+                <div className="flex items-center gap-1.5 text-slate-400">
+                  <MapPin className="size-3" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">
+                    {item.location || "N/A"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <p className="text-xl font-black tracking-tight text-slate-900">
+                    {item.compensation || "N/A"}
+                    <span className="text-[10px] text-slate-400 tracking-widest font-black uppercase">
+                      /day
+                    </span>
+                  </p>
+                  <div className="size-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:bg-slate-900 transition-colors">
+                    <ChevronRight className="size-5" />
                   </div>
                 </div>
-                <h3 className="text-base font-black tracking-tight leading-tight group-hover:text-emerald-600 transition-colors">
-                  {item.name}
-                </h3>
-                <div className="flex items-center gap-1.5 opacity-60">
-                  <Building2 className="size-3" />
-                  <span className="text-[9px] font-black uppercase tracking-widest truncate">
-                    {item.provider}
-                  </span>
-                </div>
               </div>
-            </div>
+            </Link>
+          ))}
 
-            <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
-              <div className="flex items-center gap-1.5 text-slate-400">
-                <MapPin className="size-3" />
-                <span className="text-[10px] font-black uppercase tracking-widest">
-                  {item.location}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <p className="text-xl font-black tracking-tight text-slate-900">
-                  {item.price}
-                  <span className="text-[10px] text-slate-400 tracking-widest font-black uppercase">
-                    /{item.unit}
-                  </span>
-                </p>
-                <div className="size-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:bg-slate-900 transition-colors">
-                  <ChevronRight className="size-5" />
-                </div>
-              </div>
-            </div>
-          </Link>
-        ))}
-
-        {filteredEquipments.length === 0 && (
+        {!loading && !error && filteredEquipments.length === 0 && (
           <div className="py-20 text-center space-y-4">
             <div className="size-20 rounded-full bg-slate-50 flex items-center justify-center mx-auto">
               <Search className="size-8 text-slate-300" />
@@ -207,6 +207,28 @@ const EquipmentList = () => {
                 Try adjusting your filters
               </p>
             </div>
+          </div>
+        )}
+
+        {!loading && !error && filteredEquipments.length > PAGE_SIZE && (
+          <div className="flex items-center justify-center gap-3 pt-3">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 rounded-xl border border-slate-200 text-[10px] font-black uppercase tracking-widest disabled:opacity-40"
+            >
+              Prev
+            </button>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              Page {page} / {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 rounded-xl border border-slate-200 text-[10px] font-black uppercase tracking-widest disabled:opacity-40"
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

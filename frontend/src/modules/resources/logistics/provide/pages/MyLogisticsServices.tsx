@@ -1,55 +1,62 @@
 import { Eye, MessageSquare, MoreVertical, Edit3, Trash2, Truck, Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
+import { applicationService } from "@/services/applicationService";
 
 const MyLogisticsServices = () => {
   const navigate = useNavigate();
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
-  const [services, setServices] = useState([
-    {
-      id: 1,
-      title: "Pan-India Express Heavy Haulage",
-      category: "Heavy Duty",
-      views: 450,
-      inquiries: 12,
-      status: "Active",
-      postedDate: "Jan 15, 2026",
-    },
-    {
-      id: 2,
-      title: "Last Mile Urban Delivery Fleet",
-      category: "Last Mile",
-      views: 280,
-      inquiries: 6,
-      status: "Active",
-      postedDate: "Jan 20, 2026",
-    },
-  ]);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [services, setServices] = useState<any[]>([]);
+  const [inquiries, setInquiries] = useState<any[]>([]);
+  const fetchedRef = useRef(false);
 
-  const handleEdit = (serviceId: number) => {
-    alert(
-      `Edit functionality for service #${serviceId} coming soon! You'll be able to update pricing, availability, and service details.`
-    );
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    const load = async () => {
+      try {
+        const [myServices, myInquiries] = await Promise.all([
+          resourceService.getMyListings("logistics"),
+          applicationService.getReceivedResourceApplications("logistics"),
+        ]);
+        setServices(myServices || []);
+        setInquiries(myInquiries || []);
+      } catch (error) {
+        setServices([]);
+        setInquiries([]);
+      }
+    };
+
+    load();
+  }, []);
+
+  const handleEdit = (service: any) => {
+    navigate("/logistics/provide/post", { state: { service } });
     setOpenMenuId(null);
   };
 
-  const handleDelete = (serviceId: number) => {
-    if (
-      confirm("Are you sure you want to delete this service listing? This action cannot be undone.")
-    ) {
-      setServices(services.filter((s) => s.id !== serviceId));
-      alert("Service listing deleted successfully!");
+  const handleDelete = async (serviceId: string) => {
+    try {
+      await resourceService.delete("logistics", serviceId);
+      setServices((prev) => prev.filter((s) => s.id !== serviceId));
+    } catch (error) {
+      // keep state unchanged on failure
     }
     setOpenMenuId(null);
   };
 
   const handlePostNew = () => {
-    navigate("/logistics/provide/post-service");
+    navigate("/logistics/provide/post");
   };
 
-  const toggleMenu = (serviceId: number) => {
+  const toggleMenu = (serviceId: string) => {
     setOpenMenuId(openMenuId === serviceId ? null : serviceId);
   };
+
+  const getInquiryCount = (serviceId: string) =>
+    inquiries.filter((inq: any) => (inq.resourceId?._id || inq.resourceId) === serviceId).length;
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -75,12 +82,12 @@ const MyLogisticsServices = () => {
                 </div>
                 <div
                   className={`px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest ${
-                    service.status === "Active"
+                    (service.status || "Active") === "Active"
                       ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
                       : "bg-amber-500/10 text-amber-600 border border-amber-500/20"
                   }`}
                 >
-                  {service.status}
+                  {service.status || "Active"}
                 </div>
               </div>
               <div className="relative">
@@ -95,7 +102,7 @@ const MyLogisticsServices = () => {
                     <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
                     <div className="absolute right-0 top-12 z-20 w-48 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
                       <button
-                        onClick={() => handleEdit(service.id)}
+                        onClick={() => handleEdit(service)}
                         className="w-full px-4 py-3 text-left text-sm font-bold hover:bg-slate-50 transition-colors flex items-center gap-2"
                       >
                         <Edit3 className="size-4" />
@@ -119,9 +126,9 @@ const MyLogisticsServices = () => {
             </h3>
 
             <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400 mb-6 px-1">
-              <span className="text-orange-600 italic">#{service.category}</span>
+              <span className="text-orange-600 italic">#{service.category || "Logistics"}</span>
               <div className="size-1 rounded-full bg-slate-200" />
-              <span>Posted {service.postedDate}</span>
+              <span>Posted {service.postedAt ? new Date(service.postedAt).toLocaleDateString() : "Recently"}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
@@ -133,7 +140,7 @@ const MyLogisticsServices = () => {
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Views
                   </p>
-                  <p className="text-xs font-black italic">{service.views}</p>
+                  <p className="text-xs font-black italic">{service.views || 0}</p>
                 </div>
               </div>
               <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-3">
@@ -144,14 +151,14 @@ const MyLogisticsServices = () => {
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Leads
                   </p>
-                  <p className="text-xs font-black italic">{service.inquiries}</p>
+                  <p className="text-xs font-black italic">{getInquiryCount(service.id)}</p>
                 </div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={() => handleEdit(service.id)}
+                onClick={() => handleEdit(service)}
                 className="h-12 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <Edit3 className="size-3.5" />
@@ -167,6 +174,13 @@ const MyLogisticsServices = () => {
             </div>
           </div>
         ))}
+        {services.length === 0 && (
+          <div className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">
+              No logistics services listed
+            </p>
+          </div>
+        )}
       </div>
 
       <button

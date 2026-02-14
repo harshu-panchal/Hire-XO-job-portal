@@ -36,25 +36,66 @@ export const useNotifications = () => {
       // Initial fetch
       fetchNotifications();
 
-      // Setup SSE
+      // Setup SSE using Fetch stream with Authorization header
+      const controller = new AbortController();
       const token = tokenManager.getToken();
-      const eventSource = new EventSource(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api"}/notifications/stream?token=${token}`);
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
-      eventSource.onmessage = (event) => {
-        const newNotification = JSON.parse(event.data);
-        // We could just refetch or append. Refetching ensures consistency for now.
-        // Or append to store if store supports it.
-        // Let's refetch to be safe and simple
-        fetchNotifications();
+      const connectStream = async () => {
+        try {
+          const response = await fetch(`${baseUrl}/notifications/stream`, {
+            method: "GET",
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+            signal: controller.signal,
+          });
+
+          if (!response.ok || !response.body) {
+            console.error("Notification stream connection failed with status", response.status);
+            return;
+          }
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder("utf-8");
+          let buffer = "";
+
+          const read = async (): Promise<void> => {
+            const { done, value } = await reader.read();
+            if (done) return;
+
+            buffer += decoder.decode(value, { stream: true });
+            const events = buffer.split("\n\n");
+            buffer = events.pop() || "";
+
+            for (const rawEvent of events) {
+              const lines = rawEvent.split("\n");
+              const dataLine = lines.find((line) => line.startsWith("data:"));
+              if (dataLine) {
+                const data = dataLine.replace(/^data:\s*/, "");
+                try {
+                  // We ignore the payload here and simply refetch to ensure consistency
+                  JSON.parse(data);
+                  fetchNotifications();
+                } catch (e) {
+                  console.error("Failed to parse notification event data", e);
+                }
+              }
+            }
+
+            await read();
+          };
+
+          await read();
+        } catch (error) {
+          if ((error as any).name !== "AbortError") {
+            console.error("Notification stream error:", error);
+          }
+        }
       };
 
-      eventSource.onerror = (error) => {
-        console.error("SSE Error:", error);
-        eventSource.close();
-      };
+      void connectStream();
 
       return () => {
-        eventSource.close();
+        controller.abort();
       };
     }
   }, [isAuthenticated, fetchNotifications]);

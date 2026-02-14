@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Search,
   Phone,
@@ -12,132 +12,107 @@ import {
   Clock,
   Filter,
 } from "lucide-react";
-
-interface Inquiry {
-  id: number;
-  name: string;
-  role: string;
-  message: string;
-  time: string;
-  status: "New" | "Replied" | "Closed";
-  initial: string;
-  color: string;
-  phone?: string;
-  email?: string;
-  vehicle?: string;
-  location?: string;
-  rentalDates?: string;
-  budget?: string;
-}
+import { applicationService } from "@/services/applicationService";
 
 const VehicleInquiries = () => {
-  const [inquiries, setInquiries] = useState<Inquiry[]>([
-    {
-      id: 1,
-      name: "Rahul Mehta",
-      role: "Logistics Manager",
-      message:
-        "Interested in renting the Tata Ace for 3 days for local shifting. Need quote for insurance as well.",
-      time: "2h ago",
-      status: "New",
-      initial: "RM",
-      color: "from-blue-500 to-cyan-600",
-      phone: "+91 98765 43210",
-      email: "rahul.mehta@example.com",
-      vehicle: "Tata Ace Delivery Van",
-      location: "Mumbai, Maharashtra",
-      rentalDates: "Feb 5-8, 2026",
-      budget: "₹5,000 - ₹6,000",
-    },
-    {
-      id: 2,
-      name: "Anjali Sharma",
-      role: "Event Planner",
-      message:
-        "Need a luxury sedan for a wedding ceremony in South Delhi next week. Please confirm availability.",
-      time: "5h ago",
-      status: "Replied",
-      initial: "AS",
-      color: "from-cyan-500 to-blue-600",
-      phone: "+91 87654 32109",
-      email: "anjali.sharma@events.com",
-      vehicle: "Tesla Model 3 Long Range",
-      location: "Delhi NCR",
-      rentalDates: "Feb 10-12, 2026",
-      budget: "₹12,000 - ₹15,000",
-    },
-    {
-      id: 3,
-      name: "Vikram Singh",
-      role: "Business Owner",
-      message:
-        "Looking for a commercial vehicle for daily deliveries. Interested in long-term rental options.",
-      time: "1 day ago",
-      status: "New",
-      initial: "VS",
-      color: "from-purple-500 to-pink-600",
-      phone: "+91 76543 21098",
-      email: "vikram@business.com",
-      vehicle: "Tata Ace Delivery Van",
-      location: "Pune, Maharashtra",
-      rentalDates: "Feb 3 - Mar 3, 2026",
-      budget: "₹40,000 - ₹50,000",
-    },
-    {
-      id: 4,
-      name: "Priya Patel",
-      role: "Corporate Executive",
-      message: "Need an electric car for airport transfers and business meetings. Prefer Tesla.",
-      time: "2 days ago",
-      status: "Closed",
-      initial: "PP",
-      color: "from-emerald-500 to-teal-600",
-      phone: "+91 65432 10987",
-      email: "priya.patel@corp.com",
-      vehicle: "Tesla Model 3 Long Range",
-      location: "Bangalore, Karnataka",
-      rentalDates: "Jan 28-30, 2026",
-      budget: "₹10,000 - ₹12,000",
-    },
-  ]);
-
+  const [inquiries, setInquiries] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | "New" | "Replied" | "Closed">("All");
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
+  const [selectedInquiry, setSelectedInquiry] = useState<any | null>(null);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const fetchedRef = useRef(false);
 
-  const handleCall = (phone: string, name: string) => {
-    alert(`Calling ${name} at ${phone}...`);
-    // In production, this would initiate a call
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    const load = async () => {
+      try {
+        const data = await applicationService.getReceivedResourceApplications("vehicles");
+        const mapped = (data || []).map((inq: any, idx: number) => {
+          const name = inq.applicantId?.name || "Unknown";
+          return {
+            ...inq,
+            id: inq.id,
+            name,
+            role: inq.applicantId?.profile?.jobTitle || "Resource Applicant",
+            message: inq.message || inq.coverLetter || "Interested in vehicle rental.",
+            time: inq.appliedAt ? new Date(inq.appliedAt).toLocaleDateString() : "Recently",
+            status:
+              inq.status === "Pending"
+                ? "New"
+                : inq.status === "Accepted"
+                  ? "Replied"
+                  : "Closed",
+            initial:
+              name
+                .split(" ")
+                .slice(0, 2)
+                .map((x: string) => x[0])
+                .join("")
+                .toUpperCase() || "NA",
+            color:
+              idx % 4 === 0
+                ? "from-blue-500 to-cyan-600"
+                : idx % 4 === 1
+                  ? "from-cyan-500 to-blue-600"
+                  : idx % 4 === 2
+                    ? "from-purple-500 to-pink-600"
+                    : "from-emerald-500 to-teal-600",
+            phone: inq.applicantId?.phoneNumber,
+            email: inq.applicantId?.email,
+            vehicle: inq.resourceId?.title || "Vehicle",
+            location: inq.applicantId?.profile?.location || "N/A",
+            rentalDates: inq.resourceId?.duration || "N/A",
+            budget: inq.bidAmount ? `INR ${inq.bidAmount}` : "N/A",
+          };
+        });
+        setInquiries(mapped);
+      } catch (error) {
+        setInquiries([]);
+      }
+    };
+
+    load();
+  }, []);
+
+  const handleCall = (phone: string) => {
+    if (phone) {
+      window.location.href = `tel:${phone}`;
+    }
   };
 
-  const handleEmail = (email: string, name: string) => {
-    alert(`Opening email to ${name} (${email})...`);
-    // In production, this would open email client
-    window.location.href = `mailto:${email}`;
+  const handleEmail = (email: string) => {
+    if (email) {
+      window.location.href = `mailto:${email}`;
+    }
   };
 
-  const handleStatusChange = (id: number, newStatus: "New" | "Replied" | "Closed") => {
-    setInquiries(inquiries.map((inq) => (inq.id === id ? { ...inq, status: newStatus } : inq)));
-    setShowDetailModal(false);
-    alert(`Inquiry marked as ${newStatus}!`);
+  const handleStatusChange = async (id: string, newStatus: "New" | "Replied" | "Closed") => {
+    const apiStatus =
+      newStatus === "New" ? "Pending" : newStatus === "Replied" ? "Accepted" : "Rejected";
+    try {
+      await applicationService.updateApplicationStatus(id, apiStatus, "resource");
+      setInquiries((prev) => prev.map((inq) => (inq.id === id ? { ...inq, status: newStatus } : inq)));
+      setShowDetailModal(false);
+    } catch (error) {
+      // keep current state unchanged
+    }
   };
 
-  const handleViewDetails = (inquiry: Inquiry) => {
-    setSelectedInquiry(inquiry);
-    setShowDetailModal(true);
-  };
-
-  // Filter inquiries based on search and status
-  const filteredInquiries = inquiries.filter((inquiry) => {
-    const matchesSearch =
-      inquiry.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      inquiry.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      inquiry.role.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "All" || inquiry.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredInquiries = useMemo(
+    () =>
+      inquiries.filter((inquiry) => {
+        const matchesSearch =
+          inquiry.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          inquiry.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          inquiry.role.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesStatus = statusFilter === "All" || inquiry.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      }),
+    [inquiries, searchQuery, statusFilter]
+  );
 
   const statusCounts = {
     All: inquiries.length,
@@ -256,7 +231,10 @@ const VehicleInquiries = () => {
           filteredInquiries.map((inquiry) => (
             <div
               key={inquiry.id}
-              onClick={() => handleViewDetails(inquiry)}
+              onClick={() => {
+                setSelectedInquiry(inquiry);
+                setShowDetailModal(true);
+              }}
               className="bg-white rounded-[2.5rem] p-5 border border-slate-200 group active:scale-[0.98] transition-all cursor-pointer hover:shadow-lg"
             >
               <div className="flex items-start gap-4">
@@ -286,7 +264,7 @@ const VehicleInquiries = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleCall(inquiry.phone || "", inquiry.name);
+                          handleCall(inquiry.phone || "");
                         }}
                         className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-all border border-slate-100"
                       >
@@ -295,7 +273,7 @@ const VehicleInquiries = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleEmail(inquiry.email || "", inquiry.name);
+                          handleEmail(inquiry.email || "");
                         }}
                         className="size-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-all border border-slate-100"
                       >
@@ -358,7 +336,6 @@ const VehicleInquiries = () => {
             </div>
 
             <div className="space-y-6">
-              {/* Status Badge */}
               <div
                 className={`inline-flex px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest ${
                   selectedInquiry.status === "New"
@@ -371,7 +348,6 @@ const VehicleInquiries = () => {
                 {selectedInquiry.status}
               </div>
 
-              {/* Message */}
               <div className="p-4 bg-slate-50 rounded-2xl">
                 <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
                   Message
@@ -381,7 +357,6 @@ const VehicleInquiries = () => {
                 </p>
               </div>
 
-              {/* Details Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 bg-blue-50 rounded-2xl border border-blue-200">
                   <div className="flex items-center gap-2 mb-2">
@@ -424,42 +399,6 @@ const VehicleInquiries = () => {
                 </div>
               </div>
 
-              {/* Contact Info */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <Phone className="size-5 text-slate-400" />
-                  <div className="flex-1">
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">
-                      Phone
-                    </p>
-                    <p className="text-sm font-bold">{selectedInquiry.phone}</p>
-                  </div>
-                  <button
-                    onClick={() => handleCall(selectedInquiry.phone || "", selectedInquiry.name)}
-                    className="px-4 py-2 rounded-lg bg-blue-600 text-white text-xs font-black uppercase tracking-widest hover:bg-blue-700 active:scale-95 transition-all"
-                  >
-                    Call
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <Mail className="size-5 text-slate-400" />
-                  <div className="flex-1">
-                    <p className="text-xs font-black uppercase tracking-widest text-slate-400">
-                      Email
-                    </p>
-                    <p className="text-sm font-bold">{selectedInquiry.email}</p>
-                  </div>
-                  <button
-                    onClick={() => handleEmail(selectedInquiry.email || "", selectedInquiry.name)}
-                    className="px-4 py-2 rounded-lg bg-blue-600 text-white text-xs font-black uppercase tracking-widest hover:bg-blue-700 active:scale-95 transition-all"
-                  >
-                    Email
-                  </button>
-                </div>
-              </div>
-
-              {/* Status Actions */}
               <div className="pt-6 border-t border-slate-200">
                 <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">
                   Update Status

@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Package,
   ArrowRight,
@@ -8,74 +9,95 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
+import { applicationService } from "@/services/applicationService";
 
 const ProvideDashboard = () => {
-  const stats = [
-    {
-      label: "Fleet Size",
-      value: "24",
-      icon: Package,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100",
-    },
-    {
-      label: "Active Rentals",
-      value: "15",
-      icon: UserCheck,
-      color: "text-emerald-600",
-      bgColor: "bg-emerald-100",
-    },
-    {
-      label: "Utilization",
-      value: "82%",
-      icon: BarChart3,
-      color: "text-violet-600",
-      bgColor: "bg-violet-100",
-    },
-  ];
+  const [listings, setListings] = useState<any[]>([]);
+  const [requests, setRequests] = useState<any[]>([]);
+  const fetchedRef = useRef(false);
 
-  const alerts = [
-    {
-      id: 1,
-      type: "Request",
-      message: "New rental request for Excavator 320",
-      time: "2m ago",
-      urgent: true,
-    },
-    {
-      id: 2,
-      type: "Payment",
-      message: "Payout for Order #88219 processed",
-      time: "1h ago",
-      urgent: false,
-    },
-    {
-      id: 3,
-      type: "Service",
-      message: "Maintenance due for Liebherr Crane",
-      time: "3h ago",
-      urgent: false,
-    },
-  ];
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
 
-  const activeInventory = [
-    {
-      id: 1,
-      name: "Caterpillar 320 GC",
-      status: "On Rent",
-      tenant: "Acme Infra",
-      returns: "25 Oct",
-      utilization: "95%",
-    },
-    {
-      id: 2,
-      name: "JCB 3DX EcoXcellence",
-      status: "In Service",
-      tenant: "-",
-      returns: "Available Soon",
-      utilization: "60%",
-    },
-  ];
+    const load = async () => {
+      try {
+        const [myListings, myRequests] = await Promise.all([
+          resourceService.getMyListings("equipments"),
+          applicationService.getReceivedResourceApplications("equipments"),
+        ]);
+        setListings(myListings || []);
+        setRequests(myRequests || []);
+      } catch (error) {
+        setListings([]);
+        setRequests([]);
+      }
+    };
+
+    load();
+  }, []);
+
+  const stats = useMemo(
+    () => [
+      {
+        label: "Fleet Size",
+        value: `${listings.length}`,
+        icon: Package,
+        color: "text-blue-600",
+        bgColor: "bg-blue-100",
+      },
+      {
+        label: "Active Rentals",
+        value: `${requests.filter((r: any) => r.status === "Accepted").length}`,
+        icon: UserCheck,
+        color: "text-emerald-600",
+        bgColor: "bg-emerald-100",
+      },
+      {
+        label: "Utilization",
+        value: `${listings.length > 0 ? Math.round((requests.length / listings.length) * 100) : 0}%`,
+        icon: BarChart3,
+        color: "text-violet-600",
+        bgColor: "bg-violet-100",
+      },
+    ],
+    [listings, requests]
+  );
+
+  const alerts = useMemo(
+    () =>
+      requests.slice(0, 3).map((req: any) => ({
+        id: req.id || req._id,
+        type: req.resourceType || "Request",
+        message:
+          req.message ||
+          req.coverLetter ||
+          `New rental request for ${req.resourceId?.title || "equipment"}`,
+        time: req.appliedAt ? new Date(req.appliedAt).toLocaleDateString() : "Recently",
+        urgent: req.status === "Pending",
+      })),
+    [requests]
+  );
+
+  const activeInventory = useMemo(
+    () =>
+      listings.slice(0, 2).map((item: any) => {
+        const related = requests.filter(
+          (r: any) => (r.resourceId?._id || r.resourceId) === item.id
+        );
+        const accepted = related.find((r: any) => r.status === "Accepted");
+        return {
+          id: item.id,
+          name: item.title,
+          status: accepted ? "On Rent" : "Available",
+          tenant: accepted?.applicantId?.name || "-",
+          returns: item.duration || "Available Soon",
+          utilization: `${Math.min(100, related.length * 20)}%`,
+        };
+      }),
+    [listings, requests]
+  );
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -197,6 +219,13 @@ const ProvideDashboard = () => {
               </div>
             </div>
           ))}
+          {activeInventory.length === 0 && (
+            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">
+                No equipment listings yet
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -209,7 +238,7 @@ const ProvideDashboard = () => {
           <div className="space-y-1">
             <h3 className="text-xl font-black tracking-tight italic uppercase">Rent Requests</h3>
             <p className="text-[9px] font-black uppercase tracking-widest opacity-60">
-              04 Pending Approvals
+              {requests.filter((r: any) => r.status === "Pending").length} Pending Approvals
             </p>
           </div>
           <div className="size-12 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">

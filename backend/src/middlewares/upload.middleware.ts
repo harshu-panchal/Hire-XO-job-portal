@@ -38,7 +38,10 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
         )) {
             cb(null, true);
         } else {
-            cb(new Error('Only PDF and Word documents are allowed for documents'));
+            const error: any = new Error('Only PDF and Word documents are allowed for documents');
+            error.statusCode = 400;
+            error.isUploadValidationError = true;
+            cb(error);
         }
     } else if (file.fieldname === 'file') {
         // Generic post media: Accept both images and docs
@@ -52,14 +55,20 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
         ) {
             cb(null, true);
         } else {
-            cb(new Error('Invalid file type. Allowed: Images, PDF, Word docs'));
+            const error: any = new Error('Invalid file type. Allowed: Images, PDF, Word docs');
+            error.statusCode = 400;
+            error.isUploadValidationError = true;
+            cb(error);
         }
     } else if (file.fieldname === 'image') {
         // Standardized Resource images
         if (allowedImageTypes.test(extname) && mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
-            cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed for resource images'));
+            const error: any = new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed for resource images');
+            error.statusCode = 400;
+            error.isUploadValidationError = true;
+            cb(error);
         }
     } else if (
         file.fieldname === 'equipment-image' ||
@@ -75,14 +84,20 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
         if (allowedImageTypes.test(extname) && mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
-            cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed for resource images'));
+            const error: any = new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed for resource images');
+            error.statusCode = 400;
+            error.isUploadValidationError = true;
+            cb(error);
         }
     } else {
         // Profile photo and company logo: Accept images only
         if (allowedImageTypes.test(extname) && mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
-            cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed'));
+            const error: any = new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed');
+            error.statusCode = 400;
+            error.isUploadValidationError = true;
+            cb(error);
         }
     }
 };

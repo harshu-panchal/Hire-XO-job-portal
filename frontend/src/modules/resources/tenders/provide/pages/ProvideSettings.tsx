@@ -19,6 +19,26 @@ import {
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 
+const DEFAULT_API_KEYS = [
+  { id: 1, name: "Production API", key: "sk_live_abc123xyz789def456", created: "Jan 15, 2026" },
+  { id: 2, name: "Development API", key: "sk_test_xyz789abc123ghi456", created: "Jan 10, 2026" },
+];
+
+const DEFAULT_PERSONNEL = [
+  { id: 1, name: "John Doe", email: "john@company.com", role: "Admin", status: "Active" },
+  { id: 2, name: "Jane Smith", email: "jane@company.com", role: "Manager", status: "Active" },
+];
+
+const loadFromStorage = <T,>(key: string, fallback: T): T => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+};
+
 interface SettingItemProps {
   icon: any;
   label: string;
@@ -65,23 +85,29 @@ const ProvideSettings = () => {
   const [showHelpModal, setShowHelpModal] = useState(false);
 
   // API Keys
-  const [apiKeys, setApiKeys] = useState([
-    { id: 1, name: "Production API", key: "sk_live_abc123xyz789def456", created: "Jan 15, 2026" },
-    { id: 2, name: "Development API", key: "sk_test_xyz789abc123ghi456", created: "Jan 10, 2026" },
-  ]);
+  const [apiKeys, setApiKeys] = useState(() =>
+    loadFromStorage("tenders_provide_api_keys_v1", DEFAULT_API_KEYS)
+  );
   const [copiedKey, setCopiedKey] = useState<number | null>(null);
 
   // Personnel
-  const [personnel, setPersonnel] = useState([
-    { id: 1, name: "John Doe", email: "john@company.com", role: "Admin", status: "Active" },
-    { id: 2, name: "Jane Smith", email: "jane@company.com", role: "Manager", status: "Active" },
-  ]);
+  const [personnel, setPersonnel] = useState(() =>
+    loadFromStorage("tenders_provide_personnel_v1", DEFAULT_PERSONNEL)
+  );
 
   // Security
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
 
   // Theme
   const [selectedTheme, setSelectedTheme] = useState("Default");
+
+  useEffect(() => {
+    localStorage.setItem("tenders_provide_api_keys_v1", JSON.stringify(apiKeys));
+  }, [apiKeys]);
+
+  useEffect(() => {
+    localStorage.setItem("tenders_provide_personnel_v1", JSON.stringify(personnel));
+  }, [personnel]);
 
 
   const copyToClipboard = (text: string, id: number) => {

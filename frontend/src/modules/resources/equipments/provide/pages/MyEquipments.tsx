@@ -1,42 +1,28 @@
+import { useEffect, useRef, useState } from "react";
 import { Star, Edit3, MoreVertical, Plus, Trash2, Eye } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
 
 const MyEquipments = () => {
-  const fleet = [
-    {
-      id: 1,
-      name: "Caterpillar 320 GC Excavator",
-      category: "Excavators",
-      status: "On Rent",
-      location: "Mumbai, MH",
-      price: "₹18,500/day",
-      rating: 4.8,
-      image:
-        "https://images.unsplash.com/photo-1579412691525-4c07da01ee7b?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-      id: 2,
-      name: "JCB 3DX EcoXcellence",
-      category: "Loaders",
-      status: "Available",
-      location: "Pune, MH",
-      price: "₹12,000/day",
-      rating: 4.9,
-      image:
-        "https://images.unsplash.com/photo-1541625602330-2277a7c4354d?auto=format&fit=crop&q=80&w=400",
-    },
-    {
-      id: 3,
-      name: "Kirloskar 125kVA Generator",
-      category: "Generators",
-      status: "Maintenance",
-      location: "Mumbai, MH",
-      price: "₹4,500/day",
-      rating: 4.6,
-      image:
-        "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=400",
-    },
-  ];
+  const [fleet, setFleet] = useState<any[]>([]);
+  const fetchedRef = useRef(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    const load = async () => {
+      try {
+        const data = await resourceService.getMyListings("equipments");
+        setFleet(data || []);
+      } catch (error) {
+        setFleet([]);
+      }
+    };
+
+    load();
+  }, []);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -49,6 +35,19 @@ const MyEquipments = () => {
       default:
         return "bg-slate-50 text-slate-600 border-slate-100";
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await resourceService.delete("equipments", id);
+      setFleet((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      // keep UI unchanged on failure
+    }
+  };
+
+  const handleEdit = (item: any) => {
+    navigate("/equipments/provide/post", { state: { equipment: item } });
   };
 
   return (
@@ -79,28 +78,30 @@ const MyEquipments = () => {
             <div className="p-5 flex gap-5">
               <div className="size-24 rounded-3xl overflow-hidden bg-slate-100 shrink-0">
                 <img
-                  src={item.image}
-                  alt={item.name}
+                  src={item.image || item.images?.[0]}
+                  alt={item.name || item.title}
                   className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
               <div className="flex-1 space-y-1 py-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <div
-                    className={`px-3 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-widest ${getStatusStyle(item.status)}`}
+                    className={`px-3 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-widest ${getStatusStyle(
+                      item.status || "Available"
+                    )}`}
                   >
-                    {item.status}
+                    {item.status || "Available"}
                   </div>
                   <button className="text-slate-400">
                     <MoreVertical className="size-4" />
                   </button>
                 </div>
                 <h3 className="text-sm font-black tracking-tight leading-tight truncate">
-                  {item.name}
+                  {item.name || item.title}
                 </h3>
                 <div className="flex items-center gap-1">
                   <Star className="size-2.5 text-amber-500 fill-amber-500" />
-                  <span className="text-[10px] font-black">{item.rating}</span>
+                  <span className="text-[10px] font-black">{item.rating || 0}</span>
                   <span className="text-[10px] text-slate-400 ml-1 uppercase tracking-widest font-black">
                     Rating
                   </span>
@@ -113,30 +114,45 @@ const MyEquipments = () => {
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 leading-none">
                   Last Base
                 </p>
-                <p className="text-[10px] font-black leading-none">{item.location}</p>
+                <p className="text-[10px] font-black leading-none">{item.location || "N/A"}</p>
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 space-y-0.5">
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 leading-none">
                   Pricing
                 </p>
-                <p className="text-[10px] font-black leading-none">{item.price}</p>
+                <p className="text-[10px] font-black leading-none">
+                  {item.price || item.compensation || "N/A"}
+                </p>
               </div>
             </div>
 
             {/* Action Bar */}
             <div className="bg-slate-50 p-2 flex gap-2 border-t border-slate-100">
-              <button className="flex-1 py-3 rounded-2xl bg-white border border-slate-200 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all text-slate-600 hover:text-blue-600 transition-colors">
+              <button
+                onClick={() => handleEdit(item)}
+                className="flex-1 py-3 rounded-2xl bg-white border border-slate-200 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all text-slate-600 hover:text-blue-600 transition-colors"
+              >
                 <Edit3 className="size-3.5" /> Edit Details
               </button>
               <button className="flex-1 py-3 rounded-2xl bg-white border border-slate-200 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all text-slate-600 hover:text-blue-600 transition-colors">
                 <Eye className="size-3.5" /> View Stats
               </button>
-              <button className="size-11 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center active:scale-90 transition-transform">
+              <button
+                onClick={() => handleDelete(item.id)}
+                className="size-11 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center active:scale-90 transition-transform"
+              >
                 <Trash2 className="size-4" />
               </button>
             </div>
           </div>
         ))}
+        {fleet.length === 0 && (
+          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">
+              No equipment listings found
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

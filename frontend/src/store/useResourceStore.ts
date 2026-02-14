@@ -105,8 +105,12 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await resourceService.create(resourceType, resourceData);
+      const created = (response as any).data || (response as any).resource;
+      const normalized = created
+        ? { ...created, id: created.id || created._id }
+        : undefined;
       set((state) => ({
-        myResources: [...state.myResources, response.resource],
+        myResources: normalized ? [...state.myResources, normalized] : state.myResources,
         isLoading: false,
       }));
     } catch (error: any) {
@@ -126,8 +130,14 @@ export const useResourceStore = create<ResourceState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await resourceService.update(resourceType, id, resourceData);
+      const updated = (response as any).data || (response as any).resource;
+      const normalized = updated
+        ? { ...updated, id: updated.id || updated._id || id }
+        : undefined;
       set((state) => ({
-        myResources: state.myResources.map((r) => (r.id === id ? response.resource : r)),
+        myResources: normalized
+          ? state.myResources.map((r) => (r.id === id ? normalized : r))
+          : state.myResources,
         isLoading: false,
       }));
     } catch (error: any) {
