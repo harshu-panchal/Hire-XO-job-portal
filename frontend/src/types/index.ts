@@ -55,14 +55,6 @@ export interface Certificate {
   documentUrl?: string; // For the document link
 }
 
-export interface CertificateTemplate {
-  _id: string;
-  name: string;
-  roleType: "employee" | "employer" | "resource" | "all";
-  htmlTemplate: string;
-  isActive: boolean;
-}
-
 export interface CertificateRequest {
   _id: string;
   userId: {

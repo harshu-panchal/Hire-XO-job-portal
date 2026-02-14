@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import Certificate from '../models/certificate.model';
 import CertificateRequest from '../models/certificate-request.model';
-import CertificateTemplate from '../models/certificate-template.model';
 import SubscriptionPlan from '../models/subscription-plan.model';
 import User from '../models/user.model';
 import Notification from '../models/notification.model';
@@ -15,8 +14,6 @@ type IssuePayload = {
     customText?: string;
     userEmail?: string;
 };
-
-const DEFAULT_TEMPLATE_NAME = 'Default Subscription Certificate';
 
 const DEFAULT_TEMPLATE_HTML = `
 <div style="font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; border: 8px solid #0f172a; padding: 40px;">
@@ -89,28 +86,6 @@ export class CertificateRequestService {
         };
     }
 
-    public async getActiveTemplates(roleType?: string) {
-        await this.ensureDefaultTemplate();
-        const query: any = { isActive: true };
-        if (roleType && ['employee', 'employer', 'resource'].includes(roleType)) {
-            query.$or = [{ roleType }, { roleType: 'all' }];
-        }
-        return CertificateTemplate.find(query).sort({ createdAt: -1 });
-    }
-
-    public async createTemplate(payload: {
-        name: string;
-        roleType?: 'employee' | 'employer' | 'resource' | 'all';
-        htmlTemplate: string;
-    }) {
-        return CertificateTemplate.create({
-            name: payload.name,
-            roleType: payload.roleType || 'all',
-            htmlTemplate: payload.htmlTemplate,
-            isActive: true
-        });
-    }
-
     public async rejectRequest(requestId: string, adminId: string, reason?: string) {
         const request = await CertificateRequest.findById(requestId);
         if (!request) {
@@ -129,7 +104,7 @@ export class CertificateRequestService {
     }
 
     public async issueRequest(requestId: string, adminId: string, payload: IssuePayload) {
-        const { request, user, plan, template, now, expiryDate, finalHtml } = await this.prepareRenderData(requestId, payload, true);
+        const { request, user, plan, now, expiryDate, finalHtml } = await this.prepareRenderData(requestId, payload, true);
         const certificateName = payload.certificateName || `${plan.name} Certificate`;
         const pdfUrl = await this.generatePdfDataUrlFromHtml(finalHtml, certificateName);
 
@@ -146,7 +121,6 @@ export class CertificateRequestService {
             documentUrl: pdfUrl,
             subscriptionId: request.subscriptionId,
             planId: plan._id,
-            templateId: template._id,
             issuedBy: new mongoose.Types.ObjectId(adminId),
             pdfUrl
         });
@@ -184,7 +158,7 @@ export class CertificateRequestService {
             console.error('Certificate email delivery failed:', error);
         }
 
-        return { request, certificate, template };
+        return { request, certificate };
     }
 
     public async previewRequest(requestId: string, payload: IssuePayload) {
@@ -235,9 +209,8 @@ export class CertificateRequestService {
 
         const now = new Date();
         const expiryDate = new Date(now.getTime() + plan.durationDays * 24 * 60 * 60 * 1000);
-        const template = await this.resolveTemplate(payload.templateId, user.role);
         const certificateId = new mongoose.Types.ObjectId().toString();
-        const baseTemplate = payload.editedHtml || template.htmlTemplate;
+        const baseTemplate = payload.editedHtml || DEFAULT_TEMPLATE_HTML;
 
         const finalHtml = this.renderTemplate(baseTemplate, {
             userName: this.escapeHtml(user.name),
@@ -250,36 +223,7 @@ export class CertificateRequestService {
             adminNote: this.escapeHtml(payload.customText || '')
         });
 
-        return { request, user, plan, template, now, expiryDate, finalHtml };
-    }
-
-    private async resolveTemplate(templateId: string | undefined, role: string) {
-        if (templateId) {
-            const template = await CertificateTemplate.findById(templateId);
-            if (!template || !template.isActive) {
-                throw new Error('Template not found or inactive');
-            }
-            return template;
-        }
-
-        await this.ensureDefaultTemplate();
-        const roleTemplate = await CertificateTemplate.findOne({
-            isActive: true,
-            roleType: role
-        }).sort({ createdAt: -1 });
-
-        if (roleTemplate) return roleTemplate;
-
-        const fallback = await CertificateTemplate.findOne({
-            isActive: true,
-            roleType: 'all'
-        }).sort({ createdAt: -1 });
-
-        if (!fallback) {
-            throw new Error('No active certificate template found');
-        }
-
-        return fallback;
+        return { request, user, plan, now, expiryDate, finalHtml };
     }
 
     private renderTemplate(template: string, values: Record<string, string>) {
@@ -473,17 +417,5 @@ export class CertificateRequestService {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
-    }
-
-    private async ensureDefaultTemplate() {
-        const existing = await CertificateTemplate.findOne({ name: DEFAULT_TEMPLATE_NAME });
-        if (existing) return;
-
-        await CertificateTemplate.create({
-            name: DEFAULT_TEMPLATE_NAME,
-            roleType: 'all',
-            htmlTemplate: DEFAULT_TEMPLATE_HTML,
-            isActive: true
-        });
     }
 }

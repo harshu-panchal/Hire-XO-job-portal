@@ -4,7 +4,7 @@
  */
 
 import apiClient, { getErrorMessage } from "../lib/apiConfig";
-import type { User, SubscriptionPlan, Certificate, CertificateRequest, CertificateTemplate } from "../types";
+import type { User, SubscriptionPlan, Certificate, CertificateRequest } from "../types";
 
 export interface SystemStats {
   users: {
@@ -65,10 +65,8 @@ export interface UserFilters {
 }
 
 export interface IssueCertificatePayload {
-  templateId?: string;
   certificateName?: string;
   editedHtml?: string;
-  customText?: string;
   userEmail?: string;
 }
 
@@ -278,17 +276,6 @@ export const adminService = {
     try {
       const response = await apiClient.post(`/admin/certificate-requests/${id}/reject`, { reason });
       return response.data;
-    } catch (error) {
-      throw new Error(getErrorMessage(error));
-    }
-  },
-
-  async getCertificateTemplates(roleType?: string): Promise<CertificateTemplate[]> {
-    try {
-      const response = await apiClient.get<{ success: boolean; data: CertificateTemplate[] }>("/admin/certificate-templates", {
-        params: { roleType },
-      });
-      return response.data.data || [];
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }

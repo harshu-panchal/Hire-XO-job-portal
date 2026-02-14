@@ -42,8 +42,6 @@ router.get('/certificate-requests', certificateRequestController.listRequests);
 router.post('/certificate-requests/:id/preview', certificateRequestController.previewRequest);
 router.post('/certificate-requests/:id/issue', certificateRequestController.issueRequest);
 router.post('/certificate-requests/:id/reject', certificateRequestController.rejectRequest);
-router.get('/certificate-templates', certificateRequestController.getTemplates);
-router.post('/certificate-templates', certificateRequestController.createTemplate);
 
 // Resource Management
 router.get('/resources/:category', adminController.getResources);
