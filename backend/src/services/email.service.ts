@@ -58,4 +58,55 @@ export class EmailService {
             return true; // Return true to allow flow to continue in dev mode
         }
     }
+
+    public async sendCertificateIssuedEmail(
+        to: string,
+        payload: {
+            userName: string;
+            planName: string;
+            expiryDate: Date;
+            downloadLink?: string;
+        }
+    ): Promise<boolean> {
+        const expiryLabel = new Date(payload.expiryDate).toLocaleDateString();
+        const html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Your Certificate Has Been Issued</h2>
+                <p>Hello ${payload.userName},</p>
+                <p>Your certificate for <strong>${payload.planName}</strong> is now available.</p>
+                <p><strong>Expiry Date:</strong> ${expiryLabel}</p>
+                ${payload.downloadLink
+                ? `<p><a href="${payload.downloadLink}" style="display: inline-block; background-color: #0F172A; color: white; padding: 10px 18px; text-decoration: none; border-radius: 6px;">Download Certificate</a></p>`
+                : ''}
+                <p style="color: #64748B; font-size: 14px;">You can also view it from your profile certificates section.</p>
+            </div>
+        `;
+
+        if (this.transporter) {
+            try {
+                await this.transporter.sendMail({
+                    from: `"HireXO Support" <${process.env.SMTP_FROM || 'noreply@hirexo.com'}>`,
+                    to,
+                    subject: 'Your Certificate Has Been Issued',
+                    html
+                });
+                return true;
+            } catch (error) {
+                console.error('Failed to send certificate email:', error);
+                return false;
+            }
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('--- CERTIFICATE EMAIL SIMULATION ---');
+            console.log(`To: ${to}`);
+            console.log(`Plan: ${payload.planName}`);
+            console.log(`Expiry: ${expiryLabel}`);
+            if (payload.downloadLink) {
+                console.log(`Download: ${payload.downloadLink}`);
+            }
+            console.log('------------------------------------');
+        }
+        return true;
+    }
 }

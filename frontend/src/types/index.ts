@@ -42,12 +42,52 @@ export interface Certificate {
   successRate: number;
   status: "Active" | "Expired";
   verificationStatus?: "pending" | "approved" | "rejected";
+  subscriptionId?: string;
+  planId?: string;
+  templateId?: string;
+  issuedBy?: string;
+  pdfUrl?: string;
   userId?: { // Populated field
     _id: string;
     name: string;
     email: string;
   } | string;
   documentUrl?: string; // For the document link
+}
+
+export interface CertificateTemplate {
+  _id: string;
+  name: string;
+  roleType: "employee" | "employer" | "resource" | "all";
+  htmlTemplate: string;
+  isActive: boolean;
+}
+
+export interface CertificateRequest {
+  _id: string;
+  userId: {
+    _id: string;
+    name: string;
+    email: string;
+    role: "employee" | "employer" | "resource" | "admin";
+  };
+  planId: {
+    _id: string;
+    name: string;
+    durationDays: number;
+    type: "job-seeker" | "employer" | "resource";
+  };
+  subscriptionId: string;
+  role: string;
+  status: "pending" | "issued" | "rejected";
+  requestedAt: string;
+  processedAt?: string;
+  processedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  rejectionReason?: string;
 }
 
 export type ResourceCategory =

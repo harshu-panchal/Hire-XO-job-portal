@@ -7,6 +7,7 @@ export interface ISubscriptionPlan extends Document {
     description: string;
     features: string[];
     type: 'job-seeker' | 'employer' | 'resource';
+    certificateEligible?: boolean;
     isActive: boolean;
 }
 
@@ -17,6 +18,7 @@ const SubscriptionPlanSchema: Schema = new Schema({
     description: { type: String, required: true },
     features: [{ type: String }],
     type: { type: String, enum: ['job-seeker', 'employer', 'resource'], default: 'employer' },
+    certificateEligible: { type: Boolean, default: true },
     isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 

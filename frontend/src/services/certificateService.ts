@@ -37,7 +37,7 @@ export const certificateService = {
    */
   async getMyCertificates(): Promise<Certificate[]> {
     try {
-      const response = await apiClient.get<Certificate[]>("/certificates/my-certificates");
+      const response = await apiClient.get<Certificate[]>("/certificates");
       const certificates = response.data || [];
       return certificates.map((cert: any) => ({
         ...cert,
