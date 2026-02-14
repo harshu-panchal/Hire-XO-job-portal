@@ -10,43 +10,9 @@ export class CertificateController {
     }
 
     public createCertificate = async (req: AuthRequest, res: Response): Promise<void> => {
-        try {
-            const userId = req.user?.id;
-            if (!userId) {
-                res.status(401).json({ message: 'Unauthorized' });
-                return;
-            }
-
-            const { name, issueDate, expiryDate, successRate } = req.body;
-
-            if (!name || !issueDate || !expiryDate || successRate === undefined) {
-                res.status(400).json({ message: 'All fields are required' });
-                return;
-            }
-
-            let documentUrl = '';
-            if (req.file) {
-                const { CloudinaryUtil } = require('../utils/cloudinary');
-                const result = await CloudinaryUtil.uploadFile(req.file.path, 'certificates');
-                documentUrl = result.url;
-            }
-
-            const certificate = await this.certificateService.createCertificate(
-                userId,
-                name,
-                new Date(issueDate),
-                new Date(expiryDate),
-                Number(successRate),
-                documentUrl
-            );
-
-            res.status(201).json({
-                message: 'Certificate created successfully',
-                certificate
-            });
-        } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Failed to create certificate' });
-        }
+        res.status(403).json({
+            message: 'Certificate issuance is subscription-based'
+        });
     };
 
     public getUserCertificates = async (req: AuthRequest, res: Response): Promise<void> => {

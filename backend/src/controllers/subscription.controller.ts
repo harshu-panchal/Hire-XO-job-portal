@@ -99,7 +99,7 @@ export class SubscriptionController {
      */
     public createPlan = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
-            const { name, price, durationDays, description, features, type } = req.body;
+            const { name, price, durationDays, description, features, type, certificateEligible } = req.body;
 
             if (!name || !price || !durationDays || !description) {
                 res.status(400).json({
@@ -115,7 +115,8 @@ export class SubscriptionController {
                 durationDays,
                 description,
                 features: features || [],
-                type: type || 'employer' // Default to employer if not specified
+                type: type || 'employer', // Default to employer if not specified
+                certificateEligible: typeof certificateEligible === 'boolean' ? certificateEligible : true
             });
 
             res.status(201).json({

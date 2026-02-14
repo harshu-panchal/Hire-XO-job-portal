@@ -1,5 +1,7 @@
 import SubscriptionPlan from '../models/subscription-plan.model';
 import User from '../models/user.model';
+import CertificateRequest from '../models/certificate-request.model';
+import { notifyAdmins } from '../utils/notifyAdmins';
 
 export class SubscriptionService {
     // Get all active subscription plans
@@ -62,6 +64,7 @@ export class SubscriptionService {
         const mongoose = require('mongoose');
         const session = await mongoose.startSession();
         session.startTransaction();
+        const subscriptionId = new mongoose.Types.ObjectId();
 
         try {
             // Update user
@@ -77,7 +80,7 @@ export class SubscriptionService {
                 userId,
                 type: 'deduction',
                 amount: plan.price,
-                description: `Purchase: ${plan.name} (${plan.durationDays} days)`,
+                description: `Purchase: ${plan.name} (${plan.durationDays} days) [SubscriptionId: ${String(subscriptionId)}]`,
                 status: 'completed',
                 createdAt: new Date()
             }], { session });
@@ -90,6 +93,38 @@ export class SubscriptionService {
             session.endSession();
         }
 
+        // Create certificate request only for certificate-eligible plans.
+        const isCertificateEligible =
+            typeof (plan as any).certificateEligible === 'boolean'
+                ? (plan as any).certificateEligible
+                : (plan.price > 0);
+
+        if (isCertificateEligible) {
+            try {
+                const existingRequest = await CertificateRequest.findOne({ subscriptionId });
+                if (!existingRequest) {
+                    const certificateRequest = await CertificateRequest.create({
+                        userId,
+                        subscriptionId,
+                        planId: plan._id,
+                        role: user.role,
+                        status: 'pending',
+                        requestedAt: new Date()
+                    });
+
+                    await notifyAdmins(
+                        'New Certificate Request',
+                        `${user.name} (${user.email}) purchased ${plan.name}. Issue certificate from pending requests.`,
+                        'info',
+                        String(certificateRequest._id),
+                        'certificate_request'
+                    );
+                }
+            } catch (error) {
+                console.error('Certificate request creation failed post-purchase:', error);
+            }
+        }
+
         return {
             message: 'Subscription purchased successfully',
             plan: {
@@ -97,7 +132,8 @@ export class SubscriptionService {
                 durationDays: plan.durationDays,
                 expiryDate: expiryDate
             },
-            walletBalance: newBalance
+            walletBalance: newBalance,
+            certificateRequestStatus: isCertificateEligible ? 'pending' : 'not-eligible'
         };
     }
 

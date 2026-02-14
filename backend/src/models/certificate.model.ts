@@ -12,6 +12,11 @@ export interface ICertificate extends Document {
     verifiedBy?: mongoose.Types.ObjectId;
     verifiedAt?: Date;
     documentUrl?: string;
+    subscriptionId?: mongoose.Types.ObjectId;
+    planId?: mongoose.Types.ObjectId;
+    templateId?: mongoose.Types.ObjectId;
+    issuedBy?: mongoose.Types.ObjectId;
+    pdfUrl?: string;
 }
 
 const CertificateSchema: Schema = new Schema({
@@ -33,11 +38,17 @@ const CertificateSchema: Schema = new Schema({
     rejectionReason: { type: String },
     verifiedBy: { type: Schema.Types.ObjectId, ref: 'User' },
     verifiedAt: { type: Date },
-    documentUrl: { type: String }
+    documentUrl: { type: String },
+    subscriptionId: { type: Schema.Types.ObjectId },
+    planId: { type: Schema.Types.ObjectId, ref: 'SubscriptionPlan' },
+    templateId: { type: Schema.Types.ObjectId, ref: 'CertificateTemplate' },
+    issuedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    pdfUrl: { type: String }
 }, { timestamps: true });
 
 // Index for efficient queries
 CertificateSchema.index({ userId: 1, status: 1 });
+CertificateSchema.index({ subscriptionId: 1 }, { unique: true, sparse: true });
 
 // Method to update status based on expiry date
 CertificateSchema.methods.updateStatus = function () {

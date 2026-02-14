@@ -7,7 +7,7 @@ export const notifyAdmins = async (
     message: string,
     type: 'info' | 'success' | 'warning' | 'error' = 'info',
     relatedId?: string,
-    relatedType?: 'job_application' | 'resource_application' | 'new_job' | 'new_resource' | 'new_user'
+    relatedType?: 'job_application' | 'resource_application' | 'new_job' | 'new_resource' | 'new_user' | 'certificate_request'
 ) => {
     try {
         const admins = await User.find({ role: 'admin' }).select('_id');

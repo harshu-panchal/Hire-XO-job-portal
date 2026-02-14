@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, User, Menu, Search, CheckCircle, Star, Info, AlertTriangle, XCircle } from "lucide-react";
 import { useAuthStore } from "../../../store/useAuthStore";
@@ -13,8 +13,24 @@ interface AdminHeaderProps {
 export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
   const { user } = useAuthStore();
   const [showNotifications, setShowNotifications] = useState(false);
+  const navigate = useNavigate();
 
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useAdminNotifications();
+
+  const handleNotificationClick = (notification: any) => {
+    if (!notification.read) {
+      markAsRead(notification._id);
+    }
+
+    if (notification.relatedType === "certificate_request") {
+      const target = notification.relatedId
+        ? `/admin/certificates?tab=pending&requestId=${notification.relatedId}`
+        : "/admin/certificates?tab=pending";
+      navigate(target);
+      setShowNotifications(false);
+      return;
+    }
+  };
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -122,7 +138,7 @@ export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
                         return (
                           <div
                             key={notif._id}
-                            onClick={() => !notif.read && markAsRead(notif._id)}
+                            onClick={() => handleNotificationClick(notif)}
                             className={`p-4 flex gap-4 hover:bg-slate-50 transition-colors cursor-pointer border-b border-slate-100 last:border-0 ${!notif.read ? "bg-primary/5" : ""}`}
                           >
                             <div
@@ -162,7 +178,13 @@ export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
                       </div>
                     )}
                   </div>
-                  <button className="w-full p-3 text-center text-sm font-medium text-slate-500 border-t border-slate-100 hover:bg-slate-50 transition-colors">
+                  <button
+                    onClick={() => {
+                      setShowNotifications(false);
+                      navigate("/admin/certificates?tab=pending");
+                    }}
+                    className="w-full p-3 text-center text-sm font-medium text-slate-500 border-t border-slate-100 hover:bg-slate-50 transition-colors"
+                  >
                     See all notifications
                   </button>
                 </motion.div>

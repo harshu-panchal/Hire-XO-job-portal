@@ -4,7 +4,7 @@
  */
 
 import apiClient, { getErrorMessage } from "../lib/apiConfig";
-import type { User, SubscriptionPlan, Certificate } from "../types";
+import type { User, SubscriptionPlan, Certificate, CertificateRequest, CertificateTemplate } from "../types";
 
 export interface SystemStats {
   users: {
@@ -62,6 +62,14 @@ export interface UserFilters {
   search?: string;
   page?: number;
   limit?: number;
+}
+
+export interface IssueCertificatePayload {
+  templateId?: string;
+  certificateName?: string;
+  editedHtml?: string;
+  customText?: string;
+  userEmail?: string;
 }
 
 export const adminService = {
@@ -234,6 +242,53 @@ export const adminService = {
     try {
       const response = await apiClient.patch(`/admin/certificates/${id}/reject`, { reason });
       return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  async getCertificateRequests(params?: { status?: string; search?: string; page?: number; limit?: number }): Promise<PaginatedResponse<CertificateRequest>> {
+    try {
+      const response = await apiClient.get<PaginatedResponse<CertificateRequest>>("/admin/certificate-requests", { params });
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  async issueCertificateRequest(id: string, payload: IssueCertificatePayload): Promise<{ message: string; data: any }> {
+    try {
+      const response = await apiClient.post(`/admin/certificate-requests/${id}/issue`, payload);
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  async previewCertificateRequest(id: string, payload: IssueCertificatePayload): Promise<{ html: string; meta: any }> {
+    try {
+      const response = await apiClient.post(`/admin/certificate-requests/${id}/preview`, payload);
+      return response.data.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  async rejectCertificateRequest(id: string, reason?: string): Promise<{ message: string; data: CertificateRequest }> {
+    try {
+      const response = await apiClient.post(`/admin/certificate-requests/${id}/reject`, { reason });
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  async getCertificateTemplates(roleType?: string): Promise<CertificateTemplate[]> {
+    try {
+      const response = await apiClient.get<{ success: boolean; data: CertificateTemplate[] }>("/admin/certificate-templates", {
+        params: { roleType },
+      });
+      return response.data.data || [];
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }

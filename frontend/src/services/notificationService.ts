@@ -7,7 +7,7 @@ export interface Notification {
   type: "success" | "info" | "warning" | "error";
   read: boolean;
   relatedId?: string;
-  relatedType?: "job_application" | "resource_application";
+  relatedType?: "job_application" | "resource_application" | "certificate_request" | "certificate_issued";
   createdAt: string;
 }
 
