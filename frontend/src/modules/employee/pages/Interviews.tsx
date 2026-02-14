@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar, Clock, Video, MapPin, CheckCircle, XCircle, AlertCircle, Search, ShieldCheck, Check } from "lucide-react";
+import { Calendar, Clock, Video, MapPin, CheckCircle, XCircle, AlertCircle, Search, ShieldCheck, Check, Pencil } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { interviewService, type Interview } from "@/services/interviewService";
@@ -14,6 +14,19 @@ const Interviews = () => {
     const { user } = useAuthStore();
     const navigate = useNavigate();
     const isEmployer = user?.role === "employer";
+    const isAdmin = user?.role === "admin";
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedInterview, setSelectedInterview] = useState<any>(null);
+    const [isSaving, setIsSaving] = useState(false);
+    const [editForm, setEditForm] = useState({
+        title: "",
+        date: "",
+        time: "",
+        type: "Remote" as "Remote" | "On-site",
+        link: "",
+        location: "",
+        status: "scheduled" as "scheduled" | "pending" | "completed" | "cancelled",
+    });
 
     const [activeTab, setActiveTab] = useState<'upcoming' | 'pending' | 'history' | 'verification'>('upcoming');
     const [searchQuery, setSearchQuery] = useState("");
@@ -88,6 +101,53 @@ const Interviews = () => {
         });
     };
 
+    const openEditModal = (interview: any) => {
+        setSelectedInterview(interview);
+        setEditForm({
+            title: interview.title || "",
+            date: interview.date ? new Date(interview.date).toISOString().split("T")[0] : "",
+            time: interview.time || "",
+            type: interview.type || "Remote",
+            link: interview.link || "",
+            location: interview.location || "",
+            status: interview.status || "scheduled",
+        });
+        setIsEditModalOpen(true);
+    };
+
+    const handleSaveInterview = async () => {
+        if (!selectedInterview) return;
+
+        if (!editForm.date || !editForm.time) {
+            toast.error("Date and time are required");
+            return;
+        }
+
+        if (editForm.type === "Remote" && !editForm.link) {
+            toast.error("Meeting link is required for remote interviews");
+            return;
+        }
+
+        if (editForm.type === "On-site" && !editForm.location) {
+            toast.error("Location is required for on-site interviews");
+            return;
+        }
+
+        try {
+            setIsSaving(true);
+            const updated = await interviewService.updateInterview(selectedInterview._id, editForm as any);
+            setInterviews((prev) => prev.map((item) => (item._id === updated._id ? updated : item)));
+            setIsEditModalOpen(false);
+            setSelectedInterview(null);
+            toast.success("Interview updated");
+        } catch (error) {
+            console.error("Failed to update interview:", error);
+            toast.error("Failed to update interview");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     const filteredInterviews = interviews.filter(interview => {
         const matchesSearch = (interview.title?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
             (interview.jobId?.company?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
@@ -117,7 +177,9 @@ const Interviews = () => {
         <div className="min-h-screen bg-slate-50 pb-20 animate-in fade-in duration-700">
             <div className="bg-white px-6 pt-12 pb-6 rounded-b-[2rem] shadow-sm mb-6 sticky top-0 z-10">
                 <h1 className="text-2xl font-black text-slate-900 mb-1">My Interviews</h1>
-                <p className="text-slate-500 font-medium mb-6">Manage your upcoming and past interviews</p>
+                <p className="text-slate-500 font-medium mb-6">
+                    {isAdmin ? "View and edit all scheduled interviews" : "Manage your upcoming and past interviews"}
+                </p>
 
                 {/* Tabs */}
                 <div className="flex p-1 bg-slate-100 rounded-2xl mb-4 overflow-x-auto no-scrollbar">
@@ -270,6 +332,17 @@ const Interviews = () => {
                                     Awaiting Confirmation
                                 </Button>
                             )}
+
+                            {isAdmin && ["scheduled", "pending"].includes(interview.status) && (
+                                <Button
+                                    variant="outline"
+                                    onClick={() => openEditModal(interview)}
+                                    className="w-full mt-3 border-slate-200 font-black text-xs uppercase tracking-widest rounded-2xl h-12 text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-2"
+                                >
+                                    <Pencil className="size-4" />
+                                    Edit Interview
+                                </Button>
+                            )}
                         </Card>
                     ))
                 ) : (
@@ -298,6 +371,96 @@ const Interviews = () => {
                     </div>
                 )}
             </div>
+
+            {isAdmin && isEditModalOpen && selectedInterview && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+                        onClick={() => !isSaving && setIsEditModalOpen(false)}
+                    />
+                    <div className="relative w-full max-w-xl bg-white rounded-[2rem] shadow-2xl p-6 space-y-4">
+                        <h3 className="text-lg font-black">Edit Interview</h3>
+
+                        <input
+                            value={editForm.title}
+                            onChange={(e) => setEditForm((prev) => ({ ...prev, title: e.target.value }))}
+                            placeholder="Interview title"
+                            className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold"
+                        />
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <input
+                                type="date"
+                                value={editForm.date}
+                                onChange={(e) => setEditForm((prev) => ({ ...prev, date: e.target.value }))}
+                                className="h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold"
+                            />
+                            <input
+                                type="time"
+                                value={editForm.time}
+                                onChange={(e) => setEditForm((prev) => ({ ...prev, time: e.target.value }))}
+                                className="h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <select
+                                value={editForm.type}
+                                onChange={(e) => setEditForm((prev) => ({ ...prev, type: e.target.value as "Remote" | "On-site" }))}
+                                className="h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold"
+                            >
+                                <option value="Remote">Remote</option>
+                                <option value="On-site">On-site</option>
+                            </select>
+                            <select
+                                value={editForm.status}
+                                onChange={(e) => setEditForm((prev) => ({ ...prev, status: e.target.value as any }))}
+                                className="h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold"
+                            >
+                                <option value="scheduled">scheduled</option>
+                                <option value="pending">pending</option>
+                                <option value="completed">completed</option>
+                                <option value="cancelled">cancelled</option>
+                            </select>
+                        </div>
+
+                        {editForm.type === "Remote" ? (
+                            <input
+                                type="url"
+                                value={editForm.link}
+                                onChange={(e) => setEditForm((prev) => ({ ...prev, link: e.target.value }))}
+                                placeholder="Meeting link"
+                                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold"
+                            />
+                        ) : (
+                            <input
+                                value={editForm.location}
+                                onChange={(e) => setEditForm((prev) => ({ ...prev, location: e.target.value }))}
+                                placeholder="Interview location"
+                                className="w-full h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold"
+                            />
+                        )}
+
+                        <div className="flex gap-3 pt-2">
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsEditModalOpen(false)}
+                                className="flex-1 h-11 rounded-xl"
+                                disabled={isSaving}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleSaveInterview}
+                                className="flex-1 h-11 rounded-xl bg-primary text-white"
+                                disabled={isSaving}
+                            >
+                                {isSaving ? "Saving..." : "Save Changes"}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

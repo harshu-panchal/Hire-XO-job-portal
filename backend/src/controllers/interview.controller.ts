@@ -63,6 +63,23 @@ export class InterviewController {
         }
     };
 
+    public updateInterview = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            const role = req.user?.role;
+            if (!userId || !role) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const { interviewId } = req.params;
+            const interview = await this.interviewService.updateInterview(interviewId, req.body, userId, role);
+            res.status(200).json(interview);
+        } catch (error: any) {
+            res.status(400).json({ message: error.message || 'Failed to update interview' });
+        }
+    };
+
     public cancelInterview = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const userId = req.user?.id;

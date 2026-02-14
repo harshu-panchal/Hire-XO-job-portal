@@ -134,6 +134,25 @@ export class PostController {
         }
     };
 
+    public getMyPosts = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const posts = await Post.find({ userId })
+                .sort({ createdAt: -1 })
+                .populate('userId', 'name role profilePhoto');
+
+            res.status(200).json({ data: posts });
+        } catch (error: any) {
+            console.error('Error fetching my posts:', error);
+            res.status(500).json({ message: 'Failed to fetch my posts', error: error.message });
+        }
+    };
+
     public getById = async (req: Request, res: Response): Promise<void> => {
         try {
             const post = await Post.findById(req.params.id).populate('userId', 'name role profilePhoto');

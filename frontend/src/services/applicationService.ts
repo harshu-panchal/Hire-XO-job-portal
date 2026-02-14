@@ -11,7 +11,7 @@ export interface Application {
   resourceId?: string;
   resourceType?: string;
   appliedAt: string;
-  status: "Pending" | "Accepted" | "Rejected";
+  status: "Pending" | "Accepted" | "InterviewScheduled" | "Rejected";
   coverLetter?: string;
   [key: string]: any;
 }
@@ -181,7 +181,7 @@ export const applicationService = {
    */
   async updateApplicationStatus(
     applicationId: string,
-    status: "Pending" | "Accepted" | "Rejected",
+    status: "Pending" | "Accepted" | "InterviewScheduled" | "Rejected",
     type: "job" | "resource" = "job"
   ): Promise<{ message: string; application: Application }> {
     try {

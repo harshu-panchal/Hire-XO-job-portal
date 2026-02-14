@@ -681,6 +681,7 @@ function App() {
           <Route path="/admin/certificates" element={<AdminCertificates />} />
           <Route path="/admin/reports" element={<AdminReports />} />
           <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/interviews" element={<Interviews />} />
 
           {/* Resource Management Routes */}
           <Route path="/admin/resources/investors" element={<AdminInvestors />} />

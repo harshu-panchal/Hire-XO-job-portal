@@ -40,7 +40,7 @@ export const ProfileDropdown = ({ loginPath = "/login/employee" }: ProfileDropdo
 
     const isEmployer = user?.role === "employer";
     const settingsPath = isEmployer ? "/employer/settings" : "/settings";
-    const promotionsPath = user?.role === "employee" ? "/payments" : "/employer/promotions";
+    const promotionsPath = "/payments";
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -103,21 +103,22 @@ export const ProfileDropdown = ({ loginPath = "/login/employee" }: ProfileDropdo
                                         <ChevronRight className="size-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
                                     </Link>
 
-                                    {/* Promotions Link - Only for Employer/Recruiter if needed, but here simple link */}
-                                    <Link
-                                        to={promotionsPath}
-                                        onClick={() => setIsOpen(false)}
-                                        className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-all group"
-                                    >
-                                        <div className="size-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-megaphone"><path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" /></svg>
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-bold text-slate-900 leading-none">Promotions</p>
-                                            <p className="text-[10px] text-slate-400 font-medium mt-1">Boost your visibility</p>
-                                        </div>
-                                        <ChevronRight className="size-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
-                                    </Link>
+                                    {user?.role === "employee" && (
+                                        <Link
+                                            to={promotionsPath}
+                                            onClick={() => setIsOpen(false)}
+                                            className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-all group"
+                                        >
+                                            <div className="size-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-megaphone"><path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" /></svg>
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-bold text-slate-900 leading-none">Promotions</p>
+                                                <p className="text-[10px] text-slate-400 font-medium mt-1">Boost your visibility</p>
+                                            </div>
+                                            <ChevronRight className="size-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
+                                        </Link>
+                                    )}
 
                                     {isEmployer && (
                                         <Link

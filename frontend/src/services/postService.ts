@@ -34,6 +34,15 @@ export const postService = {
         }
     },
 
+    async getMyPosts(): Promise<Post[]> {
+        try {
+            const response = await apiClient.get<{ data: Post[] }>('/posts/my-posts');
+            return response.data.data || [];
+        } catch (error) {
+            throw new Error(getErrorMessage(error));
+        }
+    },
+
     async createPost(
         content: string,
         contactDetail?: string,

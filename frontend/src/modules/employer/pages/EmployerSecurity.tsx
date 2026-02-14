@@ -1,171 +1,134 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  ChevronLeft,
-  ShieldCheck,
-  Lock,
-  Eye,
-  EyeOff,
-  Smartphone,
-  ChevronRight,
-} from "lucide-react";
+import { ChevronLeft, ShieldCheck, Lock } from "lucide-react";
+import { authService } from "@/services/authService";
+import { toast } from "sonner";
 
 const EmployerSecurity = () => {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [twoFactor, setTwoFactor] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [form, setForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
-  const devices = [
-    {
-      id: 1,
-      name: "iPhone 15 Pro",
-      location: "Bengaluru, IN",
-      status: "Current Device",
-      active: true,
-    },
-    {
-      id: 2,
-      name: "MacBook Pro M3",
-      location: "Bengaluru, IN",
-      status: "Active 2h ago",
-      active: false,
-    },
-  ];
+  const handleUpdatePassword = async () => {
+    if (!form.currentPassword || !form.newPassword || !form.confirmPassword) {
+      toast.error("Please fill in all password fields");
+      return;
+    }
+
+    if (form.newPassword !== form.confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    if (form.newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      await authService.changePassword(form.currentPassword, form.newPassword);
+      setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      toast.success("Password updated successfully");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update password");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
-    <div className="pb-32 select-none">
-      {/* Header */}
-      <div className="flex items-center justify-between py-6 sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 -mx-5 px-5">
-        <button
-          onClick={() => navigate(-1)}
-          className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all"
-        >
-          <ChevronLeft className="size-6" />
-        </button>
-        <h2 className="text-sm font-black uppercase tracking-widest">Security</h2>
-        <div className="size-11" />
+    <div className="pb-32 min-h-screen">
+      <div className="sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 px-4 sm:px-5 py-5 sm:py-6">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="size-11 flex items-center justify-center rounded-2xl bg-white border border-slate-200 active:scale-90 transition-all shadow-sm"
+          >
+            <ChevronLeft className="size-6" />
+          </button>
+          <h1 className="text-xl font-black tracking-tight">Security</h1>
+        </div>
       </div>
 
-      <div className="mt-6 space-y-8">
-        {/* Password Section */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 px-1">
-            <div className="size-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
-              <Lock className="size-4 text-blue-500" />
+      <div className="px-4 sm:px-5 space-y-8 w-full max-w-3xl mx-auto">
+        <section className="space-y-4">
+          <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 pl-1">
+            Change Password
+          </h2>
+          <div className="bg-white rounded-[2rem] border border-slate-200 p-5 space-y-4">
+            <div className="flex items-center gap-4 pb-1">
+              <div className="size-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
+                <ShieldCheck className="size-5" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-black">Account Password</p>
+                <p className="text-[10px] font-bold text-slate-400">Keep your account protected</p>
+              </div>
             </div>
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Password & Authentication
-            </h3>
-          </div>
 
-          <div className="bg-white rounded-[2.5rem] border border-slate-200 p-6 space-y-6">
-            <div className="space-y-4">
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                  <Lock className="size-5 text-slate-400 group-focus-within:text-primary transition-colors" />
-                </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Current Password
+              </label>
+              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 border border-slate-100 focus-within:border-primary/50 transition-all">
+                <Lock className="size-5 text-slate-400" />
                 <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Current Password"
-                  className="w-full h-16 pl-14 pr-14 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+                  type="password"
+                  value={form.currentPassword}
+                  onChange={(e) => setForm({ ...form, currentPassword: e.target.value })}
+                  className="flex-1 bg-transparent text-sm font-bold focus:outline-none"
+                  placeholder="Enter current password"
                 />
-                <button
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-5 flex items-center text-slate-400 hover:text-primary transition-colors"
-                >
-                  {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
-                </button>
               </div>
-
-              <button className="text-[10px] font-black uppercase tracking-widest text-primary px-1 active:opacity-60 transition-opacity">
-                Change Password?
-              </button>
             </div>
 
-            <div className="h-px bg-slate-100" />
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-black tracking-tight">Two-factor Authentication</p>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
-                  Add an extra layer of security to your account
-                </p>
-              </div>
-              <button
-                onClick={() => setTwoFactor(!twoFactor)}
-                className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${twoFactor ? "bg-primary" : "bg-slate-200"}`}
-              >
-                <div
-                  className={`size-4 bg-white rounded-full transition-all duration-300 ${twoFactor ? "translate-x-6" : "translate-x-0"}`}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                New Password
+              </label>
+              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 border border-slate-100 focus-within:border-primary/50 transition-all">
+                <Lock className="size-5 text-slate-400" />
+                <input
+                  type="password"
+                  value={form.newPassword}
+                  onChange={(e) => setForm({ ...form, newPassword: e.target.value })}
+                  className="flex-1 bg-transparent text-sm font-bold focus:outline-none"
+                  placeholder="Minimum 6 characters"
                 />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Login Activity */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 px-1">
-            <div className="size-8 rounded-xl bg-green-500/10 flex items-center justify-center">
-              <Smartphone className="size-4 text-green-500" />
-            </div>
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Login Activity
-            </h3>
-          </div>
-
-          <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
-            {devices.map((device, i, arr) => (
-              <div
-                key={device.id}
-                className={`p-5 flex items-center justify-between ${i !== arr.length - 1 ? "border-b border-slate-100" : ""}`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="size-12 rounded-2xl bg-slate-100 flex items-center justify-center">
-                    <Smartphone className="size-6 text-slate-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-black tracking-tight">{device.name}</p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                      {device.location} • {device.status}
-                    </p>
-                  </div>
-                </div>
-                {device.active ? (
-                  <div className="size-2 rounded-full bg-green-500 animate-pulse" />
-                ) : (
-                  <button className="text-[10px] font-black uppercase tracking-widest text-red-500 active:opacity-60">
-                    Log out
-                  </button>
-                )}
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Privacy */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 px-1">
-            <div className="size-8 rounded-xl bg-amber-500/10 flex items-center justify-center">
-              <ShieldCheck className="size-4 text-amber-500" />
             </div>
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Privacy Settings
-            </h3>
-          </div>
 
-          <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
-            <button className="w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all">
-              <span className="text-sm font-black tracking-tight">Privacy Policy</span>
-              <ChevronRight className="size-4 text-slate-300" />
-            </button>
-            <div className="h-px bg-slate-100" />
-            <button className="w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all text-red-500">
-              <span className="text-sm font-black tracking-tight">Delete Account</span>
-              <ChevronRight className="size-4 text-slate-300" />
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Confirm New Password
+              </label>
+              <div className="flex items-center gap-3 h-14 px-4 rounded-2xl bg-slate-50 border border-slate-100 focus-within:border-primary/50 transition-all">
+                <Lock className="size-5 text-slate-400" />
+                <input
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                  className="flex-1 bg-transparent text-sm font-bold focus:outline-none"
+                  placeholder="Re-enter new password"
+                />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleUpdatePassword}
+              disabled={isUpdating}
+              className="w-full h-12 rounded-2xl bg-slate-900 text-white font-black text-xs uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50"
+            >
+              {isUpdating ? "Updating..." : "Update Password"}
             </button>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

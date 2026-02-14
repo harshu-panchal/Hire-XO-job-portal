@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Send, Image as ImageIcon, MapPin, Smile, MoreHorizontal, Heart, MessageCircle, Share2, User, Phone, Mail, Lock, ShieldCheck, Plus, Trash2 } from "lucide-react";
+import { Send, MoreHorizontal, Phone, Mail, Lock, ShieldCheck, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -77,29 +77,6 @@ const Post = () => {
             toast.error(error instanceof Error ? error.message : "Failed to create post");
         } finally {
             setIsPosting(false);
-        }
-    };
-
-    const handleLike = async (postId: string) => {
-        // Optimistic update
-        setPosts((prev: IPost[]) => prev.map((p: IPost) => {
-            if (p._id === postId) {
-                const userId = user?._id || user?.id || '';
-                const isLiked = p.likes.includes(userId);
-                return {
-                    ...p,
-                    likes: isLiked ? p.likes.filter((id: string) => id !== userId) : [...p.likes, userId]
-                };
-            }
-            return p;
-        }));
-
-        try {
-            await postService.likePost(postId);
-        } catch (err) {
-            // Revert on error
-            fetchPosts();
-            toast.error("Failed to like post");
         }
     };
 
@@ -216,15 +193,7 @@ const Post = () => {
                                         className="flex-1 w-full bg-slate-50 border border-slate-100 rounded-3xl p-5 text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[150px] resize-none"
                                     />
 
-                                    <div className="mt-6 flex items-center justify-between">
-                                        <div className="flex gap-2">
-                                            <button className="size-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
-                                                <ImageIcon className="w-5 h-5" />
-                                            </button>
-                                            <button className="size-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
-                                                <Smile className="w-5 h-5" />
-                                            </button>
-                                        </div>
+                                    <div className="mt-6 flex items-center justify-center">
                                         <Button
                                             onClick={handleCreatePost}
                                             disabled={!postContent.trim() || isPosting}
@@ -391,21 +360,6 @@ const Post = () => {
                                     </div>
                                 )}
 
-                                {/* Action Buttons */}
-                                <div className="flex items-center gap-4 border-t border-slate-100 pt-4">
-                                    <button
-                                        onClick={() => handleLike(post._id)}
-                                        className={`flex items-center gap-2 transition-colors group ${post.likes.includes(user?._id || user?.id || '') ? 'text-rose-500' : 'text-slate-500 hover:text-rose-500'}`}
-                                        disabled={isLoading}
-                                    >
-                                        <Heart className={`w-5 h-5 group-hover:scale-110 transition-transform ${post.likes.includes(user?._id || user?.id || '') ? 'fill-current' : ''}`} />
-                                        <span className="text-xs font-bold">{post.likes.length} Likes</span>
-                                    </button>
-
-                                    <button className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors ml-auto">
-                                        <Share2 className="w-5 h-5" />
-                                    </button>
-                                </div>
                             </Card>
                         ))
                     ) : (

@@ -7,7 +7,6 @@ import {
   Link as LinkIcon,
   Bell,
   Shield,
-  HelpCircle,
   Plus,
   Trash2,
   Loader2,
@@ -15,6 +14,7 @@ import {
 import { useAuthStore } from "@/store/useAuthStore";
 import { useState, useEffect, useRef } from "react";
 import { userService } from "@/services/userService";
+import { authService } from "@/services/authService";
 import { toast } from "sonner";
 
 const Settings = () => {
@@ -22,10 +22,16 @@ const Settings = () => {
   const { user: userProfile, updateProfile, updateUser } = useAuthStore();
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Local state for preferences
   const [pushEnabled, setPushEnabled] = useState(true);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
 
   const [form, setForm] = useState({
@@ -98,17 +104,27 @@ const Settings = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      const parsedSkills = form.skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s !== "");
+
       const updatedProfile = {
         name: form.name,
         email: form.email,
+        bio: form.bio,
+        linkedinUrl: form.linkedinUrl,
+        skills: parsedSkills,
+        experience: form.experience,
+        education: form.education,
+        preferences: {
+          notifications: pushEnabled,
+        },
         profile: {
           ...userProfile?.profile,
           bio: form.bio,
           linkedinUrl: form.linkedinUrl,
-          skills: form.skills
-            .split(",")
-            .map((s) => s.trim())
-            .filter((s) => s !== ""),
+          skills: parsedSkills,
           experience: form.experience,
           education: form.education,
           preferences: {
@@ -122,6 +138,40 @@ const Settings = () => {
       toast.error(error.message || "Failed to save settings");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    const { currentPassword, newPassword, confirmPassword } = passwordForm;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("Please fill in all password fields");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setIsUpdatingPassword(true);
+    try {
+      await authService.changePassword(currentPassword, newPassword);
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      toast.success("Password changed successfully!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to change password");
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -170,7 +220,7 @@ const Settings = () => {
   return (
     <div className="pb-32 min-h-screen">
       {/* Header */}
-      <div className="sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 px-5 py-6">
+      <div className="sticky top-0 bg-slate-50/80 backdrop-blur-md z-20 px-4 sm:px-5 py-5 sm:py-6">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
@@ -182,7 +232,7 @@ const Settings = () => {
         </div>
       </div>
 
-      <div className="px-5 space-y-8">
+      <div className="px-4 sm:px-5 space-y-8 w-full max-w-3xl mx-auto">
         {/* Avatar Section */}
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
@@ -337,7 +387,7 @@ const Settings = () => {
                       onChange={(e) => handleExperienceChange(index, "role", e.target.value)}
                       className="w-full bg-transparent text-sm font-black focus:outline-none placeholder:text-slate-400"
                     />
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                       <input
                         type="text"
                         value={exp.company}
@@ -350,7 +400,7 @@ const Settings = () => {
                         value={exp.period}
                         placeholder="Period"
                         onChange={(e) => handleExperienceChange(index, "period", e.target.value)}
-                        className="w-24 bg-transparent text-[11px] font-bold text-slate-400 focus:outline-none text-right uppercase tracking-widest placeholder:text-slate-400"
+                        className="w-full sm:w-24 bg-transparent text-[11px] font-bold text-slate-400 focus:outline-none text-left sm:text-right uppercase tracking-widest placeholder:text-slate-400"
                       />
                     </div>
                   </div>
@@ -392,7 +442,7 @@ const Settings = () => {
                       onChange={(e) => handleEducationChange(index, "degree", e.target.value)}
                       className="w-full bg-transparent text-sm font-black focus:outline-none placeholder:text-slate-400"
                     />
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                       <input
                         type="text"
                         value={edu.school}
@@ -405,7 +455,7 @@ const Settings = () => {
                         value={edu.period}
                         placeholder="Year"
                         onChange={(e) => handleEducationChange(index, "period", e.target.value)}
-                        className="w-24 bg-transparent text-[11px] font-bold text-slate-400 focus:outline-none text-right uppercase tracking-widest placeholder:text-slate-400"
+                        className="w-full sm:w-24 bg-transparent text-[11px] font-bold text-slate-400 focus:outline-none text-left sm:text-right uppercase tracking-widest placeholder:text-slate-400"
                       />
                     </div>
                   </div>
@@ -443,38 +493,76 @@ const Settings = () => {
                 />
               </div>
             </button>
+          </div>
+        </section>
 
+        <section className="space-y-4">
+          <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 pl-1">
+            Security
+          </h2>
+          <div className="bg-white rounded-[2rem] border border-slate-200 p-5 space-y-4">
+            <div className="flex items-center gap-4 pb-1">
+              <div className="size-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
+                <Shield className="size-5" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-black">Change Password</p>
+                <p className="text-[10px] font-bold text-slate-400">Update your account password</p>
+              </div>
+            </div>
 
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Current Password
+              </label>
+              <input
+                type="password"
+                value={passwordForm.currentPassword}
+                onChange={(e) =>
+                  setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
+                }
+                className="w-full h-14 px-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary/50 focus:outline-none transition-all text-sm font-bold shadow-inner"
+                placeholder="Enter current password"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                New Password
+              </label>
+              <input
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) =>
+                  setPasswordForm({ ...passwordForm, newPassword: e.target.value })
+                }
+                className="w-full h-14 px-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary/50 focus:outline-none transition-all text-sm font-bold shadow-inner"
+                placeholder="Minimum 6 characters"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={(e) =>
+                  setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
+                }
+                className="w-full h-14 px-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-primary/50 focus:outline-none transition-all text-sm font-bold shadow-inner"
+                placeholder="Re-enter new password"
+              />
+            </div>
 
             <button
               type="button"
-              onClick={() => toast.info("Security settings coming soon!")}
-              className="w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all border-b border-slate-100 cursor-pointer"
+              onClick={handleChangePassword}
+              disabled={isUpdatingPassword}
+              className="w-full h-12 rounded-2xl bg-slate-900 text-white font-black text-xs uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50"
             >
-              <div className="flex items-center gap-4">
-                <div className="size-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
-                  <Shield className="size-5" />
-                </div>
-                <div className="text-left">
-                  <p className="text-sm font-black">Security</p>
-                  <p className="text-[10px] font-bold text-slate-400">Password & Auth</p>
-                </div>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => toast.info("Support ticket system coming soon!")}
-              className="w-full p-5 flex items-center justify-between active:bg-slate-50 transition-all cursor-pointer"
-            >
-              <div className="flex items-center gap-4">
-                <div className="size-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
-                  <HelpCircle className="size-5" />
-                </div>
-                <div className="text-left">
-                  <p className="text-sm font-black">Help & Support</p>
-                  <p className="text-[10px] font-bold text-slate-400">FAQ & Contact</p>
-                </div>
-              </div>
+              {isUpdatingPassword ? "Updating..." : "Update Password"}
             </button>
           </div>
         </section>

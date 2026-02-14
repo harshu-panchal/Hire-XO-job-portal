@@ -36,6 +36,11 @@ export const interviewService = {
         return response.data;
     },
 
+    updateInterview: async (interviewId: string, data: Partial<Interview>) => {
+        const response = await api.put(`/interviews/${interviewId}`, data);
+        return response.data;
+    },
+
     cancelInterview: async (interviewId: string) => {
         const response = await api.delete(`/interviews/${interviewId}`);
         return response.data;

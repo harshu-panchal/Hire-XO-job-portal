@@ -19,6 +19,7 @@ import {
   Truck,
   Wrench,
   CarFront,
+  Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -40,6 +41,7 @@ const financialItems = [
 const systemItems = [
   { icon: BarChart3, label: "Reports", path: "/admin/reports" },
   { icon: BadgeCheck, label: "Certificates", path: "/admin/certificates" },
+  { icon: Video, label: "Interviews", path: "/admin/interviews" },
   { icon: Settings, label: "Admin Settings", path: "/admin/settings" },
 ];
 

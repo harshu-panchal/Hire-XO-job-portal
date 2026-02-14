@@ -12,6 +12,7 @@ const postController = new PostController();
 router.get('/', optionalAuthenticate, postController.getAll);
 
 // Protected routes
+router.get('/my-posts', authenticateToken, postController.getMyPosts);
 router.post('/', authenticateToken, validate(createPostSchema), postController.create);
 router.post('/:id/like', authenticateToken, postController.like);
 router.delete('/:id', authenticateToken, postController.delete);

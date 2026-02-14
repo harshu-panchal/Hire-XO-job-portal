@@ -41,10 +41,9 @@ const EmployerPromotions = () => {
             setStats(data.stats);
             setPromotions(data.promotions);
 
-            // Fetch Posts (Filter by user)
-            const { data: postsData } = await postService.getAllPosts(1, 100);
-            const userPosts = postsData.filter((p: any) => p.userId?._id === user?.id);
-            setMyPosts(userPosts);
+            // Fetch my posts directly (no global list truncation issues)
+            const postsData = await postService.getMyPosts();
+            setMyPosts(postsData);
 
             // Fetch Jobs
             if (user.role === 'employer') {

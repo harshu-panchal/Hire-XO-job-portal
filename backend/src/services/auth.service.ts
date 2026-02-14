@@ -133,6 +133,7 @@ export class AuthService {
                     ...userResponse,
                     id: newUser._id,
                     // Flattened profile fields
+                    ...(newUser.profile || {}),
                     ...(profile?.toObject() || {}),
                     // Helper fields from user model
                     name: newUser.name,
@@ -140,6 +141,7 @@ export class AuthService {
                     role: newUser.role,
                     // Preserved nested profile for backward compatibility
                     profile: {
+                        ...(newUser.profile || {}),
                         ...profile?.toObject(),
                         id: profile?._id,
                         name: newUser.name,
@@ -200,6 +202,7 @@ export class AuthService {
             ...userResponse,
             id: user._id,
             profile: {
+                ...(user.profile || {}),
                 ...profile?.toObject() || {},
                 id: profile?._id,
                 name: user.name,
@@ -216,6 +219,7 @@ export class AuthService {
             user: {
                 ...unifiedUser,
                 // Flattened profile fields
+                ...(user.profile || {}),
                 ...(profile?.toObject() || {}),
                 profile: unifiedUser.profile // Ensure nested profile is kept
             }
@@ -245,8 +249,10 @@ export class AuthService {
             ...userResponse,
             id: user._id,
             // Flattened profile fields
+            ...(user.profile || {}),
             ...(profile?.toObject() || {}),
             profile: {
+                ...(user.profile || {}),
                 ...profile?.toObject() || {},
                 id: profile?._id,
                 name: user.name,
@@ -266,11 +272,47 @@ export class AuthService {
             throw new Error('User not found');
         }
 
+        const nestedProfile = updateData.profile || {};
+
+        const getField = (field: string) =>
+            updateData[field] !== undefined ? updateData[field] : nestedProfile[field];
+
         // Update User fields
         const userUpdates: any = {};
-        if (updateData.name) userUpdates.name = updateData.name;
-        if (updateData.phoneNumber) userUpdates.phoneNumber = updateData.phoneNumber;
-        if (updateData.profilePhoto) userUpdates.profilePhoto = updateData.profilePhoto;
+        if (updateData.name !== undefined) userUpdates.name = updateData.name;
+        if (getField('phoneNumber') !== undefined) userUpdates.phoneNumber = getField('phoneNumber');
+        if (getField('profilePhoto') !== undefined) userUpdates.profilePhoto = getField('profilePhoto');
+
+        // Persist shared profile fields on User.profile
+        const mergedProfile = { ...((user.profile as any) || {}) };
+        const profileFields = [
+            'bio',
+            'skills',
+            'linkedinUrl',
+            'githubUrl',
+            'twitterUrl',
+            'preferences',
+            'experience',
+            'education',
+            'age',
+            'jobTitle',
+            'location',
+            'website',
+            'about',
+            'company',
+            'companyLogo',
+        ];
+
+        for (const field of profileFields) {
+            const value = getField(field);
+            if (value !== undefined) {
+                mergedProfile[field] = value;
+            }
+        }
+
+        if (Object.keys(mergedProfile).length > 0) {
+            userUpdates.profile = mergedProfile;
+        }
 
         if (Object.keys(userUpdates).length > 0) {
             await User.findByIdAndUpdate(userId, userUpdates);
@@ -280,28 +322,36 @@ export class AuthService {
         let profile;
         if (user.role === 'employee') {
             const profileUpdates: any = {};
-            if (updateData.education) profileUpdates.education = updateData.education;
-            if (updateData.age) profileUpdates.age = updateData.age;
-            if (updateData.experience) profileUpdates.experience = updateData.experience;
-            if (updateData.interestedCompanies) profileUpdates.interestedCompanies = updateData.interestedCompanies;
-            if (updateData.cv) profileUpdates.cv = updateData.cv;
+            if (getField('education') !== undefined) profileUpdates.education = getField('education');
+            if (getField('age') !== undefined) profileUpdates.age = getField('age');
+            if (getField('experience') !== undefined) profileUpdates.experience = getField('experience');
+            if (getField('interestedCompanies') !== undefined) profileUpdates.interestedCompanies = getField('interestedCompanies');
+            if (getField('cv') !== undefined) profileUpdates.cv = getField('cv');
 
-            profile = await JobSeeker.findOneAndUpdate(
-                { userId },
-                profileUpdates,
-                { new: true }
-            );
+            if (Object.keys(profileUpdates).length > 0) {
+                profile = await JobSeeker.findOneAndUpdate(
+                    { userId },
+                    profileUpdates,
+                    { new: true }
+                );
+            } else {
+                profile = await JobSeeker.findOne({ userId });
+            }
         } else if (user.role === 'employer') {
             const profileUpdates: any = {};
-            if (updateData.company) profileUpdates.company = updateData.company;
-            if (updateData.companyLogo) profileUpdates.companyLogo = updateData.companyLogo;
-            if (updateData.experience) profileUpdates.experience = updateData.experience;
+            if (getField('company') !== undefined) profileUpdates.company = getField('company');
+            if (getField('companyLogo') !== undefined) profileUpdates.companyLogo = getField('companyLogo');
+            if (getField('experience') !== undefined) profileUpdates.experience = getField('experience');
 
-            profile = await Recruiter.findOneAndUpdate(
-                { userId },
-                profileUpdates,
-                { new: true }
-            );
+            if (Object.keys(profileUpdates).length > 0) {
+                profile = await Recruiter.findOneAndUpdate(
+                    { userId },
+                    profileUpdates,
+                    { new: true }
+                );
+            } else {
+                profile = await Recruiter.findOne({ userId });
+            }
         } else if (user.role === 'resource') {
             profile = await ResourceProfile.findOneAndUpdate(
                 { userId },

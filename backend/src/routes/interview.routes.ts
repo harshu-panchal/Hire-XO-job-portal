@@ -7,6 +7,7 @@ const interviewController = new InterviewController();
 
 router.post('/schedule', authenticateToken, requireRole('employer', 'recruiter'), interviewController.scheduleInterview);
 router.get('/my', authenticateToken, interviewController.getMyInterviews);
+router.put('/:interviewId', authenticateToken, requireRole('employer', 'recruiter', 'admin'), interviewController.updateInterview);
 router.patch('/:interviewId/status', authenticateToken, interviewController.updateStatus);
 router.delete('/:interviewId', authenticateToken, interviewController.cancelInterview);
 

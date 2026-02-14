@@ -17,6 +17,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { userService } from "@/services/userService";
 import { applicationService } from "@/services/applicationService";
 import { jobService } from "@/services/jobService";
+import { interviewService } from "@/services/interviewService";
 import { postService, type Post } from "@/services/postService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { formatDistanceToNow } from "date-fns";
@@ -43,21 +44,22 @@ const EmployerDashboard = () => {
     setError(null);
     setLoading(true);
     try {
-      const [statsData, appsData, myJobs, postsData] = await Promise.all([
+      const [statsData, appsData, myJobs, postsData, interviewsData] = await Promise.all([
         userService.getDashboardStats(),
         applicationService.getReceivedApplications(),
         jobService.getMyListings(),
         postService.getAllPosts(),
+        interviewService.getMyInterviews(),
       ]);
-
-      setStats({
-        activeJobs: (Array.isArray(myJobs) ? myJobs.length : 0) || statsData?.activeJobs || 0,
-        totalApplications: statsData?.totalApplications || 0,
-        interviews: 0,
-      });
 
       // Format applications safely
       const appsArray = Array.isArray(appsData) ? appsData : (appsData as any)?.data || [];
+      setStats({
+        activeJobs: (Array.isArray(myJobs) ? myJobs.length : 0) || statsData?.activeJobs || 0,
+        totalApplications: appsArray.length || statsData?.totalApplications || 0,
+        interviews: Array.isArray(interviewsData) ? interviewsData.length : 0,
+      });
+
       const formattedApps = appsArray.slice(0, 5).map((app: any) => ({
         id: app.id || app._id,
         name: app.applicantId?.name || "Unknown Candidate",
@@ -106,6 +108,7 @@ const EmployerDashboard = () => {
       icon: TrendingUp,
       color: "text-green-500",
       bg: "bg-green-500/10",
+      to: "/employer/interviews",
     },
   ];
 
@@ -346,6 +349,8 @@ const EmployerDashboard = () => {
                 <div
                   className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${app.status === "Pending"
                     ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                    : app.status === "InterviewScheduled"
+                      ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
                     : app.status === "Accepted"
                       ? "bg-green-500/10 text-green-600 border-green-500/20"
                       : "bg-red-500/10 text-red-600 border-red-500/20"

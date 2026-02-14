@@ -407,9 +407,9 @@ export class ApplicationService {
             await application.save();
 
             // Create Notification
-            const title = status === 'Accepted' ? 'Application Shortlisted' : 'Application Update';
+            const title = status === 'Accepted' ? 'Application Accepted' : 'Application Update';
             const message = status === 'Accepted'
-                ? `You are shortlisted for ${job.title}. Our team will contact you soon.`
+                ? `Your application for ${job.title} has been accepted. The employer may now schedule an interview.`
                 : `Thank you for your interest in ${job.title}. Unfortunately, your application was not selected at this time.`;
 
             const notification = await Notification.create({
@@ -444,9 +444,9 @@ export class ApplicationService {
             await application.save();
 
             // Create Notification
-            const title = status === 'Accepted' ? 'Application Shortlisted' : 'Application Update';
+            const title = status === 'Accepted' ? 'Application Accepted' : 'Application Update';
             const message = status === 'Accepted'
-                ? `You are shortlisted for the ${application.resourceType} position. Our team will contact you soon.`
+                ? `Your application for the ${application.resourceType} position has been accepted.`
                 : `Thank you for your interest in the ${application.resourceType} position. Unfortunately, your application was not selected at this time.`;
 
             const notification = await Notification.create({

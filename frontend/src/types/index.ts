@@ -202,6 +202,8 @@ export interface UserProfile {
   location?: string;
   company?: string;
   jobTitle?: string;
+  website?: string;
+  about?: string;
   companyLogo?: string;
   profilePhoto?: string;
   bio?: string;
@@ -227,7 +229,6 @@ export interface UserProfile {
   preferredEquity?: string;
 
   // Tender specific
-  website?: string;
   founded?: string;
   projectsWon?: number;
 

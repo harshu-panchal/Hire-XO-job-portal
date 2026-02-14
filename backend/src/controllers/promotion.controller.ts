@@ -38,7 +38,9 @@ export class PromotionController {
                 promotion
             });
         } catch (error: any) {
-            res.status(500).json({ message: error.message || 'Failed to create promotion' });
+            const message = error?.message || 'Failed to create promotion';
+            const statusCode = this.getPromotionErrorStatusCode(message);
+            res.status(statusCode).json({ message });
         }
     };
 
@@ -80,4 +82,33 @@ export class PromotionController {
             res.status(500).json({ message: error.message || 'Failed to fetch promotions' });
         }
     };
+
+    private getPromotionErrorStatusCode(message: string): number {
+        const normalizedMessage = message.toLowerCase();
+
+        if (
+            normalizedMessage.includes('invalid resource type') ||
+            normalizedMessage.includes('missing required fields') ||
+            normalizedMessage.includes('no longer available')
+        ) {
+            return 400;
+        }
+
+        if (normalizedMessage.includes('you can only promote your own')) {
+            return 403;
+        }
+
+        if (
+            normalizedMessage.includes('not found') ||
+            normalizedMessage.includes('plan not found')
+        ) {
+            return 404;
+        }
+
+        if (normalizedMessage.includes('already has an active promotion')) {
+            return 409;
+        }
+
+        return 500;
+    }
 }

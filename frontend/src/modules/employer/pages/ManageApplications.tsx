@@ -13,7 +13,6 @@ import {
   ExternalLink,
   CheckCircle2,
   XCircle,
-  UserPlus,
   Video,
   Calendar as CalendarIcon,
   MapPin,
@@ -114,11 +113,10 @@ const ManageApplications = () => {
   }, [filter]);
 
   const statusColors = {
-    Shortlisted: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-    Interviewed: "bg-green-500/10 text-green-600 border-green-500/20",
     Pending: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+    InterviewScheduled: "bg-blue-500/10 text-blue-600 border-blue-500/20",
     Rejected: "bg-red-500/10 text-red-600 border-red-500/20",
-    Accepted: "bg-green-500/10 text-green-600 border-green-500/20", // Added Accepted mappings
+    Accepted: "bg-green-500/10 text-green-600 border-green-500/20",
   };
 
   const handleViewDetails = (app: any) => {
@@ -127,6 +125,11 @@ const ManageApplications = () => {
   };
 
   const handleScheduleInterview = async () => {
+    if (!["Accepted", "InterviewScheduled"].includes(selectedApp?.status)) {
+      toast.error("Hire candidate first, then schedule interview");
+      return;
+    }
+
     if (!interviewDate || !interviewTime) {
       toast.error("Please select date and time");
       return;
@@ -148,11 +151,19 @@ const ManageApplications = () => {
       });
       toast.success("Interview scheduled successfully");
       setIsInterviewModalOpen(false);
-
-      // Optionally update status to Shortlisted
-      if (selectedApp.status === "Pending") {
-        handleUpdateStatus(selectedApp.id, "Shortlisted");
-      }
+      setInterviewDate("");
+      setInterviewTime("");
+      setInterviewLocation("");
+      setInterviewLink("");
+      setApplications((prev) =>
+        prev.map((app) =>
+          app.id === selectedApp.id ? { ...app, status: "InterviewScheduled" } : app
+        )
+      );
+      setSelectedApp((prev: any) => (prev ? { ...prev, status: "InterviewScheduled" } : prev));
+      setFilter("Scheduled");
+      const refreshedInterviews = await interviewService.getMyInterviews();
+      setInterviews(refreshedInterviews);
     } catch (error) {
       console.error(error);
       toast.error("Failed to schedule interview");
@@ -161,20 +172,34 @@ const ManageApplications = () => {
     }
   };
 
-  const handleUpdateStatus = async (appId: string, newStatus: string) => {
+  const handleUpdateStatus = async (appId: string, newStatus: Application["status"]): Promise<boolean> => {
     try {
       setUpdating(appId);
       await applicationService.updateApplicationStatus(appId, newStatus as any);
       setApplications((prev) =>
         prev.map((app) => (app.id === appId ? { ...app, status: newStatus } : app))
       );
+      setSelectedApp((prev: any) => (prev?.id === appId ? { ...prev, status: newStatus } : prev));
       setActiveMenu(null);
+      return true;
     } catch (error) {
       console.error("Failed to update status:", error);
       alert("Failed to update status. Please try again.");
+      return false;
     } finally {
       setUpdating(null);
     }
+  };
+
+  const handleHireAndSchedule = async (app: any) => {
+    const isUpdated = await handleUpdateStatus(app.id, "Accepted");
+    if (!isUpdated) return;
+
+    setSelectedApp((prev: any) => {
+      if (prev?.id === app.id) return { ...prev, status: "Accepted" };
+      return { ...app, status: "Accepted" };
+    });
+    setIsInterviewModalOpen(true);
   };
 
   const handleRestrictedAction = (action: string, app: any) => {
@@ -209,7 +234,7 @@ const ManageApplications = () => {
 
       {/* Filter Tabs */}
       <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-5 px-5">
-        {["All", "Pending", "Shortlisted", "Scheduled", "Interviewed", "Rejected"].map((f) => (
+        {["All", "Pending", "Accepted", "Rejected", "Scheduled"].map((f) => (
           <button
             key={f}
             type="button"
@@ -368,15 +393,7 @@ const ManageApplications = () => {
                               <div className="p-2 space-y-1">
                                 <button
                                   type="button"
-                                  onClick={() => handleUpdateStatus(app.id, "Shortlisted")}
-                                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-slate-600 transition-colors text-xs font-bold"
-                                >
-                                  <UserPlus className="size-4 text-blue-500" />
-                                  Shortlist Candidate
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleUpdateStatus(app.id, "Accepted")}
+                                  onClick={() => handleHireAndSchedule(app)}
                                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-green-50 text-slate-600 transition-colors text-xs font-bold"
                                 >
                                   <CheckCircle2 className="size-4 text-green-500" />
@@ -394,11 +411,18 @@ const ManageApplications = () => {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    setSelectedApp(app);
-                                    setIsInterviewModalOpen(true);
+                                    if (!["Accepted", "InterviewScheduled"].includes(app.status)) {
+                                      toast.error("Hire candidate first, then schedule interview");
+                                    } else {
+                                      setSelectedApp(app);
+                                      setIsInterviewModalOpen(true);
+                                    }
                                     setActiveMenu(null);
                                   }}
-                                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 text-slate-600 transition-colors text-xs font-bold"
+                                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-colors ${["Accepted", "InterviewScheduled"].includes(app.status)
+                                    ? "hover:bg-slate-50 text-slate-600"
+                                    : "bg-slate-50 text-slate-400 cursor-not-allowed"
+                                    }`}
                                 >
                                   <CalendarIcon className="size-4 text-slate-400" />
                                   Schedule Interview
@@ -717,8 +741,7 @@ const ManageApplications = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    handleUpdateStatus(selectedApp.id, "Accepted");
-                    setSelectedApp(null);
+                    handleHireAndSchedule(selectedApp);
                   }}
                   className="flex-1 h-14 rounded-2xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-3"
                 >
@@ -746,8 +769,17 @@ const ManageApplications = () => {
                 </button>
                 <button
                   type="button"
-                  className="h-14 px-8 rounded-2xl bg-white border-2 border-slate-100 font-black text-sm uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2"
-                  onClick={() => setIsInterviewModalOpen(true)}
+                  className={`h-14 px-8 rounded-2xl border-2 font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${["Accepted", "InterviewScheduled"].includes(selectedApp.status)
+                    ? "bg-white border-slate-100 active:scale-95"
+                    : "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
+                  onClick={() => {
+                    if (!["Accepted", "InterviewScheduled"].includes(selectedApp.status)) {
+                      toast.error("Hire candidate first, then schedule interview");
+                      return;
+                    }
+                    setIsInterviewModalOpen(true);
+                  }}
                 >
                   Schedule
                   <CalendarIcon className="size-4" />

@@ -1,7 +1,7 @@
 import { config } from './config/env.config';
 import app from './app';
 import { connectDB } from './config/database';
-import { seedPlans } from './utils/seed';
+// import { seedPlans } from './utils/seed';
 
 const PORT = config.PORT;
 
@@ -11,7 +11,7 @@ const startServer = async () => {
         await connectDB();
 
         // Seed initial data
-        await seedPlans();
+        // await seedPlans();
 
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);

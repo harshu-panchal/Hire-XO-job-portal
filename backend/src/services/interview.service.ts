@@ -9,6 +9,34 @@ import Job from '../models/job.model';
 
 export class InterviewService {
     public createInterview = async (data: any): Promise<IInterview> => {
+        if (!data.applicationId || !data.applicationType) {
+            throw new Error('Application details are required to schedule an interview');
+        }
+
+        let jobApplication: any = null;
+        if (data.applicationType === 'JobApplication') {
+            const application = await JobApplication.findById(data.applicationId);
+            if (!application) {
+                throw new Error('Application not found');
+            }
+
+            if (application.status !== 'Accepted') {
+                throw new Error('Candidate must be hired before scheduling interview');
+            }
+
+            const job = await Job.findById(application.jobId);
+            if (!job) {
+                throw new Error('Job not found');
+            }
+            if (job.userId.toString() !== data.employerId) {
+                throw new Error('You can only schedule interviews for your own jobs');
+            }
+
+            data.applicantId = application.applicantId;
+            data.jobId = application.jobId;
+            jobApplication = application;
+        }
+
         // 1. Verify Applicant exists
         const applicant = await User.findById(data.applicantId);
         if (!applicant) {
@@ -30,6 +58,12 @@ export class InterviewService {
         // For now, focusing on Job as per plan.
 
         const interview = await Interview.create(data);
+
+        // Mark job application as interview scheduled once interview is created.
+        if (jobApplication) {
+            jobApplication.status = 'InterviewScheduled';
+            await jobApplication.save();
+        }
 
         // Notify Applicant
         try {
@@ -57,12 +91,79 @@ export class InterviewService {
     };
 
     public getInterviewsForUser = async (userId: string, role: string): Promise<IInterview[]> => {
-        const query = role === 'employer' ? { employerId: userId } : { applicantId: userId };
+        const query = role === 'admin'
+            ? {}
+            : role === 'employer'
+                ? { employerId: userId }
+                : { applicantId: userId };
         return await Interview.find(query)
             .populate('jobId', 'title company location')
             .populate('applicantId', 'name profilePhoto email')
             .populate('employerId', 'name profilePhoto email')
             .sort({ date: 1, time: 1 });
+    };
+
+    public updateInterview = async (
+        interviewId: string,
+        payload: Partial<IInterview>,
+        userId: string,
+        role: string
+    ): Promise<IInterview> => {
+        const interview = await Interview.findById(interviewId);
+        if (!interview) {
+            throw new Error('Interview not found');
+        }
+
+        const isAdmin = role === 'admin';
+        if (!isAdmin && interview.employerId.toString() !== userId) {
+            throw new Error('Only employer or admin can edit this interview');
+        }
+
+        if (!['scheduled', 'pending'].includes(interview.status)) {
+            throw new Error('Only scheduled or pending interviews can be edited');
+        }
+
+        const editableFields = ['title', 'description', 'date', 'time', 'type', 'location', 'link', 'status'] as const;
+        editableFields.forEach((field) => {
+            if (payload[field] !== undefined) {
+                (interview as any)[field] = payload[field];
+            }
+        });
+
+        if (interview.type === 'Remote' && !interview.link) {
+            throw new Error('Meeting link is required for remote interviews');
+        }
+        if (interview.type === 'On-site' && !interview.location) {
+            throw new Error('Location is required for on-site interviews');
+        }
+
+        await interview.save();
+
+        try {
+            const editor = await User.findById(userId);
+            const editorName = editor ? editor.name : 'Admin';
+
+            const message = `${editorName} updated interview details for ${interview.title} on ${new Date(interview.date).toLocaleDateString()} at ${interview.time}.`;
+
+            const notifyTargets = [interview.applicantId.toString(), interview.employerId.toString()]
+                .filter((targetId) => targetId !== userId);
+
+            for (const targetId of notifyTargets) {
+                const notification = await Notification.create({
+                    userId: targetId,
+                    title: 'Interview Updated',
+                    message,
+                    type: 'info',
+                    relatedId: interview._id.toString(),
+                    relatedType: 'job_application'
+                });
+                notificationEmitter.emit('new_notification', { userId: targetId, notification });
+            }
+        } catch (error) {
+            console.error('Failed to notify users about interview update', error);
+        }
+
+        return interview;
     };
 
     public updateInterviewStatus = async (interviewId: string, status: string, userId: string): Promise<IInterview> => {

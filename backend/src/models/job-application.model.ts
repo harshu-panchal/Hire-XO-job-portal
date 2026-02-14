@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IJobApplication extends Document {
     applicantId: mongoose.Types.ObjectId;
     jobId: mongoose.Types.ObjectId;
-    status: 'Pending' | 'Accepted' | 'Rejected';
+    status: 'Pending' | 'Accepted' | 'InterviewScheduled' | 'Rejected';
     message?: string;
     resume?: string;
     additionalDocuments?: string[];
@@ -13,7 +13,7 @@ export interface IJobApplication extends Document {
 const JobApplicationSchema: Schema = new Schema({
     applicantId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     jobId: { type: Schema.Types.ObjectId, ref: 'Job', required: true },
-    status: { type: String, enum: ['Pending', 'Accepted', 'Rejected'], default: 'Pending' },
+    status: { type: String, enum: ['Pending', 'Accepted', 'InterviewScheduled', 'Rejected'], default: 'Pending' },
     message: { type: String },
     resume: { type: String },
     additionalDocuments: [{ type: String }],

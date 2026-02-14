@@ -17,11 +17,18 @@ export interface IUser extends Document {
         skills?: string[];
         experience?: Array<{ company: string; role: string; period: string }>;
         education?: Array<{ school: string; degree: string; period: string }>;
+        preferences?: {
+            notifications?: boolean;
+            theme?: string;
+            notificationSettings?: any;
+        };
         linkedinUrl?: string;
         githubUrl?: string;
         twitterUrl?: string;
         company?: string;
         jobTitle?: string;
+        website?: string;
+        about?: string;
         username?: string;
         age?: number;
         organizationName?: string;
@@ -74,12 +81,19 @@ const UserSchema: Schema = new Schema({
             degree: String,
             period: String
         }],
+        preferences: {
+            notifications: { type: Boolean, default: true },
+            theme: { type: String, enum: ['light', 'dark', 'system'], default: 'system' },
+            notificationSettings: { type: Schema.Types.Mixed }
+        },
         linkedinUrl: { type: String },
         githubUrl: { type: String },
         twitterUrl: { type: String },
         // Role specific fields
         company: { type: String },
         jobTitle: { type: String },
+        website: { type: String },
+        about: { type: String },
         username: { type: String },
         age: { type: Number },
         organizationName: { type: String },
