@@ -5,7 +5,7 @@ import { authenticateToken, requireRole } from '../middlewares/auth.middleware';
 const router = Router();
 const interviewController = new InterviewController();
 
-router.post('/schedule', authenticateToken, requireRole('employer', 'recruiter'), interviewController.scheduleInterview);
+router.post('/schedule', authenticateToken, requireRole('employer', 'recruiter', 'admin'), interviewController.scheduleInterview);
 router.get('/my', authenticateToken, interviewController.getMyInterviews);
 router.put('/:interviewId', authenticateToken, requireRole('employer', 'recruiter', 'admin'), interviewController.updateInterview);
 router.patch('/:interviewId/status', authenticateToken, interviewController.updateStatus);

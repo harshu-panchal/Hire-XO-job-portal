@@ -20,11 +20,15 @@ export const certificateService = {
         },
       });
       const data = response.data;
+      const certificate = data.certificate || data.data;
+      if (!certificate) {
+        throw new Error(data.message || "Certificate upload is not available");
+      }
       return {
         ...data,
         certificate: {
-          ...data.certificate,
-          id: data.certificate.id || data.certificate._id,
+          ...certificate,
+          id: certificate.id || certificate._id,
         },
       };
     } catch (error) {

@@ -74,6 +74,8 @@ import Employers from "./modules/admin/pages/Employers";
 import JobSeekers from "./modules/admin/pages/JobSeekers";
 import EmployeePlans from "./modules/admin/pages/EmployeePlans";
 import EmployerPlans from "./modules/admin/pages/EmployerPlans";
+import InterviewTiers from "./modules/admin/pages/InterviewTiers";
+import PromotionPlans from "./modules/admin/pages/PromotionPlans";
 import ResourcePlansAdmin from "./modules/admin/pages/ResourcePlansAdmin";
 import Payments from "./modules/admin/pages/Payments";
 import AdminCertificates from "./modules/admin/pages/Certificates";
@@ -675,7 +677,9 @@ function App() {
           <Route path="/admin/employers" element={<Employers />} />
           <Route path="/admin/job-seekers" element={<JobSeekers />} />
           <Route path="/admin/employee-plans" element={<EmployeePlans />} />
+          <Route path="/admin/interview-tiers" element={<InterviewTiers />} />
           <Route path="/admin/employer-plans" element={<EmployerPlans />} />
+          <Route path="/admin/promotion-plans" element={<PromotionPlans />} />
           <Route path="/admin/resource-plans" element={<ResourcePlansAdmin />} />
           <Route path="/admin/payments" element={<Payments />} />
           <Route path="/admin/certificates" element={<AdminCertificates />} />

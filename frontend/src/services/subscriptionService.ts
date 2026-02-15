@@ -32,6 +32,27 @@ export const subscriptionService = {
   },
 
   /**
+   * Get interview verification tiers for employees
+   */
+  async getInterviewTiers(): Promise<SubscriptionPlan[]> {
+    try {
+      const response = await apiClient.get<SubscriptionPlan[]>("/subscriptions/interview-tiers");
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  async purchaseInterviewTier(planId: string): Promise<{ message: string; tier: any; walletBalance: number }> {
+    try {
+      const response = await apiClient.post("/subscriptions/interview-tiers/purchase", { planId });
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  /**
    * Purchase a subscription
    */
   async purchaseSubscription(planId: string): Promise<{ message: string; subscription: any }> {

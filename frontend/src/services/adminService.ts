@@ -245,6 +245,30 @@ export const adminService = {
     }
   },
 
+  /**
+   * Get interview tiers (job-seeker plans with SLA)
+   */
+  async getInterviewTiers(): Promise<SubscriptionPlan[]> {
+    try {
+      const response = await apiClient.get("/admin/interview-tiers");
+      return response.data.data || [];
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  /**
+   * Bootstrap default interview tiers
+   */
+  async bootstrapInterviewTiers(): Promise<{ message: string; data: any }> {
+    try {
+      const response = await apiClient.post("/admin/interview-tiers/bootstrap");
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
   async getCertificateRequests(params?: { status?: string; search?: string; page?: number; limit?: number }): Promise<PaginatedResponse<CertificateRequest>> {
     try {
       const response = await apiClient.get<PaginatedResponse<CertificateRequest>>("/admin/certificate-requests", { params });

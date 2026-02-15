@@ -15,8 +15,10 @@ export interface PromotionPlan {
 
 export const promotionPlanService = {
     // Get all active promotion plans
-    async getAllPlans(): Promise<PromotionPlan[]> {
-        const response = await apiClient.get('/promotion-plans/plans');
+    async getAllPlans(activeOnly: boolean = true): Promise<PromotionPlan[]> {
+        const response = await apiClient.get('/promotion-plans/plans', {
+            params: { activeOnly }
+        });
         return response.data.data;
     },
 

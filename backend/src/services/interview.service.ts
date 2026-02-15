@@ -6,6 +6,7 @@ import User from '../models/user.model';
 import { notificationEmitter } from '../utils/notificationEmitter';
 import mongoose from 'mongoose';
 import Job from '../models/job.model';
+import { AuditService } from './audit.service';
 
 export class InterviewService {
     public createInterview = async (data: any): Promise<IInterview> => {
@@ -14,6 +15,7 @@ export class InterviewService {
         }
 
         let jobApplication: any = null;
+        let interviewOwnerEmployerId: string | undefined = data.employerId;
         if (data.applicationType === 'JobApplication') {
             const application = await JobApplication.findById(data.applicationId);
             if (!application) {
@@ -28,13 +30,61 @@ export class InterviewService {
             if (!job) {
                 throw new Error('Job not found');
             }
-            if (job.userId.toString() !== data.employerId) {
+            interviewOwnerEmployerId = job.userId.toString();
+            if (data.requesterRole !== 'admin' && job.userId.toString() !== data.employerId) {
                 throw new Error('You can only schedule interviews for your own jobs');
             }
 
             data.applicantId = application.applicantId;
             data.jobId = application.jobId;
+            data.employerId = job.userId;
             jobApplication = application;
+
+            const hasEmployerSubscription = await this.hasActiveEmployerSubscription(interviewOwnerEmployerId);
+            if (!hasEmployerSubscription) {
+                throw new Error('Employer subscription required to schedule interview');
+            }
+
+            const now = new Date();
+            const appliedAt = new Date(application.appliedAt);
+            const maxScheduleDays = application.verificationMaxScheduleDays;
+
+            if (maxScheduleDays && maxScheduleDays > 0) {
+                const deadline = new Date(appliedAt);
+                deadline.setDate(deadline.getDate() + maxScheduleDays);
+
+                const isForceScheduleByAdmin = Boolean(
+                    data.requesterRole === 'admin' && data.forceSchedule && data.overrideReason
+                );
+
+                if (now > deadline && !isForceScheduleByAdmin) {
+                    application.status = 'SLAExpired';
+                    await application.save();
+                    throw new Error(`Interview SLA window expired on ${deadline.toDateString()}`);
+                }
+
+                if (isForceScheduleByAdmin) {
+                    await AuditService.logAction(
+                        data.requesterId,
+                        'FORCE_SCHEDULE_INTERVIEW',
+                        'JobApplication',
+                        String(application._id),
+                        {
+                            reason: data.overrideReason,
+                            appliedAt,
+                            maxScheduleDays,
+                            originalDeadline: deadline
+                        }
+                    );
+                }
+            } else {
+                const earliestScheduleDate = new Date(appliedAt);
+                earliestScheduleDate.setDate(earliestScheduleDate.getDate() + 30);
+
+                if (now < earliestScheduleDate) {
+                    throw new Error(`Without employee verification tier, interview can be scheduled after ${earliestScheduleDate.toDateString()}`);
+                }
+            }
         }
 
         // 1. Verify Applicant exists
@@ -49,7 +99,7 @@ export class InterviewService {
             if (!job) {
                 throw new Error('Job not found');
             }
-            if (job.userId.toString() !== data.employerId) {
+            if (data.requesterRole !== 'admin' && job.userId.toString() !== data.employerId) {
                 throw new Error('You can only schedule interviews for your own jobs');
             }
         }
@@ -89,6 +139,13 @@ export class InterviewService {
 
         return interview;
     };
+
+    private async hasActiveEmployerSubscription(employerId: string): Promise<boolean> {
+        const employer = await User.findById(employerId);
+        if (!employer) return false;
+        if (!employer.activeSubscriptionId || !employer.subscriptionExpiry) return false;
+        return employer.subscriptionExpiry > new Date();
+    }
 
     public getInterviewsForUser = async (userId: string, role: string): Promise<IInterview[]> => {
         const query = role === 'admin'

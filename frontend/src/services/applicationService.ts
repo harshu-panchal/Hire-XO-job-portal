@@ -11,9 +11,32 @@ export interface Application {
   resourceId?: string;
   resourceType?: string;
   appliedAt: string;
-  status: "Pending" | "Accepted" | "InterviewScheduled" | "Rejected";
+  status: "Pending" | "Accepted" | "InterviewScheduled" | "Rejected" | "SLAExpired";
   coverLetter?: string;
   [key: string]: any;
+}
+
+export interface SLAExpiredApplication {
+  _id?: string;
+  id: string;
+  status: "SLAExpired";
+  appliedAt: string;
+  applicantId: {
+    _id?: string;
+    id?: string;
+    name?: string;
+    email?: string;
+    profilePhoto?: string;
+  };
+  jobId: {
+    _id?: string;
+    id?: string;
+    title?: string;
+    company?: string;
+    userId?: string;
+  };
+  employerId?: string;
+  verificationMaxScheduleDays?: number;
 }
 
 export const applicationService = {
@@ -181,7 +204,7 @@ export const applicationService = {
    */
   async updateApplicationStatus(
     applicationId: string,
-    status: "Pending" | "Accepted" | "InterviewScheduled" | "Rejected",
+    status: "Pending" | "Accepted" | "InterviewScheduled" | "Rejected" | "SLAExpired",
     type: "job" | "resource" = "job"
   ): Promise<{ message: string; application: Application }> {
     try {
@@ -203,6 +226,22 @@ export const applicationService = {
         `/applications/${applicationId}`
       );
       return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
+
+  async getSLAExpiredApplications(page: number = 1, limit: number = 20): Promise<SLAExpiredApplication[]> {
+    try {
+      const response = await apiClient.get<{ success: boolean; data: SLAExpiredApplication[] }>(
+        "/applications/admin/sla-expired",
+        { params: { page, limit } }
+      );
+      return (response.data.data || []).map((app: any) => ({
+        ...app,
+        id: app.id || app._id,
+        employerId: app.employerId || app.jobId?.userId,
+      }));
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }

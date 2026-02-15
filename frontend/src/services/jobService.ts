@@ -39,8 +39,8 @@ export const jobService = {
    */
   async getJobById(id: string): Promise<Job> {
     try {
-      const response = await apiClient.get<Job>(`/jobs/${id}`);
-      const job = response.data;
+      const response = await apiClient.get<any>(`/jobs/${id}`);
+      const job = response.data?.data || response.data;
       return {
         ...job,
         id: (job as any).id || (job as any)._id,

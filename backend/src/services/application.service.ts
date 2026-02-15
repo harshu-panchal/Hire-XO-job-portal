@@ -11,10 +11,43 @@ import CSM from '../models/csm.model';
 import Logistics from '../models/logistics.model';
 import Vehicle from '../models/vehicle.model';
 import User from '../models/user.model';
+import SubscriptionPlan from '../models/subscription-plan.model';
+import InterviewTier from '../models/interview-tier.model';
 import { notificationEmitter } from '../utils/notificationEmitter';
 
 
 export class ApplicationService {
+    public async getSLAExpiredApplications(page: number = 1, limit: number = 20) {
+        const skip = (page - 1) * limit;
+
+        const applications = await JobApplication.find({ status: 'SLAExpired' })
+            .populate('applicantId', 'name email phoneNumber profilePhoto')
+            .populate('jobId', 'title company userId')
+            .sort({ appliedAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        const data = applications
+            .filter((app: any) => app?.jobId?.userId)
+            .map((app: any) => ({
+                ...app,
+                employerId: app.jobId.userId
+            }));
+
+        const total = await JobApplication.countDocuments({ status: 'SLAExpired' });
+
+        return {
+            data,
+            pagination: {
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        };
+    }
+
     // Apply to a job
     public async applyToJob(
         applicantId: string,
@@ -42,6 +75,26 @@ export class ApplicationService {
             throw new Error('You have already applied to this job');
         }
 
+        const applicant = await User.findById(applicantId);
+        let verificationPlanId: any = undefined;
+        let verificationMaxScheduleDays: number | undefined = undefined;
+
+        // Preferred: dedicated interview tier
+        if (applicant?.interviewTierId && applicant.interviewTierExpiry && applicant.interviewTierExpiry > new Date()) {
+            const tier = await InterviewTier.findById(applicant.interviewTierId);
+            if (tier?.isActive && tier.maxScheduleDays) {
+                verificationPlanId = tier._id;
+                verificationMaxScheduleDays = tier.maxScheduleDays;
+            }
+        } else if (applicant?.activeSubscriptionId && applicant.subscriptionExpiry && applicant.subscriptionExpiry > new Date()) {
+            // Backward compatibility: previously interview tiers were tied to activeSubscriptionId
+            const activePlan = await SubscriptionPlan.findById(applicant.activeSubscriptionId);
+            if (activePlan?.type === 'job-seeker' && activePlan.maxScheduleDays) {
+                verificationPlanId = activePlan._id;
+                verificationMaxScheduleDays = activePlan.maxScheduleDays;
+            }
+        }
+
         // Create application
         const application = await JobApplication.create({
             applicantId,
@@ -49,7 +102,9 @@ export class ApplicationService {
             message: data.message,
             resume: data.resume,
             additionalDocuments: data.additionalDocuments,
-            status: 'Pending'
+            status: 'Pending',
+            verificationPlanId,
+            verificationMaxScheduleDays
         });
 
         // Notify Job Owner (Employer)
@@ -319,7 +374,12 @@ export class ApplicationService {
         // Check if user can view unmasked data
         const canViewData = await this.canViewUnmaskedData(ownerId);
 
-        const ResourceModel = this.getResourceModel(resourceType);
+        const normalizedResourceType = this.getNormalizedResourceType(resourceType);
+        if (!normalizedResourceType) {
+            throw new Error(`Invalid resource type: ${resourceType}`);
+        }
+
+        const ResourceModel = this.getResourceModel(normalizedResourceType);
         if (!ResourceModel) {
             throw new Error(`Invalid resource type: ${resourceType}`);
         }
@@ -336,14 +396,14 @@ export class ApplicationService {
 
         const skip = (page - 1) * limit;
 
-        const applications = await ResourceApplication.find({ resourceId, resourceType })
+        const applications = await ResourceApplication.find({ resourceId, resourceType: normalizedResourceType })
             .populate('applicantId', 'name email phoneNumber profilePhoto profile')
             .sort({ appliedAt: -1 })
             .skip(skip)
             .limit(limit)
             .lean();
 
-        const total = await ResourceApplication.countDocuments({ resourceId, resourceType });
+        const total = await ResourceApplication.countDocuments({ resourceId, resourceType: normalizedResourceType });
 
         let data = applications;
         if (!canViewData) {
@@ -401,6 +461,19 @@ export class ApplicationService {
             const job: any = application.jobId;
             if (job.userId.toString() !== userId) {
                 throw new Error('You are not authorized to update this application');
+            }
+
+            if (status === 'Accepted') {
+                const recruiter = await User.findById(userId);
+                const hasActiveSubscription = Boolean(
+                    recruiter?.activeSubscriptionId &&
+                    recruiter?.subscriptionExpiry &&
+                    recruiter.subscriptionExpiry > new Date()
+                );
+
+                if (!hasActiveSubscription) {
+                    throw new Error('Employer subscription required to hire candidate');
+                }
             }
 
             application.status = status;

@@ -21,7 +21,7 @@ export const userService = {
   async getDashboardStats(): Promise<DashboardStats> {
     try {
       const response = await apiClient.get<DashboardStats>("/users/stats");
-      return response.data;
+      return (response.data as any)?.stats || response.data;
     } catch (error) {
       throw new Error(getErrorMessage(error));
     }

@@ -27,6 +27,7 @@ export interface SubscriptionPlan {
   name: string;
   price: number;
   durationDays: number;
+  maxScheduleDays?: number;
   description: string;
   features: string[];
   type: 'job-seeker' | 'employer' | 'resource';
@@ -135,6 +136,8 @@ export interface User {
   profilePhoto?: string;
   activeSubscriptionId?: string;
   subscriptionExpiry?: string | Date;
+  interviewTierId?: string;
+  interviewTierExpiry?: string | Date;
   status?: "active" | "suspended" | "banned";
   bookmarks?: string[];
 }

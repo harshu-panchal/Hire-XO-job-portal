@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ApplicationController } from '../controllers/application.controller';
-import { authenticateToken } from '../middlewares/auth.middleware';
+import { authenticateToken, requireRole } from '../middlewares/auth.middleware';
 import { uploadApplication } from '../middlewares/upload.middleware';
 
 const router = Router();
@@ -14,6 +14,7 @@ router.get('/received', authenticateToken, applicationController.getReceivedAppl
 router.get('/jobs/:jobId/applications', authenticateToken, applicationController.getJobApplications);
 router.get('/resources/:resourceType/:resourceId/applications', authenticateToken, applicationController.getResourceApplications);
 router.get('/resources/received', authenticateToken, applicationController.getReceivedResourceApplications);
+router.get('/admin/sla-expired', authenticateToken, requireRole('admin'), applicationController.getSLAExpiredApplications);
 router.put('/:applicationId/status', authenticateToken, applicationController.updateApplicationStatus);
 router.delete('/:applicationId', authenticateToken, applicationController.deleteApplication);
 

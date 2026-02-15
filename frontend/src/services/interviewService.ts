@@ -20,8 +20,16 @@ export interface Interview {
     createdAt: string;
 }
 
+export interface ScheduleInterviewPayload extends Partial<Interview> {
+    employerId?: string;
+    requesterId?: string;
+    requesterRole?: string;
+    forceSchedule?: boolean;
+    overrideReason?: string;
+}
+
 export const interviewService = {
-    scheduleInterview: async (data: Partial<Interview>) => {
+    scheduleInterview: async (data: ScheduleInterviewPayload) => {
         const response = await api.post('/interviews/schedule', data);
         return response.data;
     },

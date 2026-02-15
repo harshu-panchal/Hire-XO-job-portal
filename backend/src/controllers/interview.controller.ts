@@ -11,21 +11,41 @@ export class InterviewController {
 
     public scheduleInterview = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
-            const employerId = req.user?.id;
-            if (!employerId) {
+            const requesterId = req.user?.id;
+            const requesterRole = req.user?.role;
+            if (!requesterId || !requesterRole) {
                 res.status(401).json({ message: 'Unauthorized' });
                 return;
             }
 
             const interviewData = {
                 ...req.body,
-                employerId
+                employerId: requesterRole === 'admin' ? req.body.employerId : requesterId,
+                requesterId,
+                requesterRole
             };
 
             const interview = await this.interviewService.createInterview(interviewData);
             res.status(201).json(interview);
         } catch (error: any) {
-            res.status(400).json({ message: error.message || 'Failed to schedule interview' });
+            const message = error.message || 'Failed to schedule interview';
+            if (
+                message.includes('subscription required') ||
+                message.includes('subscription')
+            ) {
+                res.status(403).json({ message });
+                return;
+            }
+            if (
+                message.includes('before scheduling interview') ||
+                message.includes('SLA window') ||
+                message.includes('one month') ||
+                message.includes('Without employee verification tier')
+            ) {
+                res.status(409).json({ message });
+                return;
+            }
+            res.status(400).json({ message });
         }
     };
 

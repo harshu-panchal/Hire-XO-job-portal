@@ -51,14 +51,6 @@ const Profile = () => {
       count: Array.isArray(savedJobs) ? savedJobs.length : 0,
     },
     {
-      label: "Applied Jobs",
-      icon: Briefcase,
-      color: "text-indigo-500",
-      bg: "bg-indigo-500/10",
-      path: "/my-applications",
-      count: applications?.jobs?.length || 0,
-    },
-    {
       label: "Account Settings",
       icon: Settings,
       color: "text-slate-500",

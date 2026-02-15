@@ -68,8 +68,8 @@ export const postService = {
 
     async likePost(id: string): Promise<number> {
         try {
-            const response = await apiClient.post<{ likes: number }>(`/posts/${id}/like`);
-            return response.data.likes;
+            const response = await apiClient.post<any>(`/posts/${id}/like`);
+            return response.data?.likes ?? response.data?.data?.likes ?? 0;
         } catch (error) {
             throw new Error(getErrorMessage(error));
         }

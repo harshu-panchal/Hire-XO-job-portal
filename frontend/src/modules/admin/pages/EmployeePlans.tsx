@@ -24,8 +24,7 @@ export default function EmployeePlans() {
   const fetchPlans = async () => {
     setIsLoading(true);
     try {
-      const data = await adminService.getPlans('job-seeker');
-      console.log("Fetched job-seeker plans:", data);
+      const data = await adminService.getPlans("job-seeker");
       setPlans(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to fetch plans:", error);

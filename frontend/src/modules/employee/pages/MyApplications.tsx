@@ -19,7 +19,7 @@ const MyApplications = () => {
   // Combine and format
   const formattedJobs = Array.isArray(jobApplications)
     ? jobApplications.map((app: any) => ({
-      id: app.id,
+      id: app.id || app._id,
       title: app.jobId?.title || "Unknown Job",
       company: app.jobId?.company || "Unknown Company",
       companyLogo: app.jobId?.companyLogo, // Assuming populated
@@ -32,7 +32,7 @@ const MyApplications = () => {
 
   const formattedResources = Array.isArray(resourceApplications)
     ? resourceApplications.map((app: any) => ({
-      id: app.id,
+      id: app.id || app._id,
       title: app.resourceId?.title || app.resourceId?.name || "Resource Application",
       company: "Resource", // Resource doesn't always have company
       companyLogo: null,
@@ -43,11 +43,16 @@ const MyApplications = () => {
     }))
     : [];
 
-  const allApplications = [...formattedJobs, ...formattedResources].filter(
-    (app) =>
-      app.title.toLowerCase().includes(search.toLowerCase()) ||
-      app.company.toLowerCase().includes(search.toLowerCase())
-  );
+  const allApplications = [...formattedJobs, ...formattedResources];
+  const normalizedSearch = search.trim().toLowerCase();
+  const filteredApplications = allApplications.filter((app) => {
+    if (!normalizedSearch) return true;
+    return [app.title, app.company, app.location, app.status, app.appType]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+      .includes(normalizedSearch);
+  });
 
   return (
     <div className="pb-32 min-h-screen">
@@ -90,7 +95,7 @@ const MyApplications = () => {
           {isLoading ? (
             <div className="text-center py-10">Loading applications...</div>
           ) : (
-            allApplications.map((app) => (
+            filteredApplications.map((app) => (
               <div
                 key={`${app.appType}-${app.id}`}
                 className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm active:scale-[0.98] transition-all duration-200"
@@ -163,7 +168,7 @@ const MyApplications = () => {
             ))
           )}
 
-          {!isLoading && allApplications.length > 0 && hasMore && (
+          {!isLoading && filteredApplications.length > 0 && hasMore && (
             <div className="pt-4 pb-8 flex justify-center">
               <button
                 onClick={() => loadMoreApplications()}
@@ -175,17 +180,19 @@ const MyApplications = () => {
             </div>
           )}
 
-          {!isLoading && allApplications.length === 0 && (
+          {!isLoading && filteredApplications.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
               <div className="size-20 rounded-full bg-slate-100 flex items-center justify-center">
                 <Building2 className="size-10 text-slate-300" />
               </div>
               <div>
                 <h3 className="text-lg font-black text-slate-900">
-                  No Applications
+                  {normalizedSearch ? "No Matching Applications" : "No Applications"}
                 </h3>
                 <p className="text-slate-500 text-sm font-medium mt-1">
-                  Start applying for jobs or resources to see them here.
+                  {normalizedSearch
+                    ? "Try a different search keyword."
+                    : "Start applying for jobs or resources to see them here."}
                 </p>
               </div>
             </div>

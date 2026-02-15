@@ -44,7 +44,7 @@ const ManageApplications = () => {
   const [isScheduling, setIsScheduling] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { checkSubscription, user: currentUser } = useAuthStore();
+  const { checkSubscription } = useAuthStore();
 
   // Interview State
   const [interviews, setInterviews] = useState<any[]>([]);
@@ -63,6 +63,9 @@ const ManageApplications = () => {
           role: app.jobId?.title || "Unknown Role",
           status: app.status,
           appliedAt: new Date(app.appliedAt).toLocaleDateString(),
+          appliedAtRaw: app.appliedAt,
+          verificationMaxScheduleDays:
+            typeof app.verificationMaxScheduleDays === "number" ? app.verificationMaxScheduleDays : null,
           experience: app.applicantId?.profile?.experience || [],
           skills: app.applicantId?.profile?.skills || [],
           bio: app.applicantId?.profile?.bio || "No bio provided.",
@@ -71,6 +74,8 @@ const ManageApplications = () => {
           avatarUrl: app.applicantId?.profilePhoto,
           avatar: (app.applicantId?.name || "U").charAt(0).toUpperCase(),
           message: app.message,
+          resume: app.resume,
+          additionalDocuments: Array.isArray(app.additionalDocuments) ? app.additionalDocuments : [],
           applicantId: app.applicantId?._id || app.applicantId?.id,
           jobId: app.jobId?._id || app.jobId?.id,
         }));
@@ -117,6 +122,43 @@ const ManageApplications = () => {
     InterviewScheduled: "bg-blue-500/10 text-blue-600 border-blue-500/20",
     Rejected: "bg-red-500/10 text-red-600 border-red-500/20",
     Accepted: "bg-green-500/10 text-green-600 border-green-500/20",
+    SLAExpired: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+  };
+
+  const getInterviewSchedulingWindow = (app: any) => {
+    const appliedAtValue = app?.appliedAtRaw || app?.appliedAt;
+    const appliedAt = new Date(appliedAtValue);
+    if (!appliedAtValue || Number.isNaN(appliedAt.getTime())) return null;
+
+    const formatDate = (date: Date) =>
+      date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+
+    const maxDays = Number(app?.verificationMaxScheduleDays || 0);
+    const now = new Date();
+
+    if (maxDays > 0) {
+      const deadline = new Date(appliedAt);
+      deadline.setDate(deadline.getDate() + maxDays);
+      return {
+        kind: "tier" as const,
+        dateLabel: `Deadline: ${formatDate(deadline)}`,
+        message:
+          now > deadline
+            ? "Tier SLA window is expired. Only admin override can force scheduling now."
+            : "Interview must be scheduled within the employee tier SLA window.",
+      };
+    }
+
+    const earliestDate = new Date(appliedAt);
+    earliestDate.setDate(earliestDate.getDate() + 30);
+    return {
+      kind: "default" as const,
+      dateLabel: `Earliest allowed date: ${formatDate(earliestDate)}`,
+      message:
+        now < earliestDate
+          ? "Employee has no verification tier, so scheduling is blocked until this date."
+          : "Employee has no verification tier and 30-day waiting period is complete.",
+    };
   };
 
   const handleViewDetails = (app: any) => {
@@ -164,9 +206,9 @@ const ManageApplications = () => {
       setFilter("Scheduled");
       const refreshedInterviews = await interviewService.getMyInterviews();
       setInterviews(refreshedInterviews);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Failed to schedule interview");
+      toast.error(error?.message || "Failed to schedule interview");
     } finally {
       setIsScheduling(false);
     }
@@ -182,9 +224,9 @@ const ManageApplications = () => {
       setSelectedApp((prev: any) => (prev?.id === appId ? { ...prev, status: newStatus } : prev));
       setActiveMenu(null);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update status:", error);
-      alert("Failed to update status. Please try again.");
+      toast.error(error?.message || "Failed to update status. Please try again.");
       return false;
     } finally {
       setUpdating(null);
@@ -337,7 +379,24 @@ const ManageApplications = () => {
                     >
                       Cancel
                     </button>
-                    <button className="flex-1 h-12 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-colors">
+                    <button
+                      onClick={() => {
+                        if (interview.type === "Remote" && interview.link) {
+                          window.open(interview.link, "_blank", "noopener,noreferrer");
+                          return;
+                        }
+                        if (interview.type === "On-site" && interview.location) {
+                          window.open(
+                            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(interview.location)}`,
+                            "_blank",
+                            "noopener,noreferrer"
+                          );
+                          return;
+                        }
+                        toast.info("Interview details are not available");
+                      }}
+                      className="flex-1 h-12 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-colors"
+                    >
                       Join / View
                     </button>
                   </div>
@@ -814,6 +873,29 @@ const ManageApplications = () => {
               </div>
 
               <div className="p-8 space-y-6">
+                {(() => {
+                  const schedulingWindow = getInterviewSchedulingWindow(selectedApp);
+                  if (!schedulingWindow) return null;
+
+                  return (
+                    <div
+                      className={`rounded-2xl border p-4 ${schedulingWindow.kind === "tier"
+                        ? "bg-blue-50 border-blue-100"
+                        : "bg-amber-50 border-amber-100"
+                        }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <Clock className={`size-4 ${schedulingWindow.kind === "tier" ? "text-blue-600" : "text-amber-600"}`} />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">
+                          Interview SLA Window
+                        </p>
+                      </div>
+                      <p className="text-xs font-black text-slate-900">{schedulingWindow.dateLabel}</p>
+                      <p className="text-[11px] font-medium text-slate-600 mt-1">{schedulingWindow.message}</p>
+                    </div>
+                  );
+                })()}
+
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Interview Type</label>

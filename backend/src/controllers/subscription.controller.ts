@@ -19,6 +19,24 @@ export class SubscriptionController {
         }
     };
 
+    /**
+     * Public interview tiers endpoint for employee verification screen.
+     * Auto-bootstraps defaults if no active interview tiers exist.
+     * GET /api/subscriptions/interview-tiers
+     */
+    public getInterviewTiersPublic = async (_req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
+        try {
+            let tiers = await this.subscriptionService.getInterviewTiers();
+            if (tiers.length === 0) {
+                await this.subscriptionService.bootstrapInterviewTiers();
+                tiers = await this.subscriptionService.getInterviewTiers();
+            }
+            res.status(200).json(tiers);
+        } catch (error: any) {
+            next(error);
+        }
+    };
+
     public getWalletBalance = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
@@ -91,7 +109,63 @@ export class SubscriptionController {
         }
     };
 
+    public purchaseInterviewTier = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const { planId } = req.body;
+            if (!planId) {
+                res.status(400).json({ message: 'Plan ID is required' });
+                return;
+            }
+
+            const result = await this.subscriptionService.purchaseInterviewTier(userId, planId);
+            res.status(200).json(result);
+        } catch (error: any) {
+            next(error);
+        }
+    };
+
     // ========== ADMIN ONLY METHODS ==========
+
+    /**
+     * Get interview tiers (Admin only)
+     * GET /api/admin/interview-tiers
+     */
+    public getInterviewTiers = async (_req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
+        try {
+            const tiers = await this.subscriptionService.getInterviewTiers();
+            res.status(200).json({
+                success: true,
+                data: tiers
+            });
+        } catch (error: any) {
+            next(error);
+        }
+    };
+
+    /**
+     * Bootstrap default interview tiers (Admin only)
+     * POST /api/admin/interview-tiers/bootstrap
+     */
+    public bootstrapInterviewTiers = async (_req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
+        try {
+            const result = await this.subscriptionService.bootstrapInterviewTiers();
+            res.status(200).json({
+                success: true,
+                message: result.created.length > 0
+                    ? 'Default interview tiers created successfully'
+                    : 'Interview tiers already exist. No new defaults created.',
+                data: result
+            });
+        } catch (error: any) {
+            next(error);
+        }
+    };
 
     /**
      * Create a new subscription plan (Admin only)
@@ -99,7 +173,7 @@ export class SubscriptionController {
      */
     public createPlan = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
-            const { name, price, durationDays, description, features, type, certificateEligible } = req.body;
+            const { name, price, durationDays, description, features, type, certificateEligible, maxScheduleDays } = req.body;
 
             if (!name || !price || !durationDays || !description) {
                 res.status(400).json({
@@ -116,7 +190,8 @@ export class SubscriptionController {
                 description,
                 features: features || [],
                 type: type || 'employer', // Default to employer if not specified
-                certificateEligible: typeof certificateEligible === 'boolean' ? certificateEligible : true
+                certificateEligible: typeof certificateEligible === 'boolean' ? certificateEligible : true,
+                maxScheduleDays: maxScheduleDays ? Number(maxScheduleDays) : undefined
             });
 
             res.status(201).json({

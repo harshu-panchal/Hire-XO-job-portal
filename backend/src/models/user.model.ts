@@ -11,6 +11,8 @@ export interface IUser extends Document {
     walletBalance?: number;
     activeSubscriptionId?: string;
     subscriptionExpiry?: Date;
+    interviewTierId?: string;
+    interviewTierExpiry?: Date;
     bookmarks: mongoose.Types.ObjectId[];
     profile: {
         bio?: string;
@@ -66,6 +68,8 @@ const UserSchema: Schema = new Schema({
     walletBalance: { type: Number, default: 0 },
     activeSubscriptionId: { type: String },
     subscriptionExpiry: { type: Date },
+    interviewTierId: { type: String },
+    interviewTierExpiry: { type: Date },
     bookmarks: [{ type: Schema.Types.ObjectId, default: [] }],
     // Extended profile fields
     profile: {

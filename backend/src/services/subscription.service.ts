@@ -4,12 +4,96 @@ import CertificateRequest from '../models/certificate-request.model';
 import { notifyAdmins } from '../utils/notifyAdmins';
 
 export class SubscriptionService {
+    private readonly defaultInterviewTiers = [
+        {
+            name: 'Tier 2',
+            price: 99,
+            durationDays: 30,
+            maxScheduleDays: 30,
+            description: 'Interview scheduling window: 15-30 days from application date.',
+            features: ['Verification timeline: 15-30 days', 'Improved recruiter visibility'],
+            type: 'job-seeker',
+            certificateEligible: true,
+            isActive: true
+        },
+        {
+            name: 'Tier 3',
+            price: 149,
+            durationDays: 30,
+            maxScheduleDays: 15,
+            description: 'Interview scheduling window: 7-15 days from application date.',
+            features: ['Verification timeline: 7-15 days', 'Higher recruiter priority'],
+            type: 'job-seeker',
+            certificateEligible: true,
+            isActive: true
+        },
+        {
+            name: 'Tier 4',
+            price: 199,
+            durationDays: 30,
+            maxScheduleDays: 7,
+            description: 'Up to 7 days interview scheduling window from application date.',
+            features: ['Stage 1 clearance', 'Urgent recruiter visibility', 'Interview scheduling SLA: up to 7 days'],
+            type: 'job-seeker',
+            certificateEligible: true,
+            isActive: true
+        }
+    ];
+
     // Get all active subscription plans
     public async getAllPlans(type?: string) {
         const query: any = { isActive: true };
         if (type) query.type = type;
         const plans = await SubscriptionPlan.find(query).sort({ price: 1 });
         return plans;
+    }
+
+    public async getInterviewTiers() {
+        return await SubscriptionPlan.find({
+            isActive: true,
+            type: 'job-seeker',
+            maxScheduleDays: { $gt: 0 }
+        }).sort({ maxScheduleDays: 1, price: 1 });
+    }
+
+    public async bootstrapInterviewTiers() {
+        const existingTiers = await SubscriptionPlan.find({
+            isActive: true,
+            type: 'job-seeker',
+            maxScheduleDays: { $gt: 0 }
+        });
+
+        if (existingTiers.length > 0) {
+            return {
+                created: [],
+                existingCount: existingTiers.length
+            };
+        }
+
+        const created = [];
+        for (const tier of this.defaultInterviewTiers) {
+            const tierByName = await SubscriptionPlan.findOne({ name: tier.name });
+            if (tierByName) {
+                const upgraded = await SubscriptionPlan.findByIdAndUpdate(
+                    tierByName._id,
+                    {
+                        ...tier,
+                        maxScheduleDays: tier.maxScheduleDays
+                    },
+                    { new: true }
+                );
+                if (upgraded) created.push(upgraded);
+                continue;
+            }
+
+            const createdTier = await SubscriptionPlan.create(tier);
+            created.push(createdTier);
+        }
+
+        return {
+            created,
+            existingCount: 0
+        };
     }
 
     // Get wallet balance
@@ -47,6 +131,19 @@ export class SubscriptionService {
 
         if (!plan.isActive) {
             throw new Error('This subscription plan is no longer available');
+        }
+
+        const roleToPlanType: Record<string, string> = {
+            employee: 'job-seeker',
+            'job-seeker': 'job-seeker',
+            employer: 'employer',
+            recruiter: 'employer',
+            resource: 'resource'
+        };
+
+        const expectedPlanType = roleToPlanType[user.role];
+        if (expectedPlanType && plan.type !== expectedPlanType) {
+            throw new Error(`Invalid plan type for role ${user.role}. Expected ${expectedPlanType} plan.`);
         }
 
         const currentBalance = user.walletBalance || 0;
@@ -134,6 +231,78 @@ export class SubscriptionService {
             },
             walletBalance: newBalance,
             certificateRequestStatus: isCertificateEligible ? 'pending' : 'not-eligible'
+        };
+    }
+
+    // Purchase interview tier (separate from general subscriptions)
+    public async purchaseInterviewTier(userId: string, planId: string) {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        if (!['employee', 'job-seeker'].includes(user.role as any)) {
+            throw new Error('Only employees can purchase interview tiers');
+        }
+
+        const plan = await SubscriptionPlan.findById(planId);
+        if (!plan) {
+            throw new Error('Interview tier plan not found');
+        }
+
+        if (!plan.isActive || plan.type !== 'job-seeker' || !plan.maxScheduleDays || plan.maxScheduleDays <= 0) {
+            throw new Error('Invalid interview tier plan');
+        }
+
+        const currentBalance = user.walletBalance || 0;
+        if (currentBalance < plan.price) {
+            throw new Error(`Insufficient balance. Required: ${plan.price}, Available: ${currentBalance}`);
+        }
+
+        const now = new Date();
+        const expiryDate = new Date(now.getTime() + plan.durationDays * 24 * 60 * 60 * 1000);
+        const newBalance = currentBalance - plan.price;
+
+        const mongoose = require('mongoose');
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        const interviewTierPurchaseId = new mongoose.Types.ObjectId();
+
+        try {
+            await User.findByIdAndUpdate(userId, {
+                walletBalance: newBalance,
+                interviewTierId: plan._id,
+                interviewTierExpiry: expiryDate
+            }, { session });
+
+            const Transaction = require('../models/transaction.model').default;
+            await Transaction.create([{
+                userId,
+                type: 'deduction',
+                amount: plan.price,
+                description: `Interview Tier: ${plan.name} (${plan.durationDays} days) [TierPurchaseId: ${String(interviewTierPurchaseId)}]`,
+                status: 'completed',
+                createdAt: new Date()
+            }], { session });
+
+            await session.commitTransaction();
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            session.endSession();
+        }
+
+        return {
+            message: 'Interview tier purchased successfully',
+            tier: {
+                id: plan._id,
+                name: plan.name,
+                maxScheduleDays: plan.maxScheduleDays,
+                durationDays: plan.durationDays,
+                expiryDate
+            },
+            walletBalance: newBalance
         };
     }
 

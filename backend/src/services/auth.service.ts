@@ -306,6 +306,9 @@ export class AuthService {
         for (const field of profileFields) {
             const value = getField(field);
             if (value !== undefined) {
+                if ((field === 'experience' || field === 'education') && !Array.isArray(value)) {
+                    continue;
+                }
                 mergedProfile[field] = value;
             }
         }

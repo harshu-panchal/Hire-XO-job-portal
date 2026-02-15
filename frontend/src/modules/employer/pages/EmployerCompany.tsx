@@ -32,7 +32,6 @@ const EmployerCompany = () => {
     try {
       await updateProfile({
         profile: {
-          ...user?.profile,
           company: formData.company,
           location: formData.location,
           website: formData.website,

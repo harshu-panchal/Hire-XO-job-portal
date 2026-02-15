@@ -128,7 +128,7 @@ const ResourceDetails = () => {
 
         <div className="grid w-full gap-4">
           <button
-            onClick={() => navigate("/resources")}
+            onClick={() => navigate("/employee/resources")}
             className="h-16 w-full rounded-3xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2"
           >
             Browse More Resources

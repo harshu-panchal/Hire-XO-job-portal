@@ -29,8 +29,8 @@ const Subscription = () => {
   }, []);
 
   // Calculate expiry date if exists
-  const isSubscribed = user?.profile?.subscriptionExpiry
-    ? new Date(user.profile.subscriptionExpiry) > new Date()
+  const isSubscribed = user?.subscriptionExpiry
+    ? new Date(user.subscriptionExpiry) > new Date()
     : false;
 
   const getPlanIcon = (planName: string) => {

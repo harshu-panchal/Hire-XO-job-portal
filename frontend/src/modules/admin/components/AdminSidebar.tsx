@@ -15,11 +15,13 @@ import {
   Layers,
   FileText,
   BadgeCheck,
+  ShieldCheck,
   Building2,
   Truck,
   Wrench,
   CarFront,
   Video,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -33,7 +35,9 @@ const mainItems = [
 
 const financialItems = [
   { icon: CreditCard, label: "Employee Plans", path: "/admin/employee-plans" },
+  { icon: ShieldCheck, label: "Interview Tiers", path: "/admin/interview-tiers" },
   { icon: CreditCard, label: "Employer Plans", path: "/admin/employer-plans" },
+  { icon: Megaphone, label: "Promotion Plans", path: "/admin/promotion-plans" },
   { icon: Layers, label: "Resource Plans", path: "/admin/resource-plans" },
   { icon: DollarSign, label: "Payments", path: "/admin/payments" },
 ];

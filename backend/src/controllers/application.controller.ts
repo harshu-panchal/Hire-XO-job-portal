@@ -183,6 +183,17 @@ export class ApplicationController {
         }
     };
 
+    public getSLAExpiredApplications = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
+        try {
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 20;
+            const result = await this.applicationService.getSLAExpiredApplications(page, limit);
+            res.status(200).json({ success: true, ...result });
+        } catch (error: any) {
+            next(error);
+        }
+    };
+
     public getResourceApplications = async (req: AuthRequest, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id;
@@ -288,6 +299,10 @@ export class ApplicationController {
                 application
             });
         } catch (error: any) {
+            if (error?.message === 'Employer subscription required to hire candidate') {
+                res.status(403).json({ success: false, message: error.message });
+                return;
+            }
             next(error);
         }
     };

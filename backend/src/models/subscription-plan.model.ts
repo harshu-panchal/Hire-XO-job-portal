@@ -8,6 +8,7 @@ export interface ISubscriptionPlan extends Document {
     features: string[];
     type: 'job-seeker' | 'employer' | 'resource';
     certificateEligible?: boolean;
+    maxScheduleDays?: number;
     isActive: boolean;
 }
 
@@ -19,6 +20,7 @@ const SubscriptionPlanSchema: Schema = new Schema({
     features: [{ type: String }],
     type: { type: String, enum: ['job-seeker', 'employer', 'resource'], default: 'employer' },
     certificateEligible: { type: Boolean, default: true },
+    maxScheduleDays: { type: Number, min: 1 },
     isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
