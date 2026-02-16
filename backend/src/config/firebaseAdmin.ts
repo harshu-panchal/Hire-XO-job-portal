@@ -42,19 +42,11 @@ try {
 
     // 3. Initialize Firebase if credentials found
     if (serviceAccount) {
-        // Aggressive sanitization for private_key to handle OpenSSL 3/Node 20+ strictness
+        // Sanitize private key - handle both literal newlines and escaped versions
         if (serviceAccount.private_key) {
-            let key = serviceAccount.private_key;
-            // Handle double-escaped newlines first
-            key = key.replace(/\\\\n/g, '\n');
-            // Handle single-escaped newlines
-            key = key.replace(/\\n/g, '\n');
-            // Remove any potential surrounding quotes
-            key = key.trim();
-            if (key.startsWith('"') && key.endsWith('"')) {
-                key = key.substring(1, key.length - 1);
-            }
-            serviceAccount.private_key = key;
+            serviceAccount.private_key = serviceAccount.private_key
+                .replace(/\\n/g, '\n')
+                .trim();
         }
 
         firebaseAdmin = admin.initializeApp({
