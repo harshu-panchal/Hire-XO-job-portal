@@ -74,7 +74,7 @@ import ResourceFAQ from "./modules/resources/pages/ResourceFAQ";
 // Admin Pages
 import AdminDashboard from "./modules/admin/pages/Dashboard";
 import Employers from "./modules/admin/pages/Employers";
-import JobSeekers from "./modules/admin/pages/JobSeekers";
+import Employees from "./modules/admin/pages/Employees";
 import EmployeePlans from "./modules/admin/pages/EmployeePlans";
 import EmployerPlans from "./modules/admin/pages/EmployerPlans";
 import InterviewTiers from "./modules/admin/pages/InterviewTiers";
@@ -697,7 +697,7 @@ function App() {
           >
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/employers" element={<Employers />} />
-            <Route path="/admin/job-seekers" element={<JobSeekers />} />
+            <Route path="/admin/employees" element={<Employees />} />
             <Route path="/admin/employee-plans" element={<EmployeePlans />} />
             <Route path="/admin/interview-tiers" element={<InterviewTiers />} />
             <Route path="/admin/employer-plans" element={<EmployerPlans />} />

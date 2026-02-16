@@ -158,7 +158,8 @@ export default function Employers() {
           phoneNumber: formData.phoneNumber,
           // @ts-ignore
           company: formData.company,
-          role: "employer"
+          role: "employer",
+          status: formData.status || "active"
         });
         toast.success("Employer created successfully");
         fetchEmployers();

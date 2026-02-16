@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   User,
   Bell,
@@ -18,6 +18,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useAuthStore } from "../../../store/useAuthStore";
+import { authService } from "../../../services/authService";
 import { toast } from "sonner";
 
 export default function Settings() {
@@ -50,8 +51,8 @@ export default function Settings() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all ${activeTab === tab.id
-                    ? "bg-primary text-white shadow-md shadow-primary/20"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  ? "bg-primary text-white shadow-md shadow-primary/20"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   }`}
               >
                 <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? "text-white" : "text-slate-400"}`} />
@@ -77,7 +78,7 @@ export default function Settings() {
 }
 
 function ProfileSettings() {
-  const { user, updateUser } = useAuthStore();
+  const { user, updateProfile } = useAuthStore();
   const [profileImage, setProfileImage] = useState<string | null>(
     user?.profilePhoto || null
   );
@@ -94,16 +95,34 @@ function ProfileSettings() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Simulate API update
-      await new Promise(r => setTimeout(r, 1000));
-      updateUser({ ...formData, profilePhoto: profileImage || undefined });
+      await updateProfile({
+        name: formData.name,
+        phoneNumber: formData.phoneNumber,
+        profile: {
+          ...(user?.profile || {}),
+          organizationName: formData.organization,
+        },
+        profilePhoto: profileImage || undefined
+      });
       toast.success("Profile updated successfully");
-    } catch (error) {
-      toast.error("Failed to update profile");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile");
     } finally {
       setIsSaving(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        organization: (user.profile as any)?.organizationName || "HireXO Headquarters",
+      });
+      setProfileImage(user.profilePhoto || null);
+    }
+  }, [user]);
 
   return (
     <div className="space-y-8">
@@ -198,6 +217,7 @@ function ProfileSettings() {
 
 function PlatformSettings() {
   const [isSaving, setIsSaving] = useState(false);
+  const { user, updateProfile } = useAuthStore();
   const [config, setConfig] = useState({
     siteName: "HireXO",
     maintenanceMode: false,
@@ -206,11 +226,34 @@ function PlatformSettings() {
     defaultCurrency: "INR",
   });
 
+  useEffect(() => {
+    const pc = (user?.profile as any)?.platformConfig;
+    if (pc) {
+      setConfig({
+        siteName: pc.siteName ?? "HireXO",
+        maintenanceMode: pc.maintenanceMode ?? false,
+        allowRegistrations: pc.allowRegistrations ?? true,
+        requireVerification: pc.requireVerification ?? true,
+        defaultCurrency: pc.defaultCurrency ?? "INR",
+      });
+    }
+  }, [user]);
+
   const handleSave = async () => {
     setIsSaving(true);
-    await new Promise(r => setTimeout(r, 1000));
-    setIsSaving(false);
-    toast.success("Platform configuration updated");
+    try {
+      await updateProfile({
+        profile: {
+          ...(user?.profile || {}),
+          platformConfig: config
+        }
+      });
+      toast.success("Platform configuration updated");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update config");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -281,6 +324,8 @@ function PlatformSettings() {
 }
 
 function NotificationSettings() {
+  const { user, updateProfile } = useAuthStore();
+  const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState({
     systemAlerts: true,
     revenueAlerts: true,
@@ -288,6 +333,36 @@ function NotificationSettings() {
     securityAlerts: true,
     weeklyReport: true,
   });
+
+  useEffect(() => {
+    const sa = (user?.profile as any)?.systemAlerts;
+    if (sa) {
+      setSettings({
+        systemAlerts: sa.systemAlerts ?? true,
+        revenueAlerts: sa.revenueAlerts ?? true,
+        newRegistrationAlerts: sa.newRegistrationAlerts ?? false,
+        securityAlerts: sa.securityAlerts ?? true,
+        weeklyReport: sa.weeklyReport ?? true,
+      });
+    }
+  }, [user]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...(user?.profile || {}),
+          systemAlerts: settings
+        }
+      });
+      toast.success("System alerts updated");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update alerts");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -311,7 +386,7 @@ function NotificationSettings() {
         />
         <Toggle
           label="User Signup Monitoring"
-          description="Alerts for every new employer or job seeker registration"
+          description="Alerts for every new employer or employee registration"
           enabled={settings.newRegistrationAlerts}
           onToggle={() => setSettings({ ...settings, newRegistrationAlerts: !settings.newRegistrationAlerts })}
         />
@@ -328,20 +403,41 @@ function NotificationSettings() {
           onToggle={() => setSettings({ ...settings, weeklyReport: !settings.weeklyReport })}
         />
       </div>
+
+      <div className="flex justify-end pt-6">
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-8 py-3 bg-slate-900 text-white rounded-xl font-bold shadow-xl hover:bg-slate-800 transition-all disabled:opacity-50"
+        >
+          {isSaving ? "Saving Alerts..." : "Save Settings"}
+        </button>
+      </div>
     </div>
   );
 }
 
 function SecuritySettings() {
+  const [formData, setFormData] = useState({ current: "", new: "" });
   const [showPasswords, setShowPasswords] = useState({ current: false, new: false });
   const [isSaving, setIsSaving] = useState(false);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.new.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
     setIsSaving(true);
-    await new Promise(r => setTimeout(r, 1500));
-    setIsSaving(false);
-    toast.success("Security credentials updated");
+    try {
+      await authService.changePassword(formData.current, formData.new);
+      setFormData({ current: "", new: "" });
+      toast.success("Security credentials updated");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update security credentials");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -362,6 +458,8 @@ function SecuritySettings() {
             <div className="relative">
               <input
                 type={showPasswords.current ? "text" : "password"}
+                value={formData.current}
+                onChange={(e) => setFormData({ ...formData, current: e.target.value })}
                 className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl pr-12 focus:ring-2 focus:ring-primary/20 outline-none"
                 required
               />
@@ -379,6 +477,8 @@ function SecuritySettings() {
             <div className="relative">
               <input
                 type={showPasswords.new ? "text" : "password"}
+                value={formData.new}
+                onChange={(e) => setFormData({ ...formData, new: e.target.value })}
                 className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl pr-12 focus:ring-2 focus:ring-primary/20 outline-none"
                 required
               />

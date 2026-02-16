@@ -29,7 +29,7 @@ import logo from "@/assets/logo.png";
 
 const mainItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
-  { icon: Users, label: "Employee", path: "/admin/job-seekers" },
+  { icon: Users, label: "Employees", path: "/admin/employees" },
   { icon: Building2, label: "Employers", path: "/admin/employers" },
 ];
 

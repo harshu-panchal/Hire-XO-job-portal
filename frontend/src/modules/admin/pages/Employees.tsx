@@ -31,8 +31,8 @@ const itemVariants: Variants = {
     },
 } as const;
 
-export default function JobSeekers() {
-    const [jobSeekers, setJobSeekers] = useState<User[]>([]);
+export default function Employees() {
+    const [employees, setEmployees] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
@@ -57,7 +57,7 @@ export default function JobSeekers() {
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
-    const fetchJobSeekers = async () => {
+    const fetchEmployees = async () => {
         setIsLoading(true);
         try {
             const response = await adminService.getUsers({
@@ -67,19 +67,19 @@ export default function JobSeekers() {
                 page,
                 limit
             });
-            setJobSeekers(response.data);
+            setEmployees(response.data);
             setTotalPages(response.pagination.pages);
             setTotalUsers(response.pagination.total);
         } catch (error) {
-            console.error("Failed to fetch job seekers:", error);
-            toast.error("Failed to fetch job seekers");
+            console.error("Failed to fetch employees:", error);
+            toast.error("Failed to fetch employees");
         } finally {
             setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchJobSeekers();
+        fetchEmployees();
     }, [debouncedSearch, statusFilter, page]); // Dependency array updated
 
     const handleDelete = async (id: string | undefined) => {
@@ -88,7 +88,7 @@ export default function JobSeekers() {
             try {
                 await adminService.deleteUser(id);
                 toast.success("User deleted successfully");
-                setJobSeekers(jobSeekers.filter((u) => u._id !== id));
+                setEmployees(employees.filter((u) => u._id !== id));
             } catch (error) {
                 toast.error("Failed to delete user");
             }
@@ -103,6 +103,12 @@ export default function JobSeekers() {
                 email: user.email,
                 phoneNumber: user.phoneNumber,
                 status: user.status,
+                // @ts-ignore
+                age: user.profile?.age || user.age || "",
+                // @ts-ignore
+                education: user.profile?.education || user.education || "",
+                // @ts-ignore
+                experience: user.profile?.experience || user.experience || "",
             });
         } else {
             setEditingUser(null);
@@ -122,6 +128,12 @@ export default function JobSeekers() {
                     email: formData.email,
                     phoneNumber: formData.phoneNumber,
                     status: (formData.status || "active") as any,
+                    // @ts-ignore
+                    age: formData.age,
+                    // @ts-ignore
+                    education: formData.education,
+                    // @ts-ignore
+                    experience: formData.experience,
                 });
 
                 if (formData.status && formData.status !== editingUser.status) {
@@ -129,17 +141,22 @@ export default function JobSeekers() {
                 }
 
                 toast.success("User updated successfully");
-                fetchJobSeekers();
+                fetchEmployees();
             } else {
                 await adminService.createUser({
                     name: formData.name,
                     email: formData.email,
                     phoneNumber: formData.phoneNumber,
-                    // status: formData.status || "active", // Backend currently forces active
+                    // @ts-ignore
+                    age: formData.age,
+                    // @ts-ignore
+                    education: formData.education,
+                    // @ts-ignore
+                    experience: formData.experience,
                     role: "employee"
                 });
                 toast.success("User created successfully");
-                fetchJobSeekers();
+                fetchEmployees();
             }
             setShowModal(false);
         } catch (error) {
@@ -155,15 +172,15 @@ export default function JobSeekers() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-900">Job Seekers</h1>
-                    <p className="text-slate-500 mt-1">Manage all registered job seekers</p>
+                    <h1 className="text-2xl font-semibold text-slate-900">Employees</h1>
+                    <p className="text-slate-500 mt-1">Manage all registered employees</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
                     className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors"
                 >
                     <Plus className="w-4 h-4" />
-                    Add Job Seeker
+                    Add Employee
                 </button>
             </div>
 
@@ -173,7 +190,7 @@ export default function JobSeekers() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                         type="text"
-                        placeholder="Search job seekers..."
+                        placeholder="Search employees..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -202,13 +219,13 @@ export default function JobSeekers() {
                 <div className="bg-white rounded-lg border border-slate-200 p-4">
                     <p className="text-sm text-slate-500">Active (Visible)</p>
                     <p className="text-2xl font-bold text-green-600 mt-1">
-                        {jobSeekers.filter((u) => u.status === "active").length}
+                        {employees.filter((u) => u.status === "active").length}
                     </p>
                 </div>
                 <div className="bg-white rounded-lg border border-slate-200 p-4">
                     <p className="text-sm text-slate-500">Inactive (Visible)</p>
                     <p className="text-2xl font-bold text-slate-400 mt-1">
-                        {jobSeekers.filter((u) => u.status !== "active").length}
+                        {employees.filter((u) => u.status !== "active").length}
                     </p>
                 </div>
             </div>
@@ -243,7 +260,7 @@ export default function JobSeekers() {
                             </thead>
                             <tbody>
                                 <AnimatePresence>
-                                    {jobSeekers.map((user) => (
+                                    {employees.map((user) => (
                                         <motion.tr
                                             key={user._id}
                                             variants={itemVariants}
@@ -313,10 +330,10 @@ export default function JobSeekers() {
                     )}
                 </div>
 
-                {!isLoading && jobSeekers.length === 0 && (
+                {!isLoading && employees.length === 0 && (
                     <div className="py-12 text-center">
                         <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                        <p className="text-slate-500">No job seekers found</p>
+                        <p className="text-slate-500">No employees found</p>
                     </div>
                 )}
 
@@ -370,7 +387,7 @@ export default function JobSeekers() {
                         >
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-lg font-semibold text-slate-900">
-                                    {editingUser ? "Edit Job Seeker" : "Add New Job Seeker"}
+                                    {editingUser ? "Edit Employee" : "Add New Employee"}
                                 </h3>
                                 <button
                                     onClick={() => setShowModal(false)}
@@ -379,7 +396,7 @@ export default function JobSeekers() {
                                     <X className="w-5 h-5 text-slate-500" />
                                 </button>
                             </div>
-                            <form onSubmit={handleSave} className="space-y-4">
+                            <form onSubmit={handleSave} className="space-y-4 max-h-[70vh] overflow-y-auto px-1">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1.5">
                                         Full Name
@@ -415,6 +432,42 @@ export default function JobSeekers() {
                                         className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                                     />
                                 </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                                            Age
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={formData.age || ""}
+                                            onChange={(e) => setFormData({ ...formData, age: e.target.value as any })}
+                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                                            Experience (Years)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={formData.experience || ""}
+                                            onChange={(e) => setFormData({ ...formData, experience: e.target.value as any })}
+                                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                                        Education
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.education || ""}
+                                        onChange={(e) => setFormData({ ...formData, education: e.target.value as any })}
+                                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                        placeholder="e.g. Bachelor of Technology"
+                                    />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1.5">
                                         Status
@@ -447,7 +500,7 @@ export default function JobSeekers() {
                                         {isSaving && (
                                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                         )}
-                                        {editingUser ? "Save Changes" : "Add User"}
+                                        {editingUser ? "Save Changes" : "Add Employee"}
                                     </button>
                                 </div>
                             </form>

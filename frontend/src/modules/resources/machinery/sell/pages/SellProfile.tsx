@@ -272,9 +272,6 @@ const SellProfile = () => {
         >
           <Edit3 className="size-4" /> Edit Profile
         </button>
-        <button className="size-[60px] rounded-2xl bg-indigo-600 text-white flex items-center justify-center active:scale-95 transition-all shadow-xl shadow-indigo-500/10">
-          <Globe className="size-6" />
-        </button>
       </div>
 
       <div className="h-4" />
