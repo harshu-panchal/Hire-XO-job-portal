@@ -71,19 +71,12 @@ VITE_FIREBASE_VAPID_KEY=YOUR_VAPID_KEY_FROM_STEP_1.3
 
 ### 3. Configure Service Worker
 
-Update `frontend/public/firebase-messaging-sw.js` with your Firebase config:
+The system is now configured to pass Firebase credentials to the Service Worker dynamically during registration. This means you **no longer need to hardcode keys** in `frontend/public/firebase-messaging-sw.js`.
 
-Replace the placeholder config (lines 6-12) with YOUR actual values from Step 1.2:
-```javascript
-firebase.initializeApp({
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
-});
-```
+The Service Worker will automatically parse the configuration from its registration URL, which is constructed using the environment variables defined in your `frontend/.env` file.
+
+**Note**: Ensure your `frontend/.env` variables (Step 2) are correct, as they are now the single source of truth for both the main app and the background Service Worker.
+
 
 ### 4. Configure Backend
 
