@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MapPin,
   ShieldCheck,
@@ -33,6 +33,19 @@ const SellProfile = () => {
     listingsActive: profileAny.listingsActive ? String(profileAny.listingsActive) : "",
     memberSince: profileAny.memberSince || "",
   });
+
+  useEffect(() => {
+    setFormData({
+      company: profileAny.company || user?.name || "",
+      type: profileAny.jobTitle || "Machinery Seller",
+      location: profileAny.location || "",
+      website: profileAny.website || "",
+      totalSales: profileAny.totalSales || "",
+      salesCompleted: profileAny.salesCompleted ? String(profileAny.salesCompleted) : "",
+      listingsActive: profileAny.listingsActive ? String(profileAny.listingsActive) : "",
+      memberSince: profileAny.memberSince || "",
+    });
+  }, [user?.name, profileAny.company, profileAny.jobTitle, profileAny.location, profileAny.website, profileAny.totalSales, profileAny.salesCompleted, profileAny.listingsActive, profileAny.memberSince]);
 
   if (!user) {
     return <div className="p-10 text-center font-black">Please log in to view your profile.</div>;

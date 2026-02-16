@@ -27,7 +27,11 @@ const MyApplications = () => {
         // Response is { jobs: [], resources: [] }
         // Filter for Tenders
         const tenderApps = (data.resources || []).filter(
-          (app: any) => app.resourceType === "Tender"
+          (app: any) => {
+            const appType = (app.resourceType || "").toLowerCase();
+            const appCategory = (app.resourceId?.category || "").toLowerCase();
+            return appType === "tenders" || appType === "tender" || appCategory === "tenders";
+          }
         );
         setApplications(tenderApps);
       } catch (error) {

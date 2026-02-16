@@ -34,7 +34,9 @@ const MachineryList = () => {
       setError("");
       try {
         const data = await resourceService.getAll("machinery");
-        const activeMachines = (data || []).filter((item: any) => item.status !== "Inactive");
+        const activeMachines = (data || []).filter(
+          (item: any) => item.status !== "Inactive" && item.status !== "Archived"
+        );
         setMachines(activeMachines);
       } catch (err: any) {
         setError(err.message || "Failed to load machinery");

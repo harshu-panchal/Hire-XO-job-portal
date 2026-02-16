@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Building2, Globe, ChevronRight, Camera, ShieldCheck, FileText, Edit3, X, Save, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
@@ -17,6 +17,17 @@ const ProvideProfile = () => {
     rating: profileAny.rating ? String(profileAny.rating) : "",
     successRate: profileAny.successRate || "",
   });
+
+  useEffect(() => {
+    setFormData({
+      company: profileAny.company || user?.name || "",
+      location: profileAny.location || "",
+      website: profileAny.website || "",
+      licenseId: profileAny.licenseId || "",
+      rating: profileAny.rating ? String(profileAny.rating) : "",
+      successRate: profileAny.successRate || "",
+    });
+  }, [user?.name, profileAny.company, profileAny.location, profileAny.website, profileAny.licenseId, profileAny.rating, profileAny.successRate]);
 
   if (!user) {
     return <div className="p-10 text-center font-black">Please log in to view your profile.</div>;

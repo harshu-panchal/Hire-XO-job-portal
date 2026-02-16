@@ -102,8 +102,6 @@ const BrowseSettings = () => {
 
 
               <button
-                onClick={handle2faToggle}
-                disabled={isSaving}
                 className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group"
               >
                 <div className="flex items-center gap-4">
@@ -138,7 +136,11 @@ const BrowseSettings = () => {
                 <ChevronRight className="size-5 text-slate-300" />
               </button>
 
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
+              <button
+                onClick={handle2faToggle}
+                disabled={isSaving}
+                className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group"
+              >
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
                     <Smartphone className="size-5" />

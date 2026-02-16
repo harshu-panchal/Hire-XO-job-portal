@@ -46,9 +46,13 @@ const ProvideDashboard = () => {
 
         // Process Active Tenders
         const tenders = listings.slice(0, 3).map((item: any) => ({
-          id: item._id,
+          id: item.id || item._id,
           title: item.title,
-          bids: bids.filter((b: any) => (b.resourceId?._id || b.resourceId) === item._id).length,
+          bids: bids.filter((b: any) => {
+            const bidResourceId = b.resourceId?._id || b.resourceId?.id || b.resourceId;
+            const itemId = item.id || item._id;
+            return bidResourceId === itemId;
+          }).length,
           closing: item.deadline ? new Date(item.deadline).toLocaleDateString() : item.duration || "N/A",
           status: item.status || "Active",
         }));
@@ -56,7 +60,7 @@ const ProvideDashboard = () => {
 
         // Process Recent Bids
         const recent = bids.slice(0, 3).map((bid: any) => ({
-          id: bid._id,
+          id: bid.id || bid._id,
           vendor: bid.applicantId?.name || "Unknown Vendor",
           tender: bid.resourceId?.title || "Tender",
           time: new Date(bid.appliedAt).toLocaleDateString(),

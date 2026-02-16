@@ -37,7 +37,11 @@ const ApplyDashboard = () => {
             // Get my applications to count active bids
             const myApps: any = await applicationService.getMyApplications();
             myTenderBids = (myApps.resources || []).filter(
-              (app: any) => app.resourceType === "Tender"
+              (app: any) => {
+                const appType = (app.resourceType || "").toLowerCase();
+                const appCategory = (app.resourceId?.category || "").toLowerCase();
+                return appType === "tenders" || appType === "tender" || appCategory === "tenders";
+              }
             );
           } catch (e) {
             console.log("Error fetching my apps", e);

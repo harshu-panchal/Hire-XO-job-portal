@@ -15,7 +15,10 @@ const PostMachine = () => {
 
   const [formData, setFormData] = useState({
     title: existingMachine?.title || "",
-    category: existingMachine?.machineryTypes?.[0] || "Concrete Mixers",
+    category:
+      existingMachine?.machineryTypes?.[0] ||
+      existingMachine?.category ||
+      "Concrete Mixers",
     brand: existingMachine?.brand || "",
     year: existingMachine?.year || "",
     hoursUsed: existingMachine?.hoursUsed || "",

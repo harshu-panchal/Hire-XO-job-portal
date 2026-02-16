@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail, Phone, ShieldCheck, CreditCard, ChevronRight, Camera, Edit3, X, Save, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
@@ -15,6 +15,15 @@ const BrowseProfile = () => {
     location: profileAny.location || "",
     company: profileAny.company || "",
   });
+
+  useEffect(() => {
+    setFormData({
+      name: user?.name || "",
+      phoneNumber: user?.phoneNumber || "",
+      location: profileAny.location || "",
+      company: profileAny.company || "",
+    });
+  }, [user?.name, user?.phoneNumber, profileAny.location, profileAny.company]);
 
   if (!user) {
     return <div className="p-10 text-center font-black">Please log in to view your profile.</div>;

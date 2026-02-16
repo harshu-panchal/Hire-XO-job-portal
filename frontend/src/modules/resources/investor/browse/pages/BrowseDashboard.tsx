@@ -19,15 +19,16 @@ const BrowseDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const data = await resourceService.getAll("investors");
-        setFeatured(data.slice(0, 3));
+        const active = (data || []).filter((item: any) => (item.status || "Active") !== "Inactive");
+        setFeatured(active.slice(0, 3));
 
-        const total = data.reduce((acc, curr: any) => {
+        const total = active.reduce((acc, curr: any) => {
           const amountStr = curr.investmentAmount || curr.amount || curr.compensation || "0";
           const val = parseFloat(String(amountStr).replace(/[^0-9.]/g, ""));
           return acc + (isNaN(val) ? 0 : val);
         }, 0);
 
-        const roiValues = data
+        const roiValues = active
           .map((item: any) => {
             const raw = String(item?.roi || "");
             const match = raw.match(/(\d+(\.\d+)?)/);
@@ -36,7 +37,7 @@ const BrowseDashboard = () => {
           .filter((val: number | null): val is number => val !== null);
 
         setStats({
-          activeOpportunities: data.length,
+          activeOpportunities: active.length,
           avgROI:
             roiValues.length > 0
               ? `${(roiValues.reduce((sum, value) => sum + value, 0) / roiValues.length).toFixed(1)}%`

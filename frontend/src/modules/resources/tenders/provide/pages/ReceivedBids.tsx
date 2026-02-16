@@ -72,8 +72,8 @@ const ReceivedBids = () => {
 
       if (Array.isArray(data)) {
         const mappedBids = data.map((app) => ({
-          id: app.id,
-          _id: app.id,
+          id: app.id || app._id,
+          _id: app.id || app._id,
           vendorName: app.applicantId?.name || "Unknown Vendor",
           tenderTitle: app.resourceId?.title || "Tender Deleted",
           amount: app.bidAmount ? `₹${app.bidAmount}` : "Not Specified",

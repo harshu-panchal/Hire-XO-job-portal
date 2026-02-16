@@ -41,8 +41,9 @@ const OpportunitiesList = () => {
 
     const sector = (opp.investmentSector?.[0] || opp.industry || opp.category || "").toLowerCase();
     const matchesSector = selectedSector === "all" || sector === selectedSector.toLowerCase();
+    const isActive = (opp.status || "Active") !== "Inactive";
 
-    return matchesSearch && matchesSector;
+    return matchesSearch && matchesSector && isActive;
   });
 
   if (loading) {

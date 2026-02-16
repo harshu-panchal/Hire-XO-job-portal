@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MapPin,
   Building2,
@@ -30,6 +30,17 @@ const RentProfile = () => {
     experience: Array.isArray(profileAny.experience) ? "" : profileAny.experience || "",
     skills: Array.isArray(profileAny.skills) ? profileAny.skills.join(", ") : "",
   });
+
+  useEffect(() => {
+    setFormData({
+      company: profileAny.company || user?.name || "",
+      location: profileAny.location || "",
+      website: profileAny.website || "",
+      about: profileAny.about || "",
+      experience: Array.isArray(profileAny.experience) ? "" : profileAny.experience || "",
+      skills: Array.isArray(profileAny.skills) ? profileAny.skills.join(", ") : "",
+    });
+  }, [user?.name, profileAny.company, profileAny.location, profileAny.website, profileAny.about, profileAny.experience, profileAny.skills]);
 
   if (!user) {
     return <div className="p-10 text-center font-black">Please log in to view your profile.</div>;
