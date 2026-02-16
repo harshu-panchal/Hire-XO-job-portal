@@ -188,14 +188,14 @@ const RoleSelection = () => {
           </p>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => alert("Terms of Service coming soon!")}
+              onClick={() => navigate("/terms")}
               className="text-[10px] font-black text-slate-400 hover:text-primary uppercase tracking-widest transition-colors cursor-pointer"
             >
               Terms
             </button>
             <span className="size-1 rounded-full bg-slate-300" />
             <button
-              onClick={() => alert("Privacy Policy coming soon!")}
+              onClick={() => navigate("/privacy")}
               className="text-[10px] font-black text-slate-400 hover:text-primary uppercase tracking-widest transition-colors cursor-pointer"
             >
               Privacy

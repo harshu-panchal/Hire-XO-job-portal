@@ -12,6 +12,8 @@ import {
   Award,
   Check,
   X,
+  Scale,
+  Shield,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -107,6 +109,25 @@ const EmployerSettings = () => {
         },
       ],
     },
+    {
+      title: "Legal & Support",
+      items: [
+        {
+          label: "Terms of Service",
+          icon: Scale,
+          color: "text-slate-500",
+          bg: "bg-slate-500/10",
+          routeKey: "Terms",
+        },
+        {
+          label: "Privacy Policy",
+          icon: Shield,
+          color: "text-slate-500",
+          bg: "bg-slate-500/10",
+          routeKey: "Privacy",
+        },
+      ],
+    },
   ];
 
   return (
@@ -165,6 +186,8 @@ const EmployerSettings = () => {
                       Certificates: "/employer/certificates",
                       Notifications: "/employer/settings/notifications",
                       "Security & Privacy": "/employer/security",
+                      Terms: "/terms",
+                      Privacy: "/privacy",
                     };
 
                     const key = (item as any).routeKey || item.label;

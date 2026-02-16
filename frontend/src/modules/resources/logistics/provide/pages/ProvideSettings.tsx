@@ -12,6 +12,8 @@ import {
   EyeOff,
   Trash2,
   AlertCircle,
+  Scale,
+  Shield,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
@@ -243,6 +245,46 @@ const ProvideSettings = () => {
                   </span>
                   <ChevronRight className="size-5 text-slate-300 group-hover:text-orange-600 transition-colors" />
                 </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Legal */}
+        <div className="space-y-4">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 px-2 italic">
+            Legal
+          </h3>
+          <div className="bg-white rounded-[3rem] border border-slate-200 overflow-hidden shadow-sm">
+            <div className="divide-y divide-slate-100">
+              <button
+                onClick={() => navigate("/terms")}
+                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 transition-colors group"
+              >
+                <div className="flex items-center gap-5">
+                  <div className="size-12 rounded-2xl bg-slate-500/10 text-slate-600 flex items-center justify-center border border-slate-500/10">
+                    <Scale className="size-5" />
+                  </div>
+                  <p className="font-black text-[11px] uppercase tracking-widest text-left">
+                    Terms of Service
+                  </p>
+                </div>
+                <ChevronRight className="size-5 text-slate-300 group-hover:text-primary transition-colors" />
+              </button>
+
+              <button
+                onClick={() => navigate("/privacy")}
+                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 transition-colors group"
+              >
+                <div className="flex items-center gap-5">
+                  <div className="size-12 rounded-2xl bg-slate-500/10 text-slate-600 flex items-center justify-center border border-slate-500/10">
+                    <Shield className="size-5" />
+                  </div>
+                  <p className="font-black text-[11px] uppercase tracking-widest text-left">
+                    Privacy Policy
+                  </p>
+                </div>
+                <ChevronRight className="size-5 text-slate-300 group-hover:text-primary transition-colors" />
               </button>
             </div>
           </div>

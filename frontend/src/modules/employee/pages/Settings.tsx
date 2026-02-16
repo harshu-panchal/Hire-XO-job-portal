@@ -10,6 +10,8 @@ import {
   Plus,
   Trash2,
   Loader2,
+  Scale,
+  ChevronRight,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useState, useEffect, useRef } from "react";
@@ -563,6 +565,44 @@ const Settings = () => {
               className="w-full h-12 rounded-2xl bg-slate-900 text-white font-black text-xs uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50"
             >
               {isUpdatingPassword ? "Updating..." : "Update Password"}
+            </button>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 pl-1">
+            Legal & About
+          </h2>
+          <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden divide-y divide-slate-100">
+            <button
+              onClick={() => navigate("/terms")}
+              className="w-full p-5 flex items-center justify-between hover:bg-slate-50 transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div className="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">
+                  <Scale className="size-5" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-black">Terms of Service</p>
+                  <p className="text-[10px] font-bold text-slate-400">Read our platform rules</p>
+                </div>
+              </div>
+              <ChevronRight className="size-4 text-slate-300" />
+            </button>
+            <button
+              onClick={() => navigate("/privacy")}
+              className="w-full p-5 flex items-center justify-between hover:bg-slate-50 transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div className="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">
+                  <Shield className="size-5" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-black">Privacy Policy</p>
+                  <p className="text-[10px] font-bold text-slate-400">Data protection policy</p>
+                </div>
+              </div>
+              <ChevronRight className="size-4 text-slate-300" />
             </button>
           </div>
         </section>
