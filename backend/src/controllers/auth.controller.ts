@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { CloudinaryUtil } from '../utils/cloudinary';
 import { AuthService } from '../services/auth.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
+import { sendNotification } from '../utils/notification.util';
 
 export class AuthController {
     private authService: AuthService;
@@ -13,6 +14,22 @@ export class AuthController {
     public login = async (req: Request, res: Response, next: import('express').NextFunction): Promise<void> => {
         try {
             const { token, user } = await this.authService.login(req.body);
+
+            // Send login notification
+            try {
+                await sendNotification({
+                    userId: user._id.toString(),
+                    title: 'Welcome Back!',
+                    message: `Hello ${user.name}, you have successfully logged in.`,
+                    type: 'success',
+                    data: {
+                        action: 'login_success'
+                    }
+                });
+            } catch (notifyError) {
+                console.error('Failed to send login notification:', notifyError);
+            }
+
             res.status(200).json({ message: 'Login successful', token, user });
         } catch (error: any) {
             next(error);
@@ -61,6 +78,22 @@ export class AuthController {
                 );
             } catch (err) {
                 console.error('Notification error:', err);
+            }
+
+            // Send welcome notification
+            try {
+                const user = (result as any).user;
+                await sendNotification({
+                    userId: user._id.toString(),
+                    title: 'Welcome to HireXO!',
+                    message: `Hello ${user.name}, your account has been created successfully.`,
+                    type: 'success',
+                    data: {
+                        action: 'signup_success'
+                    }
+                });
+            } catch (notifyError) {
+                console.error('Failed to send signup notification:', notifyError);
             }
 
             res.status(201).json({ message: 'User registered successfully', ...result });

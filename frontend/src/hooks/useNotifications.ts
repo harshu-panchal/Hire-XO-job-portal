@@ -14,7 +14,7 @@ export interface UINotification {
   icon: any;
   unread: boolean;
   relatedId?: string;
-  relatedType?: "job_application" | "resource_application" | "certificate_request" | "certificate_issued";
+  relatedType?: "job_application" | "resource_application" | "certificate_request" | "certificate_issued" | "new_job" | "new_resource" | "new_user";
 }
 
 export const useNotifications = () => {
@@ -26,7 +26,8 @@ export const useNotifications = () => {
     fetchNotifications,
     markAsRead: storeMarkAsRead,
     markAllAsRead: storeMarkAllAsRead,
-    deleteNotification: storeDeleteNotification
+    deleteNotification: storeDeleteNotification,
+    addNotificationLocal
   } = useNotificationStore();
 
   const navigate = useNavigate();
@@ -72,11 +73,17 @@ export const useNotifications = () => {
               if (dataLine) {
                 const data = dataLine.replace(/^data:\s*/, "");
                 try {
-                  // We ignore the payload here and simply refetch to ensure consistency
-                  JSON.parse(data);
-                  fetchNotifications();
+                  const notification = JSON.parse(data);
+                  if (notification && notification._id) {
+                    addNotificationLocal(notification);
+                  } else {
+                    // Fallback to refetch if data is missing
+                    fetchNotifications();
+                  }
                 } catch (e) {
                   console.error("Failed to parse notification event data", e);
+                  // Fallback to fetch on parse error
+                  fetchNotifications();
                 }
               }
             }

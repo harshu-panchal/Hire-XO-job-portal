@@ -14,6 +14,7 @@ import User from '../models/user.model';
 import SubscriptionPlan from '../models/subscription-plan.model';
 import InterviewTier from '../models/interview-tier.model';
 import { notificationEmitter } from '../utils/notificationEmitter';
+import { sendNotification } from '../utils/notification.util';
 
 
 export class ApplicationService {
@@ -112,17 +113,16 @@ export class ApplicationService {
             const applicant = await User.findById(applicantId);
             const applicantName = applicant ? applicant.name : 'A candidate';
 
-            const notification = await Notification.create({
-                userId: job.userId,
+            await sendNotification({
+                userId: job.userId.toString(),
                 title: 'New Job Application',
                 message: `${applicantName} has applied for ${job.title}`,
                 type: 'info',
                 relatedId: application._id.toString(),
                 relatedType: 'job_application'
             });
-            notificationEmitter.emit('new_notification', { userId: job.userId, notification });
         } catch (error) {
-            console.error('Failed to create notification for job owner', error);
+            console.error('Failed to notify job owner', error);
         }
 
         return application;
@@ -188,17 +188,16 @@ export class ApplicationService {
             const applicant = await User.findById(applicantId);
             const applicantName = applicant ? applicant.name : 'A candidate';
 
-            const notification = await Notification.create({
-                userId: resource.userId,
+            await sendNotification({
+                userId: resource.userId.toString(),
                 title: 'New Resource Application',
                 message: `${applicantName} has applied for your ${resourceType}`,
                 type: 'info',
                 relatedId: application._id.toString(),
                 relatedType: 'resource_application'
             });
-            notificationEmitter.emit('new_notification', { userId: resource.userId, notification });
         } catch (error) {
-            console.error('Failed to create notification for resource owner', error);
+            console.error('Failed to notify resource owner', error);
         }
 
         return application;
@@ -485,15 +484,14 @@ export class ApplicationService {
                 ? `Your application for ${job.title} has been accepted. The employer may now schedule an interview.`
                 : `Thank you for your interest in ${job.title}. Unfortunately, your application was not selected at this time.`;
 
-            const notification = await Notification.create({
-                userId: application.applicantId,
+            await sendNotification({
+                userId: application.applicantId.toString(),
                 title,
                 message,
                 type: status === 'Accepted' ? 'success' : 'info',
                 relatedId: application._id.toString(),
                 relatedType: 'job_application'
             });
-            notificationEmitter.emit('new_notification', { userId: application.applicantId, notification });
 
             return application;
         } else {
@@ -522,15 +520,14 @@ export class ApplicationService {
                 ? `Your application for the ${application.resourceType} position has been accepted.`
                 : `Thank you for your interest in the ${application.resourceType} position. Unfortunately, your application was not selected at this time.`;
 
-            const notification = await Notification.create({
-                userId: application.applicantId,
+            await sendNotification({
+                userId: application.applicantId.toString(),
                 title,
                 message,
                 type: status === 'Accepted' ? 'success' : 'info',
                 relatedId: application._id.toString(),
                 relatedType: 'resource_application'
             });
-            notificationEmitter.emit('new_notification', { userId: application.applicantId, notification });
 
             return application;
         }

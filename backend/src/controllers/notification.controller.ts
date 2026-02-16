@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import Notification from '../models/notification.model';
+import { notificationEmitter } from '../utils/notificationEmitter';
 
 export class NotificationController {
     public getNotifications = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -111,12 +112,16 @@ export class NotificationController {
 
         const onNewNotification = (data: { userId: string, notification: any }) => {
             if (data.userId.toString() === userId.toString()) {
+                console.log(`SSE: Sending notification to user ${userId}`);
                 res.write(`data: ${JSON.stringify(data.notification)}\n\n`);
             }
         };
 
-        const { notificationEmitter } = require('../utils/notificationEmitter');
         notificationEmitter.on('new_notification', onNewNotification);
+
+        // Send a comment to keep the connection alive immediately and log it
+        console.log(`SSE: Stream established for user ${userId}`);
+        res.write(': ok\n\n');
 
         req.on('close', () => {
             notificationEmitter.off('new_notification', onNewNotification);

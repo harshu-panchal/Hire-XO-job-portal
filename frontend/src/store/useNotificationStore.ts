@@ -97,6 +97,12 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     },
 
     addNotificationLocal: (notification: Notification) => {
+        const { notifications } = get();
+        // Check if notification already exists to avoid duplicates (e.g. from SSE and FCM)
+        if (notifications.some(n => n._id === notification._id)) {
+            return;
+        }
+
         set(state => {
             const updated = [notification, ...state.notifications];
             return {
@@ -106,10 +112,24 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         });
 
         if (!notification.read) {
+            // UI Toast
             toast(notification.title, {
                 description: notification.message,
                 duration: 5000,
             });
+
+            // System Notification (Windows Notification Center)
+            if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification(notification.title, {
+                        body: notification.message,
+                        icon: "/logo.png",
+                        tag: notification._id, // Use ID as tag for deduplication by OS
+                    });
+                } catch (err) {
+                    console.error("Failed to show system notification:", err);
+                }
+            }
         }
     }
 }));

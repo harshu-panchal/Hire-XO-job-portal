@@ -6,6 +6,8 @@ import { ProfileDropdown } from "@/components/ProfileDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/useAuthStore";
 import logo from "@/assets/logo.png";
+import apiClient from "@/lib/apiConfig";
+import { toast } from "sonner";
 
 export const EmployeeNavbar = () => {
   const navigate = useNavigate();
@@ -36,12 +38,36 @@ export const EmployeeNavbar = () => {
     setShowNotifications(false);
   };
 
+  const handleTestPush = async () => {
+    try {
+      if (!isAuthenticated) {
+        toast.error("Please login first");
+        return;
+      }
+      const response = await apiClient.post("/notifications/test-push");
+      if (response.data.success) {
+        toast.success("Test notification triggered!");
+      }
+    } catch (error: any) {
+      console.error("Test push failed", error);
+      toast.error("Failed to trigger test notification");
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 px-5 py-4 flex items-center justify-between transition-all duration-300 select-none">
       <Link to="/jobs" className="active:scale-95 transition-transform">
         <img src={logo} alt="HireXO" className="h-10 w-auto object-contain" />
       </Link>
       <div className="flex gap-2.5 relative items-center">
+        {isAuthenticated && (
+          <button
+            onClick={handleTestPush}
+            className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl border border-slate-200 text-xs font-bold hover:bg-slate-200 transition-colors active:scale-95"
+          >
+            Test Push
+          </button>
+        )}
         <button
           onClick={() => isAuthenticated ? setShowNotifications(!showNotifications) : navigate("/login/employee")}
           className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all duration-200 active:scale-90 ${showNotifications

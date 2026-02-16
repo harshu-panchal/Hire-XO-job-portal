@@ -123,6 +123,11 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: null,
           });
+
+          // Initialize push notifications after successful auth check (e.g. refresh)
+          initializeNotifications().catch(err =>
+            console.error('Failed to initialize notifications after checkAuth:', err)
+          );
         } catch (error: any) {
           // Token is invalid or expired, clear auth state
           set({

@@ -1,6 +1,5 @@
 import User from '../models/user.model';
-import Notification from '../models/notification.model';
-import { notificationEmitter } from './notificationEmitter';
+import { sendNotification } from './notification.util';
 
 export const notifyAdmins = async (
     title: string,
@@ -14,25 +13,17 @@ export const notifyAdmins = async (
 
         if (!admins.length) return;
 
-        const notifications = admins.map(admin => ({
-            userId: admin._id,
-            title,
-            message,
-            type,
-            relatedId,
-            relatedType,
-            read: false,
-            createdAt: new Date()
-        }));
-
-        const createdNotifications = await Notification.insertMany(notifications);
-
-        createdNotifications.forEach(notification => {
-            notificationEmitter.emit('new_notification', {
-                userId: notification.userId,
-                notification
-            });
-        });
+        // Send notifications to all admins
+        await Promise.all(admins.map(admin =>
+            sendNotification({
+                userId: admin._id.toString(),
+                title,
+                message,
+                type,
+                relatedId,
+                relatedType: relatedType as any,
+            })
+        ));
 
     } catch (error) {
         console.error('Failed to notify admins:', error);

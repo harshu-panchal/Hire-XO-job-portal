@@ -54,6 +54,7 @@ export interface IUser extends Document {
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
     fcmTokens?: string[];
+    mobileFcmTokens?: string[];
     createdAt: Date;
 }
 
@@ -121,6 +122,7 @@ const UserSchema: Schema = new Schema({
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
     fcmTokens: [{ type: String }],
+    mobileFcmTokens: [{ type: String }],
 }, { timestamps: true });
 
 // Cascade delete profiles when a user is deleted

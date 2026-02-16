@@ -1,6 +1,6 @@
 import { getToken, onMessage } from 'firebase/messaging';
 import { messaging } from '../firebase';
-import axios from 'axios';
+import apiClient from './apiConfig';
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
@@ -52,14 +52,9 @@ export const requestNotificationPermission = async (): Promise<string | null> =>
  */
 export const saveFCMToken = async (token: string): Promise<void> => {
     try {
-        const response = await axios.post(
-            '/api/notifications/save-token',
-            { token },
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-            }
+        const response = await apiClient.post(
+            '/notifications/save-token',
+            { token, platform: 'web' }
         );
 
         if (response.data.success) {
@@ -95,9 +90,11 @@ export const setupForegroundMessageListener = (
             } else {
                 // Default: show browser notification
                 if (Notification.permission === 'granted') {
+                    const notificationId = payload.data?.notificationId;
                     new Notification(title || 'New Message', {
                         body: body || '',
-                        icon: '/logo pngg.png',
+                        icon: '/logo.png',
+                        tag: notificationId || undefined,
                     });
                 }
             }
