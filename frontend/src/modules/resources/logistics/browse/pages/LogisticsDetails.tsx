@@ -24,11 +24,21 @@ const LogisticsDetails = () => {
         const data = await resourceService.getById("logistics", id);
         setProvider(data);
 
-        const myApps: any = await applicationService.getMyApplications();
-        const alreadyApplied = (myApps.resources || []).some(
-          (app: any) => (app.resourceId?._id || app.resourceId) === id
-        );
-        setHasApplied(alreadyApplied);
+        if (!user) {
+          setHasApplied(false);
+        } else {
+          const myApps: any = await applicationService.getMyApplications();
+          const alreadyApplied = (myApps.resources || []).some((app: any) => {
+            const appResourceType = (app.resourceType || "").toLowerCase();
+            const appCategory = (app.resourceId?.category || "").toLowerCase();
+            const appResourceId = app.resourceId?._id || app.resourceId?.id || app.resourceId;
+            return (
+              appResourceId === id &&
+              (appResourceType === "logistics" || appCategory === "logistics")
+            );
+          });
+          setHasApplied(alreadyApplied);
+        }
       } catch (error: any) {
         toast.error(error.message || "Failed to load logistics details");
       } finally {
@@ -36,7 +46,7 @@ const LogisticsDetails = () => {
       }
     };
     load();
-  }, [id]);
+  }, [id, user]);
 
   const handleApply = async () => {
     if (!user) {
@@ -70,6 +80,14 @@ const LogisticsDetails = () => {
 
   if (!provider) {
     return <div className="p-10 text-center font-black">Provider not found</div>;
+  }
+
+  if ((provider.status || "Active") === "Inactive") {
+    return (
+      <div className="p-10 text-center font-black">
+        This logistics service is currently unavailable.
+      </div>
+    );
   }
 
   return (

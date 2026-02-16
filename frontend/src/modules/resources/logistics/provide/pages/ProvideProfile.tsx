@@ -1,9 +1,135 @@
-import { Building2, Globe, ChevronRight, Camera, ShieldCheck, FileText } from "lucide-react";
+import { useState } from "react";
+import { Building2, Globe, ChevronRight, Camera, ShieldCheck, FileText, Edit3, X, Save, Loader2 } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 const ProvideProfile = () => {
+  const { user, updateProfile } = useAuthStore();
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const profileAny: any = user?.profile || {};
+
+  const [formData, setFormData] = useState({
+    company: profileAny.company || user?.name || "",
+    location: profileAny.location || "",
+    website: profileAny.website || "",
+    fleetId: profileAny.fleetId || "",
+    rating: profileAny.rating ? String(profileAny.rating) : "",
+    trips: profileAny.trips ? String(profileAny.trips) : "",
+  });
+
+  if (!user) {
+    return <div className="p-10 text-center font-black">Please log in to view your profile.</div>;
+  }
+
+  const initial = (profileAny.company || user.name || "S").charAt(0).toUpperCase();
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user.profile,
+          company: formData.company,
+          location: formData.location,
+          website: formData.website,
+          fleetId: formData.fleetId,
+          rating: Number(formData.rating) || 0,
+          trips: Number(formData.trips) || 0,
+        },
+      });
+      toast.success("Profile updated successfully");
+      setIsEditing(false);
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to update profile");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="py-6 space-y-8 select-none">
-      {/* Header */}
+      {isEditing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-lg rounded-[2rem] p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-black tracking-tight">Edit Provider Profile</h2>
+              <button
+                onClick={() => setIsEditing(false)}
+                className="size-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-red-100 hover:text-red-600 transition-colors"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            <form onSubmit={handleSave} className="space-y-4">
+              <input
+                type="text"
+                value={formData.company}
+                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                placeholder="Company name"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-sm"
+              />
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                placeholder="Location"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-sm"
+              />
+              <input
+                type="text"
+                value={formData.website}
+                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                placeholder="Website"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-sm"
+              />
+              <input
+                type="text"
+                value={formData.fleetId}
+                onChange={(e) => setFormData({ ...formData, fleetId: e.target.value })}
+                placeholder="Fleet ID"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-sm"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="number"
+                  step="0.1"
+                  value={formData.rating}
+                  onChange={(e) => setFormData({ ...formData, rating: e.target.value })}
+                  placeholder="Rating"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-sm"
+                />
+                <input
+                  type="number"
+                  value={formData.trips}
+                  onChange={(e) => setFormData({ ...formData, trips: e.target.value })}
+                  placeholder="Trips"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-sm"
+                />
+              </div>
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="flex-1 py-3 rounded-xl font-black uppercase tracking-widest text-xs border border-slate-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="flex-1 py-3 rounded-xl bg-orange-600 text-white font-black uppercase tracking-widest text-xs hover:bg-orange-700 flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-1 px-1">
         <h1 className="text-3xl font-black tracking-tighter">Logistics Admin</h1>
         <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
@@ -11,24 +137,27 @@ const ProvideProfile = () => {
         </p>
       </div>
 
-      {/* Profile Card */}
       <div className="relative pt-12">
         <div className="bg-white rounded-[3rem] p-8 pt-16 border border-slate-200 text-center shadow-sm">
-          {/* Avatar */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-0">
             <div className="relative">
               <div className="size-24 rounded-[2rem] bg-orange-600 flex items-center justify-center text-white text-3xl font-black shadow-xl border-4 border-slate-50 italic">
-                S
+                {initial}
               </div>
-              <button className="absolute -bottom-1 -right-1 size-8 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="absolute -bottom-1 -right-1 size-8 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
+              >
                 <Camera className="size-4" />
               </button>
             </div>
           </div>
 
-          <h2 className="text-2xl font-black tracking-tight leading-tight">SwiftLoad Carriers</h2>
+          <h2 className="text-2xl font-black tracking-tight leading-tight">
+            {profileAny.company || user.name}
+          </h2>
           <p className="text-orange-600 font-black uppercase tracking-widest text-[9px] mb-6 italic">
-            Verified Fleet Owner • Pan India
+            Verified Fleet Owner - Pan India
           </p>
 
           <div className="grid grid-cols-2 gap-4 mb-8">
@@ -36,13 +165,13 @@ const ProvideProfile = () => {
               <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">
                 Rating
               </p>
-              <p className="text-base font-black italic">4.9/5</p>
+              <p className="text-base font-black italic">{profileAny.rating || 0}</p>
             </div>
             <div className="bg-slate-50 p-4 rounded-3xl text-center border border-slate-100">
               <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">
                 Trips
               </p>
-              <p className="text-base font-black italic">1,200+</p>
+              <p className="text-base font-black italic">{profileAny.trips || 0}</p>
             </div>
           </div>
 
@@ -55,7 +184,7 @@ const ProvideProfile = () => {
                 <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                   Headquarters
                 </p>
-                <p className="text-[11px] font-black capitalize">Mumbai, Maharashtra</p>
+                <p className="text-[11px] font-black capitalize">{profileAny.location || "N/A"}</p>
               </div>
             </div>
             <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
@@ -67,7 +196,7 @@ const ProvideProfile = () => {
                   Fleet ID
                 </p>
                 <p className="text-[11px] font-black uppercase tracking-tighter">
-                  LOG-MUM-2026-F12
+                  {profileAny.fleetId || "N/A"}
                 </p>
               </div>
             </div>
@@ -75,7 +204,6 @@ const ProvideProfile = () => {
         </div>
       </div>
 
-      {/* Management */}
       <div className="space-y-4">
         <h3 className="text-lg font-black tracking-tight px-1 italic">Administration</h3>
         <div className="grid gap-3">
@@ -89,14 +217,17 @@ const ProvideProfile = () => {
             <ChevronRight className="size-5 text-slate-300 group-hover:text-orange-600 transition-colors" />
           </button>
 
-          <button className="flex items-center justify-between p-6 bg-white rounded-[2rem] border border-slate-200 active:scale-[0.98] transition-all group shadow-sm">
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center justify-between p-6 bg-white rounded-[2rem] border border-slate-200 active:scale-[0.98] transition-all group shadow-sm"
+          >
             <div className="flex items-center gap-4">
               <div className="size-12 rounded-2xl bg-orange-500/10 text-orange-600 flex items-center justify-center">
                 <Building2 className="size-6" />
               </div>
               <span className="font-black text-xs uppercase tracking-widest">Fleet Documents</span>
             </div>
-            <ChevronRight className="size-5 text-slate-300 group-hover:text-orange-600 transition-colors" />
+            <Edit3 className="size-5 text-slate-300 group-hover:text-orange-600 transition-colors" />
           </button>
         </div>
       </div>

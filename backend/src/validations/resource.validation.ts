@@ -12,6 +12,7 @@ export const baseResourceSchema = Joi.object({
     price: Joi.number().min(0).optional(),
     images: Joi.array().items(Joi.string().uri()).optional(),
     available: Joi.boolean().optional(),
+    status: Joi.string().valid('Active', 'Inactive', 'Archived').optional(),
 }).unknown(true); // Allow dynamic fields specific to each resource type
 
 export const updateResourceSchema = Joi.object({
@@ -25,4 +26,5 @@ export const updateResourceSchema = Joi.object({
     price: Joi.number().min(0).optional(),
     images: Joi.array().items(Joi.string().uri()).optional(),
     available: Joi.boolean().optional(),
+    status: Joi.string().valid('Active', 'Inactive', 'Archived').optional(),
 }).min(1);

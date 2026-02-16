@@ -37,7 +37,11 @@ const ApplyDashboard = () => {
             // Get my applications to count active bids
             const myApps: any = await applicationService.getMyApplications();
             myTenderBids = (myApps.resources || []).filter(
-              (app: any) => app.resourceType === "Tender"
+              (app: any) => {
+                const appType = (app.resourceType || "").toLowerCase();
+                const appCategory = (app.resourceId?.category || "").toLowerCase();
+                return appType === "tenders" || appType === "tender" || appCategory === "tenders";
+              }
             );
           } catch (e) {
             console.log("Error fetching my apps", e);
@@ -55,9 +59,12 @@ const ApplyDashboard = () => {
           return deadline > now && deadline <= sevenDaysFromNow;
         }).length;
 
-        setTenders(tendersData.slice(0, 5)); // Show top 5 recommended
+        const activeTenders = tendersData.filter(
+          (t: any) => (t.status || "Active") !== "Archived" && (t.status || "Active") !== "Inactive"
+        );
+        setTenders(activeTenders.slice(0, 5)); // Show top 5 recommended
         setStats({
-          activeTenders: tendersData.length,
+          activeTenders: activeTenders.length,
           closingSoon: closingSoonCount,
           myBids: myTenderBids.length,
         });
@@ -160,8 +167,8 @@ const ApplyDashboard = () => {
           ) : (
             tenders.map((tender) => (
               <Link
-                key={tender._id}
-                to={`/tenders/apply/tenders/${tender._id}`}
+                key={tender._id || tender.id}
+                to={`/tenders/apply/tenders/${tender._id || tender.id}`}
                 className="block bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative shadow-sm hover:shadow-md"
               >
                 <div className="flex items-start justify-between mb-4">
@@ -216,7 +223,7 @@ const ApplyDashboard = () => {
                   </div>
                   <div className="size-1 rounded-full bg-slate-200" />
                   <span className="text-[10px] font-black uppercase tracking-widest text-violet-500/70 truncate max-w-[120px]">
-                    {tender.category || "General"}
+                    {tender.tenderCategory?.[0] || tender.category || "General"}
                   </span>
                 </div>
 

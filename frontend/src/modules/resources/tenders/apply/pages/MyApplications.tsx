@@ -27,7 +27,11 @@ const MyApplications = () => {
         // Response is { jobs: [], resources: [] }
         // Filter for Tenders
         const tenderApps = (data.resources || []).filter(
-          (app: any) => app.resourceType === "Tender"
+          (app: any) => {
+            const appType = (app.resourceType || "").toLowerCase();
+            const appCategory = (app.resourceId?.category || "").toLowerCase();
+            return appType === "tenders" || appType === "tender" || appCategory === "tenders";
+          }
         );
         setApplications(tenderApps);
       } catch (error) {
@@ -163,7 +167,7 @@ const MyApplications = () => {
             return (
               <div
                 key={app._id}
-                onClick={() => navigate(`/tenders/apply/tenders/${tender._id}`)}
+                onClick={() => navigate(`/tenders/apply/tenders/${tender._id || tender.id}`)}
                 className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-4">

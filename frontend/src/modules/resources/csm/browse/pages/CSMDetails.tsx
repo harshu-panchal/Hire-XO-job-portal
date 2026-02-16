@@ -24,11 +24,20 @@ const CSMDetails = () => {
         const data = await resourceService.getById("csm", id);
         setFirm(data);
 
-        const myApps: any = await applicationService.getMyApplications();
-        const alreadyApplied = (myApps.resources || []).some(
-          (app: any) => (app.resourceId?._id || app.resourceId) === id
-        );
-        setHasApplied(alreadyApplied);
+        if (user) {
+          const myApps: any = await applicationService.getMyApplications();
+          const alreadyApplied = (myApps.resources || []).some((app: any) => {
+            const appType = String(app.resourceType || "").toLowerCase();
+            const appCategory = String(app.resourceId?.category || "").toLowerCase();
+            const appliedResourceId =
+              app.resourceId?._id || app.resourceId?.id || app.resourceId;
+            const isCsmApp = appType.includes("csm") || appCategory.includes("csm");
+            return isCsmApp && appliedResourceId === id;
+          });
+          setHasApplied(alreadyApplied);
+        } else {
+          setHasApplied(false);
+        }
       } catch (error: any) {
         toast.error(error.message || "Failed to load CSM details");
       } finally {
@@ -36,7 +45,7 @@ const CSMDetails = () => {
       }
     };
     load();
-  }, [id]);
+  }, [id, user]);
 
   const handleApply = async () => {
     if (!user) {

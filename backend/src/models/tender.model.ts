@@ -16,11 +16,12 @@ export interface ITender extends Document {
     tenderType?: "provide-tenders" | "apply-for-tenders";
     tenderValue?: string;
     tenderCategory?: string[];
+    deadline?: Date;
     duration?: string;
     urgency?: "Immediate" | "Within Week" | "Flexible";
     postedAt: Date;
     documents?: string[];
-    status?: "Active" | "Inactive";
+    status?: "Active" | "Inactive" | "Archived";
 }
 
 const TenderSchema: Schema = new Schema({
@@ -39,10 +40,11 @@ const TenderSchema: Schema = new Schema({
     tenderType: { type: String },
     tenderValue: { type: String },
     tenderCategory: [{ type: String }],
+    deadline: { type: Date },
     duration: { type: String },
     urgency: { type: String, enum: ["Immediate", "Within Week", "Flexible"] },
     documents: [{ type: String }],
-    status: { type: String, enum: ["Active", "Inactive"], default: "Active" }
+    status: { type: String, enum: ["Active", "Inactive", "Archived"], default: "Active" }
 }, { timestamps: { createdAt: 'postedAt', updatedAt: 'updatedAt' } });
 
 // Optimize resource queries by user

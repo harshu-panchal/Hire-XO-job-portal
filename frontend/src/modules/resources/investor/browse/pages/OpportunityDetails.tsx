@@ -38,12 +38,22 @@ const OpportunityDetails = () => {
         const data = await resourceService.getById("investors", id);
         setOpportunity(data);
 
-        // Check if already applied
-        const myApps: any = await applicationService.getMyApplications();
-        const alreadyApplied = (myApps.resources || []).some(
-          (app: any) => (app.resourceId?._id || app.resourceId) === id && app.resourceType === "Investor"
-        );
-        setHasExpressed(alreadyApplied);
+        // Check if already applied (only for authenticated users)
+        if (!user) {
+          setHasExpressed(false);
+        } else {
+          const myApps: any = await applicationService.getMyApplications();
+          const alreadyApplied = (myApps.resources || []).some((app: any) => {
+            const appResourceId = app.resourceId?._id || app.resourceId?.id || app.resourceId;
+            const appType = (app.resourceType || "").toLowerCase();
+            const appCategory = (app.resourceId?.category || "").toLowerCase();
+            return (
+              appResourceId === id &&
+              (appType === "investor" || appType === "investors" || appCategory === "investor")
+            );
+          });
+          setHasExpressed(alreadyApplied);
+        }
       } catch (error) {
         console.error("Failed to fetch opportunity details:", error);
         toast.error("Could not load opportunity details");
@@ -52,7 +62,7 @@ const OpportunityDetails = () => {
       }
     };
     fetchDetails();
-  }, [id]);
+  }, [id, user]);
 
   const handleExpressInterest = async () => {
     if (!user) {
@@ -62,7 +72,7 @@ const OpportunityDetails = () => {
 
     setIsExpressing(true);
     try {
-      await applicationService.applyToResource("Investor", id!, {
+      await applicationService.applyToResource("investors", id!, {
         message: "Interested in this investment opportunity. Let's discuss further.",
       });
       setHasExpressed(true);
@@ -179,7 +189,7 @@ const OpportunityDetails = () => {
               Total Seeking
             </p>
             <p className="text-xl font-black text-emerald-700">
-              ₹{opportunity.amount || opportunity.seekingAmount || "Negotiable"}
+              ₹{opportunity.investmentAmount || opportunity.amount || opportunity.compensation || "Negotiable"}
             </p>
           </div>
           <div className="bg-violet-50 rounded-[2rem] p-5 border border-violet-100">
@@ -190,7 +200,7 @@ const OpportunityDetails = () => {
               Equity Offered
             </p>
             <p className="text-xl font-black text-violet-700">
-              {opportunity.equity || "Discussion"}
+              {opportunity.equity || opportunity.details?.equity || "Discussion"}
             </p>
           </div>
           <div className="bg-indigo-50 rounded-[2rem] p-5 border border-indigo-100">
@@ -233,7 +243,7 @@ const OpportunityDetails = () => {
                 { icon: MapPin, label: "Registered In", value: opportunity.location || "N/A" },
                 { icon: Calendar, label: "Founded Year", value: opportunity.founded || "N/A" },
                 { icon: Users, label: "Team Strength", value: opportunity.employees || "10-25" },
-                { icon: Building2, label: "Sector", value: opportunity.category || "Technology" },
+                { icon: Building2, label: "Sector", value: opportunity.investmentSector?.[0] || opportunity.category || "Technology" },
               ].map((stat, i) => (
                 <div key={i} className="flex gap-4">
                   <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
@@ -331,3 +341,4 @@ const OpportunityDetails = () => {
 };
 
 export default OpportunityDetails;
+

@@ -17,7 +17,6 @@ import { toast } from "sonner";
 
 const MyInvestments = () => {
   const navigate = useNavigate();
-  console.log("Rendering MyInvestments component");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [interests, setInterests] = useState<any[]>([]);
@@ -31,7 +30,11 @@ const MyInvestments = () => {
         const response: any = await applicationService.getMyApplications();
         // Handle both { resources: [] } and [] formats
         const allApplications = Array.isArray(response) ? response : response.resources || [];
-        const investorApps = allApplications.filter((app: any) => app.resourceType === "Investor");
+        const investorApps = allApplications.filter((app: any) => {
+          const appType = (app.resourceType || "").toLowerCase();
+          const appCategory = (app.resourceId?.category || "").toLowerCase();
+          return appType === "investor" || appType === "investors" || appCategory === "investor";
+        });
         setInterests(investorApps);
       } catch (error) {
         console.error("Failed to fetch interests:", error);
@@ -177,7 +180,7 @@ const MyInvestments = () => {
 
             return (
               <div
-                key={interest._id}
+                key={interest.id || interest._id}
                 className="bg-white border border-slate-100 rounded-[2.5rem] p-6 active:scale-[0.98] transition-all hover:shadow-xl shadow-sm relative overflow-hidden group"
               >
                 <div className="flex items-start justify-between mb-4">
@@ -222,14 +225,14 @@ const MyInvestments = () => {
                       Seeking Amount
                     </p>
                     <p className="text-lg font-black">
-                      ₹{resource.amount || resource.seekingAmount || "Negotiable"}
+                      ₹{resource.investmentAmount || resource.amount || resource.compensation || "Negotiable"}
                     </p>
                   </div>
                   <div className="bg-slate-50 rounded-2xl p-4">
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">
                       Offered Equity
                     </p>
-                    <p className="text-lg font-black">{resource.equity || "Discussion"}</p>
+                    <p className="text-lg font-black">{resource.equity || resource.details?.equity || "Discussion"}</p>
                   </div>
                 </div>
 
@@ -243,7 +246,7 @@ const MyInvestments = () => {
                     <span>{resource.category || "General"}</span>
                   </div>
                   <Link
-                    to={`/investor/browse/opportunities/${resource._id}`}
+                    to={`/investor/browse/opportunities/${resource._id || resource.id}`}
                     className="text-violet-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all"
                   >
                     View Listing <MessageSquare className="size-3.5" />
@@ -286,3 +289,4 @@ const MyInvestments = () => {
 };
 
 export default MyInvestments;
+

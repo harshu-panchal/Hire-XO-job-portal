@@ -40,7 +40,7 @@ const MyLogisticsServices = () => {
   const handleDelete = async (serviceId: string) => {
     try {
       await resourceService.delete("logistics", serviceId);
-      setServices((prev) => prev.filter((s) => s.id !== serviceId));
+      setServices((prev) => prev.filter((s) => (s.id || s._id) !== serviceId));
     } catch (error) {
       // keep state unchanged on failure
     }
@@ -56,7 +56,10 @@ const MyLogisticsServices = () => {
   };
 
   const getInquiryCount = (serviceId: string) =>
-    inquiries.filter((inq: any) => (inq.resourceId?._id || inq.resourceId) === serviceId).length;
+    inquiries.filter((inq: any) => {
+      const inqResourceId = inq.resourceId?._id || inq.resourceId?.id || inq.resourceId;
+      return inqResourceId === serviceId;
+    }).length;
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -70,9 +73,11 @@ const MyLogisticsServices = () => {
 
       {/* List */}
       <div className="space-y-4">
-        {services.map((service) => (
+        {services.map((service) => {
+          const serviceId = String(service.id || service._id || "");
+          return (
           <div
-            key={service.id}
+            key={serviceId}
             className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm"
           >
             <div className="flex items-start justify-between mb-4">
@@ -92,12 +97,12 @@ const MyLogisticsServices = () => {
               </div>
               <div className="relative">
                 <button
-                  onClick={() => toggleMenu(service.id)}
+                  onClick={() => toggleMenu(serviceId)}
                   className="size-10 rounded-full hover:bg-slate-50 flex items-center justify-center text-slate-400 transition-colors active:scale-90"
                 >
                   <MoreVertical className="size-5" />
                 </button>
-                {openMenuId === service.id && (
+                {openMenuId === serviceId && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
                     <div className="absolute right-0 top-12 z-20 w-48 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
@@ -109,7 +114,7 @@ const MyLogisticsServices = () => {
                         Edit Service
                       </button>
                       <button
-                        onClick={() => handleDelete(service.id)}
+                        onClick={() => handleDelete(serviceId)}
                         className="w-full px-4 py-3 text-left text-sm font-bold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
                       >
                         <Trash2 className="size-4" />
@@ -151,7 +156,7 @@ const MyLogisticsServices = () => {
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Leads
                   </p>
-                  <p className="text-xs font-black italic">{getInquiryCount(service.id)}</p>
+                  <p className="text-xs font-black italic">{getInquiryCount(serviceId)}</p>
                 </div>
               </div>
             </div>
@@ -165,7 +170,7 @@ const MyLogisticsServices = () => {
                 Edit Listing
               </button>
               <button
-                onClick={() => handleDelete(service.id)}
+                onClick={() => handleDelete(serviceId)}
                 className="h-12 rounded-2xl bg-red-500/10 text-red-600 border border-red-500/10 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <Trash2 className="size-3.5" />
@@ -173,7 +178,8 @@ const MyLogisticsServices = () => {
               </button>
             </div>
           </div>
-        ))}
+          );
+        })}
         {services.length === 0 && (
           <div className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">

@@ -36,11 +36,14 @@ const LogisticsList = () => {
 
   const filtered = useMemo(
     () =>
-      providers.filter(
-        (item) =>
-          (item.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (item.company || "").toLowerCase().includes(searchQuery.toLowerCase())
-      ),
+      providers.filter((item) => {
+        const isActive = (item.status || "Active") !== "Inactive";
+        const query = searchQuery.toLowerCase();
+        const matches =
+          (item.title || "").toLowerCase().includes(query) ||
+          (item.company || "").toLowerCase().includes(query);
+        return isActive && matches;
+      }),
     [providers, searchQuery]
   );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -92,8 +95,8 @@ const LogisticsList = () => {
           !error &&
           paged.map((provider, idx) => (
             <Link
-              key={provider.id}
-              to={`/logistics/browse/list/${provider.id}`}
+              key={provider.id || provider._id}
+              to={`/logistics/browse/list/${provider.id || provider._id}`}
               className="block bg-white rounded-[2.5rem] p-6 border border-slate-200 active:scale-[0.98] transition-all hover:shadow-xl hover:shadow-red-600/5 group"
             >
               <div className="flex items-center gap-5">

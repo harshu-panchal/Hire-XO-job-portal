@@ -24,7 +24,10 @@ const RentDashboard = () => {
           resourceService.getAll("equipments"),
           applicationService.getMyApplications(),
         ]);
-        setEquipments(all || []);
+        const activeEquipments = (all || []).filter(
+          (item: any) => item.status !== "Inactive" && item.status !== "Archived"
+        );
+        setEquipments(activeEquipments);
         const filtered = (apps.resources || []).filter((app: any) => {
           const category = (app.resourceId?.category || "").toLowerCase();
           const type = (app.resourceType || "").toLowerCase();
@@ -145,8 +148,8 @@ const RentDashboard = () => {
         <div className="space-y-5">
           {featuredEquipment.map((item) => (
             <Link
-              key={item.id}
-              to={`/equipments/rent/equipment/${item.id}`}
+              key={item.id || item._id}
+              to={`/equipments/rent/equipment/${item.id || item._id}`}
               className="block bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative"
             >
               <div className="flex gap-4">

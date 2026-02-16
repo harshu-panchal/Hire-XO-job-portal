@@ -38,7 +38,9 @@ const RentalRequests = () => {
     try {
       await applicationService.updateApplicationStatus(requestId, status, "resource");
       setRequests((prev) =>
-        prev.map((req: any) => (req.id === requestId ? { ...req, status } : req))
+        prev.map((req: any) =>
+          (req.id === requestId || req._id === requestId) ? { ...req, status } : req
+        )
       );
     } catch (error) {
       // keep current UI unchanged
@@ -143,7 +145,7 @@ const RentalRequests = () => {
               {/* Action Buttons */}
               <div className="flex gap-2">
                 <button
-                  onClick={() => handleStatus(req.id, "Accepted")}
+                  onClick={() => handleStatus(req.id || req._id, "Accepted")}
                   className="flex-1 bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest py-4 rounded-2xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                   <CheckCircle2 className="size-3.5" /> Approve Rent
@@ -152,7 +154,7 @@ const RentalRequests = () => {
                   <MessageSquare className="size-5" />
                 </button>
                 <button
-                  onClick={() => handleStatus(req.id, "Rejected")}
+                  onClick={() => handleStatus(req.id || req._id, "Rejected")}
                   className="size-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center active:scale-90 transition-transform"
                 >
                   <XCircle className="size-5" />

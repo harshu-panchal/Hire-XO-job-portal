@@ -20,7 +20,6 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { resourceService } from "@/services/resourceService";
 import { toast } from "sonner";
-import { applicationService } from "@/services/applicationService"; // To estimate bids count if not in tender object
 
 interface Tender {
   _id: string; // Updated ID type
@@ -59,8 +58,8 @@ const MyTenders = () => {
       // Map API data to component structure and add UI helpers
       const mappedTenders = data.map((t) => ({
         ...t,
-        id: t._id,
-        refNo: t._id.slice(-8).toUpperCase(), // Mock ref if missing
+        id: t.id || t._id,
+        refNo: (t._id || t.id || "").toString().slice(-8).toUpperCase(), // Mock ref if missing
         bids: t.bidsCount || 0, // Assuming backend might populate this, else defaulted
         closingDate: t.deadline ? new Date(t.deadline).toLocaleDateString() : "Open",
         publishedDate: t.postedAt ? new Date(t.postedAt).toLocaleDateString() : "N/A",
@@ -92,6 +91,8 @@ const MyTenders = () => {
         return { color: "text-amber-600", bg: "bg-amber-100" };
       case "Draft":
         return { color: "text-slate-600", bg: "bg-slate-100" };
+      case "Archived":
+        return { color: "text-slate-500", bg: "bg-slate-200" };
       default:
         return { color: "text-slate-600", bg: "bg-slate-100" };
     }
@@ -145,9 +146,27 @@ const MyTenders = () => {
 
   const handleArchive = async (tenderId: string) => {
     if (confirm("Are you sure you want to archive this tender?")) {
-      // Logic to archive via API would go here, for now just UI update or delete
-      // For real implementation: await resourceService.update('tenders', tenderId, { status: 'Archived' });
-      toast.info("Archive functionality to be implemented");
+      const previous = tenders;
+      setTenders((prev) =>
+        prev.map((t) =>
+          (t._id || t.id) === tenderId
+            ? {
+                ...t,
+                status: "Archived",
+                statusColor: getStatusColor("Archived").color,
+                statusBg: getStatusColor("Archived").bg,
+              }
+            : t
+        )
+      );
+
+      try {
+        await resourceService.update("tenders", tenderId, { status: "Archived" } as any);
+        toast.success("Tender archived successfully");
+      } catch (error) {
+        setTenders(previous);
+        toast.error("Failed to archive tender");
+      }
     }
   };
 
@@ -167,7 +186,7 @@ const MyTenders = () => {
     if (confirm("Are you sure you want to delete this tender? This action cannot be undone.")) {
       try {
         await resourceService.delete("tenders", tenderId);
-        setTenders(tenders.filter((t) => t._id !== tenderId)); // Optimistic update
+        setTenders(tenders.filter((t) => (t._id || t.id) !== tenderId)); // Optimistic update
         setShowMenuModal(false);
         toast.success("Tender deleted successfully!");
       } catch (error) {
@@ -242,9 +261,11 @@ const MyTenders = () => {
 
       {/* Tenders List */}
       <div className="space-y-5">
-        {filteredTenders.map((tender) => (
+        {filteredTenders.map((tender) => {
+          const tenderId = String(tender._id || tender.id || "");
+          return (
           <div
-            key={tender._id}
+            key={tenderId}
             className="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
           >
             <div className="flex items-start justify-between mb-4">
@@ -312,7 +333,7 @@ const MyTenders = () => {
                   <Eye className="size-4" />
                 </button>
                 <button
-                  onClick={() => handleDelete(tender._id)}
+                  onClick={() => handleArchive(tenderId)}
                   className="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:text-rose-600 hover:bg-rose-50 active:scale-95 transition-all"
                 >
                   <Archive className="size-4" />
@@ -323,7 +344,8 @@ const MyTenders = () => {
             {/* Background Highlight */}
             <div className="absolute top-0 right-0 size-24 bg-indigo-500/5 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-500" />
           </div>
-        ))}
+          );
+        })}
 
         {filteredTenders.length === 0 && (
           <div className="text-center py-20 opacity-50 space-y-4">
@@ -517,7 +539,7 @@ const MyTenders = () => {
 
               <button
                 onClick={() => {
-                  handleArchive(selectedTender._id);
+                  handleArchive(String(selectedTender._id || selectedTender.id || ""));
                   setShowMenuModal(false);
                 }}
                 className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 hover:bg-amber-50 transition-all group"
@@ -532,7 +554,7 @@ const MyTenders = () => {
               </button>
 
               <button
-                onClick={() => handleDelete(selectedTender._id)}
+                onClick={() => handleDelete(String(selectedTender._id || selectedTender.id || ""))}
                 className="w-full flex items-center gap-3 p-4 rounded-2xl bg-rose-50 hover:bg-rose-100 transition-all group border border-rose-200"
               >
                 <div className="size-10 rounded-xl bg-white flex items-center justify-center group-hover:bg-rose-100 transition-all">

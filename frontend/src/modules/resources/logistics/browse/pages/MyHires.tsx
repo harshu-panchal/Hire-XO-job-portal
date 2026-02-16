@@ -16,7 +16,7 @@ const MyHires = () => {
             return category.includes("logistics") || type.includes("logistics");
           })
           .map((app: any, idx: number) => ({
-            id: app.id,
+            id: app.id || app._id,
             firmName: app.resourceId?.company || "Logistics Partner",
             loadName: app.resourceId?.title || "Logistics Order",
             status: app.status === "Rejected" ? "Completed" : "Active",

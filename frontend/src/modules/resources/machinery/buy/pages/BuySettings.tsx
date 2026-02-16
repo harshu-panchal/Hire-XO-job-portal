@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Bell,
   Shield,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface SettingItemProps {
   icon: any;
@@ -41,9 +42,51 @@ const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProp
 
 const BuySettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
   const [alerts, setAlerts] = useState(true);
   const [highPriority, setHighPriority] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const prefs = user?.profile?.preferences || {};
+    setAlerts(prefs.machineryBuyMarketAlerts ?? true);
+    setHighPriority(prefs.machineryBuyPriorityDeals ?? false);
+  }, [user?.profile?.preferences]);
+
+  const persistSettings = async (nextPrefs: Record<string, boolean>) => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...(user?.profile?.preferences || {}),
+            ...nextPrefs,
+          },
+        },
+      });
+      return true;
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save settings");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAlertsToggle = async () => {
+    const next = !alerts;
+    setAlerts(next);
+    const ok = await persistSettings({ machineryBuyMarketAlerts: next });
+    if (!ok) setAlerts(!next);
+  };
+
+  const handlePriorityToggle = async () => {
+    const next = !highPriority;
+    setHighPriority(next);
+    const ok = await persistSettings({ machineryBuyPriorityDeals: next });
+    if (!ok) setHighPriority(!next);
+  };
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -67,7 +110,8 @@ const BuySettings = () => {
             description="New machinery listings near you"
             action={
               <button
-                onClick={() => setAlerts(!alerts)}
+                onClick={handleAlertsToggle}
+                disabled={isSaving}
                 className={`w-12 h-6 rounded-full transition-colors relative ${alerts ? "bg-amber-600" : "bg-slate-200"}`}
               >
                 <div
@@ -82,7 +126,8 @@ const BuySettings = () => {
             description="Flash sales and deep discounts"
             action={
               <button
-                onClick={() => setHighPriority(!highPriority)}
+                onClick={handlePriorityToggle}
+                disabled={isSaving}
                 className={`w-12 h-6 rounded-full transition-colors relative ${highPriority ? "bg-amber-600" : "bg-slate-200"}`}
               >
                 <div

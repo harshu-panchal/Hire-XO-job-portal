@@ -16,7 +16,7 @@ const MyRentals = () => {
             return category.includes("equipment") || type.includes("equipment");
           })
           .map((app: any) => ({
-            id: app.id,
+            id: app.id || app._id,
             name: app.resourceId?.title || "Equipment Rental",
             provider: app.resourceId?.company || "Resource Provider",
             status: app.status === "Rejected" ? "Completed" : "In Progress",
@@ -142,7 +142,7 @@ const MyRentals = () => {
                 <div className="flex items-center gap-3">
                   <Calendar className="size-4 opacity-40 shrink-0" />
                   <span className="text-[10px] font-black uppercase tracking-widest opacity-80">
-                    {rental.startDate} — {rental.endDate}
+                    {rental.startDate} - {rental.endDate}
                   </span>
                 </div>
                 <button className="text-[9px] font-black uppercase tracking-widest underline underline-offset-4 active:scale-95 transition-transform">

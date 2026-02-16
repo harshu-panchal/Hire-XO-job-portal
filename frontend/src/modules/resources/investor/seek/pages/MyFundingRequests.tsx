@@ -3,7 +3,6 @@ import {
   Eye,
   Edit2,
   Trash2,
-  MoreVertical,
   TrendingUp,
   MessageSquare,
   Calendar,
@@ -44,7 +43,7 @@ const MyFundingRequests = () => {
       // Count inquiries per resource
       const inquiryCounts: Record<string, number> = {};
       applications.forEach((app: any) => {
-        const resId = app.resourceId?._id || app.resourceId; // dependent on populate or not
+        const resId = app.resourceId?._id || app.resourceId?.id || app.resourceId; // dependent on populate or not
         if (resId) {
           inquiryCounts[resId] = (inquiryCounts[resId] || 0) + 1;
         }
@@ -52,18 +51,25 @@ const MyFundingRequests = () => {
 
       // Format resources
       const formatted = resources.map((res: any) => ({
-        id: res._id,
+        id: res.id || res._id,
         title: res.title,
-        sector: res.category || "General",
+        sector: res.investmentSector?.[0] || res.category || "General",
         sectorColor: "blue", // Dynamic mapping could be added
-        amount: res.amount || "N/A",
-        equity: res.equity || "N/A",
+        amount: res.amount || res.investmentAmount || res.compensation || "N/A",
+        equity: res.equity || res.details?.equity || "N/A",
         duration: res.duration || "N/A",
         status: res.status || "Active",
         statusColor: res.status === "Active" ? "emerald" : "slate",
         postedDate: new Date(res.createdAt).toLocaleDateString(),
         views: res.views || 0,
-        inquiries: inquiryCounts[res._id] || 0,
+        inquiries: inquiryCounts[res.id || res._id] || 0,
+        company: res.company || "",
+        location: res.location || "",
+        useOfFunds: res.details?.useOfFunds || "",
+        revenueModel: res.details?.revenueModel || "",
+        currentRevenue: res.details?.currentRevenue || "",
+        teamSize: res.details?.teamSize || "",
+        documents: Array.isArray(res.details?.documents) ? res.details.documents : [],
         description: res.description,
         fullDescription: res.description, // Same for now
       }));
@@ -78,9 +84,16 @@ const MyFundingRequests = () => {
 
   // Filter requests based on active filter and search query
   const filteredRequests = allRequests.filter((request) => {
-    // Map backend status to UI filters if needed
-    // Since we likely just use strings, basic match is fine
-    const matchesFilter = activeFilter === "All" || request.status === activeFilter;
+    const normalizedStatus = String(request.status || "").toLowerCase();
+    const matchesFilter =
+      activeFilter === "All" ||
+      (activeFilter === "Active" && normalizedStatus === "active") ||
+      (activeFilter === "Under Review" &&
+        (normalizedStatus === "under review" || normalizedStatus === "pending")) ||
+      (activeFilter === "Closed" &&
+        (normalizedStatus === "closed" ||
+          normalizedStatus === "archived" ||
+          normalizedStatus === "inactive"));
     const matchesSearch =
       request.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       request.sector.toLowerCase().includes(searchQuery.toLowerCase());

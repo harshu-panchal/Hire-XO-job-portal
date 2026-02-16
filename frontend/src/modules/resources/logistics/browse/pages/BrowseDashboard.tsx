@@ -1,7 +1,30 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { TrendingUp, Truck, Target, Search, Briefcase, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { resourceService } from "@/services/resourceService";
 
 const BrowseDashboard = () => {
+  const [providers, setProviders] = useState<any[]>([]);
+  const fetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    const load = async () => {
+      try {
+        const data = await resourceService.getAll("logistics");
+        setProviders((data || []).filter((item: any) => (item.status || "Active") !== "Inactive"));
+      } catch (error) {
+        setProviders([]);
+      }
+    };
+
+    load();
+  }, []);
+
+  const featuredProviders = useMemo(() => providers.slice(0, 2), [providers]);
+
   return (
     <div className="py-6 space-y-8 select-none">
       {/* Header */}
@@ -27,7 +50,7 @@ const BrowseDashboard = () => {
                 <p className="text-[10px] font-black uppercase tracking-widest text-red-600/60 mb-0.5">
                   Verified Fleet Owners
                 </p>
-                <p className="text-2xl font-black tracking-tight">450+</p>
+                <p className="text-2xl font-black tracking-tight">{providers.length}+</p>
               </div>
             </div>
             <div className="text-[10px] font-black bg-red-600/10 text-red-600 px-3 py-1 rounded-full uppercase tracking-widest">
@@ -56,7 +79,7 @@ const BrowseDashboard = () => {
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
                 Vehicles
               </p>
-              <p className="text-xl font-black tracking-tight">5.2k+</p>
+              <p className="text-xl font-black tracking-tight">{Math.max(providers.length * 8, 0)}+</p>
               <p className="text-[8px] font-black uppercase tracking-widest text-amber-500/60 mt-2">
                 Pan India Network
               </p>
@@ -78,94 +101,60 @@ const BrowseDashboard = () => {
         </div>
 
         <div className="space-y-4">
-          {/* Logistics Card 1 */}
-          <Link
-            to="/logistics/browse/list/1"
-            className="block bg-white rounded-[2rem] p-5 border border-slate-200 active:scale-[0.98] transition-all"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className="size-12 rounded-xl bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center text-white font-black text-lg">
-                  S
-                </div>
-                <div>
-                  <p className="text-red-600 font-black uppercase tracking-widest text-[9px]">
-                    SwiftLoad Carriers
-                  </p>
-                  <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-red-500/10 border border-red-500/10 mt-0.5">
-                    <span className="text-[8px] font-black uppercase tracking-widest text-red-600">
-                      Heavy Haulage
-                    </span>
+          {featuredProviders.map((provider, idx) => (
+            <Link
+              key={provider.id || provider._id}
+              to={`/logistics/browse/list/${provider.id || provider._id}`}
+              className="block bg-white rounded-[2rem] p-5 border border-slate-200 active:scale-[0.98] transition-all"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`size-12 rounded-xl bg-gradient-to-br ${idx % 2 === 0 ? "from-red-500 to-orange-600" : "from-orange-500 to-red-600"} flex items-center justify-center text-white font-black text-lg`}
+                  >
+                    {(provider.company || provider.title || "L").charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-red-600 font-black uppercase tracking-widest text-[9px]">
+                      {provider.company || "Logistics Provider"}
+                    </p>
+                    <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-red-500/10 border border-red-500/10 mt-0.5">
+                      <span className="text-[8px] font-black uppercase tracking-widest text-red-600">
+                        {provider.requirements?.[0] || "Transport"}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="text-right">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                  Rating
-                </p>
-                <p className="text-lg font-black text-amber-500">5.0/5</p>
-              </div>
-            </div>
-            <h3 className="font-black text-lg tracking-tight mb-2">Pan-India Express Freight</h3>
-            <p className="text-xs text-slate-600 mb-3 line-clamp-2">
-              Expertise in long-haul containerized transport with real-time tracking and temperature
-              control.
-            </p>
-            <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
-              <div className="flex items-center gap-1">
-                <MapPin className="size-3" />
-                <span>Mumbai base</span>
-              </div>
-              <div className="size-1 rounded-full bg-slate-200" />
-              <span>120+ Trucks</span>
-              <div className="size-1 rounded-full bg-slate-200" />
-              <span>Fast Delivery</span>
-            </div>
-          </Link>
-
-          {/* Logistics Card 2 */}
-          <Link
-            to="/logistics/browse/list/2"
-            className="block bg-white rounded-[2rem] p-5 border border-slate-200 active:scale-[0.98] transition-all"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className="size-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white font-black text-lg">
-                  V
-                </div>
-                <div>
-                  <p className="text-red-600 font-black uppercase tracking-widest text-[9px]">
-                    Vento Logistics
+                <div className="text-right">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                    Rating
                   </p>
-                  <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-orange-500/10 border border-orange-500/10 mt-0.5">
-                    <span className="text-[8px] font-black uppercase tracking-widest text-orange-600">
-                      Last Mile
-                    </span>
-                  </div>
+                  <p className="text-lg font-black text-amber-500">{provider.rating || 4.8}/5</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                  Rating
-                </p>
-                <p className="text-lg font-black text-amber-500">4.8/5</p>
+              <h3 className="font-black text-lg tracking-tight mb-2">{provider.title || "Logistics Service"}</h3>
+              <p className="text-xs text-slate-600 mb-3 line-clamp-2">
+                {provider.description || "Professional transportation and supply chain support."}
+              </p>
+              <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                <div className="flex items-center gap-1">
+                  <MapPin className="size-3" />
+                  <span>{provider.location || "Pan India"}</span>
+                </div>
+                <div className="size-1 rounded-full bg-slate-200" />
+                <span>{provider.compensation || "Fleet Ready"}</span>
+                <div className="size-1 rounded-full bg-slate-200" />
+                <span>{provider.type || "Fast Delivery"}</span>
               </div>
+            </Link>
+          ))}
+          {featuredProviders.length === 0 && (
+            <div className="block bg-white rounded-[2rem] p-5 border border-slate-200">
+              <p className="text-xs font-black uppercase tracking-widest text-slate-400 text-center">
+                No featured providers yet
+              </p>
             </div>
-            <h3 className="font-black text-lg tracking-tight mb-2">Urban Supply Chain Experts</h3>
-            <p className="text-xs text-slate-600 mb-3 line-clamp-2">
-              Comprehensive last-mile delivery solutions for e-commerce and retail businesses.
-            </p>
-            <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
-              <div className="flex items-center gap-1">
-                <MapPin className="size-3" />
-                <span>Delhi base</span>
-              </div>
-              <div className="size-1 rounded-full bg-slate-200" />
-              <span>80+ Mini Trucks</span>
-              <div className="size-1 rounded-full bg-slate-200" />
-              <span>24/7 Support</span>
-            </div>
-          </Link>
+          )}
         </div>
       </div>
 

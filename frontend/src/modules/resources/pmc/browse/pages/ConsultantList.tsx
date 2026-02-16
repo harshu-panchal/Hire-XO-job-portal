@@ -22,7 +22,10 @@ const ConsultantList = () => {
       setError("");
       try {
         const data = await resourceService.getAll("pmc");
-        setConsultants(data || []);
+        const activeConsultants = (data || []).filter(
+          (item: any) => item.status !== "Inactive" && item.status !== "Archived"
+        );
+        setConsultants(activeConsultants);
       } catch (err: any) {
         setError(err.message || "Failed to load PMC firms");
         setConsultants([]);
@@ -92,8 +95,8 @@ const ConsultantList = () => {
           !error &&
           paged.map((firm, idx) => (
             <Link
-              key={firm.id}
-              to={`/pmc/browse/consultants/${firm.id}`}
+              key={firm.id || firm._id}
+              to={`/pmc/browse/consultants/${firm.id || firm._id}`}
               className="block bg-white rounded-[2.5rem] p-6 border border-slate-200 active:scale-[0.98] transition-all hover:shadow-xl hover:shadow-indigo-600/5 group"
             >
               <div className="flex items-center gap-5">

@@ -24,11 +24,20 @@ const ConsultantDetails = () => {
         const data = await resourceService.getById("pmc", id);
         setFirm(data);
 
-        const myApps: any = await applicationService.getMyApplications();
-        const alreadyApplied = (myApps.resources || []).some(
-          (app: any) => (app.resourceId?._id || app.resourceId) === id
-        );
-        setHasApplied(alreadyApplied);
+        if (user) {
+          const myApps: any = await applicationService.getMyApplications();
+          const alreadyApplied = (myApps.resources || []).some((app: any) => {
+            const appType = String(app.resourceType || "").toLowerCase();
+            const appCategory = String(app.resourceId?.category || "").toLowerCase();
+            const appliedResourceId =
+              app.resourceId?._id || app.resourceId?.id || app.resourceId;
+            const isPmcApp = appType.includes("pmc") || appCategory.includes("pmc");
+            return isPmcApp && appliedResourceId === id;
+          });
+          setHasApplied(alreadyApplied);
+        } else {
+          setHasApplied(false);
+        }
       } catch (error: any) {
         toast.error(error.message || "Failed to load PMC details");
       } finally {
@@ -36,7 +45,7 @@ const ConsultantDetails = () => {
       }
     };
     load();
-  }, [id]);
+  }, [id, user]);
 
   const handleApply = async () => {
     if (!user) {

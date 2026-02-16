@@ -17,7 +17,7 @@ const SellDashboard = () => {
   const { isAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    assetValue: "₹0",
+    assetValue: "INR 0",
     activeListings: 0,
     buyerInterest: 0
   });
@@ -34,25 +34,30 @@ const SellDashboard = () => {
       try {
         const listings = await resourceService.getMyListings("machinery");
         const bids = await applicationService.getReceivedResourceApplications("machinery");
+        const activeListings = listings.filter(
+          (item: any) => item.status !== "Inactive" && item.status !== "Archived"
+        );
 
         // Calculate Stats
-        const totalValue = listings.reduce((acc: number, curr: any) => {
+        const totalValue = activeListings.reduce((acc: number, curr: any) => {
           const val = parseFloat((curr.compensation || curr.price || "0").replace(/[^0-9.]/g, ""));
           return acc + (isNaN(val) ? 0 : val);
         }, 0);
 
         setStats({
-          assetValue: `₹${(totalValue / 100000).toFixed(1)}L`,
-          activeListings: listings.length,
+          assetValue: `INR ${(totalValue / 100000).toFixed(1)}L`,
+          activeListings: activeListings.length,
           buyerInterest: bids.length
         });
 
         const inventory = listings.slice(0, 3).map((item: any) => ({
-          id: item.id,
+          id: item.id || item._id,
           name: item.title,
-          status: item.status || "Live",
+          status: item.status === "Inactive" ? "Inactive" : "Active",
           views: (item.views || 0).toString(),
-          inquiries: bids.filter((b: any) => (b.resourceId?._id || b.resourceId) === item.id).length,
+          inquiries: bids.filter(
+            (b: any) => (b.resourceId?._id || b.resourceId?.id || b.resourceId) === (item.id || item._id)
+          ).length,
           price: item.compensation || item.price || "N/A"
         }));
 
@@ -211,7 +216,7 @@ const SellDashboard = () => {
                     </p>
                   </div>
                   <div
-                    className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${item.status === "Live"
+                    className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${item.status === "Active"
                         ? "bg-emerald-50 text-emerald-600 border-emerald-100"
                         : "bg-slate-100 text-slate-500 border-slate-200"
                       }`}
@@ -274,3 +279,4 @@ const SellDashboard = () => {
 };
 
 export default SellDashboard;
+

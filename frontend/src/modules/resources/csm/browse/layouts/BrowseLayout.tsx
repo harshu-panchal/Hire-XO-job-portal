@@ -48,25 +48,25 @@ const BrowseLayout = () => {
             </span>
           </Link>
           <Link
-            to="/csm/browse/consultants"
+            to="/csm/browse/list"
             className={`flex flex-col items-center gap-1.5 transition-all duration-200 active:scale-90 ${
-              isActive("/csm/browse/consultants") ? "text-rose-600" : "text-slate-400"
+              isActive("/csm/browse/list") ? "text-rose-600" : "text-slate-400"
             }`}
           >
             <div
               className={`p-2.5 rounded-2xl transition-all duration-200 ${
-                isActive("/csm/browse/consultants")
+                isActive("/csm/browse/list")
                   ? "bg-rose-600/10 scale-110 shadow-lg shadow-rose-600/5"
                   : "bg-transparent"
               }`}
             >
               <Search
-                className={`h-6 w-6 ${isActive("/csm/browse/consultants") ? "fill-rose-600/20" : ""}`}
+                className={`h-6 w-6 ${isActive("/csm/browse/list") ? "fill-rose-600/20" : ""}`}
               />
             </div>
             <span
               className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                isActive("/csm/browse/consultants") ? "opacity-100" : "opacity-40"
+                isActive("/csm/browse/list") ? "opacity-100" : "opacity-40"
               }`}
             >
               Find

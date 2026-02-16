@@ -15,13 +15,14 @@ import {
 import { useResourceStore } from "@/store/useResourceStore";
 import { useState, useEffect } from "react";
 import type { Resource } from "@/types";
+import type { ResourceType } from "@/services/resourceService";
 
 const ResourceDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const {
     resources,
-    fetchResources,
+    getResourceById,
     bookmarkedResources,
     toggleBookmark,
     applications,
@@ -46,21 +47,52 @@ const ResourceDetails = () => {
   };
 
   const isApplied = resource
-    ? applications.some((app: any) => app.resourceId === resource.id)
+    ? applications.some((app: any) => (app.resourceId?._id || app.resourceId) === resource.id)
     : false;
 
-  useEffect(() => {
-    if (resources.length === 0) {
-      fetchResources("tenders"); // Default to fetch some
-    }
-  }, [resources.length, fetchResources]);
+  const resourceTypes: ResourceType[] = [
+    "investors",
+    "tenders",
+    "equipments",
+    "machinery",
+    "pmc",
+    "csm",
+    "logistics",
+    "vehicles",
+  ];
 
   useEffect(() => {
-    const foundResource = resources.find((r) => r.id === id);
-    if (foundResource) {
-      setResource(foundResource);
-    }
-  }, [id, resources]);
+    let cancelled = false;
+
+    const loadResource = async () => {
+      if (!id) return;
+
+      const fromStore = resources.find((r) => r.id === id);
+      if (fromStore) {
+        if (!cancelled) setResource(fromStore);
+        return;
+      }
+
+      for (const type of resourceTypes) {
+        try {
+          const item = await getResourceById(type, id);
+          if (item?.id) {
+            if (!cancelled) setResource(item);
+            return;
+          }
+        } catch (_error) {
+          // Try the next resource type until one matches.
+        }
+      }
+
+      if (!cancelled) setResource(null);
+    };
+
+    loadResource();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, resources, getResourceById]);
 
   if (!resource) {
     return (

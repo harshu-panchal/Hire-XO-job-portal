@@ -3,10 +3,8 @@ import { TrendingUp, Eye, MessageSquare, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { resourceService } from "@/services/resourceService";
 import { applicationService } from "@/services/applicationService";
-import { useAuthStore } from "@/store/useAuthStore";
 
 const SeekDashboard = () => {
-  const { user } = useAuthStore();
   const [stats, setStats] = useState({
     activeRequests: 0,
     totalViews: 0, // Mock for now
@@ -19,42 +17,37 @@ const SeekDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch my listings (Active Requests)
-        // "investors" is the resource type for those seeking investment (SeekDashboard context)
-        // Wait, if I am a "Resource" user with category "investors", I post "investor" resources?
-        // Actually, the "Seek" dashboard is for those SEEKING investment.
-        // In my resource service, this maps to the 'Investor' model?
-        // Or 'Tender'?
-        // This dashboard is specifically in `investor/seek`.
-        // So I am posting requests for Investors to see.
-        // The Resource Type is "Investor" (meaning "Investment Opportunity"?) or are we posting "Startups"?
-        // The `Investor` model likely represents the "Need" or "Opportunity".
+        const listings = await resourceService.getMyListings("investors");
 
-        // Fetch listings
-        const listings = await resourceService.getMyListings("investors"); // OR 'investor'? Type is "investors" in service
-        setActiveRequests(listings.slice(0, 3));
-
-        // Fetch inquiries (Received Applications)
-        // We assume "investors" category for now as we are in Investor/Seek section
         const inquiries = await applicationService.getReceivedResourceApplications("investors");
+        const inquiryCountByResource: Record<string, number> = {};
+        inquiries.forEach((inq: any) => {
+          const resourceId = inq.resourceId?._id || inq.resourceId?.id || inq.resourceId;
+          if (!resourceId) return;
+          inquiryCountByResource[resourceId] = (inquiryCountByResource[resourceId] || 0) + 1;
+        });
 
-        // Format inquiries
         const formattedInquiries = inquiries.slice(0, 3).map((inq: any) => ({
-          id: inq._id,
+          id: inq.id || inq._id,
           name: inq.applicantId?.name || "Unknown Investor",
           message: inq.message || "No message provided",
           time: new Date(inq.appliedAt).toLocaleDateString(), // Simple date
           avatar: (inq.applicantId?.name || "U").charAt(0).toUpperCase(),
-          // We don't have request title easily unless we populate resourceId in backend properly.
-          // For now, assume it's linked.
         }));
         setRecentInquiries(formattedInquiries);
 
         setStats({
-          activeRequests: listings.length,
+          activeRequests: listings.filter((item: any) => item.status !== "Inactive" && item.status !== "Archived").length,
           totalViews: listings.reduce((acc: number, curr: any) => acc + (curr.views || 0), 0),
           inquiries: inquiries.length,
         });
+
+        setActiveRequests(
+          listings.slice(0, 3).map((item: any) => ({
+            ...item,
+            inquiryCount: inquiryCountByResource[item.id || item._id] || 0,
+          }))
+        );
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
@@ -199,7 +192,7 @@ const SeekDashboard = () => {
           {activeRequests.length > 0 ? (
             activeRequests.map((req: any) => (
               <div
-                key={req._id}
+                key={req.id || req._id}
                 className="bg-white rounded-[2rem] p-5 border border-slate-200"
               >
                 <div className="flex items-start justify-between mb-3">
@@ -217,7 +210,9 @@ const SeekDashboard = () => {
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
                       Seeking
                     </p>
-                    <p className="text-lg font-black text-emerald-600">{req.amount || "N/A"}</p>
+                    <p className="text-lg font-black text-emerald-600">
+                      {req.amount || req.investmentAmount || req.compensation || "N/A"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
@@ -228,7 +223,7 @@ const SeekDashboard = () => {
                   <div className="size-1 rounded-full bg-slate-200" />
                   <div className="flex items-center gap-1">
                     <MessageSquare className="size-3" />
-                    <span>{stats.inquiries} inquiries</span> {/* Global count for now */}
+                    <span>{req.inquiryCount || 0} inquiries</span>
                   </div>
                   <div className="size-1 rounded-full bg-slate-200" />
                   <span className="text-emerald-600">Active</span>

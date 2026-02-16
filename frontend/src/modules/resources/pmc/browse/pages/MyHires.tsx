@@ -16,7 +16,7 @@ const MyHires = () => {
             return category.includes("pmc") || type.includes("pmc");
           })
           .map((app: any, idx: number) => ({
-            id: app.id,
+            id: app.id || app._id,
             firmName: app.resourceId?.company || "PMC Firm",
             projectName: app.resourceId?.title || "PMC Project",
             status: app.status === "Rejected" ? "Completed" : "Active",

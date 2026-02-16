@@ -8,12 +8,58 @@ import {
   LogOut,
   ChevronRight,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const BrowseSettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
+  const [notifications, setNotifications] = useState(true);
+  const [is2faEnabled, setIs2faEnabled] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const prefs = user?.profile?.preferences || {};
+    setNotifications(prefs.pmcBrowseNotifications ?? true);
+    setIs2faEnabled(prefs.pmcBrowse2FA ?? true);
+  }, [user?.profile?.preferences]);
+
+  const persistSettings = async (nextPrefs: Record<string, boolean>) => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...(user?.profile?.preferences || {}),
+            ...nextPrefs,
+          },
+        },
+      });
+      return true;
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save settings");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleNotificationsToggle = async () => {
+    const next = !notifications;
+    setNotifications(next);
+    const ok = await persistSettings({ pmcBrowseNotifications: next });
+    if (!ok) setNotifications(!next);
+  };
+
+  const handle2faToggle = async () => {
+    const next = !is2faEnabled;
+    setIs2faEnabled(next);
+    const ok = await persistSettings({ pmcBrowse2FA: next });
+    if (!ok) setIs2faEnabled(!next);
+  };
   return (
     <div className="py-6 space-y-10 select-none">
       {/* Header */}
@@ -33,7 +79,11 @@ const BrowseSettings = () => {
           </h3>
           <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm">
             <div className="divide-y divide-slate-100">
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
+              <button
+                onClick={handleNotificationsToggle}
+                disabled={isSaving}
+                className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group"
+              >
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
                     <Bell className="size-5" />
@@ -43,13 +93,17 @@ const BrowseSettings = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-black text-slate-400 uppercase">On</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase">
+                    {notifications ? "On" : "Off"}
+                  </span>
                   <ChevronRight className="size-5 text-slate-300" />
                 </div>
               </button>
 
 
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
+              <button
+                className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group"
+              >
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
                     <Globe className="size-5" />
@@ -82,7 +136,11 @@ const BrowseSettings = () => {
                 <ChevronRight className="size-5 text-slate-300" />
               </button>
 
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
+              <button
+                onClick={handle2faToggle}
+                disabled={isSaving}
+                className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group"
+              >
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
                     <Smartphone className="size-5" />
@@ -90,7 +148,9 @@ const BrowseSettings = () => {
                   <span className="font-black text-[12px] uppercase tracking-widest">2FA Auth</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-black text-emerald-600 uppercase">Active</span>
+                  <span className="text-[10px] font-black text-emerald-600 uppercase">
+                    {is2faEnabled ? "Active" : "Off"}
+                  </span>
                   <ChevronRight className="size-5 text-slate-300" />
                 </div>
               </button>

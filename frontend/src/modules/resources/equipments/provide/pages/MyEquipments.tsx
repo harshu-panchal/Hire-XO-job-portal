@@ -40,7 +40,7 @@ const MyEquipments = () => {
   const handleDelete = async (id: string) => {
     try {
       await resourceService.delete("equipments", id);
-      setFleet((prev) => prev.filter((item) => item.id !== id));
+      setFleet((prev) => prev.filter((item) => (item.id || item._id) !== id));
     } catch (error) {
       // keep UI unchanged on failure
     }
@@ -72,7 +72,7 @@ const MyEquipments = () => {
       <div className="space-y-6 pb-20">
         {fleet.map((item) => (
           <div
-            key={item.id}
+            key={item.id || item._id}
             className="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-sm group"
           >
             <div className="p-5 flex gap-5">
@@ -138,7 +138,7 @@ const MyEquipments = () => {
                 <Eye className="size-3.5" /> View Stats
               </button>
               <button
-                onClick={() => handleDelete(item.id)}
+                onClick={() => handleDelete(item.id || item._id)}
                 className="size-11 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center active:scale-90 transition-transform"
               >
                 <Trash2 className="size-4" />

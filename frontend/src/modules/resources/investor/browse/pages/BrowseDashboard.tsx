@@ -1,12 +1,15 @@
 import { TrendingUp, DollarSign, Target, Eye, Search, Briefcase } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { resourceService } from "@/services/resourceService";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const BrowseDashboard = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
   const [stats, setStats] = useState({
     activeOpportunities: 0,
-    avgROI: "18.5%",
+    avgROI: "N/A",
     totalValue: "₹0",
   });
   const [featured, setFeatured] = useState<any[]>([]);
@@ -16,19 +19,29 @@ const BrowseDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const data = await resourceService.getAll("investors");
-        setFeatured(data.slice(0, 3));
+        const active = (data || []).filter((item: any) => (item.status || "Active") !== "Inactive");
+        setFeatured(active.slice(0, 3));
 
-        // Calculate total value (mocking for now as we don't have a sum API)
-        const total = data.reduce((acc, curr: any) => {
-          // Extract numeric value from strings like "₹10L - ₹50L" or "50000"
-          const amountStr = curr.investmentAmount || curr.compensation || "0";
-          const val = parseFloat(amountStr.replace(/[^0-9.]/g, ""));
+        const total = active.reduce((acc, curr: any) => {
+          const amountStr = curr.investmentAmount || curr.amount || curr.compensation || "0";
+          const val = parseFloat(String(amountStr).replace(/[^0-9.]/g, ""));
           return acc + (isNaN(val) ? 0 : val);
         }, 0);
 
+        const roiValues = active
+          .map((item: any) => {
+            const raw = String(item?.roi || "");
+            const match = raw.match(/(\d+(\.\d+)?)/);
+            return match ? Number(match[1]) : null;
+          })
+          .filter((val: number | null): val is number => val !== null);
+
         setStats({
-          activeOpportunities: data.length,
-          avgROI: "22.4%", // Simplified average ROI
+          activeOpportunities: active.length,
+          avgROI:
+            roiValues.length > 0
+              ? `${(roiValues.reduce((sum, value) => sum + value, 0) / roiValues.length).toFixed(1)}%`
+              : "N/A",
           totalValue: `₹${total}Cr`,
         });
       } catch (error) {
@@ -158,7 +171,7 @@ const BrowseDashboard = () => {
                       Seeking
                     </p>
                     <p className="text-lg font-black text-emerald-600">
-                      {opp.investmentAmount || opp.compensation || "Negotiable"}
+                      {opp.investmentAmount || opp.amount || opp.compensation || "Negotiable"}
                     </p>
                   </div>
                 </div>
@@ -169,7 +182,7 @@ const BrowseDashboard = () => {
                 <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
                   <div className="flex items-center gap-1">
                     <Eye className="size-3" />
-                    <span>{(opp.views || 0) + 10} views</span>
+                    <span>{opp.views || 0} views</span>
                   </div>
                   <div className="size-1 rounded-full bg-slate-200" />
                   <span>{opp.type || "Equity"} Offered</span>
@@ -199,19 +212,7 @@ const BrowseDashboard = () => {
             </p>
           </Link>
           <button
-            onClick={() => {
-              // Check if authenticated (using simple localStorage check or we needs to import store)
-              // For simplicity, we just link to it, but we know it's protected.
-              // Better user experience: go to login if not authenticated
-              const storage = localStorage.getItem("auth-storage");
-              const isAuthenticated = storage ? JSON.parse(storage).state.isAuthenticated : false;
-
-              if (isAuthenticated) {
-                window.location.href = "/investor/browse/my-investments";
-              } else {
-                window.location.href = "/login/resource";
-              }
-            }}
+            onClick={() => navigate(isAuthenticated ? "/investor/browse/my-investments" : "/login/resource")}
             className="bg-slate-900 dark:bg-white rounded-[2rem] p-5 text-white dark:text-slate-900 active:scale-95 transition-transform shadow-lg shadow-slate-900/10 w-full text-left"
           >
             <div className="size-10 rounded-xl bg-white/10 flex items-center justify-center mb-3">

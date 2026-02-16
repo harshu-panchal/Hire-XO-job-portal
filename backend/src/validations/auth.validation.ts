@@ -35,7 +35,18 @@ export const registerSchema = Joi.object({
     pmcType: Joi.string().optional(),
     csmType: Joi.string().optional(),
     logisticsType: Joi.string().optional(),
-    vehicleType: Joi.string().optional()
+    vehicleType: Joi.string().optional(),
+    investmentAmount: Joi.string().optional(),
+    investmentSector: Joi.array().items(Joi.string()).single().optional(),
+    equipmentTypes: Joi.array().items(Joi.string()).single().optional(),
+    machineryTypes: Joi.array().items(Joi.string()).single().optional(),
+    machinerySpecs: Joi.alternatives().try(Joi.string(), Joi.object()).optional(),
+    vehicleTypes: Joi.array().items(Joi.string()).single().optional(),
+    serviceArea: Joi.string().optional(),
+    projectExperience: Joi.number().min(0).max(100).optional(),
+    certifications: Joi.array().items(Joi.string()).single().optional(),
+    tenderValue: Joi.string().optional(),
+    tenderCategory: Joi.array().items(Joi.string()).single().optional()
 });
 // Note: Removed .unknown(true) for security - all fields must be explicitly defined
 

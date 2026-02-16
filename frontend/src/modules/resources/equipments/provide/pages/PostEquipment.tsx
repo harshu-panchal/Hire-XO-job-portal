@@ -16,7 +16,7 @@ const PostEquipment = () => {
   const [formData, setFormData] = useState({
     title: existingEquipment?.title || "",
     category:
-      existingEquipment?.equipmentType ||
+      existingEquipment?.equipmentTypes?.[0] ||
       existingEquipment?.category ||
       "Excavators",
     location: existingEquipment?.location || "",
@@ -79,7 +79,7 @@ const PostEquipment = () => {
       const payload = {
         ...formData,
         category: "Equipments" as any,
-        equipmentType: formData.category,
+        equipmentType: formData.equipmentType,
         equipmentTypes: [formData.category],
         images: [...existingImages, ...imageUrls],
         postedAt: new Date().toISOString(),

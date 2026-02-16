@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Bell,
   Lock,
@@ -26,7 +26,7 @@ interface Device {
 
 const ProvideSettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
 
   // State for modals
   const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -50,6 +50,7 @@ const ProvideSettings = () => {
   const [showCurrentPin, setShowCurrentPin] = useState(false);
   const [showNewPin, setShowNewPin] = useState(false);
   const [showConfirmPin, setShowConfirmPin] = useState(false);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   // Devices state
   const [devices, setDevices] = useState<Device[]>([
@@ -84,6 +85,55 @@ const ProvideSettings = () => {
   const handleLogout = () => {
     logout();
     navigate("/");
+  };
+
+  useEffect(() => {
+    const prefs = user?.profile?.preferences || {};
+    setBookingAlerts(prefs.vehicleBookingAlerts ?? true);
+    setEmailNotifications(prefs.vehicleEmailNotifications ?? true);
+    setPushNotifications(prefs.vehiclePushNotifications ?? true);
+    setIsOnline(prefs.vehiclePublicListing ?? true);
+  }, [user?.profile?.preferences]);
+
+  const persistSettings = async (nextPrefs: Record<string, boolean>) => {
+    setIsSavingSettings(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...(user?.profile?.preferences || {}),
+            ...nextPrefs,
+          },
+        },
+      });
+      return true;
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save settings");
+      return false;
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
+  const handleSaveNotificationSettings = async () => {
+    const ok = await persistSettings({
+      vehicleBookingAlerts: bookingAlerts,
+      vehicleEmailNotifications: emailNotifications,
+      vehiclePushNotifications: pushNotifications,
+    });
+    if (!ok) return;
+    setShowNotificationModal(false);
+    toast.success("Notification settings saved!");
+  };
+
+  const handleSaveVisibilitySettings = async () => {
+    const ok = await persistSettings({
+      vehiclePublicListing: isOnline,
+    });
+    if (!ok) return;
+    setShowVisibilityModal(false);
+    toast.success("Visibility settings saved!");
   };
 
   const activeDeviceCount = devices.filter((d) => d.status === "Active").length;
@@ -288,10 +338,8 @@ const ProvideSettings = () => {
             </div>
 
             <button
-              onClick={() => {
-                setShowNotificationModal(false);
-                toast.success("Notification settings saved!");
-              }}
+              onClick={handleSaveNotificationSettings}
+              disabled={isSavingSettings}
               className="w-full mt-6 px-4 py-3 rounded-xl bg-blue-600 text-white font-black text-sm uppercase tracking-widest hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-600/20"
             >
               Save Changes
@@ -356,10 +404,8 @@ const ProvideSettings = () => {
             </div>
 
             <button
-              onClick={() => {
-                setShowVisibilityModal(false);
-                toast.success("Visibility settings saved!");
-              }}
+              onClick={handleSaveVisibilitySettings}
+              disabled={isSavingSettings}
               className="w-full px-4 py-3 rounded-xl bg-emerald-600 text-white font-black text-sm uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-600/20"
             >
               Save Changes

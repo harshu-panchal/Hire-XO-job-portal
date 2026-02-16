@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Bell,
   Shield,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface SettingItemProps {
   icon: any;
@@ -40,8 +41,36 @@ const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProp
 
 const RentSettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
   const [notifications, setNotifications] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const prefs = user?.profile?.preferences || {};
+    setNotifications(prefs.equipmentsRentAlerts ?? true);
+  }, [user?.profile?.preferences]);
+
+  const handleNotificationsToggle = async () => {
+    const next = !notifications;
+    setNotifications(next);
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...(user?.profile?.preferences || {}),
+            equipmentsRentAlerts: next,
+          },
+        },
+      });
+    } catch (error: any) {
+      setNotifications(!next);
+      toast.error(error?.message || "Failed to save settings");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -65,7 +94,8 @@ const RentSettings = () => {
             description="New gear available near you"
             action={
               <button
-                onClick={() => setNotifications(!notifications)}
+                onClick={handleNotificationsToggle}
+                disabled={isSaving}
                 className={`w-12 h-6 rounded-full transition-colors relative ${notifications ? "bg-emerald-600" : "bg-slate-200"}`}
               >
                 <div

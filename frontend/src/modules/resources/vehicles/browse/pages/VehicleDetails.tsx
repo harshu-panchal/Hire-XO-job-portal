@@ -24,11 +24,23 @@ const VehicleDetails = () => {
         const data = await resourceService.getById("vehicles", id);
         setVehicle(data);
 
-        const myApps: any = await applicationService.getMyApplications();
-        const alreadyApplied = (myApps.resources || []).some(
-          (app: any) => (app.resourceId?._id || app.resourceId) === id
-        );
-        setHasApplied(alreadyApplied);
+        if (!user) {
+          setHasApplied(false);
+        } else {
+          const myApps: any = await applicationService.getMyApplications();
+          const alreadyApplied = (myApps.resources || []).some((app: any) => {
+            const appResourceType = (app.resourceType || "").toLowerCase();
+            const appCategory = (app.resourceId?.category || "").toLowerCase();
+            const appResourceId = app.resourceId?._id || app.resourceId?.id || app.resourceId;
+            return (
+              appResourceId === id &&
+              (appResourceType === "vehicles" ||
+                appResourceType === "vehicle" ||
+                appCategory.includes("vehicle"))
+            );
+          });
+          setHasApplied(alreadyApplied);
+        }
       } catch (error: any) {
         toast.error(error.message || "Failed to load vehicle details");
       } finally {
@@ -36,7 +48,7 @@ const VehicleDetails = () => {
       }
     };
     load();
-  }, [id]);
+  }, [id, user]);
 
   const handleApply = async () => {
     if (!user) {
@@ -70,6 +82,10 @@ const VehicleDetails = () => {
 
   if (!vehicle) {
     return <div className="p-10 text-center font-black">Vehicle not found</div>;
+  }
+
+  if ((vehicle.status || "Active") === "Inactive") {
+    return <div className="p-10 text-center font-black">This vehicle is currently unavailable.</div>;
   }
 
   return (

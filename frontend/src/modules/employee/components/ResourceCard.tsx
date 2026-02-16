@@ -31,7 +31,7 @@ const ResourceCard = ({ resource }: ResourceCardProps) => {
 
   return (
     <Link
-      to={`/resources/${resource.id}`}
+      to={`/employee/resources/${resource.id}`}
       className="flex flex-col h-full group relative bg-white rounded-[2rem] p-4 border border-slate-200 shadow-sm active:shadow-md active:scale-[0.98] active:border-primary/20 transition-all"
     >
       <div className="flex-1">

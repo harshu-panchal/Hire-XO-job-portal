@@ -46,14 +46,17 @@ const MyVehicles = () => {
   const handleDelete = async (vehicleId: string) => {
     try {
       await resourceService.delete("vehicles", vehicleId);
-      setVehicles((prev) => prev.filter((v) => v.id !== vehicleId));
+      setVehicles((prev) => prev.filter((v) => (v.id || v._id) !== vehicleId));
     } catch (error) {
       // keep page state unchanged
     }
   };
 
   const getInquiryCount = (vehicleId: string) =>
-    inquiries.filter((inq: any) => (inq.resourceId?._id || inq.resourceId) === vehicleId).length;
+    inquiries.filter((inq: any) => {
+      const resourceId = inq.resourceId?._id || inq.resourceId?.id || inq.resourceId;
+      return resourceId === vehicleId;
+    }).length;
 
   const handleAddNew = () => {
     navigate("/vehicles/provide/post");
@@ -97,9 +100,11 @@ const MyVehicles = () => {
 
       {/* List */}
       <div className="space-y-4">
-        {vehicles.map((vehicle) => (
+        {vehicles.map((vehicle) => {
+          const vehicleId = String(vehicle.id || vehicle._id || "");
+          return (
           <div
-            key={vehicle.id}
+            key={vehicleId}
             className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm"
           >
             <div className="flex items-start justify-between mb-4">
@@ -156,7 +161,7 @@ const MyVehicles = () => {
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Leads
                   </p>
-                  <p className="text-xs font-black italic">{getInquiryCount(vehicle.id)}</p>
+                  <p className="text-xs font-black italic">{getInquiryCount(vehicleId)}</p>
                 </div>
               </div>
             </div>
@@ -177,7 +182,7 @@ const MyVehicles = () => {
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(vehicle.id)}
+                onClick={() => handleDelete(vehicleId)}
                 className="h-12 rounded-2xl bg-red-500/10 text-red-600 border border-red-500/10 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-red-500/20 active:scale-95 transition-all"
               >
                 <Trash2 className="size-3.5" />
@@ -185,7 +190,8 @@ const MyVehicles = () => {
               </button>
             </div>
           </div>
-        ))}
+          );
+        })}
         {vehicles.length === 0 && (
           <div className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">

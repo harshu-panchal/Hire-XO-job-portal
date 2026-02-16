@@ -117,9 +117,9 @@ const TendersList = () => {
       {/* Tenders Grid */}
       <div className="space-y-4">
         {filteredTenders.map((tender) => (
-          <div
-            key={tender.id}
-            onClick={() => navigate(`/tenders/apply/tenders/${tender.id}`)}
+            <div
+            key={tender.id || tender._id}
+            onClick={() => navigate(`/tenders/apply/tenders/${tender.id || tender._id}`)}
             className="bg-white border border-slate-200 rounded-[2rem] p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer"
           >
             {/* Status/Type Badge */}

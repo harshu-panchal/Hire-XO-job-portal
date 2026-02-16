@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const DEFAULT_API_KEYS = [
   { id: 1, name: "Production API", key: "sk_live_abc123xyz789def456", created: "Jan 15, 2026" },
@@ -71,7 +72,7 @@ const SettingItem = ({ icon: Icon, label, description, action, onClick }: Settin
 
 const ProvideSettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
 
   // Toggles
   const [bidAlerts, setBidAlerts] = useState(true);
@@ -97,9 +98,18 @@ const ProvideSettings = () => {
 
   // Security
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [isSavingPrefs, setIsSavingPrefs] = useState(false);
 
   // Theme
   const [selectedTheme, setSelectedTheme] = useState("Default");
+
+  useEffect(() => {
+    const prefs = user?.profile?.preferences || {};
+    setBidAlerts(prefs.tendersProvideBidAlerts ?? true);
+    setExtensionEnabled(prefs.tendersProvideAutoExtension ?? false);
+    setIs2FAEnabled(Boolean(prefs.tendersProvide2FAEnabled));
+    setSelectedTheme(prefs.tendersProvideTheme || "Default");
+  }, [user?.profile?.preferences]);
 
   useEffect(() => {
     localStorage.setItem("tenders_provide_api_keys_v1", JSON.stringify(apiKeys));
@@ -108,6 +118,48 @@ const ProvideSettings = () => {
   useEffect(() => {
     localStorage.setItem("tenders_provide_personnel_v1", JSON.stringify(personnel));
   }, [personnel]);
+
+  const persistPreferences = async (nextPrefs: Record<string, any>) => {
+    setIsSavingPrefs(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...(user?.profile?.preferences || {}),
+            ...nextPrefs,
+          },
+        },
+      });
+      return true;
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save settings");
+      return false;
+    } finally {
+      setIsSavingPrefs(false);
+    }
+  };
+
+  const handleToggleBidAlerts = async () => {
+    const next = !bidAlerts;
+    setBidAlerts(next);
+    const ok = await persistPreferences({ tendersProvideBidAlerts: next });
+    if (!ok) setBidAlerts(!next);
+  };
+
+  const handleToggleAutoExtension = async () => {
+    const next = !extensionEnabled;
+    setExtensionEnabled(next);
+    const ok = await persistPreferences({ tendersProvideAutoExtension: next });
+    if (!ok) setExtensionEnabled(!next);
+  };
+
+  const handleToggle2FA = async () => {
+    const next = !is2FAEnabled;
+    setIs2FAEnabled(next);
+    const ok = await persistPreferences({ tendersProvide2FAEnabled: next });
+    if (!ok) setIs2FAEnabled(!next);
+  };
 
 
   const copyToClipboard = (text: string, id: number) => {
@@ -138,7 +190,8 @@ const ProvideSettings = () => {
             description="Instant notified on new bid submissions"
             action={
               <button
-                onClick={() => setBidAlerts(!bidAlerts)}
+                onClick={handleToggleBidAlerts}
+                disabled={isSavingPrefs}
                 className={`w-12 h-6 rounded-full transition-colors relative ${bidAlerts ? "bg-indigo-600" : "bg-slate-200"}`}
               >
                 <div
@@ -153,7 +206,8 @@ const ProvideSettings = () => {
             description="Extend deadline on last-minute bids"
             action={
               <button
-                onClick={() => setExtensionEnabled(!extensionEnabled)}
+                onClick={handleToggleAutoExtension}
+                disabled={isSavingPrefs}
                 className={`w-12 h-6 rounded-full transition-colors relative ${extensionEnabled ? "bg-indigo-600" : "bg-slate-200"}`}
               >
                 <div
@@ -389,7 +443,8 @@ const ProvideSettings = () => {
                     <p className="text-xs text-slate-500">Add extra security layer</p>
                   </div>
                   <button
-                    onClick={() => setIs2FAEnabled(!is2FAEnabled)}
+                    onClick={handleToggle2FA}
+                    disabled={isSavingPrefs}
                     className={`w-12 h-6 rounded-full transition-colors relative ${is2FAEnabled ? "bg-emerald-600" : "bg-slate-200"}`}
                   >
                     <div
