@@ -32,6 +32,7 @@
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "nodemailer": "^8.0.0",
+    "pdf-lib": "^1.17.1",
     "puppeteer-core": "^24.6.0"
   },
   "devDependencies": {
