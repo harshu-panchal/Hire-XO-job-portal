@@ -124,7 +124,15 @@ export const useNotifications = () => {
       if (notification.relatedType === "job_application" && notification.relatedId) {
         navigate(`/employer/applications?id=${notification.relatedId}`);
       } else if (notification.relatedType === "resource_application" && notification.relatedId) {
-        navigate(`/employer/applications?id=${notification.relatedId}`);
+        if (user?.role === "resource") {
+          navigate(getResourceHomePath(user));
+        } else if (user?.role === "employee") {
+          navigate("/my-applications");
+        } else if (user?.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate(`/employer/applications?id=${notification.relatedId}`);
+        }
       } else if (notification.relatedType === "certificate_issued") {
         const certificatePath = user?.role === "employer" ? "/employer/certificates" : "/certificates";
         navigate(certificatePath);
@@ -170,4 +178,52 @@ const getIcon = (type: string) => {
     default:
       return Info;
   }
+};
+
+const getResourceHomePath = (user: any): string => {
+  const profile = user?.profile || {};
+  const category = String(user?.category || profile?.category || "").toLowerCase();
+
+  if (category === "investor") {
+    return profile?.investorType === "want-investment"
+      ? "/investor/seek/dashboard"
+      : "/investor/browse/dashboard";
+  }
+  if (category === "tenders") {
+    return profile?.tenderType === "provide-tenders"
+      ? "/tenders/provide/dashboard"
+      : "/tenders/apply/dashboard";
+  }
+  if (category === "equipments") {
+    return profile?.equipmentType === "rent-out-equipment"
+      ? "/equipments/provide/dashboard"
+      : "/equipments/rent/dashboard";
+  }
+  if (category === "machinery") {
+    return profile?.machineryType === "provide-machinery"
+      ? "/machinery/sell/dashboard"
+      : "/machinery/buy/dashboard";
+  }
+  if (category === "pmc") {
+    return profile?.pmcType === "offer-pmc-services"
+      ? "/pmc/provide/dashboard"
+      : "/pmc/browse/dashboard";
+  }
+  if (category === "csm") {
+    return profile?.csmType === "offer-csm-services"
+      ? "/csm/provide/dashboard"
+      : "/csm/browse/dashboard";
+  }
+  if (category === "logistics") {
+    return profile?.logisticsType === "provide-logistics"
+      ? "/logistics/provide/dashboard"
+      : "/logistics/browse/dashboard";
+  }
+  if (category === "vehicles") {
+    return profile?.vehicleType === "rent-out-vehicles"
+      ? "/vehicles/provide/dashboard"
+      : "/vehicles/browse/dashboard";
+  }
+
+  return "/resources/categories";
 };

@@ -92,6 +92,8 @@ const MyTenders = () => {
         return { color: "text-amber-600", bg: "bg-amber-100" };
       case "Draft":
         return { color: "text-slate-600", bg: "bg-slate-100" };
+      case "Archived":
+        return { color: "text-slate-500", bg: "bg-slate-200" };
       default:
         return { color: "text-slate-600", bg: "bg-slate-100" };
     }
@@ -145,9 +147,27 @@ const MyTenders = () => {
 
   const handleArchive = async (tenderId: string) => {
     if (confirm("Are you sure you want to archive this tender?")) {
-      // Logic to archive via API would go here, for now just UI update or delete
-      // For real implementation: await resourceService.update('tenders', tenderId, { status: 'Archived' });
-      toast.info("Archive functionality to be implemented");
+      const previous = tenders;
+      setTenders((prev) =>
+        prev.map((t) =>
+          t._id === tenderId
+            ? {
+                ...t,
+                status: "Archived",
+                statusColor: getStatusColor("Archived").color,
+                statusBg: getStatusColor("Archived").bg,
+              }
+            : t
+        )
+      );
+
+      try {
+        await resourceService.update("tenders", tenderId, { status: "Archived" } as any);
+        toast.success("Tender archived successfully");
+      } catch (error) {
+        setTenders(previous);
+        toast.error("Failed to archive tender");
+      }
     }
   };
 

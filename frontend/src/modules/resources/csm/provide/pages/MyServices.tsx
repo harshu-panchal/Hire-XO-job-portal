@@ -30,6 +30,10 @@ const MyServices = () => {
     }
   };
 
+  const handleEdit = (service: any) => {
+    navigate("/csm/provide/post", { state: { service } });
+  };
+
   const getInquiryCount = (serviceId: string) =>
     myInquiries.filter((inq: any) => {
       const resourceId = inq.resourceId?._id || inq.resourceId;
@@ -119,7 +123,10 @@ const MyServices = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <button className="h-12 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform">
+              <button
+                onClick={() => handleEdit(service)}
+                className="h-12 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
+              >
                 <Edit3 className="size-3.5" />
                 Edit Listing
               </button>

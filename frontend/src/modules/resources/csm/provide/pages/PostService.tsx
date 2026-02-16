@@ -1,14 +1,18 @@
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Building2, FileText, Camera, Plus, X, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { resourceService } from "@/services/resourceService";
 import { uploadService } from "@/services/uploadService";
 import { toast } from "sonner";
 
 const PostService = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
+  const editingService = (location.state as any)?.service;
+  const editingId = editingService?.id || editingService?._id || "";
+  const isEditing = Boolean(editingId);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -24,6 +28,29 @@ const PostService = () => {
 
   const [serviceCategory, setServiceCategory] = useState("Structural Audit");
   const [files, setFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!editingService) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      title: editingService.title || "",
+      company: editingService.company || "",
+      location: editingService.location || prev.location,
+      compensation: editingService.compensation || prev.compensation,
+      type: editingService.type || prev.type,
+      description: editingService.description || "",
+      category: editingService.category || prev.category,
+      csmType: editingService.csmType || prev.csmType,
+      urgency: editingService.urgency || prev.urgency,
+    }));
+
+    if (Array.isArray(editingService.requirements) && editingService.requirements[0]) {
+      setServiceCategory(editingService.requirements[0]);
+    }
+    setExistingImages(Array.isArray(editingService.images) ? editingService.images : []);
+  }, [editingService]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -68,12 +95,17 @@ const PostService = () => {
         ...formData,
         category: "CSM" as any,
         requirements: [serviceCategory], // Store sub-category
-        images: imageUrls,
+        images: [...existingImages, ...imageUrls],
         postedAt: new Date().toISOString(),
       };
 
-      await resourceService.create("csm", payload);
-      toast.success("CSM service published successfully!");
+      if (isEditing) {
+        await resourceService.update("csm", editingId, payload);
+        toast.success("CSM service updated successfully!");
+      } else {
+        await resourceService.create("csm", payload);
+        toast.success("CSM service published successfully!");
+      }
       navigate("/csm/provide/dashboard");
     } catch (error: any) {
       console.error("Failed to save CSM service", error);
@@ -93,9 +125,11 @@ const PostService = () => {
         >
           <ArrowLeft className="size-6 text-slate-600" />
         </button>
-        <h1 className="text-xl font-black tracking-tight uppercase italic">Post CSM service</h1>
-        <div className="size-12 opacity-0" />
-      </div>
+          <h1 className="text-xl font-black tracking-tight uppercase italic">
+            {isEditing ? "Edit CSM service" : "Post CSM service"}
+          </h1>
+          <div className="size-12 opacity-0" />
+        </div>
 
       {/* Form */}
       <div className="space-y-6">
@@ -267,7 +301,7 @@ const PostService = () => {
           disabled={loading}
           className="w-full h-20 rounded-[2.5rem] bg-rose-600 text-white font-black text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-[0.98] transition-all shadow-xl shadow-rose-600/25 mt-4 disabled:opacity-70"
         >
-          {loading ? "Publishing..." : "Publish CSM Service"}
+          {loading ? "Saving..." : isEditing ? "Update CSM Service" : "Publish CSM Service"}
           <ChevronRight className="size-5" />
         </button>
       </div>
