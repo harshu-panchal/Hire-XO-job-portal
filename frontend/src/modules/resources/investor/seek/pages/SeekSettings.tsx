@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 const SeekSettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
 
   // Notification settings
   const [newInquiries, setNewInquiries] = useState(true);
@@ -45,6 +45,74 @@ const SeekSettings = () => {
 
   // 2FA
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const prefs = user?.profile?.preferences || {};
+    setNewInquiries(prefs.investorSeekNewInquiries ?? true);
+    setRequestViews(prefs.investorSeekRequestViews ?? true);
+    setEmailNotifications(prefs.investorSeekEmailNotifications ?? false);
+    setTipsRecommendations(prefs.investorSeekTipsRecommendations ?? true);
+    setPublicProfile(prefs.investorSeekPublicProfile ?? true);
+    setSelectedLanguage(prefs.investorSeekLanguage || "English (India)");
+    setIs2FAEnabled(Boolean(prefs.investorSeek2FAEnabled));
+  }, [user?.profile?.preferences]);
+
+  const persistPreferences = async (nextPrefs: Record<string, any>) => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...(user?.profile?.preferences || {}),
+            ...nextPrefs,
+          },
+        },
+      });
+      return true;
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save settings");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleToggleNewInquiries = async (next: boolean) => {
+    const prev = newInquiries;
+    setNewInquiries(next);
+    const ok = await persistPreferences({ investorSeekNewInquiries: next });
+    if (!ok) setNewInquiries(prev);
+  };
+
+  const handleToggleRequestViews = async (next: boolean) => {
+    const prev = requestViews;
+    setRequestViews(next);
+    const ok = await persistPreferences({ investorSeekRequestViews: next });
+    if (!ok) setRequestViews(prev);
+  };
+
+  const handleToggleEmailNotifications = async (next: boolean) => {
+    const prev = emailNotifications;
+    setEmailNotifications(next);
+    const ok = await persistPreferences({ investorSeekEmailNotifications: next });
+    if (!ok) setEmailNotifications(prev);
+  };
+
+  const handleToggleTipsRecommendations = async (next: boolean) => {
+    const prev = tipsRecommendations;
+    setTipsRecommendations(next);
+    const ok = await persistPreferences({ investorSeekTipsRecommendations: next });
+    if (!ok) setTipsRecommendations(prev);
+  };
+
+  const handleTogglePublicProfile = async (next: boolean) => {
+    const prev = publicProfile;
+    setPublicProfile(next);
+    const ok = await persistPreferences({ investorSeekPublicProfile: next });
+    if (!ok) setPublicProfile(prev);
+  };
 
 
   const handlePasswordChange = () => {
@@ -65,8 +133,10 @@ const SeekSettings = () => {
   };
 
   const toggle2FA = () => {
-    setIs2FAEnabled(!is2FAEnabled);
+    const next = !is2FAEnabled;
+    setIs2FAEnabled(next);
     setShow2FAModal(false);
+    persistPreferences({ investorSeek2FAEnabled: next });
     toast.success(is2FAEnabled ? "2FA disabled successfully!" : "2FA enabled successfully!");
   };
 
@@ -101,7 +171,7 @@ const SeekSettings = () => {
                 type="checkbox"
                 className="sr-only peer"
                 checked={newInquiries}
-                onChange={(e) => setNewInquiries(e.target.checked)}
+                onChange={(e) => handleToggleNewInquiries(e.target.checked)}
               />
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
@@ -121,7 +191,7 @@ const SeekSettings = () => {
                 type="checkbox"
                 className="sr-only peer"
                 checked={requestViews}
-                onChange={(e) => setRequestViews(e.target.checked)}
+                onChange={(e) => handleToggleRequestViews(e.target.checked)}
               />
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
@@ -141,7 +211,7 @@ const SeekSettings = () => {
                 type="checkbox"
                 className="sr-only peer"
                 checked={emailNotifications}
-                onChange={(e) => setEmailNotifications(e.target.checked)}
+                onChange={(e) => handleToggleEmailNotifications(e.target.checked)}
               />
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
@@ -161,7 +231,7 @@ const SeekSettings = () => {
                 type="checkbox"
                 className="sr-only peer"
                 checked={tipsRecommendations}
-                onChange={(e) => setTipsRecommendations(e.target.checked)}
+                onChange={(e) => handleToggleTipsRecommendations(e.target.checked)}
               />
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
@@ -245,7 +315,7 @@ const SeekSettings = () => {
                 type="checkbox"
                 className="sr-only peer"
                 checked={publicProfile}
-                onChange={(e) => setPublicProfile(e.target.checked)}
+                onChange={(e) => handleTogglePublicProfile(e.target.checked)}
               />
               <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
@@ -442,8 +512,9 @@ const SeekSettings = () => {
               {["English (India)", "English (US)", "Hindi", "Spanish", "French"].map((lang) => (
                 <button
                   key={lang}
-                  onClick={() => {
+                  onClick={async () => {
                     setSelectedLanguage(lang);
+                    await persistPreferences({ investorSeekLanguage: lang });
                     setShowLanguageModal(false);
                   }}
                   className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${selectedLanguage === lang

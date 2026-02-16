@@ -1,10 +1,56 @@
 import { Bell, Lock, Smartphone, Globe, LogOut, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const ProvideSettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
+  const [leadAlerts, setLeadAlerts] = useState(true);
+  const [isListed, setIsListed] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const prefs = user?.profile?.preferences || {};
+    setLeadAlerts(prefs.csmProvideLeadAlerts ?? true);
+    setIsListed(prefs.csmProvidePublicListing ?? true);
+  }, [user?.profile?.preferences]);
+
+  const persistSettings = async (nextPrefs: Record<string, boolean>) => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...(user?.profile?.preferences || {}),
+            ...nextPrefs,
+          },
+        },
+      });
+      return true;
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save settings");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleLeadAlertsToggle = async () => {
+    const next = !leadAlerts;
+    setLeadAlerts(next);
+    const ok = await persistSettings({ csmProvideLeadAlerts: next });
+    if (!ok) setLeadAlerts(!next);
+  };
+
+  const handleListingToggle = async () => {
+    const next = !isListed;
+    setIsListed(next);
+    const ok = await persistSettings({ csmProvidePublicListing: next });
+    if (!ok) setIsListed(!next);
+  };
   return (
     <div className="py-6 space-y-10 select-none">
       {/* Header */}
@@ -24,7 +70,11 @@ const ProvideSettings = () => {
           </h3>
           <div className="bg-white rounded-[3rem] border border-slate-200 overflow-hidden shadow-sm">
             <div className="divide-y divide-slate-100">
-              <button className="w-full flex items-center justify-between p-7 hover:bg-slate-50 transition-colors group">
+              <button
+                onClick={handleLeadAlertsToggle}
+                disabled={isSaving}
+                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 transition-colors group"
+              >
                 <div className="flex items-center gap-5">
                   <div className="size-12 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center border border-rose-500/10">
                     <Bell className="size-5" />
@@ -36,13 +86,17 @@ const ProvideSettings = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-[9px] font-black text-rose-600 uppercase tracking-widest italic">
-                    Always
+                    {leadAlerts ? "Always" : "Off"}
                   </span>
                   <ChevronRight className="size-5 text-slate-300 group-hover:text-rose-600 transition-colors" />
                 </div>
               </button>
 
-              <button className="w-full flex items-center justify-between p-7 hover:bg-slate-50 transition-colors group">
+              <button
+                onClick={handleListingToggle}
+                disabled={isSaving}
+                className="w-full flex items-center justify-between p-7 hover:bg-slate-50 transition-colors group"
+              >
                 <div className="flex items-center gap-5">
                   <div className="size-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center border border-emerald-500/10">
                     <Globe className="size-5" />
@@ -54,7 +108,7 @@ const ProvideSettings = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest italic">
-                    Listed
+                    {isListed ? "Listed" : "Hidden"}
                   </span>
                   <ChevronRight className="size-5 text-slate-300 group-hover:text-rose-600 transition-colors" />
                 </div>

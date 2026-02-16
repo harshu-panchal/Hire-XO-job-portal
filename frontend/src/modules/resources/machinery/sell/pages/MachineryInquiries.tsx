@@ -28,7 +28,7 @@ const MachineryInquiries = () => {
         const mapped = (data || []).map((inq: any) => {
           return {
             ...inq,
-            id: inq.id,
+            id: inq.id || inq._id,
             buyer: inq.applicantId?.name || "Unknown",
             asset: inq.resourceId?.title || "Machinery",
             location: inq.applicantId?.profile?.location || "N/A",
@@ -81,7 +81,9 @@ const MachineryInquiries = () => {
   const handleMarkAsReplied = async (id: string) => {
     try {
       await applicationService.updateApplicationStatus(id, "Accepted", "resource");
-      setInquiries((prev) => prev.map((inq) => (inq.id === id ? { ...inq, status: "Replied" } : inq)));
+      setInquiries((prev) =>
+        prev.map((inq) => ((inq.id === id || inq._id === id) ? { ...inq, status: "Replied" } : inq))
+      );
     } catch (error) {
       // keep state unchanged on failure
     }

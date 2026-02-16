@@ -46,7 +46,7 @@ const ProvideDashboard = () => {
           idx % 2 === 0 ? "from-indigo-500 to-blue-600" : "from-purple-500 to-pink-600";
         const name = inq.applicantId?.name || "Unknown";
         return {
-          id: inq.id,
+          id: inq.id || inq._id,
           name,
           initial:
             name

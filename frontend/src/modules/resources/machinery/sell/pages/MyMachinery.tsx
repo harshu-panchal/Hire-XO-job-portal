@@ -32,10 +32,12 @@ const MyMachinery = () => {
   }, []);
 
   const getInquiryCount = (itemId: string) =>
-    inquiries.filter((inq: any) => (inq.resourceId?._id || inq.resourceId) === itemId).length;
+    inquiries.filter(
+      (inq: any) => (inq.resourceId?._id || inq.resourceId?.id || inq.resourceId) === itemId
+    ).length;
 
   const activeCount = useMemo(
-    () => machinery.filter((item) => (item.status || "Live") === "Live").length,
+    () => machinery.filter((item) => (item.status || "Active") === "Active").length,
     [machinery]
   );
 
@@ -46,7 +48,7 @@ const MyMachinery = () => {
   const handleDelete = async (itemId: string) => {
     try {
       await resourceService.delete("machinery", itemId);
-      setMachinery((prev) => prev.filter((item) => item.id !== itemId));
+      setMachinery((prev) => prev.filter((item) => (item.id || item._id) !== itemId));
     } catch (error) {
       // keep state unchanged on failure
     }
@@ -76,7 +78,7 @@ const MyMachinery = () => {
       <div className="space-y-6 pb-20">
         {machinery.map((item, index) => (
           <div
-            key={item.id}
+            key={item.id || item._id}
             className="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden group shadow-sm relative"
           >
             <div className="p-6 flex gap-6">
@@ -91,12 +93,12 @@ const MyMachinery = () => {
                 />
                 <div
                   className={`absolute top-2 left-2 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${
-                    (item.status || "Live") === "Live"
+                    (item.status || "Active") === "Active"
                       ? "bg-emerald-500 text-white border-emerald-400/30 shadow-lg shadow-emerald-500/20"
                       : "bg-slate-200 text-slate-600 border-slate-300"
                   }`}
                 >
-                  {item.status || "Live"}
+                  {item.status || "Active"}
                 </div>
               </div>
               <div className="flex-1 space-y-2 py-1 min-w-0">
@@ -121,7 +123,7 @@ const MyMachinery = () => {
                   <div className="flex items-center gap-1.5 opacity-60">
                     <MessageSquare className="size-3 text-amber-500" />
                     <span className="text-[10px] font-black uppercase tracking-widest">
-                      {getInquiryCount(item.id)}
+                      {getInquiryCount(item.id || item._id)}
                     </span>
                   </div>
                 </div>
@@ -140,7 +142,7 @@ const MyMachinery = () => {
                   <Edit3 className="size-4" />
                 </button>
                 <button
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => handleDelete(item.id || item._id)}
                   className="size-11 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-400 hover:text-rose-600 transition-colors border border-rose-100 active:scale-90 transition-transform"
                 >
                   <Trash2 className="size-4" />

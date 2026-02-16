@@ -48,11 +48,13 @@ const SellDashboard = () => {
         });
 
         const inventory = listings.slice(0, 3).map((item: any) => ({
-          id: item.id,
+          id: item.id || item._id,
           name: item.title,
-          status: item.status || "Live",
+          status: item.status === "Inactive" ? "Inactive" : "Active",
           views: (item.views || 0).toString(),
-          inquiries: bids.filter((b: any) => (b.resourceId?._id || b.resourceId) === item.id).length,
+          inquiries: bids.filter(
+            (b: any) => (b.resourceId?._id || b.resourceId?.id || b.resourceId) === (item.id || item._id)
+          ).length,
           price: item.compensation || item.price || "N/A"
         }));
 
@@ -211,7 +213,7 @@ const SellDashboard = () => {
                     </p>
                   </div>
                   <div
-                    className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${item.status === "Live"
+                    className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${item.status === "Active"
                         ? "bg-emerald-50 text-emerald-600 border-emerald-100"
                         : "bg-slate-100 text-slate-500 border-slate-200"
                       }`}

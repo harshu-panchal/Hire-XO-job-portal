@@ -133,7 +133,7 @@ export const useCSMStore = create<CSMState>((set, get) => ({
         : undefined;
       set((state) => ({
         myServices: normalized
-          ? state.myServices.map((s) => (s.id === id ? normalized : s))
+          ? state.myServices.map((s: any) => ((s.id || s._id) === id ? normalized : s))
           : state.myServices,
         isLoading: false,
       }));
@@ -151,7 +151,7 @@ export const useCSMStore = create<CSMState>((set, get) => ({
     try {
       await resourceService.delete("csm", id);
       set((state) => ({
-        myServices: state.myServices.filter((s) => s.id !== id),
+        myServices: state.myServices.filter((s: any) => (s.id || s._id) !== id),
         isLoading: false,
       }));
     } catch (error: any) {

@@ -179,7 +179,7 @@ const OpportunityDetails = () => {
               Total Seeking
             </p>
             <p className="text-xl font-black text-emerald-700">
-              ₹{opportunity.amount || opportunity.seekingAmount || "Negotiable"}
+              ₹{opportunity.investmentAmount || opportunity.amount || opportunity.compensation || "Negotiable"}
             </p>
           </div>
           <div className="bg-violet-50 rounded-[2rem] p-5 border border-violet-100">
@@ -190,7 +190,7 @@ const OpportunityDetails = () => {
               Equity Offered
             </p>
             <p className="text-xl font-black text-violet-700">
-              {opportunity.equity || "Discussion"}
+              {opportunity.equity || opportunity.details?.equity || "Discussion"}
             </p>
           </div>
           <div className="bg-indigo-50 rounded-[2rem] p-5 border border-indigo-100">
@@ -233,7 +233,7 @@ const OpportunityDetails = () => {
                 { icon: MapPin, label: "Registered In", value: opportunity.location || "N/A" },
                 { icon: Calendar, label: "Founded Year", value: opportunity.founded || "N/A" },
                 { icon: Users, label: "Team Strength", value: opportunity.employees || "10-25" },
-                { icon: Building2, label: "Sector", value: opportunity.category || "Technology" },
+                { icon: Building2, label: "Sector", value: opportunity.investmentSector?.[0] || opportunity.category || "Technology" },
               ].map((stat, i) => (
                 <div key={i} className="flex gap-4">
                   <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
@@ -331,3 +331,4 @@ const OpportunityDetails = () => {
 };
 
 export default OpportunityDetails;
+

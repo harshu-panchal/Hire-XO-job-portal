@@ -33,7 +33,7 @@ const PostTender = () => {
     if (existingTender) {
       setFormData({
         title: existingTender.title || "",
-        category: existingTender.category || "Civil Works",
+        category: existingTender.tenderCategory?.[0] || existingTender.category || "Civil Works",
         type: existingTender.type || "Open Tender",
         tenderValue: existingTender.tenderValue || existingTender.budget || "",
         deadline: existingTender.deadline
@@ -129,8 +129,8 @@ const PostTender = () => {
         compensation: formData.tenderValue, // Required by schema
       };
 
-      if (isEditMode && existingTender._id) {
-        await resourceService.update("tenders", existingTender._id, payload);
+      if (isEditMode && (existingTender._id || existingTender.id)) {
+        await resourceService.update("tenders", existingTender._id || existingTender.id, payload);
         toast.success("Tender updated successfully!");
       } else {
         await resourceService.create("tenders", payload);

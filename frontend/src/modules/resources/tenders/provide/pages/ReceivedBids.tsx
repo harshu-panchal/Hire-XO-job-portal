@@ -83,7 +83,7 @@ const ReceivedBids = () => {
           location: app.applicantId?.location || "N/A",
           rating: app.applicantId?.rating || 0,
           email: app.applicantId?.email,
-          phone: app.applicantId?.phone,
+          phone: app.applicantId?.phoneNumber,
           experience: app.applicantId?.experience || "N/A",
           proposal: app.coverLetter || "No additional comments provided.",
         }));

@@ -10,7 +10,8 @@ const BrowseDashboard = () => {
     const fetchFeatured = async () => {
       try {
         const data = await resourceService.getAll("csm");
-        setFeaturedCSM((Array.isArray(data) ? data : []).slice(0, 2));
+        const active = (Array.isArray(data) ? data : []).filter((item: any) => item.status !== "Inactive");
+        setFeaturedCSM(active.slice(0, 2));
       } catch (_error) {
         setFeaturedCSM([]);
       }

@@ -39,7 +39,7 @@ const OpportunitiesList = () => {
       (opp.company?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (opp.description?.toLowerCase() || "").includes(searchQuery.toLowerCase());
 
-    const sector = (opp.industry || opp.category || "").toLowerCase();
+    const sector = (opp.investmentSector?.[0] || opp.industry || opp.category || "").toLowerCase();
     const matchesSector = selectedSector === "all" || sector === selectedSector.toLowerCase();
 
     return matchesSearch && matchesSector;
@@ -113,10 +113,10 @@ const OpportunitiesList = () => {
         ) : (
           filteredOpportunities.map((opp) => (
             <div
-              key={opp.id}
+              key={opp.id || opp._id}
               className="bg-white rounded-[2.5rem] p-6 border border-slate-200 relative group hover:border-violet-300 transition-all shadow-sm hover:shadow-xl"
             >
-              <Link to={`/investor/browse/opportunities/${opp.id}`} className="block">
+              <Link to={`/investor/browse/opportunities/${opp.id || opp._id}`} className="block">
                 {/* Header */}
                 <div className="flex items-start gap-4 mb-5">
                   <div className="size-16 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-black text-2xl shrink-0 group-hover:scale-105 transition-transform">
@@ -140,7 +140,7 @@ const OpportunitiesList = () => {
                     <div className="flex gap-2">
                       <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-violet-500/10 border border-violet-500/10">
                         <span className="text-[8px] font-black uppercase tracking-widest text-violet-600">
-                          {opp.industry || opp.category || "Investment"}
+                          {opp.investmentSector?.[0] || opp.industry || opp.category || "Investment"}
                         </span>
                       </div>
                       {opp.founded && (
@@ -166,7 +166,7 @@ const OpportunitiesList = () => {
                       Investment Seeking
                     </p>
                     <p className="text-xl font-black text-emerald-700">
-                      ₹{opp.amount || opp.seekingAmount || "Negotiable"}
+                      ₹{opp.investmentAmount || opp.amount || opp.compensation || "Negotiable"}
                     </p>
                   </div>
                   <div className="bg-violet-50 rounded-2xl p-4 border border-violet-100">
@@ -174,7 +174,7 @@ const OpportunitiesList = () => {
                       Equity Offered
                     </p>
                     <p className="text-xl font-black text-violet-700">
-                      {opp.equity || "To be discussed"}
+                      {opp.equity || opp.details?.equity || "To be discussed"}
                     </p>
                   </div>
                 </div>
@@ -184,7 +184,7 @@ const OpportunitiesList = () => {
                   <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
                     <div className="flex items-center gap-1.5">
                       <Eye className="size-3.5 text-slate-400" />
-                      <span>{(opp.views || 0) + 10} views</span>
+                      <span>{opp.views || 0} views</span>
                     </div>
                     <div className="size-1 rounded-full bg-slate-300" />
                     <span>ROI: {opp.roi || "18-25%"}</span>
@@ -214,3 +214,4 @@ const OpportunitiesList = () => {
 };
 
 export default OpportunitiesList;
+

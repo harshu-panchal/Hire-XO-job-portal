@@ -22,14 +22,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import { resourceService } from "@/services/resourceService";
 import { applicationService } from "@/services/applicationService";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const TenderDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { isAuthenticated } = useAuthStore();
   const [tender, setTender] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showBidModal, setShowBidModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
 
   // Bid Form State
   const [bidData, setBidData] = useState({
@@ -43,6 +46,18 @@ const TenderDetails = () => {
       try {
         const data = await resourceService.getById("tenders", id);
         setTender(data);
+
+        if (isAuthenticated) {
+          try {
+            const myApps: any = await applicationService.getMyApplications();
+            const alreadyApplied = (myApps.resources || []).some(
+              (app: any) => (app.resourceId?._id || app.resourceId) === id && app.resourceType === "Tender"
+            );
+            setHasApplied(alreadyApplied);
+          } catch {
+            // Ignore non-blocking check failure
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch tender details:", error);
       } finally {
@@ -50,7 +65,7 @@ const TenderDetails = () => {
       }
     };
     fetchTenderDetails();
-  }, [id]);
+  }, [id, isAuthenticated]);
 
   const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,7 +152,7 @@ const TenderDetails = () => {
             {tender.type || "Open Tender"}
           </span>
           <span className="px-3 py-1 rounded-full bg-emerald-100 border border-emerald-200 text-[8px] font-black uppercase tracking-widest text-emerald-600">
-            {tender.category || "General"}
+            {tender.tenderCategory?.[0] || tender.category || "General"}
           </span>
         </div>
       </div>
@@ -258,9 +273,10 @@ const TenderDetails = () => {
           <div className="w-full max-w-[430px] flex gap-3 pointer-events-auto">
             <button
               onClick={() => setShowBidModal(true)}
+              disabled={hasApplied}
               className="flex-1 bg-gradient-to-r from-violet-600 to-purple-700 text-white font-black text-sm uppercase tracking-[0.2em] py-5 rounded-[2rem] shadow-2xl shadow-violet-500/40 active:scale-95 transition-all"
             >
-              Initiate Bid Now
+              {hasApplied ? "Bid Already Submitted" : "Initiate Bid Now"}
             </button>
           </div>
         </div>

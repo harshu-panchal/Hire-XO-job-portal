@@ -16,18 +16,21 @@ import { resourceService } from "@/services/resourceService";
 import { uploadService } from "@/services/uploadService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { ResourceCategory } from "@/types";
 
 const PostFundingNeed = () => {
   const DRAFT_STORAGE_KEY = "investor_funding_need_draft_v1";
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuthStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const editingRequest = (location.state as any)?.editRequest;
+  const isEditMode = Boolean(editingRequest?.id);
 
   const [formData, setFormData] = useState({
     businessName: "",
@@ -48,6 +51,27 @@ const PostFundingNeed = () => {
 
   useEffect(() => {
     try {
+      if (isEditMode) {
+        setFormData((prev) => ({
+          ...prev,
+          businessName: editingRequest.company || "",
+          sector: editingRequest.sector || "",
+          amount: editingRequest.amount || "",
+          equity: editingRequest.equity || "",
+          duration: editingRequest.duration || "",
+          location: editingRequest.location || "",
+          description: editingRequest.description || "",
+          useOfFunds: editingRequest.useOfFunds || "",
+          revenueModel: editingRequest.revenueModel || "",
+          currentRevenue: editingRequest.currentRevenue || "",
+          teamSize: editingRequest.teamSize || "",
+        }));
+        if (Array.isArray(editingRequest.documents)) {
+          setDocuments(editingRequest.documents);
+        }
+        return;
+      }
+
       const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
       if (!raw) return;
       const draft = JSON.parse(raw);
@@ -60,7 +84,7 @@ const PostFundingNeed = () => {
     } catch (error) {
       // ignore malformed drafts
     }
-  }, []);
+  }, [isEditMode, editingRequest]);
 
   const sectors = [
     "Technology",
@@ -160,6 +184,8 @@ const PostFundingNeed = () => {
         category: "Investor" as ResourceCategory,
         location: formData.location,
         compensation: formData.amount,
+        amount: formData.amount,
+        equity: formData.equity,
         type: "seeking-investment",
         description: formData.description,
         investorType: "want-investment",
@@ -175,13 +201,17 @@ const PostFundingNeed = () => {
           equity: formData.equity,
           documents: documents,
         },
-        status: "active",
+        status: "Active",
       };
 
-      await resourceService.create("investors", payload);
+      if (isEditMode) {
+        await resourceService.update("investors", editingRequest.id, payload);
+      } else {
+        await resourceService.create("investors", payload);
+      }
       localStorage.removeItem(DRAFT_STORAGE_KEY);
 
-      toast.success("Funding request posted successfully!");
+      toast.success(isEditMode ? "Funding request updated successfully!" : "Funding request posted successfully!");
       navigate("/investor/seek/my-requests");
     } catch (error: any) {
       toast.error(error.message || "Failed to post funding request");
@@ -193,14 +223,17 @@ const PostFundingNeed = () => {
   return (
     <div className="py-6 space-y-6 select-none mb-24">
       {/* Header */}
-      <div className="px-1">
-        <h1 className="text-3xl font-black tracking-tight">
-          Post Funding <span className="text-primary">Need</span>
-        </h1>
-        <p className="text-slate-500 font-black text-xs uppercase tracking-widest mt-1">
-          Share your funding requirements with investors
-        </p>
-      </div>
+        <div className="px-1">
+          <h1 className="text-3xl font-black tracking-tight">
+          {isEditMode ? "Edit Funding " : "Post Funding "}
+          <span className="text-primary">Need</span>
+          </h1>
+          <p className="text-slate-500 font-black text-xs uppercase tracking-widest mt-1">
+          {isEditMode
+            ? "Update your funding requirements"
+            : "Share your funding requirements with investors"}
+          </p>
+        </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
@@ -531,7 +564,7 @@ const PostFundingNeed = () => {
             className="py-5 rounded-[1.5rem] bg-gradient-to-r from-primary to-primary/80 text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : null}
-            {isSubmitting ? "Posting..." : "Post Request"}
+            {isSubmitting ? (isEditMode ? "Updating..." : "Posting...") : isEditMode ? "Update Request" : "Post Request"}
           </button>
         </div>
       </form>

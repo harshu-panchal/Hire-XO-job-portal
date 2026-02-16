@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Shield,
   CreditCard,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface SettingItemProps {
   icon: any;
@@ -41,9 +42,51 @@ const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProp
 
 const SellSettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
   const [presence, setPresence] = useState(true);
   const [analytics, setAnalytics] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const prefs = user?.profile?.preferences || {};
+    setPresence(prefs.machinerySellMarketPresence ?? true);
+    setAnalytics(prefs.machinerySellPublicAnalytics ?? true);
+  }, [user?.profile?.preferences]);
+
+  const persistSettings = async (nextPrefs: Record<string, boolean>) => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...(user?.profile?.preferences || {}),
+            ...nextPrefs,
+          },
+        },
+      });
+      return true;
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save settings");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePresenceToggle = async () => {
+    const next = !presence;
+    setPresence(next);
+    const ok = await persistSettings({ machinerySellMarketPresence: next });
+    if (!ok) setPresence(!next);
+  };
+
+  const handleAnalyticsToggle = async () => {
+    const next = !analytics;
+    setAnalytics(next);
+    const ok = await persistSettings({ machinerySellPublicAnalytics: next });
+    if (!ok) setAnalytics(!next);
+  };
 
   return (
     <div className="py-6 space-y-8 select-none bg-slate-50 min-h-screen text-slate-900">
@@ -69,7 +112,8 @@ const SellSettings = () => {
             description="Show your listings to global buyers"
             action={
               <button
-                onClick={() => setPresence(!presence)}
+                onClick={handlePresenceToggle}
+                disabled={isSaving}
                 className={`w-12 h-6 rounded-full transition-colors relative ${presence ? "bg-indigo-600" : "bg-slate-200"}`}
               >
                 <div
@@ -84,7 +128,8 @@ const SellSettings = () => {
             description="Display sales performance on profile"
             action={
               <button
-                onClick={() => setAnalytics(!analytics)}
+                onClick={handleAnalyticsToggle}
+                disabled={isSaving}
                 className={`w-12 h-6 rounded-full transition-colors relative ${analytics ? "bg-indigo-600" : "bg-slate-200"}`}
               >
                 <div

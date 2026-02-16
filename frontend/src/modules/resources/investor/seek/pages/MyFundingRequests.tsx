@@ -54,16 +54,23 @@ const MyFundingRequests = () => {
       const formatted = resources.map((res: any) => ({
         id: res._id,
         title: res.title,
-        sector: res.category || "General",
+        sector: res.investmentSector?.[0] || res.category || "General",
         sectorColor: "blue", // Dynamic mapping could be added
-        amount: res.amount || "N/A",
-        equity: res.equity || "N/A",
+        amount: res.amount || res.investmentAmount || res.compensation || "N/A",
+        equity: res.equity || res.details?.equity || "N/A",
         duration: res.duration || "N/A",
         status: res.status || "Active",
         statusColor: res.status === "Active" ? "emerald" : "slate",
         postedDate: new Date(res.createdAt).toLocaleDateString(),
         views: res.views || 0,
         inquiries: inquiryCounts[res._id] || 0,
+        company: res.company || "",
+        location: res.location || "",
+        useOfFunds: res.details?.useOfFunds || "",
+        revenueModel: res.details?.revenueModel || "",
+        currentRevenue: res.details?.currentRevenue || "",
+        teamSize: res.details?.teamSize || "",
+        documents: Array.isArray(res.details?.documents) ? res.details.documents : [],
         description: res.description,
         fullDescription: res.description, // Same for now
       }));

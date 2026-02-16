@@ -19,7 +19,7 @@ const Inquiries = () => {
           const name = inq.applicantId?.name || "Unknown";
           return {
             ...inq,
-            id: inq.id,
+            id: inq.id || inq._id,
             name,
             role: inq.applicantId?.profile?.jobTitle || "Resource Applicant",
             message: inq.message || inq.coverLetter || "Inquiry received",
@@ -84,7 +84,9 @@ const Inquiries = () => {
   const handleMarkAsReplied = async (id: string) => {
     try {
       await applicationService.updateApplicationStatus(id, "Accepted", "resource");
-      setInquiries((prev) => prev.map((inq) => (inq.id === id ? { ...inq, status: "Replied" } : inq)));
+      setInquiries((prev) =>
+        prev.map((inq) => ((inq.id === id || inq._id === id) ? { ...inq, status: "Replied" } : inq))
+      );
     } catch (error) {
       // keep state unchanged on failure
     }
@@ -93,7 +95,9 @@ const Inquiries = () => {
   const handleMarkAsClosed = async (id: string) => {
     try {
       await applicationService.updateApplicationStatus(id, "Rejected", "resource");
-      setInquiries((prev) => prev.map((inq) => (inq.id === id ? { ...inq, status: "Closed" } : inq)));
+      setInquiries((prev) =>
+        prev.map((inq) => ((inq.id === id || inq._id === id) ? { ...inq, status: "Closed" } : inq))
+      );
     } catch (error) {
       // keep state unchanged on failure
     }

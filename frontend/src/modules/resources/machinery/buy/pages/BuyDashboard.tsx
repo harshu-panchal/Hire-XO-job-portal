@@ -22,8 +22,9 @@ const BuyDashboard = () => {
     const fetchMachines = async () => {
       try {
         const data = await resourceService.getAll("machinery");
-        setAllMachines(data || []);
-        setFeaturedMachines((data || []).slice(0, 5));
+        const activeMachines = (data || []).filter((item: any) => item.status !== "Inactive");
+        setAllMachines(activeMachines);
+        setFeaturedMachines(activeMachines.slice(0, 5));
       } catch (e: any) {
         console.error(e);
         setError(e.message || "Failed to load marketplace");
@@ -167,8 +168,8 @@ const BuyDashboard = () => {
           ) : (
             featuredMachines.map((item) => (
               <Link
-                key={item.id}
-                to={`/machinery/buy/item/${item.id}`}
+                key={item.id || item._id}
+                to={`/machinery/buy/item/${item.id || item._id}`}
                 className="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all group overflow-hidden relative"
               >
                 <div className="flex gap-4">

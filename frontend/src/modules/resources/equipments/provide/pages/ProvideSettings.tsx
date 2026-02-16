@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Bell,
   Shield,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface SettingItemProps {
   icon: any;
@@ -42,9 +43,51 @@ const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProp
 
 const ProvideSettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
   const [alerts, setAlerts] = useState(true);
   const [autoResponse, setAutoResponse] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const prefs = user?.profile?.preferences || {};
+    setAlerts(prefs.equipmentsProvideInquiryAlerts ?? true);
+    setAutoResponse(prefs.equipmentsProvideQuickReply ?? false);
+  }, [user?.profile?.preferences]);
+
+  const persistPreferences = async (nextPrefs: Record<string, boolean>) => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...(user?.profile?.preferences || {}),
+            ...nextPrefs,
+          },
+        },
+      });
+      return true;
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save settings");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAlertsToggle = async () => {
+    const next = !alerts;
+    setAlerts(next);
+    const ok = await persistPreferences({ equipmentsProvideInquiryAlerts: next });
+    if (!ok) setAlerts(!next);
+  };
+
+  const handleAutoResponseToggle = async () => {
+    const next = !autoResponse;
+    setAutoResponse(next);
+    const ok = await persistPreferences({ equipmentsProvideQuickReply: next });
+    if (!ok) setAutoResponse(!next);
+  };
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -70,7 +113,8 @@ const ProvideSettings = () => {
             description="Real-time alerts for rent requests"
             action={
               <button
-                onClick={() => setAlerts(!alerts)}
+                onClick={handleAlertsToggle}
+                disabled={isSaving}
                 className={`w-12 h-6 rounded-full transition-colors relative ${alerts ? "bg-blue-600" : "bg-slate-200"}`}
               >
                 <div
@@ -85,7 +129,8 @@ const ProvideSettings = () => {
             description="Auto-acknowledge new inquiries"
             action={
               <button
-                onClick={() => setAutoResponse(!autoResponse)}
+                onClick={handleAutoResponseToggle}
+                disabled={isSaving}
                 className={`w-12 h-6 rounded-full transition-colors relative ${autoResponse ? "bg-blue-600" : "bg-slate-200"}`}
               >
                 <div

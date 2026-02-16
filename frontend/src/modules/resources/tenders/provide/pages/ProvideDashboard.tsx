@@ -41,12 +41,15 @@ const ProvideDashboard = () => {
         // Fetch bids (Applications)
         const bids = await applicationService.getReceivedResourceApplications("tenders");
 
+        const isActiveTenderStatus = (status: string) =>
+          status !== "Archived" && status !== "Inactive";
+
         // Process Active Tenders
         const tenders = listings.slice(0, 3).map((item: any) => ({
           id: item._id,
           title: item.title,
           bids: bids.filter((b: any) => (b.resourceId?._id || b.resourceId) === item._id).length,
-          closing: item.duration || "N/A", // Or parse date if available
+          closing: item.deadline ? new Date(item.deadline).toLocaleDateString() : item.duration || "N/A",
           status: item.status || "Active",
         }));
         setActiveTenders(tenders);
@@ -63,10 +66,13 @@ const ProvideDashboard = () => {
 
         // Update Stats
         setStats({
-          activeTenders: listings.length,
+          activeTenders: listings.filter((l: any) => isActiveTenderStatus(l.status || "Active")).length,
           bidsReceived: bids.length,
-          awarded: listings.filter((l: any) => l.status === "Closed").length, // Mock logic for 'Awarded'
-          engagement: "+10%", // Mock
+          awarded: bids.filter((b: any) => b.status === "Accepted").length,
+          engagement:
+            listings.length > 0
+              ? `${Math.round((bids.length / listings.length) * 100)}%`
+              : "0%",
         });
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);

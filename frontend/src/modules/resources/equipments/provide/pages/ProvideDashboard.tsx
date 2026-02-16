@@ -83,12 +83,13 @@ const ProvideDashboard = () => {
   const activeInventory = useMemo(
     () =>
       listings.slice(0, 2).map((item: any) => {
+        const listingId = item.id || item._id;
         const related = requests.filter(
-          (r: any) => (r.resourceId?._id || r.resourceId) === item.id
+          (r: any) => (r.resourceId?._id || r.resourceId?.id || r.resourceId) === listingId
         );
         const accepted = related.find((r: any) => r.status === "Accepted");
         return {
-          id: item.id,
+          id: listingId,
           name: item.title,
           status: accepted ? "On Rent" : "Available",
           tenant: accepted?.applicantId?.name || "-",

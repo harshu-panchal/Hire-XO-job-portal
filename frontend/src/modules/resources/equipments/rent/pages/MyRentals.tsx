@@ -16,7 +16,7 @@ const MyRentals = () => {
             return category.includes("equipment") || type.includes("equipment");
           })
           .map((app: any) => ({
-            id: app.id,
+            id: app.id || app._id,
             name: app.resourceId?.title || "Equipment Rental",
             provider: app.resourceId?.company || "Resource Provider",
             status: app.status === "Rejected" ? "Completed" : "In Progress",

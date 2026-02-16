@@ -38,14 +38,16 @@ const MyServices = () => {
   const handleDelete = async (serviceId: string) => {
     try {
       await resourceService.delete("pmc", serviceId);
-      setServices((prev) => prev.filter((s) => s.id !== serviceId));
+      setServices((prev) => prev.filter((s) => (s.id || s._id) !== serviceId));
     } catch (error) {
       // keep current state unchanged
     }
   };
 
   const getInquiryCount = (serviceId: string) =>
-    inquiries.filter((inq: any) => (inq.resourceId?._id || inq.resourceId) === serviceId).length;
+    inquiries.filter(
+      (inq: any) => (inq.resourceId?._id || inq.resourceId?.id || inq.resourceId) === serviceId
+    ).length;
 
   return (
     <div className="py-6 space-y-8 select-none">
@@ -61,7 +63,7 @@ const MyServices = () => {
       <div className="space-y-4">
         {services.map((service) => (
           <div
-            key={service.id}
+            key={service.id || service._id}
             className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm"
           >
             <div className="flex items-start justify-between mb-4">
@@ -116,7 +118,7 @@ const MyServices = () => {
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Leads
                   </p>
-                  <p className="text-xs font-black italic">{getInquiryCount(service.id)}</p>
+                  <p className="text-xs font-black italic">{getInquiryCount(service.id || service._id)}</p>
                 </div>
               </div>
             </div>
@@ -130,7 +132,7 @@ const MyServices = () => {
                 Edit Listing
               </button>
               <button
-                onClick={() => handleDelete(service.id)}
+                onClick={() => handleDelete(service.id || service._id)}
                 className="h-12 rounded-2xl bg-red-500/10 text-red-600 border border-red-500/10 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <Trash2 className="size-3.5" />

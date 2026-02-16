@@ -23,7 +23,8 @@ const EquipmentList = () => {
       setError("");
       try {
         const data = await resourceService.getAll("equipments");
-        setEquipments(data || []);
+        const activeEquipments = (data || []).filter((item: any) => item.status !== "Inactive");
+        setEquipments(activeEquipments);
       } catch (err: any) {
         setError(err.message || "Failed to load equipments");
         setEquipments([]);
@@ -131,8 +132,8 @@ const EquipmentList = () => {
           !error &&
           pagedEquipments.map((item) => (
             <Link
-              key={item.id}
-              to={`/equipments/rent/equipment/${item.id}`}
+              key={item.id || item._id}
+              to={`/equipments/rent/equipment/${item.id || item._id}`}
               className="group block bg-white border border-slate-200 rounded-[2.5rem] p-5 hover:shadow-xl hover:shadow-black/5 transition-all relative overflow-hidden"
             >
               <div className="flex gap-5">

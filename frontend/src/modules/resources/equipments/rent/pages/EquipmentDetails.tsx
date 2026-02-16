@@ -34,11 +34,18 @@ const EquipmentDetails = () => {
         const data = await resourceService.getById("equipments", id);
         setEquipment(data);
 
-        const myApps: any = await applicationService.getMyApplications();
-        const alreadyApplied = (myApps.resources || []).some(
-          (app: any) => (app.resourceId?._id || app.resourceId) === id
-        );
-        setHasApplied(alreadyApplied);
+        if (user) {
+          const myApps: any = await applicationService.getMyApplications();
+          const alreadyApplied = (myApps.resources || []).some((app: any) => {
+            const appType = String(app.resourceType || "").toLowerCase();
+            const appliedResourceId =
+              app.resourceId?._id || app.resourceId?.id || app.resourceId;
+            return appType.includes("equipment") && appliedResourceId === id;
+          });
+          setHasApplied(alreadyApplied);
+        } else {
+          setHasApplied(false);
+        }
       } catch (error: any) {
         toast.error(error.message || "Failed to load equipment details");
       } finally {
@@ -47,7 +54,7 @@ const EquipmentDetails = () => {
     };
 
     load();
-  }, [id]);
+  }, [id, user]);
 
   const handleApply = async () => {
     if (!user) {

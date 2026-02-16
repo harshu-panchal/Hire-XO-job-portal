@@ -16,6 +16,7 @@ const PostEquipment = () => {
   const [formData, setFormData] = useState({
     title: existingEquipment?.title || "",
     category:
+      existingEquipment?.equipmentTypes?.[0] ||
       existingEquipment?.equipmentType ||
       existingEquipment?.category ||
       "Excavators",

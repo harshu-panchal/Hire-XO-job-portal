@@ -34,7 +34,8 @@ const MachineryList = () => {
       setError("");
       try {
         const data = await resourceService.getAll("machinery");
-        setMachines(data || []);
+        const activeMachines = (data || []).filter((item: any) => item.status !== "Inactive");
+        setMachines(activeMachines);
       } catch (err: any) {
         setError(err.message || "Failed to load machinery");
         setMachines([]);
@@ -142,8 +143,8 @@ const MachineryList = () => {
           !error &&
           pagedMachines.map((item) => (
             <Link
-              key={item.id}
-              to={`/machinery/buy/item/${item.id}`}
+              key={item.id || item._id}
+              to={`/machinery/buy/item/${item.id || item._id}`}
               className="group block bg-white border border-slate-200 rounded-[2.5rem] p-5 active:scale-[0.98] transition-all relative overflow-hidden shadow-sm"
             >
               <div className="flex gap-4">

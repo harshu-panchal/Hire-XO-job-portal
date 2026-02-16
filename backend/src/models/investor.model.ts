@@ -7,6 +7,10 @@ export interface IInvestor extends Document {
     companyLogo?: string;
     location: string;
     compensation: string;
+    amount?: string;
+    equity?: string;
+    details?: any;
+    views?: number;
     type: string;
     description: string;
     requirements: string[];
@@ -30,6 +34,10 @@ const InvestorSchema: Schema = new Schema({
     companyLogo: { type: String },
     location: { type: String, required: true },
     compensation: { type: String, required: true },
+    amount: { type: String },
+    equity: { type: String },
+    details: { type: Schema.Types.Mixed },
+    views: { type: Number, default: 0 },
     type: { type: String, required: true },
     description: { type: String, required: true },
     requirements: [{ type: String }],

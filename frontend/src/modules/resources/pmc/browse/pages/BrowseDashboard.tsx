@@ -1,7 +1,24 @@
 import { TrendingUp, Award, Target, Eye, Search, Briefcase } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { resourceService } from "@/services/resourceService";
 
 const BrowseDashboard = () => {
+  const [featuredConsultants, setFeaturedConsultants] = useState<any[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await resourceService.getAll("pmc");
+        const active = (data || []).filter((item: any) => item.status !== "Inactive");
+        setFeaturedConsultants(active.slice(0, 2));
+      } catch (error) {
+        setFeaturedConsultants([]);
+      }
+    };
+    load();
+  }, []);
+
   return (
     <div className="py-6 space-y-8 select-none">
       {/* Header */}
@@ -78,99 +95,60 @@ const BrowseDashboard = () => {
         </div>
 
         <div className="space-y-4">
-          {/* Consultant Card 1 */}
-          <Link
-            to="/pmc/browse/consultants/1"
-            className="block bg-white rounded-[2rem] p-5 border border-slate-200 active:scale-[0.98] transition-all"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className="size-12 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-black text-lg">
-                  P
-                </div>
-                <div>
-                  <p className="text-indigo-600 font-black uppercase tracking-widest text-[9px]">
-                    Prime Project Group
-                  </p>
-                  <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/10 mt-0.5">
-                    <span className="text-[8px] font-black uppercase tracking-widest text-indigo-600">
-                      Infrastructure
-                    </span>
+          {featuredConsultants.map((firm, idx) => (
+            <Link
+              key={firm.id || firm._id}
+              to={`/pmc/browse/consultants/${firm.id || firm._id}`}
+              className="block bg-white rounded-[2rem] p-5 border border-slate-200 active:scale-[0.98] transition-all"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`size-12 rounded-xl bg-gradient-to-br ${
+                      idx % 2 === 0 ? "from-indigo-500 to-blue-600" : "from-emerald-500 to-teal-600"
+                    } flex items-center justify-center text-white font-black text-lg`}
+                  >
+                    {(firm.company || firm.title || "P").charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-indigo-600 font-black uppercase tracking-widest text-[9px]">
+                      {firm.company || "PMC Firm"}
+                    </p>
+                    <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/10 mt-0.5">
+                      <span className="text-[8px] font-black uppercase tracking-widest text-indigo-600">
+                        {firm.requirements?.[0] || "Infrastructure"}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="text-right">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                  Rating
-                </p>
-                <p className="text-lg font-black text-amber-500">4.9/5</p>
-              </div>
-            </div>
-            <h3 className="font-black text-lg tracking-tight mb-2">
-              Global Infrastructure & Planning
-            </h3>
-            <p className="text-xs text-slate-600 mb-3 line-clamp-2">
-              Leading PMC specialized in large-scale bridge and highway projects with over 20 years
-              of experience.
-            </p>
-            <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
-              <div className="flex items-center gap-1">
-                <Eye className="size-3" />
-                <span>1.2k views</span>
-              </div>
-              <div className="size-1 rounded-full bg-slate-200" />
-              <span>50+ Projects</span>
-              <div className="size-1 rounded-full bg-slate-200" />
-              <span>ISO Certified</span>
-            </div>
-          </Link>
-
-          {/* Consultant Card 2 */}
-          <Link
-            to="/pmc/browse/consultants/2"
-            className="block bg-white rounded-[2rem] p-5 border border-slate-200 active:scale-[0.98] transition-all"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className="size-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-black text-lg">
-                  E
-                </div>
-                <div>
-                  <p className="text-indigo-600 font-black uppercase tracking-widest text-[9px]">
-                    EcoBuild Solutions
-                  </p>
-                  <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/10 mt-0.5">
-                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">
-                      Green Building
-                    </span>
-                  </div>
+                <div className="text-right">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Rating</p>
+                  <p className="text-lg font-black text-amber-500">{firm.rating || 4.8}/5</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                  Rating
-                </p>
-                <p className="text-lg font-black text-amber-500">4.8/5</p>
+              <h3 className="font-black text-lg tracking-tight mb-2">{firm.title || "PMC Service"}</h3>
+              <p className="text-xs text-slate-600 mb-3 line-clamp-2">
+                {firm.description || "Experienced PMC services for complex infrastructure projects."}
+              </p>
+              <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                <div className="flex items-center gap-1">
+                  <Eye className="size-3" />
+                  <span>{firm.views || 0} views</span>
+                </div>
+                <div className="size-1 rounded-full bg-slate-200" />
+                <span>{firm.duration || "N/A"}</span>
+                <div className="size-1 rounded-full bg-slate-200" />
+                <span>{firm.location || "N/A"}</span>
               </div>
+            </Link>
+          ))}
+          {featuredConsultants.length === 0 && (
+            <div className="block bg-white rounded-[2rem] p-5 border border-slate-200">
+              <p className="text-xs text-slate-500 font-black uppercase tracking-widest text-center">
+                No consultant profiles available
+              </p>
             </div>
-            <h3 className="font-black text-lg tracking-tight mb-2">
-              Sustainable Commercial Projects
-            </h3>
-            <p className="text-xs text-slate-600 mb-3 line-clamp-2">
-              Expert PMC services for LEED certified commercial buildings and renewable energy
-              integrations.
-            </p>
-            <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
-              <div className="flex items-center gap-1">
-                <Eye className="size-3" />
-                <span>856 views</span>
-              </div>
-              <div className="size-1 rounded-full bg-slate-200" />
-              <span>30+ Projects</span>
-              <div className="size-1 rounded-full bg-slate-200" />
-              <span>Eco Certified</span>
-            </div>
-          </Link>
+          )}
         </div>
       </div>
 

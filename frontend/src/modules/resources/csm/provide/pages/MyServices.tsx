@@ -36,7 +36,7 @@ const MyServices = () => {
 
   const getInquiryCount = (serviceId: string) =>
     myInquiries.filter((inq: any) => {
-      const resourceId = inq.resourceId?._id || inq.resourceId;
+      const resourceId = inq.resourceId?._id || inq.resourceId?.id || inq.resourceId;
       return resourceId === serviceId;
     }).length;
 
@@ -64,7 +64,7 @@ const MyServices = () => {
       <div className="space-y-4">
         {myServices.map((service: any) => (
           <div
-            key={service.id}
+            key={service.id || service._id}
             className="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm"
           >
             <div className="flex items-start justify-between mb-4">
@@ -117,7 +117,7 @@ const MyServices = () => {
                   <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">
                     Leads
                   </p>
-                  <p className="text-xs font-black italic">{getInquiryCount(service.id)}</p>
+                  <p className="text-xs font-black italic">{getInquiryCount(service.id || service._id)}</p>
                 </div>
               </div>
             </div>
@@ -131,7 +131,7 @@ const MyServices = () => {
                 Edit Listing
               </button>
               <button
-                onClick={() => handleDelete(service.id)}
+                onClick={() => handleDelete(service.id || service._id)}
                 className="h-12 rounded-2xl bg-red-500/10 text-red-600 border border-red-500/10 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <Trash2 className="size-3.5" />

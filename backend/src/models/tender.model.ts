@@ -16,6 +16,7 @@ export interface ITender extends Document {
     tenderType?: "provide-tenders" | "apply-for-tenders";
     tenderValue?: string;
     tenderCategory?: string[];
+    deadline?: Date;
     duration?: string;
     urgency?: "Immediate" | "Within Week" | "Flexible";
     postedAt: Date;
@@ -39,6 +40,7 @@ const TenderSchema: Schema = new Schema({
     tenderType: { type: String },
     tenderValue: { type: String },
     tenderCategory: [{ type: String }],
+    deadline: { type: Date },
     duration: { type: String },
     urgency: { type: String, enum: ["Immediate", "Within Week", "Flexible"] },
     documents: [{ type: String }],
