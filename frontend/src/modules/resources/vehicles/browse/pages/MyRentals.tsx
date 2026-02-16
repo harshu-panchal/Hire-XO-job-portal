@@ -16,7 +16,7 @@ const MyRentals = () => {
             return category.includes("vehicle") || type.includes("vehicle");
           })
           .map((app: any, idx: number) => ({
-            id: app.id,
+            id: app.id || app._id,
             partnerName: app.resourceId?.company || "Vehicle Provider",
             vehicleName: app.resourceId?.title || "Vehicle Rental",
             status: app.status === "Rejected" ? "Completed" : "Active",

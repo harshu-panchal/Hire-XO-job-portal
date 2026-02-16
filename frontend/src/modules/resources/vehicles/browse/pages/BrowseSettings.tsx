@@ -8,15 +8,61 @@ import {
   LogOut,
   ChevronRight,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const BrowseSettings = () => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user, updateProfile } = useAuthStore();
+  const [notifications, setNotifications] = useState(true);
+  const [is2faEnabled, setIs2faEnabled] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const prefs = user?.profile?.preferences || {};
+    setNotifications(prefs.vehicleBrowseNotifications ?? true);
+    setIs2faEnabled(prefs.vehicleBrowse2FA ?? true);
+  }, [user?.profile?.preferences]);
+
+  const persistSettings = async (nextPrefs: Record<string, boolean>) => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...(user?.profile?.preferences || {}),
+            ...nextPrefs,
+          },
+        },
+      });
+      return true;
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save settings");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleNotificationsToggle = async () => {
+    const next = !notifications;
+    setNotifications(next);
+    const ok = await persistSettings({ vehicleBrowseNotifications: next });
+    if (!ok) setNotifications(!next);
+  };
+
+  const handle2faToggle = async () => {
+    const next = !is2faEnabled;
+    setIs2faEnabled(next);
+    const ok = await persistSettings({ vehicleBrowse2FA: next });
+    if (!ok) setIs2faEnabled(!next);
+  };
+
   return (
     <div className="py-6 space-y-10 select-none">
-      {/* Header */}
       <div className="space-y-1 px-1">
         <h1 className="text-3xl font-black tracking-tighter">Settings</h1>
         <p className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em]">
@@ -24,26 +70,28 @@ const BrowseSettings = () => {
         </p>
       </div>
 
-      {/* Settings Sections */}
       <div className="space-y-8">
-        {/* Account Section */}
         <div className="space-y-4">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 px-1 italic">
             General
           </h3>
           <div className="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden shadow-sm">
             <div className="divide-y divide-slate-100">
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
+              <button
+                onClick={handleNotificationsToggle}
+                disabled={isSaving}
+                className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group"
+              >
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
                     <Bell className="size-5" />
                   </div>
-                  <span className="font-black text-[12px] uppercase tracking-widest">
-                    Alerts & Hooks
-                  </span>
+                  <span className="font-black text-[12px] uppercase tracking-widest">Alerts & Hooks</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-black text-slate-400 uppercase">On</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase">
+                    {notifications ? "On" : "Off"}
+                  </span>
                   <ChevronRight className="size-5 text-slate-300" />
                 </div>
               </button>
@@ -53,9 +101,7 @@ const BrowseSettings = () => {
                   <div className="size-11 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center">
                     <Moon className="size-5" />
                   </div>
-                  <span className="font-black text-[12px] uppercase tracking-widest">
-                    Visual Theme
-                  </span>
+                  <span className="font-black text-[12px] uppercase tracking-widest">Visual Theme</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-[10px] font-black text-slate-400 uppercase">System</span>
@@ -79,7 +125,6 @@ const BrowseSettings = () => {
           </div>
         </div>
 
-        {/* Security Section */}
         <div className="space-y-4">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 px-1 italic">
             Privacy
@@ -91,24 +136,26 @@ const BrowseSettings = () => {
                   <div className="size-11 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
                     <Lock className="size-5" />
                   </div>
-                  <span className="font-black text-[12px] uppercase tracking-widest">
-                    Access Key
-                  </span>
+                  <span className="font-black text-[12px] uppercase tracking-widest">Access Key</span>
                 </div>
                 <ChevronRight className="size-5 text-slate-300" />
               </button>
 
-              <button className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group">
+              <button
+                onClick={handle2faToggle}
+                disabled={isSaving}
+                className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group"
+              >
                 <div className="flex items-center gap-4">
                   <div className="size-11 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center">
                     <Smartphone className="size-5" />
                   </div>
-                  <span className="font-black text-[12px] uppercase tracking-widest">
-                    Device Mgmt
-                  </span>
+                  <span className="font-black text-[12px] uppercase tracking-widest">Device Mgmt</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-black text-emerald-600 uppercase">Active</span>
+                  <span className="text-[10px] font-black text-emerald-600 uppercase">
+                    {is2faEnabled ? "Active" : "Off"}
+                  </span>
                   <ChevronRight className="size-5 text-slate-300" />
                 </div>
               </button>
@@ -116,7 +163,6 @@ const BrowseSettings = () => {
           </div>
         </div>
 
-        {/* Support Section */}
         <div className="space-y-4">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 px-1 italic">
             Support
@@ -127,16 +173,13 @@ const BrowseSettings = () => {
                 <div className="size-11 rounded-xl bg-slate-500/10 text-slate-500 flex items-center justify-center">
                   <HelpCircle className="size-5" />
                 </div>
-                <span className="font-black text-[12px] uppercase tracking-widest">
-                  Rental Support
-                </span>
+                <span className="font-black text-[12px] uppercase tracking-widest">Rental Support</span>
               </div>
               <ChevronRight className="size-5 text-slate-300" />
             </button>
           </div>
         </div>
 
-        {/* Logout Button */}
         <button
           onClick={() => {
             logout();

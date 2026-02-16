@@ -36,11 +36,14 @@ const VehiclesList = () => {
 
   const filtered = useMemo(
     () =>
-      vehicles.filter(
-        (item) =>
-          (item.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (item.vehicleTypes?.[0] || "").toLowerCase().includes(searchQuery.toLowerCase())
-      ),
+      vehicles.filter((item) => {
+        const isActive = (item.status || "Active") !== "Inactive";
+        const query = searchQuery.toLowerCase();
+        const matches =
+          (item.title || "").toLowerCase().includes(query) ||
+          (item.vehicleTypes?.[0] || "").toLowerCase().includes(query);
+        return isActive && matches;
+      }),
     [vehicles, searchQuery]
   );
 
@@ -93,8 +96,8 @@ const VehiclesList = () => {
           !error &&
           paged.map((item, idx) => (
             <Link
-              key={item.id}
-              to={`/vehicles/browse/list/${item.id}`}
+              key={item.id || item._id}
+              to={`/vehicles/browse/list/${item.id || item._id}`}
               className="block bg-white rounded-[2.5rem] p-6 border border-slate-200 active:scale-[0.98] transition-all hover:shadow-xl hover:shadow-cyan-600/5 group"
             >
               <div className="flex items-center gap-5">

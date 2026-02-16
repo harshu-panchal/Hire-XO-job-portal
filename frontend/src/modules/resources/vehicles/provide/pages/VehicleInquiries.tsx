@@ -34,7 +34,7 @@ const VehicleInquiries = () => {
           const name = inq.applicantId?.name || "Unknown";
           return {
             ...inq,
-            id: inq.id,
+            id: inq.id || inq._id,
             name,
             role: inq.applicantId?.profile?.jobTitle || "Resource Applicant",
             message: inq.message || inq.coverLetter || "Interested in vehicle rental.",
