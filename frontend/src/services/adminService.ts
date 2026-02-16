@@ -68,6 +68,23 @@ export interface IssueCertificatePayload {
   certificateName?: string;
   editedHtml?: string;
   userEmail?: string;
+  fieldPositions?: {
+    username: { x: number; y: number };
+    certificateId: { x: number; y: number };
+    issueDate: { x: number; y: number };
+    validTill: { x: number; y: number };
+    category?: { x: number; y: number };
+  };
+  fieldValues?: {
+    username?: string;
+    certificateId?: string;
+    issueDate?: string;
+    validTill?: string;
+    category?: string;
+  };
+  templateImageDataUrl?: string;
+  templateWidth?: number;
+  templateHeight?: number;
 }
 
 export const adminService = {

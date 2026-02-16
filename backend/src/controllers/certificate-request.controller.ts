@@ -40,7 +40,8 @@ export class CertificateRequestController {
             }
 
             const { id } = req.params;
-            const result = await this.service.issueRequest(id, adminId, req.body || {});
+            const payload = req.body || {};
+            const result = await this.service.issueRequest(id, adminId, payload);
             res.status(200).json({
                 success: true,
                 message: 'Certificate issued successfully',

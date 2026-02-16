@@ -68,7 +68,7 @@ export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
         </div>
       </div>
 
-      <div className="hidden md:flex items-center flex-1 max-w-md mx-8">
+      {/* <div className="hidden md:flex items-center flex-1 max-w-md mx-8">
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -77,7 +77,7 @@ export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
             className="w-full bg-slate-100 border border-slate-200 rounded-lg py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
           />
         </div>
-      </div>
+      </div> */}
 
       <div className="flex items-center gap-3">
         <motion.button

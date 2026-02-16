@@ -29,7 +29,7 @@ import logo from "@/assets/logo.png";
 
 const mainItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
-  { icon: Users, label: "Job Seekers", path: "/admin/job-seekers" },
+  { icon: Users, label: "Employee", path: "/admin/job-seekers" },
   { icon: Building2, label: "Employers", path: "/admin/employers" },
 ];
 
@@ -94,7 +94,9 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
       <div className="p-6 flex items-center justify-between border-b border-slate-100 shrink-0">
         <div className="flex flex-col gap-1 text-left">
           <img src={logo} alt="HireXO" className="h-10 w-auto object-contain self-start" />
-          <span className="text-[10px] uppercase tracking-wider text-primary font-bold ml-1">Admin Console</span>
+          <span className="text-[10px] uppercase tracking-wider text-primary font-bold ml-1">
+            Admin Console
+          </span>
         </div>
         {onClose && (
           <button

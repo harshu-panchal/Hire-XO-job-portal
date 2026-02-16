@@ -13,6 +13,23 @@ type IssuePayload = {
     editedHtml?: string;
     customText?: string;
     userEmail?: string;
+    fieldPositions?: {
+        category?: { x: number; y: number };
+        username?: { x: number; y: number };
+        certificateId?: { x: number; y: number };
+        issueDate?: { x: number; y: number };
+        validTill?: { x: number; y: number };
+    };
+    fieldValues?: {
+        category?: string;
+        username?: string;
+        certificateId?: string;
+        issueDate?: string;
+        validTill?: string;
+    };
+    templateImageDataUrl?: string;
+    templateWidth?: number;
+    templateHeight?: number;
 };
 
 const DEFAULT_TEMPLATE_HTML = `
@@ -104,9 +121,9 @@ export class CertificateRequestService {
     }
 
     public async issueRequest(requestId: string, adminId: string, payload: IssuePayload) {
-        const { request, user, plan, now, expiryDate, finalHtml } = await this.prepareRenderData(requestId, payload, true);
+        const { request, user, plan, now, expiryDate, finalHtml, renderWidth, renderHeight } = await this.prepareRenderData(requestId, payload, true);
         const certificateName = payload.certificateName || `${plan.name} Certificate`;
-        const pdfUrl = await this.generatePdfDataUrlFromHtml(finalHtml, certificateName);
+        const pdfUrl = await this.generatePdfDataUrlFromHtml(finalHtml, certificateName, renderWidth, renderHeight);
 
         const certificate = await Certificate.create({
             userId: user._id,
@@ -122,7 +139,8 @@ export class CertificateRequestService {
             subscriptionId: request.subscriptionId,
             planId: plan._id,
             issuedBy: new mongoose.Types.ObjectId(adminId),
-            pdfUrl
+            pdfUrl,
+            fieldPositions: payload.fieldPositions
         });
 
         request.status = 'issued';
@@ -210,9 +228,9 @@ export class CertificateRequestService {
         const now = new Date();
         const expiryDate = new Date(now.getTime() + plan.durationDays * 24 * 60 * 60 * 1000);
         const certificateId = new mongoose.Types.ObjectId().toString();
-        const baseTemplate = payload.editedHtml || DEFAULT_TEMPLATE_HTML;
-
-        const finalHtml = this.renderTemplate(baseTemplate, {
+        const renderWidth = payload.templateWidth || 1536;
+        const renderHeight = payload.templateHeight || 1021;
+        const templateValues = {
             userName: this.escapeHtml(user.name),
             userEmail: this.escapeHtml(user.email),
             role: this.escapeHtml(user.role),
@@ -220,10 +238,98 @@ export class CertificateRequestService {
             issueDate: this.escapeHtml(now.toLocaleDateString()),
             expiryDate: this.escapeHtml(expiryDate.toLocaleDateString()),
             certificateId: this.escapeHtml(certificateId),
+            category: this.escapeHtml(this.resolveResourceCategory(user)),
             adminNote: this.escapeHtml(payload.customText || '')
-        });
+        };
 
-        return { request, user, plan, now, expiryDate, finalHtml };
+        let finalHtml = '';
+        if (payload.fieldPositions && payload.templateImageDataUrl) {
+            finalHtml = this.buildPositionedTemplateHtml({
+                templateImageDataUrl: payload.templateImageDataUrl,
+                width: renderWidth,
+                height: renderHeight,
+                fieldPositions: payload.fieldPositions,
+                fieldValues: payload.fieldValues || {},
+                values: templateValues
+            });
+        } else {
+            const baseTemplate = payload.editedHtml || DEFAULT_TEMPLATE_HTML;
+            finalHtml = this.renderTemplate(baseTemplate, templateValues);
+        }
+
+        return { request, user, plan, now, expiryDate, finalHtml, renderWidth, renderHeight };
+    }
+
+    private buildPositionedTemplateHtml(args: {
+        templateImageDataUrl: string;
+        width: number;
+        height: number;
+        fieldPositions: NonNullable<IssuePayload['fieldPositions']>;
+        fieldValues: NonNullable<IssuePayload['fieldValues']>;
+        values: {
+            userName: string;
+            issueDate: string;
+            expiryDate: string;
+            certificateId: string;
+            category: string;
+        };
+    }) {
+        const { templateImageDataUrl, width, height, fieldPositions, fieldValues, values } = args;
+
+        const username = this.escapeHtml(fieldValues.username || values.userName);
+        const certificateId = this.escapeHtml(fieldValues.certificateId || values.certificateId);
+        const issueDate = this.escapeHtml(fieldValues.issueDate || values.issueDate);
+        const validTill = this.escapeHtml(fieldValues.validTill || values.expiryDate);
+        const category = this.escapeHtml(fieldValues.category || values.category || '');
+
+        const styleText =
+            "position:absolute;font-family:'Segoe UI',Arial,sans-serif;color:#111827;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
+
+        const usernameDiv = fieldPositions.username
+            ? `<div style="${styleText}left:${fieldPositions.username.x}px;top:${fieldPositions.username.y}px;width:520px;font-size:44px;text-align:center;">${username}</div>`
+            : '';
+        const certIdDiv = fieldPositions.certificateId
+            ? `<div style="${styleText}left:${fieldPositions.certificateId.x}px;top:${fieldPositions.certificateId.y}px;width:360px;font-size:22px;text-align:left;">${certificateId}</div>`
+            : '';
+        const issueDateDiv = fieldPositions.issueDate
+            ? `<div style="${styleText}left:${fieldPositions.issueDate.x}px;top:${fieldPositions.issueDate.y}px;width:260px;font-size:28px;text-align:left;">${issueDate}</div>`
+            : '';
+        const validTillDiv = fieldPositions.validTill
+            ? `<div style="${styleText}left:${fieldPositions.validTill.x}px;top:${fieldPositions.validTill.y}px;width:260px;font-size:28px;text-align:left;">${validTill}</div>`
+            : '';
+        const categoryDiv = fieldPositions.category
+            ? `<div style="${styleText}left:${fieldPositions.category.x}px;top:${fieldPositions.category.y}px;width:420px;font-size:28px;text-align:left;">${category}</div>`
+            : '';
+
+        return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #ffffff; }
+    .page {
+      width: ${width}px;
+      height: ${height}px;
+      position: relative;
+      background-image: url('${templateImageDataUrl}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    ${usernameDiv}
+    ${certIdDiv}
+    ${issueDateDiv}
+    ${validTillDiv}
+    ${categoryDiv}
+  </div>
+</body>
+</html>`;
     }
 
     private renderTemplate(template: string, values: Record<string, string>) {
@@ -242,9 +348,14 @@ export class CertificateRequestService {
         return result;
     }
 
-    private async generatePdfDataUrlFromHtml(html: string, certificateName: string): Promise<string> {
+    private async generatePdfDataUrlFromHtml(
+        html: string,
+        certificateName: string,
+        renderWidth: number = 1536,
+        renderHeight: number = 1021
+    ): Promise<string> {
         try {
-            const renderedBuffer = await this.renderHtmlToPdfBuffer(html);
+            const renderedBuffer = await this.renderHtmlToPdfBuffer(html, renderWidth, renderHeight);
             return `data:application/pdf;base64,${renderedBuffer.toString('base64')}`;
         } catch (error) {
             console.error('HTML->PDF renderer failed, falling back to text PDF:', error);
@@ -278,7 +389,7 @@ export class CertificateRequestService {
         return `data:application/pdf;base64,${fallbackBuffer.toString('base64')}`;
     }
 
-    private async renderHtmlToPdfBuffer(html: string): Promise<Buffer> {
+    private async renderHtmlToPdfBuffer(html: string, renderWidth: number, renderHeight: number): Promise<Buffer> {
         const puppeteer = require('puppeteer-core');
         const executablePath = this.resolveChromeExecutablePath();
         const browser = await puppeteer.launch({
@@ -289,11 +400,11 @@ export class CertificateRequestService {
 
         try {
             const page = await browser.newPage();
-            await page.setViewport({ width: 1536, height: 1021, deviceScaleFactor: 2 });
+            await page.setViewport({ width: renderWidth, height: renderHeight, deviceScaleFactor: 2 });
             await page.setContent(html, { waitUntil: 'networkidle0' });
             const pdf = await page.pdf({
-                width: '1536px',
-                height: '1021px',
+                width: `${renderWidth}px`,
+                height: `${renderHeight}px`,
                 printBackground: true,
                 margin: { top: '0', right: '0', bottom: '0', left: '0' }
             });
@@ -417,5 +528,13 @@ export class CertificateRequestService {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
+    }
+
+    private resolveResourceCategory(user: any): string {
+        return (
+            user?.profile?.resourceCategory ||
+            user?.profile?.category ||
+            ''
+        );
     }
 }

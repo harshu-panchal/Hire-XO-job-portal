@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet, Link, useLocation } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProfileRedirect from "./components/ProfileRedirect";
 import PaymentRedirect from "./components/PaymentRedirect";
@@ -247,6 +247,7 @@ const InterviewsRedirect = () => {
 function App() {
   const { user } = useAuthStore();
   const { setSavedJobs } = useEmployeeStore();
+  const location = useLocation();
 
   useEffect(() => {
     if (user?.bookmarks) {
@@ -254,8 +255,24 @@ function App() {
     }
   }, [user, setSavedJobs]);
 
+  const isResourceUser = user?.role === "resource";
+  const isResourceArea =
+    location.pathname.startsWith("/investor/") ||
+    location.pathname.startsWith("/tenders/") ||
+    location.pathname.startsWith("/equipments/") ||
+    location.pathname.startsWith("/machinery/") ||
+    location.pathname.startsWith("/pmc/") ||
+    location.pathname.startsWith("/csm/") ||
+    location.pathname.startsWith("/logistics/") ||
+    location.pathname.startsWith("/vehicles/");
+  const showResourceCategoriesShortcut =
+    isResourceUser &&
+    isResourceArea &&
+    location.pathname !== "/resources/categories";
+
   return (
     <ErrorBoundary>
+      <>
       <Routes>
         {/* Public Routes - Authentication */}
         <Route path="/" element={<RoleSelection />} />
@@ -701,6 +718,15 @@ function App() {
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      {showResourceCategoriesShortcut && (
+        <Link
+          to="/resources/categories"
+          className="fixed right-4 bottom-24 z-50 rounded-2xl bg-primary text-white px-4 py-2 text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/30 active:scale-95 transition-all"
+        >
+          Resources
+        </Link>
+      )}
+      </>
     </ErrorBoundary>
   );
 }

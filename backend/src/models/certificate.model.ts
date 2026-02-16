@@ -17,6 +17,13 @@ export interface ICertificate extends Document {
     templateId?: mongoose.Types.ObjectId;
     issuedBy?: mongoose.Types.ObjectId;
     pdfUrl?: string;
+    fieldPositions?: {
+        category?: { x: number; y: number };
+        username?: { x: number; y: number };
+        certificateId?: { x: number; y: number };
+        issueDate?: { x: number; y: number };
+        validTill?: { x: number; y: number };
+    };
 }
 
 const CertificateSchema: Schema = new Schema({
@@ -43,7 +50,29 @@ const CertificateSchema: Schema = new Schema({
     planId: { type: Schema.Types.ObjectId, ref: 'SubscriptionPlan' },
     templateId: { type: Schema.Types.ObjectId, ref: 'CertificateTemplate' },
     issuedBy: { type: Schema.Types.ObjectId, ref: 'User' },
-    pdfUrl: { type: String }
+    pdfUrl: { type: String },
+    fieldPositions: {
+        category: {
+            x: { type: Number },
+            y: { type: Number }
+        },
+        username: {
+            x: { type: Number },
+            y: { type: Number }
+        },
+        certificateId: {
+            x: { type: Number },
+            y: { type: Number }
+        },
+        issueDate: {
+            x: { type: Number },
+            y: { type: Number }
+        },
+        validTill: {
+            x: { type: Number },
+            y: { type: Number }
+        }
+    }
 }, { timestamps: true });
 
 // Index for efficient queries

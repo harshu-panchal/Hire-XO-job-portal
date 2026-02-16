@@ -28,19 +28,11 @@ const ResourceCategories = () => {
 
   // Handle session management
   useEffect(() => {
-    if (isAuthenticated && user) {
-      if (user.role === "resource") {
-        // If already a resource, redirect to their specific dashboard
-        const category = (user.profile?.category || user.profile?.resourceCategory)?.toLowerCase();
-        if (category) {
-          navigate(`/resources/${category}`);
-        }
-      } else {
-        // If logged in as Employee or Employer, logout to allow Resource signup
-        logout();
-      }
+    if (isAuthenticated && user && user.role !== "resource") {
+      // If logged in as Employee or Employer, logout to allow Resource signup
+      logout();
     }
-  }, [isAuthenticated, user, logout, navigate]);
+  }, [isAuthenticated, user, logout]);
 
   const categories: Array<{
     id: ResourceCategory;

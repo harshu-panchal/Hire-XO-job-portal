@@ -48,6 +48,13 @@ export interface Certificate {
   templateId?: string;
   issuedBy?: string;
   pdfUrl?: string;
+  fieldPositions?: {
+    category?: { x: number; y: number };
+    username?: { x: number; y: number };
+    certificateId?: { x: number; y: number };
+    issueDate?: { x: number; y: number };
+    validTill?: { x: number; y: number };
+  };
   userId?: { // Populated field
     _id: string;
     name: string;

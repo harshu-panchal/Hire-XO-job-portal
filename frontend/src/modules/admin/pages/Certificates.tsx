@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Loader2, Mail, CheckCircle2, XCircle, Clock3, Shield, Eye } from "lucide-react";
 import { toast } from "sonner";
@@ -8,35 +8,138 @@ import { getErrorMessage } from "../../../lib/apiConfig";
 import employeeTemplateImage from "../../../assets/emp.jpeg";
 import employerTemplateImage from "../../../assets/Employer.jpeg";
 import resourceTemplateImage from "../../../assets/Resource.jpeg";
+import resourceProviderTemplateImage from "../../../assets/ResourceProvider.jpeg";
+import CertificateDraggableField, {
+  type DraggablePosition,
+} from "../components/CertificateDraggableField";
 
 type TabType = "pending" | "issued" | "rejected";
+type UserRole = "employee" | "employer" | "resource";
 
-type CertificateEditor = {
-  title: string;
-  subtitle: string;
-  certifyLine: string;
-  resultLine: string;
-  adminContent: string;
-  dateText: string;
-  signatureText: string;
-  signatoryText: string;
+type FieldPositions = {
+  username: DraggablePosition;
+  certificateId: DraggablePosition;
+  issueDate: DraggablePosition;
+  validTill: DraggablePosition;
+  category?: DraggablePosition;
 };
 
-const defaultEditorState = (): CertificateEditor => ({
-  title: "CERTIFICATE OF STAGE-1 CLEARANCE",
-  subtitle: "(Provisional Selection)",
-  certifyLine: "This is to certify that",
-  resultLine: "has successfully cleared 50% of the Interview & Verification Process.",
-  adminContent:
-    "Identity Verification: Confirmed via [method]\n" +
-    "Legal Status: [Details]\n" +
-    "Education: Graduation Completed.\n" +
-    "Experience: Mentioned work experience validated.\n" +
-    "Fitness: Physically and Mentally Fit for the role.",
-  dateText: new Date().toLocaleDateString(),
-  signatureText: "[Signature]",
-  signatoryText: "[Authorized Signatory]",
-});
+type OverlayValues = {
+  username: string;
+  certificateId: string;
+  issueDate: string;
+  validTill: string;
+  category?: string;
+};
+
+type TemplateConfig = {
+  image: string;
+  width: number;
+  height: number;
+  defaults: FieldPositions;
+};
+
+type FieldRenderSpec = {
+  width: number;
+  height: number;
+  fontSize: number;
+  textAlign?: "left" | "center" | "right";
+};
+
+const templateConfigs: Record<UserRole, TemplateConfig> = {
+  employee: {
+    image: employeeTemplateImage,
+    width: 1536,
+    height: 1021,
+    defaults: {
+      username: { x: 560, y: 488 },
+      certificateId: { x: 1132, y: 962 },
+      issueDate: { x: 246, y: 846 },
+      validTill: { x: 246, y: 892 },
+    },
+  },
+  employer: {
+    image: employerTemplateImage,
+    width: 1153,
+    height: 1536,
+    defaults: {
+      username: { x: 340, y: 592 },
+      certificateId: { x: 822, y: 1456 },
+      issueDate: { x: 236, y: 1404 },
+      validTill: { x: 236, y: 1478 },
+    },
+  },
+  resource: {
+    image: resourceTemplateImage,
+    width: 1536,
+    height: 1021,
+    defaults: {
+      username: { x: 560, y: 488 },
+      certificateId: { x: 1132, y: 962 },
+      issueDate: { x: 246, y: 846 },
+      validTill: { x: 246, y: 892 },
+      category: { x: 652, y: 556 },
+    },
+  },
+};
+
+const resourceProviderTypes = new Set([
+  "want-investment",
+  "provide-tenders",
+  "rent-out-equipment",
+  "provide-machinery",
+  "offer-pmc-services",
+  "offer-csm-services",
+  "provide-logistics",
+  "rent-out-vehicles",
+]);
+
+const isResourceProviderProfile = (profile: any): boolean => {
+  if (!profile) return false;
+  const typeKeys = [
+    "investorType",
+    "tenderType",
+    "equipmentType",
+    "machineryType",
+    "pmcType",
+    "csmType",
+    "logisticsType",
+    "vehicleType",
+  ];
+
+  return typeKeys.some((key) => {
+    const value = profile[key];
+    return typeof value === "string" && resourceProviderTypes.has(value);
+  });
+};
+
+const fieldRenderSpecs: Record<UserRole, {
+  username: FieldRenderSpec;
+  certificateId: FieldRenderSpec;
+  issueDate: FieldRenderSpec;
+  validTill: FieldRenderSpec;
+  category?: FieldRenderSpec;
+}> = {
+  employee: {
+    username: { width: 520, height: 56, fontSize: 44, textAlign: "center" },
+    certificateId: { width: 360, height: 34, fontSize: 22, textAlign: "left" },
+    issueDate: { width: 260, height: 38, fontSize: 28, textAlign: "left" },
+    validTill: { width: 260, height: 38, fontSize: 28, textAlign: "left" },
+  },
+  employer: {
+    username: { width: 510, height: 56, fontSize: 42, textAlign: "left" },
+    certificateId: { width: 300, height: 34, fontSize: 20, textAlign: "left" },
+    issueDate: { width: 230, height: 40, fontSize: 30, textAlign: "left" },
+    validTill: { width: 230, height: 40, fontSize: 30, textAlign: "left" },
+  },
+  resource: {
+    username: { width: 520, height: 56, fontSize: 44, textAlign: "center" },
+    certificateId: { width: 360, height: 34, fontSize: 22, textAlign: "left" },
+    issueDate: { width: 260, height: 38, fontSize: 28, textAlign: "left" },
+    validTill: { width: 260, height: 38, fontSize: 28, textAlign: "left" },
+    category: { width: 420, height: 46, fontSize: 28, textAlign: "left" },
+  },
+};
 
 const escapeHtml = (value: string) =>
   value
@@ -46,121 +149,72 @@ const escapeHtml = (value: string) =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 
-const buildCertificateHtml = (
-  editor: CertificateEditor,
-  templateImageUrl: string,
-  employeeName: string
+const buildPositionedHtml = (
+  cfg: TemplateConfig,
+  templateDataUrl: string,
+  positions: FieldPositions,
+  values: OverlayValues,
+  role: UserRole
 ) => {
-  const rows = editor.adminContent
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map(
-      (text) => `
-        <div class="check-row">
-          <span class="box">&#9633;</span>
-          <span>${escapeHtml(text)}</span>
-        </div>
-      `
-    )
-    .join("");
+  const textStyle =
+    "position:absolute;font-family:'Segoe UI',Arial,sans-serif;color:#111827;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
+  const scriptStyle =
+    "position:absolute;font-family:'Segoe Script',cursive;color:#111827;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
 
-  return `
-<!DOCTYPE html>
+  const categoryDiv =
+    role === "resource" && positions.category
+      ? `<div style="${textStyle}left:${positions.category.x}px;top:${positions.category.y}px;width:${fieldRenderSpecs.resource.category?.width || 420}px;font-size:${fieldRenderSpecs.resource.category?.fontSize || 28}px;text-align:${fieldRenderSpecs.resource.category?.textAlign || "left"};">${escapeHtml(
+          values.category || ""
+        )}</div>`
+      : "";
+
+  return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8" />
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; background: #ffffff; font-family: "Segoe UI", Arial, sans-serif; }
+    body { margin: 0; background: #ffffff; }
     .page {
-      width: 1536px;
-      height: 1021px;
+      width: ${cfg.width}px;
+      height: ${cfg.height}px;
       position: relative;
-      background-image: url('${templateImageUrl}');
+      background-image: url('${templateDataUrl}');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       overflow: hidden;
     }
-    .overlay {
-      position: absolute;
-      inset: 0;
-      color: #1f2937;
-      text-align: center;
-      font-weight: 500;
-    }
-    .title {
-      position: absolute; top: 29.5%; left: 8%; width: 84%;
-      font-size: 58px; font-weight: 800; color: #0c3a69; letter-spacing: 1px;
-      text-transform: uppercase; line-height: 1.1;
-    }
-    .subtitle {
-      position: absolute; top: 37.1%; left: 8%; width: 84%;
-      font-size: 44px; color: #111827; line-height: 1.2;
-    }
-    .certify {
-      position: absolute; top: 44.7%; left: 8%; width: 84%;
-      font-size: 32px; line-height: 1.25;
-    }
-    .name {
-      position: absolute; top: 49.2%; left: 8%; width: 84%;
-      font-size: 56px; font-weight: 800; line-height: 1.1;
-    }
-    .result {
-      position: absolute; top: 55.4%; left: 8%; width: 84%;
-      font-size: 36px; line-height: 1.2;
-    }
-    .checks {
-      position: absolute; top: 61.5%; left: 27%; width: 48%;
-      text-align: left;
-    }
-    .check-row {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 28px; margin: 2px 0; line-height: 1.24;
-    }
-    .box { font-size: 24px; min-width: 24px; margin-top: 2px; }
-    .date {
-      position: absolute; bottom: 20.4%; left: 12.5%; width: 30%;
-      text-align: left; font-size: 34px;
-    }
-    .sign {
-      position: absolute; bottom: 19.7%; right: 17.2%; width: 26%;
-      text-align: center;
-    }
-    .signature-text { font-size: 38px; font-family: "Segoe Script", cursive; }
-    .signatory-text { font-size: 28px; margin-top: 8px; }
   </style>
 </head>
 <body>
   <div class="page">
-    <div class="overlay">
-      <div class="title">${escapeHtml(editor.title)}</div>
-      <div class="subtitle">${escapeHtml(editor.subtitle)}</div>
-      <div class="certify">${escapeHtml(editor.certifyLine)}</div>
-      <div class="name">${escapeHtml(employeeName)}</div>
-      <div class="result">${escapeHtml(editor.resultLine)}</div>
-      <div class="checks">${rows}</div>
-      <div class="date">Date: ${escapeHtml(editor.dateText)}</div>
-      <div class="sign">
-        <div class="signature-text">${escapeHtml(editor.signatureText)}</div>
-        <div class="signatory-text">${escapeHtml(editor.signatoryText)}</div>
-      </div>
-    </div>
+    <div style="${textStyle}left:${positions.username.x}px;top:${positions.username.y}px;width:${fieldRenderSpecs[role].username.width}px;font-size:${fieldRenderSpecs[role].username.fontSize}px;text-align:${fieldRenderSpecs[role].username.textAlign || "left"};">${escapeHtml(
+      values.username
+    )}</div>
+    <div style="${textStyle}left:${positions.certificateId.x}px;top:${positions.certificateId.y}px;width:${fieldRenderSpecs[role].certificateId.width}px;font-size:${fieldRenderSpecs[role].certificateId.fontSize}px;text-align:${fieldRenderSpecs[role].certificateId.textAlign || "left"};">${escapeHtml(
+      values.certificateId
+    )}</div>
+    <div style="${textStyle}left:${positions.issueDate.x}px;top:${positions.issueDate.y}px;width:${fieldRenderSpecs[role].issueDate.width}px;font-size:${fieldRenderSpecs[role].issueDate.fontSize}px;text-align:${fieldRenderSpecs[role].issueDate.textAlign || "left"};">${escapeHtml(
+      values.issueDate
+    )}</div>
+    <div style="${textStyle}left:${positions.validTill.x}px;top:${positions.validTill.y}px;width:${fieldRenderSpecs[role].validTill.width}px;font-size:${fieldRenderSpecs[role].validTill.fontSize}px;text-align:${fieldRenderSpecs[role].validTill.textAlign || "left"};">${escapeHtml(
+      values.validTill
+    )}</div>
+    <div style="${scriptStyle}left:${positions.username.x + 120}px;top:${positions.validTill.y - 95}px;width:340px;font-size:34px;text-align:center;"></div>
+    ${categoryDiv}
   </div>
 </body>
-</html>
-`;
+</html>`;
 };
 
-const editorClass =
-  "w-full bg-transparent border border-transparent text-center focus:outline-none focus:border-slate-300 focus:bg-white/60 rounded px-2";
-
-const getTemplateByRole = (role?: string) => {
-  if (role === "employer") return employerTemplateImage;
-  if (role === "resource") return resourceTemplateImage;
-  return employeeTemplateImage;
-};
+const clonePositions = (p: FieldPositions): FieldPositions => ({
+  username: { ...p.username },
+  certificateId: { ...p.certificateId },
+  issueDate: { ...p.issueDate },
+  validTill: { ...p.validTill },
+  ...(p.category ? { category: { ...p.category } } : {}),
+});
 
 export default function Certificates() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -168,6 +222,7 @@ export default function Certificates() {
   const [activeTab, setActiveTab] = useState<TabType>(
     ["pending", "issued", "rejected"].includes(requestedTab) ? requestedTab : "pending"
   );
+  const highlightedRequestId = searchParams.get("requestId");
 
   const [requests, setRequests] = useState<CertificateRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,15 +230,64 @@ export default function Certificates() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<CertificateRequest | null>(null);
   const [certificateName, setCertificateName] = useState("");
-  const [editor, setEditor] = useState<CertificateEditor>(defaultEditorState());
   const [templateDataUrl, setTemplateDataUrl] = useState<string>(employeeTemplateImage);
+  const [fieldPositions, setFieldPositions] = useState<FieldPositions>(
+    clonePositions(templateConfigs.employee.defaults)
+  );
+  const [fieldValues, setFieldValues] = useState<OverlayValues>({
+    username: "",
+    certificateId: "",
+    issueDate: "",
+    validTill: "",
+  });
 
-  const highlightedRequestId = searchParams.get("requestId");
+  const selectedRole = (selected?.userId?.role || selected?.role || "employee") as UserRole;
+  const selectedUserProfile = (selected?.userId as any)?.profile;
+  const isSelectedResourceProvider =
+    selectedRole === "resource" && isResourceProviderProfile(selectedUserProfile);
+  const selectedConfig = useMemo(() => {
+    if (selectedRole !== "resource") return templateConfigs[selectedRole] || templateConfigs.employee;
+
+    const resourceBaseConfig = templateConfigs.resource;
+    const useProviderTemplate = isSelectedResourceProvider;
+    return {
+      ...resourceBaseConfig,
+      image: useProviderTemplate ? resourceProviderTemplateImage : resourceTemplateImage,
+    };
+  }, [selectedRole, selectedUserProfile, isSelectedResourceProvider]);
+  const selectedSpecs = fieldRenderSpecs[selectedRole] || fieldRenderSpecs.employee;
+
+  const contextDefaults = useMemo(() => {
+    if (!selected) {
+      return {
+        username: "",
+        issueDate: new Date().toLocaleDateString(),
+        validTill: "",
+        certificateId: "AUTO-GENERATED",
+        category: "",
+      };
+    }
+    const issue = new Date();
+    const expiry = new Date(issue.getTime() + (selected.planId?.durationDays || 0) * 24 * 60 * 60 * 1000);
+    const profile = (selected.userId as any)?.profile || {};
+    return {
+      username: selected.userId?.name || "",
+      issueDate: issue.toLocaleDateString(),
+      validTill: expiry.toLocaleDateString(),
+      certificateId: "AUTO-GENERATED",
+      category: profile.resourceCategory || profile.category || "",
+    };
+  }, [selected]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const reqRes = await adminService.getCertificateRequests({ status: activeTab, search, page: 1, limit: 50 });
+      const reqRes = await adminService.getCertificateRequests({
+        status: activeTab,
+        search,
+        page: 1,
+        limit: 50,
+      });
       setRequests(reqRes.data || []);
     } catch (error) {
       toast.error(getErrorMessage(error));
@@ -201,39 +305,39 @@ export default function Certificates() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const selectedRole = selected?.userId?.role || selected?.role;
-  const selectedTemplateImage = getTemplateByRole(selectedRole);
-
   useEffect(() => {
     let mounted = true;
-    const convertTemplateToDataUrl = async () => {
+    const convert = async () => {
       try {
-        const res = await fetch(selectedTemplateImage);
+        const res = await fetch(selectedConfig.image);
         const blob = await res.blob();
         const reader = new FileReader();
         reader.onloadend = () => {
-          if (mounted && typeof reader.result === "string") {
-            setTemplateDataUrl(reader.result);
-          }
+          if (mounted && typeof reader.result === "string") setTemplateDataUrl(reader.result);
         };
         reader.readAsDataURL(blob);
       } catch {
-        if (mounted) {
-          setTemplateDataUrl(selectedTemplateImage);
-        }
+        if (mounted) setTemplateDataUrl(selectedConfig.image);
       }
     };
-    convertTemplateToDataUrl();
+    convert();
     return () => {
       mounted = false;
     };
-  }, [selectedTemplateImage]);
+  }, [selectedConfig.image]);
 
   useEffect(() => {
     if (!selected) return;
     setCertificateName(`${selected.planId?.name || "Subscription"} Certificate`);
-    setEditor(defaultEditorState());
-  }, [selected]);
+    setFieldPositions(clonePositions(selectedConfig.defaults));
+    setFieldValues({
+      username: contextDefaults.username,
+      certificateId: contextDefaults.certificateId,
+      issueDate: contextDefaults.issueDate,
+      validTill: contextDefaults.validTill,
+      ...(selectedRole === "resource" ? { category: contextDefaults.category } : {}),
+    });
+  }, [selected, selectedConfig, selectedRole, contextDefaults]);
 
   const updateTab = (tab: TabType) => {
     setActiveTab(tab);
@@ -245,27 +349,32 @@ export default function Certificates() {
     });
   };
 
-  const openIssueModal = (request: CertificateRequest) => setSelected(request);
-
   const closeIssueModal = () => {
     setSelected(null);
     setCertificateName("");
-    setEditor(defaultEditorState());
   };
 
   const issueCertificate = async () => {
     if (!selected) return;
     setActionLoading(selected._id);
     try {
-      const renderedHtml = buildCertificateHtml(
-        editor,
+      const editedHtml = buildPositionedHtml(
+        selectedConfig,
         templateDataUrl,
-        selected.userId?.name || "Employee"
+        fieldPositions,
+        fieldValues,
+        selectedRole
       );
+
       await adminService.issueCertificateRequest(selected._id, {
         certificateName: certificateName || undefined,
-        editedHtml: renderedHtml,
-        userEmail: selected.userId.email
+        editedHtml,
+        userEmail: selected.userId.email,
+        fieldPositions,
+        fieldValues,
+        templateImageDataUrl: templateDataUrl,
+        templateWidth: selectedConfig.width,
+        templateHeight: selectedConfig.height,
       });
       toast.success("Certificate issued successfully");
       closeIssueModal();
@@ -315,13 +424,9 @@ export default function Certificates() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center p-12">
-          <Loader2 className="w-8 h-8 text-primary animate-spin" />
-        </div>
+        <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 text-primary animate-spin" /></div>
       ) : requests.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-xl p-10 text-center text-slate-500">
-          No certificate requests found.
-        </div>
+        <div className="bg-white border border-slate-200 rounded-xl p-10 text-center text-slate-500">No certificate requests found.</div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {requests.map((request) => {
@@ -333,27 +438,17 @@ export default function Certificates() {
                     <p className="font-semibold text-slate-900">{request.userId?.name || "Unknown User"}</p>
                     <p className="text-sm text-slate-500">{request.userId?.email}</p>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full ${request.status === "pending" ? "bg-amber-100 text-amber-700" : request.status === "issued" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                    {request.status}
-                  </span>
+                  <span className={`text-xs px-2 py-1 rounded-full ${request.status === "pending" ? "bg-amber-100 text-amber-700" : request.status === "issued" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{request.status}</span>
                 </div>
-
                 <div className="space-y-2 text-sm text-slate-600">
                   <div className="flex items-center gap-2"><Shield className="w-4 h-4" /> Plan: {request.planId?.name}</div>
                   <div className="flex items-center gap-2"><Clock3 className="w-4 h-4" /> Requested: {new Date(request.requestedAt).toLocaleString()}</div>
-                  {request.processedAt && (
-                    <div className="flex items-center gap-2"><Eye className="w-4 h-4" /> Processed: {new Date(request.processedAt).toLocaleString()}</div>
-                  )}
+                  {request.processedAt && <div className="flex items-center gap-2"><Eye className="w-4 h-4" /> Processed: {new Date(request.processedAt).toLocaleString()}</div>}
                 </div>
-
                 {request.status === "pending" && (
                   <div className="flex gap-2 mt-5">
-                    <button onClick={() => openIssueModal(request)} disabled={actionLoading === request._id} className="flex-1 px-3 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-60">
-                      <span className="inline-flex items-center gap-2"><CheckCircle2 className="w-4 h-4" />Issue</span>
-                    </button>
-                    <button onClick={() => rejectRequest(request._id)} disabled={actionLoading === request._id} className="flex-1 px-3 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 disabled:opacity-60">
-                      <span className="inline-flex items-center gap-2"><XCircle className="w-4 h-4" />Reject</span>
-                    </button>
+                    <button onClick={() => setSelected(request)} disabled={actionLoading === request._id} className="flex-1 px-3 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-60"><span className="inline-flex items-center gap-2"><CheckCircle2 className="w-4 h-4" />Issue</span></button>
+                    <button onClick={() => rejectRequest(request._id)} disabled={actionLoading === request._id} className="flex-1 px-3 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 disabled:opacity-60"><span className="inline-flex items-center gap-2"><XCircle className="w-4 h-4" />Reject</span></button>
                   </div>
                 )}
               </div>
@@ -366,48 +461,82 @@ export default function Certificates() {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl border border-slate-200 shadow-xl w-full max-w-7xl max-h-[92vh] overflow-auto p-6 space-y-4">
             <h2 className="text-lg font-semibold">Issue Certificate</h2>
-            <input
-              className="w-full border border-slate-200 rounded-lg p-2 text-sm"
-              value={certificateName}
-              onChange={(e) => setCertificateName(e.target.value)}
-              placeholder="Certificate Name"
-            />
+            <input className="w-full border border-slate-200 rounded-lg p-2 text-sm" value={certificateName} onChange={(e) => setCertificateName(e.target.value)} placeholder="Certificate Name" />
             <p className="text-sm text-slate-600">
-              Employee info is locked. Click directly inside the certificate preview and type your custom content.
+              Drag only these fields: username, certificateId, issueDate, validTill {selectedRole === "resource" ? ", category" : ""}.
+            </p>
+            <p className="text-xs font-semibold text-slate-500">
+              Template:{" "}
+              {selectedRole === "resource"
+                ? isSelectedResourceProvider
+                  ? "Resource Provider"
+                  : "Resource Client"
+                : selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}
             </p>
 
-            <div className="relative w-full max-w-[1200px] mx-auto border border-slate-200 rounded-lg overflow-hidden shadow-sm">
-              <img src={selectedTemplateImage} alt="Certificate template" className="w-full h-auto block" />
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute left-[8%] top-[29.5%] w-[84%] pointer-events-auto">
-                  <input className={`${editorClass} text-[clamp(14px,1.8vw,44px)] font-extrabold text-[#0c3a69] uppercase`} value={editor.title} onChange={(e) => setEditor((p) => ({ ...p, title: e.target.value }))} />
-                </div>
-                <div className="absolute left-[8%] top-[37.1%] w-[84%] pointer-events-auto">
-                  <input className={`${editorClass} text-[clamp(12px,1.3vw,30px)]`} value={editor.subtitle} onChange={(e) => setEditor((p) => ({ ...p, subtitle: e.target.value }))} />
-                </div>
-                <div className="absolute left-[8%] top-[44.7%] w-[84%] pointer-events-auto">
-                  <input className={`${editorClass} text-[clamp(12px,1.2vw,26px)]`} value={editor.certifyLine} onChange={(e) => setEditor((p) => ({ ...p, certifyLine: e.target.value }))} />
-                </div>
-                <div className="absolute left-[8%] top-[49.2%] w-[84%] pointer-events-auto">
-                  <input className={`${editorClass} text-[clamp(14px,1.8vw,40px)] font-bold`} value={selected.userId?.name || "Employee"} readOnly />
-                </div>
-                <div className="absolute left-[8%] top-[55.4%] w-[84%] pointer-events-auto">
-                  <textarea className={`${editorClass} text-[clamp(12px,1.2vw,25px)] resize-none h-[clamp(24px,4vw,65px)]`} value={editor.resultLine} onChange={(e) => setEditor((p) => ({ ...p, resultLine: e.target.value }))} />
-                </div>
-                <div className="absolute left-[27%] top-[61.5%] w-[48%] pointer-events-auto">
-                  <textarea
-                    className="w-full bg-transparent border border-transparent focus:outline-none focus:border-slate-300 focus:bg-white/60 rounded px-2 text-left leading-[1.25] text-[clamp(11px,1vw,20px)] resize-none h-[clamp(90px,15vw,220px)]"
-                    value={editor.adminContent}
-                    onChange={(e) => setEditor((p) => ({ ...p, adminContent: e.target.value }))}
+            <div className="overflow-auto border border-slate-200 rounded-lg">
+              <div
+                className="relative"
+                style={{ width: `${selectedConfig.width}px`, height: `${selectedConfig.height}px` }}
+              >
+                <img src={selectedConfig.image} alt="Certificate template" className="absolute inset-0 h-full w-full" />
+
+                <CertificateDraggableField
+                  value={fieldValues.username}
+                  position={fieldPositions.username}
+                  onPositionChange={(next) => setFieldPositions((p) => ({ ...p, username: next }))}
+                  onValueChange={(value) => setFieldValues((p) => ({ ...p, username: value }))}
+                  width={selectedSpecs.username.width}
+                  height={selectedSpecs.username.height}
+                  fontSize={selectedSpecs.username.fontSize}
+                  textAlign={selectedSpecs.username.textAlign}
+                />
+
+                <CertificateDraggableField
+                  value={fieldValues.certificateId}
+                  position={fieldPositions.certificateId}
+                  onPositionChange={(next) => setFieldPositions((p) => ({ ...p, certificateId: next }))}
+                  onValueChange={(value) => setFieldValues((p) => ({ ...p, certificateId: value }))}
+                  width={selectedSpecs.certificateId.width}
+                  height={selectedSpecs.certificateId.height}
+                  fontSize={selectedSpecs.certificateId.fontSize}
+                  textAlign={selectedSpecs.certificateId.textAlign}
+                />
+
+                <CertificateDraggableField
+                  value={fieldValues.issueDate}
+                  position={fieldPositions.issueDate}
+                  onPositionChange={(next) => setFieldPositions((p) => ({ ...p, issueDate: next }))}
+                  onValueChange={(value) => setFieldValues((p) => ({ ...p, issueDate: value }))}
+                  width={selectedSpecs.issueDate.width}
+                  height={selectedSpecs.issueDate.height}
+                  fontSize={selectedSpecs.issueDate.fontSize}
+                  textAlign={selectedSpecs.issueDate.textAlign}
+                />
+
+                <CertificateDraggableField
+                  value={fieldValues.validTill}
+                  position={fieldPositions.validTill}
+                  onPositionChange={(next) => setFieldPositions((p) => ({ ...p, validTill: next }))}
+                  onValueChange={(value) => setFieldValues((p) => ({ ...p, validTill: value }))}
+                  width={selectedSpecs.validTill.width}
+                  height={selectedSpecs.validTill.height}
+                  fontSize={selectedSpecs.validTill.fontSize}
+                  textAlign={selectedSpecs.validTill.textAlign}
+                />
+
+                {selectedRole === "resource" && fieldPositions.category && (
+                  <CertificateDraggableField
+                    value={fieldValues.category || ""}
+                    position={fieldPositions.category}
+                    onPositionChange={(next) => setFieldPositions((p) => ({ ...p, category: next }))}
+                    onValueChange={(value) => setFieldValues((p) => ({ ...p, category: value }))}
+                    width={selectedSpecs.category?.width || 420}
+                    height={selectedSpecs.category?.height || 46}
+                    fontSize={selectedSpecs.category?.fontSize || 28}
+                    textAlign={selectedSpecs.category?.textAlign || "left"}
                   />
-                </div>
-                <div className="absolute left-[12.5%] bottom-[20.4%] w-[30%] pointer-events-auto">
-                  <input className={`${editorClass} text-left text-[clamp(11px,1.1vw,22px)]`} value={`Date: ${editor.dateText}`} onChange={(e) => setEditor((p) => ({ ...p, dateText: e.target.value.replace(/^Date:\s*/i, "") }))} />
-                </div>
-                <div className="absolute right-[17.2%] bottom-[19.7%] w-[26%] pointer-events-auto">
-                  <input className={`${editorClass} text-[clamp(11px,1.1vw,22px)]`} value={editor.signatureText} onChange={(e) => setEditor((p) => ({ ...p, signatureText: e.target.value }))} />
-                  <input className={`${editorClass} mt-1 text-[clamp(11px,1vw,20px)]`} value={editor.signatoryText} onChange={(e) => setEditor((p) => ({ ...p, signatoryText: e.target.value }))} />
-                </div>
+                )}
               </div>
             </div>
 
