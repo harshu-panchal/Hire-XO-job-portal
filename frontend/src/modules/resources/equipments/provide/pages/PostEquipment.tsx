@@ -17,7 +17,6 @@ const PostEquipment = () => {
     title: existingEquipment?.title || "",
     category:
       existingEquipment?.equipmentTypes?.[0] ||
-      existingEquipment?.equipmentType ||
       existingEquipment?.category ||
       "Excavators",
     location: existingEquipment?.location || "",
@@ -80,7 +79,7 @@ const PostEquipment = () => {
       const payload = {
         ...formData,
         category: "Equipments" as any,
-        equipmentType: formData.category,
+        equipmentType: formData.equipmentType,
         equipmentTypes: [formData.category],
         images: [...existingImages, ...imageUrls],
         postedAt: new Date().toISOString(),

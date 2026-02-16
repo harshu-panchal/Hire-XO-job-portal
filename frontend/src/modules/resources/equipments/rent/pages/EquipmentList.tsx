@@ -23,7 +23,9 @@ const EquipmentList = () => {
       setError("");
       try {
         const data = await resourceService.getAll("equipments");
-        const activeEquipments = (data || []).filter((item: any) => item.status !== "Inactive");
+        const activeEquipments = (data || []).filter(
+          (item: any) => item.status !== "Inactive" && item.status !== "Archived"
+        );
         setEquipments(activeEquipments);
       } catch (err: any) {
         setError(err.message || "Failed to load equipments");

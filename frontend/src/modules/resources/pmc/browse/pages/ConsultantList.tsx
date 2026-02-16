@@ -22,7 +22,9 @@ const ConsultantList = () => {
       setError("");
       try {
         const data = await resourceService.getAll("pmc");
-        const activeConsultants = (data || []).filter((item: any) => item.status !== "Inactive");
+        const activeConsultants = (data || []).filter(
+          (item: any) => item.status !== "Inactive" && item.status !== "Archived"
+        );
         setConsultants(activeConsultants);
       } catch (err: any) {
         setError(err.message || "Failed to load PMC firms");

@@ -64,12 +64,22 @@ const ApplySettingsPage = () => {
   const [tenderAlerts, setTenderAlerts] = useState(
     user?.profile?.preferences?.notifications ?? true
   );
+  const [visibilityPrefs, setVisibilityPrefs] = useState({
+    showInSearch: user?.profile?.preferences?.tenderApplyShowInSearch ?? true,
+    publicProfile: user?.profile?.preferences?.tenderApplyPublicProfile ?? true,
+    showSuccessRate: user?.profile?.preferences?.tenderApplyShowSuccessRate ?? false,
+  });
   const [wallet, setWallet] = useState<SettingsWallet | null>(null);
 
   // Sync state when user loads
   useEffect(() => {
     if (user?.profile?.preferences) {
       setTenderAlerts(user.profile.preferences.notifications ?? true);
+      setVisibilityPrefs({
+        showInSearch: user.profile.preferences.tenderApplyShowInSearch ?? true,
+        publicProfile: user.profile.preferences.tenderApplyPublicProfile ?? true,
+        showSuccessRate: user.profile.preferences.tenderApplyShowSuccessRate ?? false,
+      });
     }
   }, [user]);
 
@@ -111,6 +121,45 @@ const ApplySettingsPage = () => {
     } catch (error: any) {
       setTenderAlerts(!newState); // Rollback
       toast.error(error.message || "Failed to update notification settings");
+    }
+  };
+
+  const persistVisibility = async (
+    key: "tenderApplyShowInSearch" | "tenderApplyPublicProfile" | "tenderApplyShowSuccessRate",
+    value: boolean
+  ) => {
+    try {
+      await updateProfile({
+        profile: {
+          ...user?.profile,
+          preferences: {
+            ...user?.profile?.preferences,
+            [key]: value,
+          },
+        },
+      });
+      return true;
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update visibility setting");
+      return false;
+    }
+  };
+
+  const handleVisibilityToggle = async (
+    key: "showInSearch" | "publicProfile" | "showSuccessRate"
+  ) => {
+    const next = !visibilityPrefs[key];
+    setVisibilityPrefs((prev) => ({ ...prev, [key]: next }));
+
+    const map: Record<"showInSearch" | "publicProfile" | "showSuccessRate", "tenderApplyShowInSearch" | "tenderApplyPublicProfile" | "tenderApplyShowSuccessRate"> = {
+      showInSearch: "tenderApplyShowInSearch",
+      publicProfile: "tenderApplyPublicProfile",
+      showSuccessRate: "tenderApplyShowSuccessRate",
+    };
+
+    const ok = await persistVisibility(map[key], next);
+    if (!ok) {
+      setVisibilityPrefs((prev) => ({ ...prev, [key]: !next }));
     }
   };
 
@@ -250,19 +299,19 @@ const ApplySettingsPage = () => {
       <div className="space-y-3">
         {[
           {
+            key: "showInSearch" as const,
             label: "Show in Search",
             desc: "Allow vendors to find your tenders via search",
-            enabled: true,
           },
           {
+            key: "publicProfile" as const,
             label: "Public Profile",
             desc: "Anyone with your link can view company details",
-            enabled: true,
           },
           {
+            key: "showSuccessRate" as const,
             label: "Show Success Rate",
             desc: "Display your tender completion percentage",
-            enabled: false,
           },
         ].map((item, i) => (
           <div
@@ -276,10 +325,11 @@ const ApplySettingsPage = () => {
               </p>
             </div>
             <button
-              className={`w-10 h-5 rounded-full relative transition-colors ${item.enabled ? "bg-emerald-500" : "bg-slate-200"}`}
+              onClick={() => handleVisibilityToggle(item.key)}
+              className={`w-10 h-5 rounded-full relative transition-colors ${visibilityPrefs[item.key] ? "bg-emerald-500" : "bg-slate-200"}`}
             >
               <div
-                className={`absolute top-0.5 size-4 bg-white rounded-full transition-all ${item.enabled ? "left-5.5" : "left-0.5"}`}
+                className={`absolute top-0.5 size-4 bg-white rounded-full transition-all ${visibilityPrefs[item.key] ? "left-5.5" : "left-0.5"}`}
               />
             </button>
           </div>

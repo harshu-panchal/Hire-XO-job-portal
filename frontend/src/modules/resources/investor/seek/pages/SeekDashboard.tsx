@@ -18,18 +18,17 @@ const SeekDashboard = () => {
     const fetchData = async () => {
       try {
         const listings = await resourceService.getMyListings("investors");
-        setActiveRequests(listings.slice(0, 3));
 
         const inquiries = await applicationService.getReceivedResourceApplications("investors");
         const inquiryCountByResource: Record<string, number> = {};
         inquiries.forEach((inq: any) => {
-          const resourceId = inq.resourceId?._id || inq.resourceId;
+          const resourceId = inq.resourceId?._id || inq.resourceId?.id || inq.resourceId;
           if (!resourceId) return;
           inquiryCountByResource[resourceId] = (inquiryCountByResource[resourceId] || 0) + 1;
         });
 
         const formattedInquiries = inquiries.slice(0, 3).map((inq: any) => ({
-          id: inq._id,
+          id: inq.id || inq._id,
           name: inq.applicantId?.name || "Unknown Investor",
           message: inq.message || "No message provided",
           time: new Date(inq.appliedAt).toLocaleDateString(), // Simple date
@@ -46,7 +45,7 @@ const SeekDashboard = () => {
         setActiveRequests(
           listings.slice(0, 3).map((item: any) => ({
             ...item,
-            inquiryCount: inquiryCountByResource[item._id] || 0,
+            inquiryCount: inquiryCountByResource[item.id || item._id] || 0,
           }))
         );
       } catch (error) {
@@ -193,7 +192,7 @@ const SeekDashboard = () => {
           {activeRequests.length > 0 ? (
             activeRequests.map((req: any) => (
               <div
-                key={req._id}
+                key={req.id || req._id}
                 className="bg-white rounded-[2rem] p-5 border border-slate-200"
               >
                 <div className="flex items-start justify-between mb-3">

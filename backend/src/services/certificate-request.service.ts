@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import Certificate from '../models/certificate.model';
 import CertificateRequest from '../models/certificate-request.model';
 import SubscriptionPlan from '../models/subscription-plan.model';
@@ -31,6 +32,9 @@ type IssuePayload = {
     templateWidth?: number;
     templateHeight?: number;
 };
+
+type FieldPositions = NonNullable<IssuePayload['fieldPositions']>;
+type FieldValues = NonNullable<IssuePayload['fieldValues']>;
 
 const DEFAULT_TEMPLATE_HTML = `
 <div style="font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; border: 8px solid #0f172a; padding: 40px;">
@@ -121,9 +125,9 @@ export class CertificateRequestService {
     }
 
     public async issueRequest(requestId: string, adminId: string, payload: IssuePayload) {
-        const { request, user, plan, now, expiryDate, finalHtml, renderWidth, renderHeight } = await this.prepareRenderData(requestId, payload, true);
+        const { request, user, plan, now, expiryDate, finalHtml, renderWidth, renderHeight, pdfFallbackInput } = await this.prepareRenderData(requestId, payload, true);
         const certificateName = payload.certificateName || `${plan.name} Certificate`;
-        const pdfUrl = await this.generatePdfDataUrlFromHtml(finalHtml, certificateName, renderWidth, renderHeight);
+        const pdfUrl = await this.generatePdfDataUrlFromHtml(finalHtml, certificateName, renderWidth, renderHeight, pdfFallbackInput);
 
         const certificate = await Certificate.create({
             userId: user._id,
@@ -241,6 +245,23 @@ export class CertificateRequestService {
             category: this.escapeHtml(this.resolveResourceCategory(user)),
             adminNote: this.escapeHtml(payload.customText || '')
         };
+        const pdfFieldValues: FieldValues = {
+            username: payload.fieldValues?.username || user.name,
+            certificateId: payload.fieldValues?.certificateId || certificateId,
+            issueDate: payload.fieldValues?.issueDate || now.toLocaleDateString(),
+            validTill: payload.fieldValues?.validTill || expiryDate.toLocaleDateString(),
+            category: payload.fieldValues?.category || this.resolveResourceCategory(user)
+        };
+
+        const pdfFallbackInput = payload.fieldPositions && payload.templateImageDataUrl
+            ? {
+                templateImageDataUrl: payload.templateImageDataUrl,
+                fieldPositions: payload.fieldPositions,
+                fieldValues: pdfFieldValues,
+                width: renderWidth,
+                height: renderHeight
+            }
+            : undefined;
 
         let finalHtml = '';
         if (payload.fieldPositions && payload.templateImageDataUrl) {
@@ -257,7 +278,7 @@ export class CertificateRequestService {
             finalHtml = this.renderTemplate(baseTemplate, templateValues);
         }
 
-        return { request, user, plan, now, expiryDate, finalHtml, renderWidth, renderHeight };
+        return { request, user, plan, now, expiryDate, finalHtml, renderWidth, renderHeight, pdfFallbackInput };
     }
 
     private buildPositionedTemplateHtml(args: {
@@ -352,13 +373,28 @@ export class CertificateRequestService {
         html: string,
         certificateName: string,
         renderWidth: number = 1536,
-        renderHeight: number = 1021
+        renderHeight: number = 1021,
+        pdfFallbackInput?: {
+            templateImageDataUrl: string;
+            fieldPositions: FieldPositions;
+            fieldValues: FieldValues;
+            width: number;
+            height: number;
+        }
     ): Promise<string> {
         try {
             const renderedBuffer = await this.renderHtmlToPdfBuffer(html, renderWidth, renderHeight);
             return `data:application/pdf;base64,${renderedBuffer.toString('base64')}`;
         } catch (error) {
-            console.error('HTML->PDF renderer failed, falling back to text PDF:', error);
+            console.error('HTML->PDF renderer failed; trying image-overlay fallback:', error);
+        }
+
+        if (pdfFallbackInput) {
+            try {
+                return await this.generateOverlayPdfDataUrl(pdfFallbackInput);
+            } catch (error) {
+                console.error('Image-overlay fallback failed; using text fallback:', error);
+            }
         }
 
         // Fallback: legacy text-only PDF (kept for resilience)
@@ -387,6 +423,93 @@ export class CertificateRequestService {
         const stream = `BT\n/F1 12 Tf\n${streamLines.join('\n')}\nET`;
         const fallbackBuffer = this.buildPdfBuffer(stream);
         return `data:application/pdf;base64,${fallbackBuffer.toString('base64')}`;
+    }
+
+    private async generateOverlayPdfDataUrl(args: {
+        templateImageDataUrl: string;
+        fieldPositions: FieldPositions;
+        fieldValues: FieldValues;
+        width: number;
+        height: number;
+    }): Promise<string> {
+        const { templateImageDataUrl, fieldPositions, fieldValues, width, height } = args;
+        const imageData = this.parseImageDataUrl(templateImageDataUrl);
+
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage([width, height]);
+        const embeddedImage = imageData.mimeType.includes('png')
+            ? await pdfDoc.embedPng(imageData.bytes)
+            : await pdfDoc.embedJpg(imageData.bytes);
+
+        page.drawImage(embeddedImage, { x: 0, y: 0, width, height });
+
+        const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const color = rgb(0.07, 0.09, 0.15);
+        const fields: Array<{
+            key: keyof FieldPositions;
+            value: string;
+            width: number;
+            size: number;
+            align: 'left' | 'center';
+        }> = [
+            { key: 'username', value: fieldValues.username || '', width: 520, size: 44, align: 'center' },
+            { key: 'certificateId', value: fieldValues.certificateId || '', width: 360, size: 22, align: 'left' },
+            { key: 'issueDate', value: fieldValues.issueDate || '', width: 260, size: 28, align: 'left' },
+            { key: 'validTill', value: fieldValues.validTill || '', width: 260, size: 28, align: 'left' },
+            { key: 'category', value: fieldValues.category || '', width: 420, size: 28, align: 'left' }
+        ];
+
+        for (const field of fields) {
+            const position = fieldPositions[field.key];
+            const cleanValue = (field.value || '').replace(/\r?\n/g, ' ').trim();
+            if (!position || !cleanValue) {
+                continue;
+            }
+
+            const text = this.fitTextToWidth(cleanValue, font, field.size, field.width);
+            const textWidth = font.widthOfTextAtSize(text, field.size);
+            const baseX = field.align === 'center'
+                ? position.x + Math.max((field.width - textWidth) / 2, 0)
+                : position.x;
+            const clampedX = Math.max(0, Math.min(baseX, width - 5));
+            const clampedY = Math.max(0, Math.min(height - field.size, height - position.y - field.size));
+
+            page.drawText(text, {
+                x: clampedX,
+                y: clampedY,
+                size: field.size,
+                font,
+                color
+            });
+        }
+
+        const pdfBytes = await pdfDoc.save();
+        return `data:application/pdf;base64,${Buffer.from(pdfBytes).toString('base64')}`;
+    }
+
+    private parseImageDataUrl(dataUrl: string): { mimeType: string; bytes: Uint8Array } {
+        const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,(.+)$/);
+        if (!match) {
+            throw new Error('Invalid template image data URL');
+        }
+        const [, mimeType, base64Data] = match;
+        return {
+            mimeType,
+            bytes: Uint8Array.from(Buffer.from(base64Data, 'base64'))
+        };
+    }
+
+    private fitTextToWidth(text: string, font: any, size: number, maxWidth: number): string {
+        if (font.widthOfTextAtSize(text, size) <= maxWidth) {
+            return text;
+        }
+
+        let trimmed = text;
+        while (trimmed.length > 1 && font.widthOfTextAtSize(`${trimmed}...`, size) > maxWidth) {
+            trimmed = trimmed.slice(0, -1);
+        }
+
+        return `${trimmed}...`;
     }
 
     private async renderHtmlToPdfBuffer(html: string, renderWidth: number, renderHeight: number): Promise<Buffer> {

@@ -51,7 +51,15 @@ const TenderDetails = () => {
           try {
             const myApps: any = await applicationService.getMyApplications();
             const alreadyApplied = (myApps.resources || []).some(
-              (app: any) => (app.resourceId?._id || app.resourceId) === id && app.resourceType === "Tender"
+              (app: any) => {
+                const appResourceId = app.resourceId?._id || app.resourceId?.id || app.resourceId;
+                const appType = (app.resourceType || "").toLowerCase();
+                const appCategory = (app.resourceId?.category || "").toLowerCase();
+                return (
+                  appResourceId === id &&
+                  (appType === "tenders" || appType === "tender" || appCategory === "tenders")
+                );
+              }
             );
             setHasApplied(alreadyApplied);
           } catch {
@@ -78,11 +86,12 @@ const TenderDetails = () => {
 
     setSubmitting(true);
     try {
-      await applicationService.applyToResource("Tender", id, {
+      await applicationService.applyToResource("tenders", id, {
         bidAmount: Number(bidData.bidAmount),
         coverLetter: bidData.coverLetter,
       });
       toast.success("Bid submitted successfully!");
+      setHasApplied(true);
       setShowBidModal(false);
     } catch (error: any) {
       toast.error(error.message || "Failed to submit bid");

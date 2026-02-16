@@ -30,7 +30,7 @@ const PostFundingNeed = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const editingRequest = (location.state as any)?.editRequest;
-  const isEditMode = Boolean(editingRequest?.id);
+  const isEditMode = Boolean(editingRequest?.id || editingRequest?._id);
 
   const [formData, setFormData] = useState({
     businessName: "",
@@ -178,6 +178,8 @@ const PostFundingNeed = () => {
         }
       }
 
+      const existingImages = Array.isArray(editingRequest?.images) ? editingRequest.images : [];
+
       const payload = {
         title: `${formData.businessName} - Funding Request`,
         company: formData.businessName,
@@ -192,7 +194,7 @@ const PostFundingNeed = () => {
         investmentAmount: formData.amount,
         investmentSector: [formData.sector],
         duration: formData.duration,
-        images: imageUrls,
+        images: isEditMode ? [...existingImages, ...imageUrls] : imageUrls,
         details: {
           useOfFunds: formData.useOfFunds,
           revenueModel: formData.revenueModel,
@@ -205,7 +207,7 @@ const PostFundingNeed = () => {
       };
 
       if (isEditMode) {
-        await resourceService.update("investors", editingRequest.id, payload);
+        await resourceService.update("investors", editingRequest.id || editingRequest._id, payload);
       } else {
         await resourceService.create("investors", payload);
       }

@@ -316,25 +316,6 @@ const ApplyProfile = () => {
           <p className="text-sm font-bold text-slate-600 leading-relaxed italic">
             "{companyData.bio}"
           </p>
-          {companyData.website !== "Website not set" && (
-            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-4">
-              <a
-                href={
-                  companyData.website.startsWith("http")
-                    ? companyData.website
-                    : `https://${companyData.website}`
-                }
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 text-violet-600"
-              >
-                <Globe className="size-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">
-                  Visit Website
-                </span>
-              </a>
-            </div>
-          )}
         </div>
       </div>
 

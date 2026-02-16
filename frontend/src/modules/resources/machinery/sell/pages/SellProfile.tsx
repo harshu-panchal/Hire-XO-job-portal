@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MapPin,
   ShieldCheck,
@@ -33,6 +33,19 @@ const SellProfile = () => {
     listingsActive: profileAny.listingsActive ? String(profileAny.listingsActive) : "",
     memberSince: profileAny.memberSince || "",
   });
+
+  useEffect(() => {
+    setFormData({
+      company: profileAny.company || user?.name || "",
+      type: profileAny.jobTitle || "Machinery Seller",
+      location: profileAny.location || "",
+      website: profileAny.website || "",
+      totalSales: profileAny.totalSales || "",
+      salesCompleted: profileAny.salesCompleted ? String(profileAny.salesCompleted) : "",
+      listingsActive: profileAny.listingsActive ? String(profileAny.listingsActive) : "",
+      memberSince: profileAny.memberSince || "",
+    });
+  }, [user?.name, profileAny.company, profileAny.jobTitle, profileAny.location, profileAny.website, profileAny.totalSales, profileAny.salesCompleted, profileAny.listingsActive, profileAny.memberSince]);
 
   if (!user) {
     return <div className="p-10 text-center font-black">Please log in to view your profile.</div>;
@@ -258,9 +271,6 @@ const SellProfile = () => {
           className="flex-1 py-5 rounded-2xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-3 shadow-lg"
         >
           <Edit3 className="size-4" /> Edit Profile
-        </button>
-        <button className="size-[60px] rounded-2xl bg-indigo-600 text-white flex items-center justify-center active:scale-95 transition-all shadow-xl shadow-indigo-500/10">
-          <Globe className="size-6" />
         </button>
       </div>
 

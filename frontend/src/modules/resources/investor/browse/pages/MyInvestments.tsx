@@ -30,7 +30,11 @@ const MyInvestments = () => {
         const response: any = await applicationService.getMyApplications();
         // Handle both { resources: [] } and [] formats
         const allApplications = Array.isArray(response) ? response : response.resources || [];
-        const investorApps = allApplications.filter((app: any) => app.resourceType === "Investor");
+        const investorApps = allApplications.filter((app: any) => {
+          const appType = (app.resourceType || "").toLowerCase();
+          const appCategory = (app.resourceId?.category || "").toLowerCase();
+          return appType === "investor" || appType === "investors" || appCategory === "investor";
+        });
         setInterests(investorApps);
       } catch (error) {
         console.error("Failed to fetch interests:", error);
@@ -176,7 +180,7 @@ const MyInvestments = () => {
 
             return (
               <div
-                key={interest._id}
+                key={interest.id || interest._id}
                 className="bg-white border border-slate-100 rounded-[2.5rem] p-6 active:scale-[0.98] transition-all hover:shadow-xl shadow-sm relative overflow-hidden group"
               >
                 <div className="flex items-start justify-between mb-4">

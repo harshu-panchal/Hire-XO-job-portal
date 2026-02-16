@@ -38,9 +38,12 @@ const EquipmentDetails = () => {
           const myApps: any = await applicationService.getMyApplications();
           const alreadyApplied = (myApps.resources || []).some((app: any) => {
             const appType = String(app.resourceType || "").toLowerCase();
+            const appCategory = String(app.resourceId?.category || "").toLowerCase();
             const appliedResourceId =
               app.resourceId?._id || app.resourceId?.id || app.resourceId;
-            return appType.includes("equipment") && appliedResourceId === id;
+            const isEquipmentApp =
+              appType.includes("equipment") || appCategory.includes("equipment");
+            return isEquipmentApp && appliedResourceId === id;
           });
           setHasApplied(alreadyApplied);
         } else {

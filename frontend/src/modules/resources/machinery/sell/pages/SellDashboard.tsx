@@ -17,7 +17,7 @@ const SellDashboard = () => {
   const { isAuthenticated } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    assetValue: "₹0",
+    assetValue: "INR 0",
     activeListings: 0,
     buyerInterest: 0
   });
@@ -34,16 +34,19 @@ const SellDashboard = () => {
       try {
         const listings = await resourceService.getMyListings("machinery");
         const bids = await applicationService.getReceivedResourceApplications("machinery");
+        const activeListings = listings.filter(
+          (item: any) => item.status !== "Inactive" && item.status !== "Archived"
+        );
 
         // Calculate Stats
-        const totalValue = listings.reduce((acc: number, curr: any) => {
+        const totalValue = activeListings.reduce((acc: number, curr: any) => {
           const val = parseFloat((curr.compensation || curr.price || "0").replace(/[^0-9.]/g, ""));
           return acc + (isNaN(val) ? 0 : val);
         }, 0);
 
         setStats({
-          assetValue: `₹${(totalValue / 100000).toFixed(1)}L`,
-          activeListings: listings.length,
+          assetValue: `INR ${(totalValue / 100000).toFixed(1)}L`,
+          activeListings: activeListings.length,
           buyerInterest: bids.length
         });
 
@@ -276,3 +279,4 @@ const SellDashboard = () => {
 };
 
 export default SellDashboard;
+

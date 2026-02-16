@@ -18,6 +18,7 @@ import Transaction from '../models/transaction.model';
 import bcrypt from 'bcryptjs';
 import JobSeeker from '../models/job-seeker.model';
 import Recruiter from '../models/recruiter.model';
+import ResourceProfile from '../models/resource-profile.model';
 
 export class AdminController {
     /**
@@ -181,6 +182,35 @@ export class AdminController {
                 user.profile = { ...user.profile, ...profile };
             }
 
+            // Also keep top-level fields in profile for compatibility if they were passed separately
+            if (company) {
+                if (!user.profile) user.profile = {};
+                user.profile.company = company;
+            }
+
+            // Role-specific profile updates for persistence across models
+            const profileUpdate = { ...user.profile, name: user.name, email: user.email, phoneNumber: user.phoneNumber };
+
+            if (user.role === 'employee' || user.role === 'job-seeker') {
+                await JobSeeker.findOneAndUpdate(
+                    { userId: user._id },
+                    { $set: profileUpdate },
+                    { upsert: true }
+                );
+            } else if (user.role === 'employer' || user.role === 'recruiter') {
+                await Recruiter.findOneAndUpdate(
+                    { userId: user._id },
+                    { $set: profileUpdate },
+                    { upsert: true }
+                );
+            } else if (user.role === 'resource') {
+                await ResourceProfile.findOneAndUpdate(
+                    { userId: user._id },
+                    { $set: profileUpdate },
+                    { upsert: true }
+                );
+            }
+
             await user.save();
 
             // Audit Log
@@ -214,7 +244,7 @@ export class AdminController {
      */
     public createUser = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { name, email, password, role, phoneNumber, company, status } = req.body;
+            const { name, email, password, role, phoneNumber, profile, status, company } = req.body;
 
             // Basic validation
             if (!name || !email || !role) {
@@ -225,7 +255,7 @@ export class AdminController {
                 return;
             }
 
-            // Check if user exists
+            // Check if user already exists
             const existingUser = await User.findOne({ email });
             if (existingUser) {
                 res.status(409).json({
@@ -235,44 +265,47 @@ export class AdminController {
                 return;
             }
 
-            // Hash password (default to 123456 if not provided)
-            const passwordToHash = password || '123456';
-            const hashedPassword = await bcrypt.hash(passwordToHash, 10);
+            // Create new user
+            const hashedPassword = await bcrypt.hash(password || 'Password123!', 10);
 
-            // Create user
-            const newUser = await User.create({
+            // Merge company into profile if provided at top level
+            const userProfile = { ...profile };
+            if (company && !userProfile.company) {
+                userProfile.company = company;
+            }
+
+            const user = new User({
                 name,
                 email,
                 password: hashedPassword,
                 role,
                 phoneNumber,
                 status: status || 'active',
-                profile: {
-                    company: company
-                }
+                profile: userProfile
             });
+
+            await user.save();
 
             // Create associated profile based on role
+            const profileData = {
+                userId: user._id,
+                name,
+                email,
+                phoneNumber,
+                ...userProfile
+            };
+
             if (role === 'job-seeker' || role === 'employee') {
-                await JobSeeker.create({
-                    userId: newUser._id
-                });
-            } else if (role === 'recruiter' || role === 'employer') {
-                await Recruiter.create({
-                    userId: newUser._id,
-                    company: company || 'Company Name'
+                await JobSeeker.create(profileData);
+            } else if (role === 'employer' || role === 'recruiter') {
+                await Recruiter.create(profileData);
+            } else if (role === 'resource') {
+                await ResourceProfile.create({
+                    ...profileData,
+                    category: userProfile?.category || 'Investor',
+                    organizationName: userProfile?.organizationName || name
                 });
             }
-
-            // Return success
-            const userResponse = newUser.toObject();
-            delete userResponse.password;
-
-            res.status(201).json({
-                success: true,
-                message: 'User created successfully',
-                data: userResponse
-            });
 
             // Audit Log
             if ((req as AuthRequest).user) {
@@ -280,11 +313,22 @@ export class AdminController {
                     (req as AuthRequest).user!.id,
                     'CREATE_USER',
                     'User',
-                    newUser._id.toString(),
-                    { email: newUser.email, role: newUser.role }
+                    user._id.toString(),
+                    { name, email, role }
                 );
             }
 
+            res.status(201).json({
+                success: true,
+                message: 'User created successfully',
+                data: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    status: user.status
+                }
+            });
         } catch (error: any) {
             res.status(500).json({
                 success: false,
@@ -345,52 +389,59 @@ export class AdminController {
             }, {});
 
             // --- Extended Stats for Dashboard ---
+            const { range = '180' } = req.query;
+            const days = parseInt(range as string);
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - days);
 
-            // 1. Revenue Chart Data (Last 6 months)
-            const sixMonthsAgo = new Date();
-            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+            // Grouping logic: if range <= 31 days, group by day. Otherwise by month.
+            const groupByDay = days <= 31;
 
             const revenueStats = await Transaction.aggregate([
                 {
                     $match: {
-                        type: 'topup', // Assuming topup is revenue
+                        type: 'topup',
                         status: 'completed',
-                        createdAt: { $gte: sixMonthsAgo }
+                        createdAt: { $gte: startDate }
                     }
                 },
                 {
                     $group: {
-                        _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
+                        _id: groupByDay
+                            ? { day: { $dayOfMonth: "$createdAt" }, month: { $month: "$createdAt" }, year: { $year: "$createdAt" } }
+                            : { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
                         total: { $sum: "$amount" }
                     }
                 },
-                { $sort: { "_id.year": 1, "_id.month": 1 } }
+                { $sort: groupByDay ? { "_id.year": 1, "_id.month": 1, "_id.day": 1 } : { "_id.year": 1, "_id.month": 1 } }
             ]);
 
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const revenueData = revenueStats.map((stat: any) => ({
-                name: monthNames[stat._id.month - 1],
+                name: groupByDay ? `${stat._id.day} ${monthNames[stat._id.month - 1]}` : monthNames[stat._id.month - 1],
                 value: stat.total
             }));
 
-            // 3. User Growth Data (Last 6 months)
+            // 3. User Growth Data
             const userGrowthStats = await User.aggregate([
                 {
                     $match: {
-                        createdAt: { $gte: sixMonthsAgo }
+                        createdAt: { $gte: startDate }
                     }
                 },
                 {
                     $group: {
-                        _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
+                        _id: groupByDay
+                            ? { day: { $dayOfMonth: "$createdAt" }, month: { $month: "$createdAt" }, year: { $year: "$createdAt" } }
+                            : { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
                         count: { $sum: 1 }
                     }
                 },
-                { $sort: { "_id.year": 1, "_id.month": 1 } }
+                { $sort: groupByDay ? { "_id.year": 1, "_id.month": 1, "_id.day": 1 } : { "_id.year": 1, "_id.month": 1 } }
             ]);
 
             const userGrowthData = userGrowthStats.map((stat: any) => ({
-                name: monthNames[stat._id.month - 1],
+                name: groupByDay ? `${stat._id.day} ${monthNames[stat._id.month - 1]}` : monthNames[stat._id.month - 1],
                 users: stat.count
             }));
 

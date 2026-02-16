@@ -22,7 +22,9 @@ const BuyDashboard = () => {
     const fetchMachines = async () => {
       try {
         const data = await resourceService.getAll("machinery");
-        const activeMachines = (data || []).filter((item: any) => item.status !== "Inactive");
+        const activeMachines = (data || []).filter(
+          (item: any) => item.status !== "Inactive" && item.status !== "Archived"
+        );
         setAllMachines(activeMachines);
         setFeaturedMachines(activeMachines.slice(0, 5));
       } catch (e: any) {

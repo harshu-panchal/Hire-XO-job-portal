@@ -156,9 +156,11 @@ export const adminService = {
   /**
    * Get system statistics
    */
-  async getSystemStats(): Promise<SystemStats> {
+  async getSystemStats(range?: string): Promise<SystemStats> {
     try {
-      const response = await apiClient.get<any>("/admin/stats");
+      const response = await apiClient.get<any>("/admin/stats", {
+        params: { range }
+      });
       return response.data.stats;
     } catch (error) {
       throw new Error(getErrorMessage(error));

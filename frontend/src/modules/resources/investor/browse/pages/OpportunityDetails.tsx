@@ -38,12 +38,22 @@ const OpportunityDetails = () => {
         const data = await resourceService.getById("investors", id);
         setOpportunity(data);
 
-        // Check if already applied
-        const myApps: any = await applicationService.getMyApplications();
-        const alreadyApplied = (myApps.resources || []).some(
-          (app: any) => (app.resourceId?._id || app.resourceId) === id && app.resourceType === "Investor"
-        );
-        setHasExpressed(alreadyApplied);
+        // Check if already applied (only for authenticated users)
+        if (!user) {
+          setHasExpressed(false);
+        } else {
+          const myApps: any = await applicationService.getMyApplications();
+          const alreadyApplied = (myApps.resources || []).some((app: any) => {
+            const appResourceId = app.resourceId?._id || app.resourceId?.id || app.resourceId;
+            const appType = (app.resourceType || "").toLowerCase();
+            const appCategory = (app.resourceId?.category || "").toLowerCase();
+            return (
+              appResourceId === id &&
+              (appType === "investor" || appType === "investors" || appCategory === "investor")
+            );
+          });
+          setHasExpressed(alreadyApplied);
+        }
       } catch (error) {
         console.error("Failed to fetch opportunity details:", error);
         toast.error("Could not load opportunity details");
@@ -52,7 +62,7 @@ const OpportunityDetails = () => {
       }
     };
     fetchDetails();
-  }, [id]);
+  }, [id, user]);
 
   const handleExpressInterest = async () => {
     if (!user) {
@@ -62,7 +72,7 @@ const OpportunityDetails = () => {
 
     setIsExpressing(true);
     try {
-      await applicationService.applyToResource("Investor", id!, {
+      await applicationService.applyToResource("investors", id!, {
         message: "Interested in this investment opportunity. Let's discuss further.",
       });
       setHasExpressed(true);

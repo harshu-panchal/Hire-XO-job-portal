@@ -38,9 +38,12 @@ const MachineDetails = () => {
           const myApps: any = await applicationService.getMyApplications();
           const alreadyApplied = (myApps.resources || []).some((app: any) => {
             const appType = String(app.resourceType || "").toLowerCase();
+            const appCategory = String(app.resourceId?.category || "").toLowerCase();
             const appliedResourceId =
               app.resourceId?._id || app.resourceId?.id || app.resourceId;
-            return appType.includes("machinery") && appliedResourceId === id;
+            const isMachineryApp =
+              appType.includes("machinery") || appCategory.includes("machinery");
+            return isMachineryApp && appliedResourceId === id;
           });
           setHasApplied(alreadyApplied);
         } else {

@@ -33,19 +33,19 @@ const InvestorInquiries = () => {
 
         // Map to component format
         const formatted = data.map((app: any) => ({
-          id: app._id,
+          id: app.id || app._id,
           investorName: app.applicantId?.name || "Unknown Investor",
           investorInitials: (app.applicantId?.name || "U").substring(0, 2).toUpperCase(),
           investorGradient: "from-blue-500 to-cyan-600", // Static for now
           investorEmail: app.applicantId?.email || "N/A",
           investorPhone: app.applicantId?.phoneNumber || "N/A",
           fundingRequest: app.resourceId?.title || "Funding Request", // Assuming we populate resourceId or have title
-          message:
-            app.message?.substring(0, 100) + (app.message?.length > 100 ? "..." : "") ||
-            "No message",
+          message: app.message
+            ? app.message.substring(0, 100) + (app.message.length > 100 ? "..." : "")
+            : "No message",
           fullMessage: app.message || "No message provided.",
           timestamp: new Date(app.appliedAt).toLocaleDateString(),
-          status: app.status.toLowerCase(), // 'pending', 'accepted', 'rejected'
+          status: String(app.status || "Pending").toLowerCase(), // 'pending', 'accepted', 'rejected'
           requestAmount: app.resourceId?.amount || "N/A", // If populated
           date: new Date(app.appliedAt).toLocaleDateString(),
           rawStatus: app.status, // Keep original for logic if needed

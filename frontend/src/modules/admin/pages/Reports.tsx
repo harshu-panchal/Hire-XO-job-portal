@@ -34,23 +34,26 @@ const PIE_COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4
 
 export default function Reports() {
   const [isExporting, setIsExporting] = useState(false);
+  const [timeRange, setTimeRange] = useState("30");
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchStats = async (range: string) => {
+    setIsLoading(true);
+    try {
+      const data = await adminService.getSystemStats(range);
+      setStats(data);
+    } catch (error) {
+      console.error("Failed to fetch stats:", error);
+      toast.error("Failed to load reports data");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await adminService.getSystemStats();
-        setStats(data);
-      } catch (error) {
-        console.error("Failed to fetch stats:", error);
-        toast.error("Failed to load reports data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
+    fetchStats(timeRange);
+  }, [timeRange]);
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -87,7 +90,7 @@ export default function Reports() {
   };
 
   const roleDistributionData = stats ? [
-    { name: "Job Seekers", value: stats.users.byRole["job-seeker"] || 0 },
+    { name: "Employees", value: stats.users.byRole["job-seeker"] || 0 },
     { name: "Employers", value: stats.users.byRole["recruiter"] || 0 },
     { name: "Resources", value: stats.users.byRole["resource"] || 0 },
     { name: "Admins", value: stats.users.byRole["admin"] || 0 },
@@ -123,10 +126,15 @@ export default function Reports() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <select className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
-            <option>Last 30 days</option>
-            <option>Last 90 days</option>
-            <option>This Year</option>
+          <select
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value)}
+            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+          >
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="180">Last 6 months</option>
+            <option value="365">This Year</option>
           </select>
           <button
             onClick={handleExport}

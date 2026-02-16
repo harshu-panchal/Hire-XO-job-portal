@@ -10,7 +10,9 @@ const BrowseDashboard = () => {
     const load = async () => {
       try {
         const data = await resourceService.getAll("pmc");
-        const active = (data || []).filter((item: any) => item.status !== "Inactive");
+        const active = (data || []).filter(
+          (item: any) => item.status !== "Inactive" && item.status !== "Archived"
+        );
         setFeaturedConsultants(active.slice(0, 2));
       } catch (error) {
         setFeaturedConsultants([]);

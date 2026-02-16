@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MapPin,
   Building2,
@@ -32,6 +32,18 @@ const ProvideProfile = () => {
     fleetSize: profileAny.fleetSize ? String(profileAny.fleetSize) : "",
     totalRentals: profileAny.totalRentals ? String(profileAny.totalRentals) : "",
   });
+
+  useEffect(() => {
+    setFormData({
+      company: profileAny.company || user?.name || "",
+      type: profileAny.jobTitle || "Rental Authority",
+      location: profileAny.location || "",
+      website: profileAny.website || "",
+      experience: Array.isArray(profileAny.experience) ? "" : profileAny.experience || "",
+      fleetSize: profileAny.fleetSize ? String(profileAny.fleetSize) : "",
+      totalRentals: profileAny.totalRentals ? String(profileAny.totalRentals) : "",
+    });
+  }, [user?.name, profileAny.company, profileAny.jobTitle, profileAny.location, profileAny.website, profileAny.experience, profileAny.fleetSize, profileAny.totalRentals]);
 
   if (!user) {
     return <div className="p-10 text-center font-black">Please log in to view your profile.</div>;

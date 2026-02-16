@@ -28,9 +28,11 @@ const CSMDetails = () => {
           const myApps: any = await applicationService.getMyApplications();
           const alreadyApplied = (myApps.resources || []).some((app: any) => {
             const appType = String(app.resourceType || "").toLowerCase();
+            const appCategory = String(app.resourceId?.category || "").toLowerCase();
             const appliedResourceId =
               app.resourceId?._id || app.resourceId?.id || app.resourceId;
-            return appType.includes("csm") && appliedResourceId === id;
+            const isCsmApp = appType.includes("csm") || appCategory.includes("csm");
+            return isCsmApp && appliedResourceId === id;
           });
           setHasApplied(alreadyApplied);
         } else {

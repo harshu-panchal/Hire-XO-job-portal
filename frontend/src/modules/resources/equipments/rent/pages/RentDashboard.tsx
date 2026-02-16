@@ -24,7 +24,9 @@ const RentDashboard = () => {
           resourceService.getAll("equipments"),
           applicationService.getMyApplications(),
         ]);
-        const activeEquipments = (all || []).filter((item: any) => item.status !== "Inactive");
+        const activeEquipments = (all || []).filter(
+          (item: any) => item.status !== "Inactive" && item.status !== "Archived"
+        );
         setEquipments(activeEquipments);
         const filtered = (apps.resources || []).filter((app: any) => {
           const category = (app.resourceId?.category || "").toLowerCase();
