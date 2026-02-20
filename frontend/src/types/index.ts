@@ -119,7 +119,7 @@ export interface Resource {
 }
 
 // Missing types
-export type UserRole = "employee" | "employer" | "resource" | "admin";
+export type UserRole = "employee" | "employer" | "resource" | "admin" | "recruiter" | "job-seeker";
 export type InvestorType = string;
 export type TenderType = string;
 export type EquipmentType = string;
@@ -204,7 +204,7 @@ export interface UserProfile {
   name: string;
   username?: string;
   email: string;
-  role: "employee" | "employer" | "resource" | "admin";
+  role: "employee" | "employer" | "resource" | "admin" | "recruiter" | "job-seeker";
   interviewSuccessRate: number;
   activeSubscriptionId?: string;
   walletBalance?: number;

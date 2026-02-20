@@ -42,8 +42,8 @@ const Post = () => {
     // Expanded contact detail in feed
     const [expandedContacts, setExpandedContacts] = useState<Set<string>>(new Set());
 
-    const isEmployee = user?.role === "employee";
-    const isEmployer = user?.role === "employer" || user?.role === "recruiter";
+    const isEmployee = user?.role === "employee" || user?.role === "job-seeker";
+    const isEmployer = ["employer", "recruiter"].includes(user?.role ?? "");
 
     const fetchPosts = async () => {
         try {

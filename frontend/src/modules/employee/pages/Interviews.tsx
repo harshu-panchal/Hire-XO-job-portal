@@ -17,9 +17,9 @@ const Interviews = () => {
     const [loading, setLoading] = useState(true);
     const { user, checkAuth } = useAuthStore();
     const navigate = useNavigate();
-    const isEmployer = user?.role === "employer";
+    const isEmployer = ["employer", "recruiter"].includes(user?.role ?? "");
     const isAdmin = user?.role === "admin";
-    const isEmployee = user?.role === "employee";
+    const isEmployee = user?.role === "employee" || user?.role === "job-seeker";
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedInterview, setSelectedInterview] = useState<any>(null);
     const [isSaving, setIsSaving] = useState(false);
