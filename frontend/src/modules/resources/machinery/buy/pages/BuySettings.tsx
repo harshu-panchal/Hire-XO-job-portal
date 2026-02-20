@@ -21,8 +21,11 @@ interface SettingItemProps {
   action?: React.ReactNode;
 }
 
-const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProps) => (
-  <div className="flex items-center gap-4 p-4 rounded-3xl bg-white border border-slate-100 shadow-sm group">
+const SettingItem = ({ icon: Icon, label, description, action, onClick }: SettingItemProps & { onClick?: () => void }) => (
+  <div
+    onClick={onClick}
+    className={`flex items-center gap-4 p-4 rounded-3xl bg-white border border-slate-100 shadow-sm group transition-all ${onClick ? "cursor-pointer active:scale-[0.98] active:bg-slate-50" : ""}`}
+  >
     <div className="size-12 rounded-2xl bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition-colors">
       <Icon className="size-6 text-slate-600 group-hover:text-amber-600" />
     </div>
@@ -74,18 +77,22 @@ const BuySettings = () => {
     }
   };
 
-  const handleAlertsToggle = async () => {
+  const handleAlertsToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const next = !alerts;
     setAlerts(next);
-    const ok = await persistSettings({ machineryBuyMarketAlerts: next });
-    if (!ok) setAlerts(!next);
+    persistSettings({ machineryBuyMarketAlerts: next }).then(ok => {
+      if (!ok) setAlerts(!next);
+    });
   };
 
-  const handlePriorityToggle = async () => {
+  const handlePriorityToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const next = !highPriority;
     setHighPriority(next);
-    const ok = await persistSettings({ machineryBuyPriorityDeals: next });
-    if (!ok) setHighPriority(!next);
+    persistSettings({ machineryBuyPriorityDeals: next }).then(ok => {
+      if (!ok) setHighPriority(!next);
+    });
   };
 
   return (
@@ -149,12 +156,19 @@ const BuySettings = () => {
             icon={UserRoundPen}
             label="Buyer Verification"
             description="Manage enterprise credentials"
+            onClick={() => navigate("/machinery/buy/profile")}
           />
-          <SettingItem icon={Shield} label="Security" description="Passwords and 2FA" />
+          <SettingItem
+            icon={Shield}
+            label="Security"
+            description="Passwords and 2FA"
+            onClick={() => navigate("/profile")}
+          />
           <SettingItem
             icon={History}
             label="Audit History"
             description="Recent marketplace activity"
+            onClick={() => navigate("/machinery/buy/my-orders")}
           />
         </div>
       </div>
@@ -169,11 +183,13 @@ const BuySettings = () => {
             icon={CreditCard}
             label="Payment Methods"
             description="Bank accounts and cards"
+            onClick={() => navigate("/payments")}
           />
           <SettingItem
             icon={LifeBuoy}
             label="Pro Help Desk"
             description="Dedicated manager assistance"
+            onClick={() => navigate("/faq")}
           />
         </div>
       </div>

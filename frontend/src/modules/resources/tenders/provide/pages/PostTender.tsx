@@ -146,7 +146,7 @@ const PostTender = () => {
   };
 
   return (
-    <div className="py-6 space-y-8 select-none mb-24">
+    <div className="py-6 space-y-8 select-none pb-32">
       {/* Action Bar */}
       <div className="flex items-center justify-between px-1">
         <button
@@ -423,7 +423,7 @@ const PostTender = () => {
       </div>
 
       {/* Navigation Footer */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-40 pointer-events-none">
+      <div className="fixed bottom-24 left-0 right-0 p-6 flex justify-center z-50 pointer-events-none">
         <div className="w-full max-w-[430px] flex gap-3 pointer-events-auto">
           {step > 1 && (
             <button

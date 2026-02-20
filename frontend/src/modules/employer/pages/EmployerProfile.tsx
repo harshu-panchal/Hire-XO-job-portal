@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { userService } from "@/services/userService";
-import { ChevronLeft, User, Camera, Mail, Phone, Briefcase, Loader2 } from "lucide-react";
+import { ChevronLeft, User, Camera, Mail, Phone, Briefcase, Loader2, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import { promotionService } from "@/services/promotionService";
 
@@ -227,13 +227,21 @@ const EmployerProfile = () => {
             </div>
           </div>
 
-          <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 z-50">
+          <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 z-50 space-y-3">
             <button
               type="submit"
               disabled={isLoading}
               className="h-16 w-full rounded-3xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:active:scale-100"
             >
               {isLoading ? "Saving..." : "Save Changes"}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/refund-policy")}
+              className="h-12 w-full rounded-2xl bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all"
+            >
+              <RefreshCcw className="size-4" />
+              Refund &amp; Payment Policy
             </button>
           </div>
         </form>

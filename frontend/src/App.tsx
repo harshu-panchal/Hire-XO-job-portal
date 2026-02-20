@@ -31,6 +31,7 @@ import VehicleOptions from "./modules/auth/pages/VehicleOptions";
 import ResourceSignup from "./modules/auth/pages/ResourceSignup";
 import Terms from "./modules/auth/pages/Terms";
 import Privacy from "./modules/auth/pages/Privacy";
+import RefundPaymentPolicy from "./modules/shared/pages/RefundPaymentPolicy";
 
 
 // Employee Pages
@@ -298,6 +299,7 @@ function App() {
           <Route path="/signup/resource/:category" element={<ResourceSignup />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/refund-policy" element={<RefundPaymentPolicy />} />
           <Route path="/profile" element={<ProfileRedirect />} />
 
 

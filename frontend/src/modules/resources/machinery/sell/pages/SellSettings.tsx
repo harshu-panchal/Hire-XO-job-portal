@@ -21,8 +21,11 @@ interface SettingItemProps {
   action?: React.ReactNode;
 }
 
-const SettingItem = ({ icon: Icon, label, description, action }: SettingItemProps) => (
-  <div className="flex items-center gap-4 p-5 rounded-[2rem] bg-white border border-slate-200 group active:bg-slate-50 transition-colors shadow-sm">
+const SettingItem = ({ icon: Icon, label, description, action, onClick }: SettingItemProps & { onClick?: () => void }) => (
+  <div
+    onClick={onClick}
+    className={`flex items-center gap-4 p-5 rounded-[2rem] bg-white border border-slate-200 group transition-all shadow-sm ${onClick ? "cursor-pointer active:scale-[0.98] active:bg-slate-50" : ""}`}
+  >
     <div className="size-12 rounded-2xl bg-indigo-50 flex items-center justify-center border border-slate-100 group-hover:border-indigo-200 transition-all">
       <Icon className="size-6 text-slate-400 group-hover:text-indigo-600" />
     </div>
@@ -74,18 +77,22 @@ const SellSettings = () => {
     }
   };
 
-  const handlePresenceToggle = async () => {
+  const handlePresenceToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const next = !presence;
     setPresence(next);
-    const ok = await persistSettings({ machinerySellMarketPresence: next });
-    if (!ok) setPresence(!next);
+    persistSettings({ machinerySellMarketPresence: next }).then(ok => {
+      if (!ok) setPresence(!next);
+    });
   };
 
-  const handleAnalyticsToggle = async () => {
+  const handleAnalyticsToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const next = !analytics;
     setAnalytics(next);
-    const ok = await persistSettings({ machinerySellPublicAnalytics: next });
-    if (!ok) setAnalytics(!next);
+    persistSettings({ machinerySellPublicAnalytics: next }).then(ok => {
+      if (!ok) setAnalytics(!next);
+    });
   };
 
   return (
@@ -151,13 +158,20 @@ const SellSettings = () => {
             icon={UserRoundPen}
             label="KYC Documents"
             description="Manage merchant credentials"
+            onClick={() => navigate("/machinery/sell/profile")}
           />
           <SettingItem
             icon={Shield}
             label="Security Core"
             description="Protected 2FA & Login Vault"
+            onClick={() => navigate("/profile")}
           />
-          <SettingItem icon={History} label="Audit Logs" description="Listing & Inquiry history" />
+          <SettingItem
+            icon={History}
+            label="Audit Logs"
+            description="Listing & Inquiry history"
+            onClick={() => navigate("/machinery/sell/inventory")}
+          />
         </div>
       </div>
 
@@ -171,11 +185,13 @@ const SellSettings = () => {
             icon={CreditCard}
             label="Settlement Account"
             description="Bank details for asset sales"
+            onClick={() => navigate("/machinery/sell/profile")}
           />
           <SettingItem
             icon={Settings2}
             label="Listing Fees"
             description="Subscription and per-listing costs"
+            onClick={() => navigate("/resource-plans")}
           />
         </div>
       </div>
