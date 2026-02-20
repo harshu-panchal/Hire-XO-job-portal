@@ -51,19 +51,38 @@ const PlanSelection = ({ onPlanSelected, onBack }: PlanSelectionProps) => {
             return;
         }
 
-        // For paid plans, process subscription
+        // For paid plans, process subscription with Razorpay
         setIsProcessing(true);
         try {
-            toast.info("Processing payment...");
-            await subscriptionService.rechargeWallet(plan.price);
+            toast.info("Initializing subscription...");
+            const { subscriptionId, razorpayKeyId } = await subscriptionService.initializeRazorpaySubscription(plan.id || (plan as any)._id);
 
-            toast.info("Activating subscription...");
-            await purchaseSubscription(plan.id || (plan as any)._id);
+            const options = {
+                key: razorpayKeyId,
+                subscription_id: subscriptionId,
+                name: "HireXO",
+                description: `Subscription: ${plan.name}`,
+                handler: function (response: any) {
+                    toast.success("Payment successful! Your subscription will be activated shortly.");
+                    // Refresh auth state to get updated subscription
+                    const { checkAuth } = useAuthStore.getState();
+                    checkAuth();
+                    onPlanSelected();
+                },
+                prefill: {
+                    name: user?.name,
+                    email: user?.email,
+                    contact: user?.phoneNumber
+                },
+                theme: {
+                    color: "#3B82F6"
+                }
+            };
 
-            toast.success(`Successfully upgraded to ${plan.name}!`);
-            onPlanSelected();
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
         } catch (error: any) {
-            toast.error(error.message || "Failed to upgrade subscription");
+            toast.error(error.message || "Failed to initialize subscription");
         } finally {
             setIsProcessing(false);
         }

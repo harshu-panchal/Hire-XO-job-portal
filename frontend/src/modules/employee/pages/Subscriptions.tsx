@@ -41,19 +41,34 @@ const Subscriptions = () => {
 
     setIsProcessing(planId);
     try {
-      // For demo/simplicity, we might need to check balance first, 
-      // but let's assume the user has balance or the purchaseSubscription logic handles it.
-      // Based on previous code, we simulate payment then activate.
+      toast.info(`Initializing payment for ${plan.name}...`);
+      const { subscriptionId, razorpayKeyId } = await subscriptionService.initializeRazorpaySubscription(planId);
 
-      toast.info(`Processing payment for ${plan.name}...`);
+      const options = {
+        key: razorpayKeyId,
+        subscription_id: subscriptionId,
+        name: "HireXO",
+        description: `Certificate: ${plan.name}`,
+        handler: async function (response: any) {
+          toast.success("Payment successful! Your certificate will be activated shortly.");
+          // Refresh auth state to get updated subscription
+          const { checkAuth } = useAuthStore.getState();
+          await checkAuth();
+        },
+        prefill: {
+          name: user?.name,
+          email: user?.email,
+          contact: user?.phoneNumber
+        },
+        theme: {
+          color: "#3B82F6"
+        }
+      };
 
-      // In a real flow, we'd recharge if needed, but here we just call purchase.
-      // Assuming purchaseSubscription in useAuthStore handles the API call and state update.
-      await purchaseSubscription(planId);
-
-      toast.success(`Successfully activated ${plan.name}!`);
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
     } catch (error: any) {
-      toast.error(error.message || "Failed to purchase certificate");
+      toast.error(error.message || "Failed to initialize payment");
     } finally {
       setIsProcessing(null);
     }

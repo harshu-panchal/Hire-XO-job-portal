@@ -13,6 +13,9 @@ export interface IUser extends Document {
     subscriptionExpiry?: Date;
     interviewTierId?: string;
     interviewTierExpiry?: Date;
+    razorpayCustomerId?: string;
+    razorpaySubscriptionId?: string;
+    subscriptionStatus?: 'none' | 'created' | 'active' | 'authenticated' | 'cancelled' | 'expired' | 'pending';
     bookmarks: mongoose.Types.ObjectId[];
     profile: {
         bio?: string;
@@ -71,6 +74,13 @@ const UserSchema: Schema = new Schema({
     subscriptionExpiry: { type: Date },
     interviewTierId: { type: String },
     interviewTierExpiry: { type: Date },
+    razorpayCustomerId: { type: String },
+    razorpaySubscriptionId: { type: String },
+    subscriptionStatus: {
+        type: String,
+        enum: ['none', 'created', 'active', 'authenticated', 'cancelled', 'expired', 'pending'],
+        default: 'none'
+    },
     bookmarks: [{ type: Schema.Types.ObjectId, default: [] }],
     // Extended profile fields
     profile: {

@@ -99,4 +99,16 @@ export const subscriptionService = {
       throw new Error(getErrorMessage(error));
     }
   },
+
+  /**
+   * Initialize Razorpay subscription
+   */
+  async initializeRazorpaySubscription(planId: string): Promise<{ success: boolean; subscriptionId: string; razorpayKeyId: string }> {
+    try {
+      const response = await apiClient.post("/payments/subscribe", { planId });
+      return response.data;
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
+  },
 };

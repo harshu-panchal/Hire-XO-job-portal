@@ -29,6 +29,7 @@ import promotionRoutes from './routes/promotion.routes';
 import promotionPlanRoutes from './routes/promotion-plan.routes';
 import walletRoutes from './routes/wallet.routes';
 import interviewTierRoutes from './routes/interview-tier.routes';
+import paymentRoutes from './routes/payment.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 
@@ -91,6 +92,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/promotion-plans', promotionPlanRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/interview-tiers', interviewTierRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Serve static files from uploads directory
 
