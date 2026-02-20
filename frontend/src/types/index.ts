@@ -147,6 +147,9 @@ export interface User {
   interviewTierExpiry?: string | Date;
   status?: "active" | "suspended" | "banned";
   bookmarks?: string[];
+  age?: number | string;
+  experience?: any;
+  education?: any;
 }
 
 export interface EmployerSignupData {
@@ -219,7 +222,8 @@ export interface UserProfile {
   bio?: string;
   skills?: string[];
   experience?: Array<{ company: string; role: string; period: string }> | any; // Updated to any to fix build error
-  education?: Array<{ school: string; degree: string; period: string }>;
+  education?: Array<{ school: string; degree: string; period: string }> | any;
+  age?: number | string;
   githubUrl?: string;
   linkedinUrl?: string;
   twitterUrl?: string;

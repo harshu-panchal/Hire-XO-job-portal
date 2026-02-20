@@ -7,7 +7,7 @@ import User from '../models/user.model';
  */
 export const saveToken = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { token } = req.body;
+        const { token, platform } = req.body;
         const userId = (req as any).user?.id;
 
         if (!userId) {
@@ -20,14 +20,18 @@ export const saveToken = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // Add token to user's fcmTokens array if not already present
+        // Determine which field to use
+        const tokenField = platform === 'mobile' ? 'mobileFcmTokens' : 'fcmTokens';
+
+        // Add token to the appropriate array if not already present
         await User.findByIdAndUpdate(
             userId,
-            { $addToSet: { fcmTokens: token } },
+            { $addToSet: { [tokenField]: token } },
             { new: true }
         );
 
-        res.json({ success: true, message: 'FCM token saved successfully' });
+        console.log(`FCM: Saved ${platform || 'web'} token for user ${userId}`);
+        res.json({ success: true, message: `FCM ${platform || 'web'} token saved successfully` });
     } catch (error: any) {
         console.error('Error saving FCM token:', error);
         res.status(500).json({
@@ -43,7 +47,7 @@ export const saveToken = async (req: Request, res: Response): Promise<void> => {
  */
 export const removeToken = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { token } = req.body;
+        const { token, platform } = req.body;
         const userId = (req as any).user?.id;
 
         if (!userId) {
@@ -56,14 +60,18 @@ export const removeToken = async (req: Request, res: Response): Promise<void> =>
             return;
         }
 
-        // Remove token from user's fcmTokens array
+        // Determine which field to use
+        const tokenField = platform === 'mobile' ? 'mobileFcmTokens' : 'fcmTokens';
+
+        // Remove token from the appropriate array
         await User.findByIdAndUpdate(
             userId,
-            { $pull: { fcmTokens: token } },
+            { $pull: { [tokenField]: token } },
             { new: true }
         );
 
-        res.json({ success: true, message: 'FCM token removed successfully' });
+        console.log(`FCM: Removed ${platform || 'web'} token for user ${userId}`);
+        res.json({ success: true, message: `FCM ${platform || 'web'} token removed successfully` });
     } catch (error: any) {
         console.error('Error removing FCM token:', error);
         res.status(500).json({
@@ -143,6 +151,8 @@ export const sendNotification = async (req: Request, res: Response): Promise<voi
 
         const successCount = results.filter(r => r.status === 'fulfilled').length;
         const failureCount = results.filter(r => r.status === 'rejected').length;
+
+        console.log(`FCM: Manual send to user ${userId} results: Total=${user.fcmTokens.length}, Success=${successCount}, Failed=${failureCount}`);
 
         res.json({
             success: true,
@@ -254,6 +264,68 @@ export const sendBulkNotification = async (req: Request, res: Response): Promise
         res.status(500).json({
             success: false,
             message: 'Failed to send bulk notification',
+            error: error.message
+        });
+    }
+};
+/**
+ * Send test push notification to the currently authenticated user
+ */
+export const sendTestNotification = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { token, platform } = req.body;
+        const userId = (req as any).user?.id;
+        const user = await User.findById(userId);
+
+        if (!user) {
+            res.status(404).json({ success: false, message: 'User not found' });
+            return;
+        }
+
+        // Import the centralized utility here to avoid circular dependencies if any
+        const { sendNotification: sendUtil } = require('../utils/notification.util');
+
+        const notificationData = {
+            userId: user._id.toString(),
+            title: `Test Notification (${platform || 'Web'}) 🔔`,
+            message: 'Congratulations! Your push notification system is working perfectly.',
+            type: 'success' as const,
+            data: {
+                action: 'test_push',
+                platform: platform || 'unknown',
+                timestamp: new Date().toISOString()
+            }
+        };
+
+        if (token) {
+            // Test specifically to the provided token
+            console.log(`FCM: Sending direct test to token: ${token.substring(0, 10)}... (Platform: ${platform})`);
+
+            const { firebaseAdmin: app } = require('../config/firebaseAdmin');
+            if (!app) throw new Error('Firebase Admin app not initialized');
+
+            await app.messaging().send({
+                notification: {
+                    title: notificationData.title,
+                    body: notificationData.message,
+                },
+                data: notificationData.data,
+                token: token,
+                android: { priority: 'high' as const },
+                apns: { headers: { 'apns-priority': '10' } }
+            });
+
+            res.json({ success: true, message: `Test notification sent directly to provided ${platform || ''} token` });
+        } else {
+            // Existing behavior: send to all user tokens
+            await sendUtil(notificationData);
+            res.json({ success: true, message: 'Test notification triggered for all your registered devices' });
+        }
+    } catch (error: any) {
+        console.error('Error sending test notification:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to trigger test notification',
             error: error.message
         });
     }

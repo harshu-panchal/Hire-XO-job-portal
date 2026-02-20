@@ -1,6 +1,6 @@
 import { getToken, onMessage } from 'firebase/messaging';
 import { messaging } from '../firebase';
-import axios from 'axios';
+import apiClient from './apiConfig';
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
@@ -21,13 +21,31 @@ export const requestNotificationPermission = async (): Promise<string | null> =>
         if (permission === 'granted') {
             console.log('Notification permission granted.');
 
+            // Construct service worker URL with config parameters to avoid hardcoding keys in the public file
+            const swConfig = {
+                apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+                authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+                projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+                storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+                messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+                appId: import.meta.env.VITE_FIREBASE_APP_ID,
+            };
+
+            const swUrl = `/firebase-messaging-sw.js?${new URLSearchParams(swConfig).toString()}`;
+
+            // Register foreground service worker
+            const registration = await navigator.serviceWorker.register(swUrl, {
+                scope: '/',
+            });
+
             // Get FCM token
             const token = await getToken(messaging, {
                 vapidKey: VAPID_KEY,
+                serviceWorkerRegistration: registration,
             });
 
             if (token) {
-                console.log('FCM Token:', token);
+                console.log('FCM Token retrieved');
                 return token;
             } else {
                 console.log('No registration token available.');
@@ -52,14 +70,9 @@ export const requestNotificationPermission = async (): Promise<string | null> =>
  */
 export const saveFCMToken = async (token: string): Promise<void> => {
     try {
-        const response = await axios.post(
-            '/api/notifications/save-token',
-            { token },
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-            }
+        const response = await apiClient.post(
+            '/notifications/save-token',
+            { token, platform: 'web' }
         );
 
         if (response.data.success) {
@@ -95,9 +108,11 @@ export const setupForegroundMessageListener = (
             } else {
                 // Default: show browser notification
                 if (Notification.permission === 'granted') {
+                    const notificationId = payload.data?.notificationId;
                     new Notification(title || 'New Message', {
                         body: body || '',
-                        icon: '/logo pngg.png',
+                        icon: '/logo.png',
+                        tag: notificationId || undefined,
                     });
                 }
             }

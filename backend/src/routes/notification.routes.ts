@@ -66,4 +66,10 @@ router.post(
     notificationController.sendBulkNotification
 );
 
+router.post(
+    '/test-push',
+    authenticateToken,
+    notificationController.sendTestNotification
+);
+
 export default router;

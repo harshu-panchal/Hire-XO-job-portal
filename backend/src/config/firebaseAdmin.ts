@@ -26,8 +26,8 @@ try {
     // 2. Fallback to service account key file
     if (!serviceAccount) {
         // Use absolute path for consistency
-        const absoluteKeyPath = path.isAbsolute(serviceAccountPath) 
-            ? serviceAccountPath 
+        const absoluteKeyPath = path.isAbsolute(serviceAccountPath)
+            ? serviceAccountPath
             : path.resolve(process.cwd(), serviceAccountPath);
 
         if (fs.existsSync(absoluteKeyPath)) {
@@ -42,6 +42,13 @@ try {
 
     // 3. Initialize Firebase if credentials found
     if (serviceAccount) {
+        // Sanitize private key - handle both literal newlines and escaped versions
+        if (serviceAccount.private_key) {
+            serviceAccount.private_key = serviceAccount.private_key
+                .replace(/\\n/g, '\n')
+                .trim();
+        }
+
         firebaseAdmin = admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
         });
