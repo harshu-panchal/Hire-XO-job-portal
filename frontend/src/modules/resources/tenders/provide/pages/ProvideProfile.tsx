@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Building2,
   MapPin,
@@ -13,11 +14,13 @@ import {
   X,
   Save,
   Loader2,
+  RefreshCcw,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 
 const ProvideProfile = () => {
+  const navigate = useNavigate();
   const { user, updateProfile } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -277,6 +280,24 @@ const ProvideProfile = () => {
           </div>
         </div>
       </div>
+
+      <div className="h-4" />
+
+      {/* Refund & Payment Policy */}
+      <button
+        onClick={() => navigate("/refund-policy")}
+        className="w-full flex items-center justify-between p-5 bg-white rounded-[2rem] border border-slate-200 shadow-sm active:scale-95 transition-all"
+      >
+        <div className="flex items-center gap-4">
+          <div className="size-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+            <RefreshCcw className="size-6 text-emerald-600" />
+          </div>
+          <span className="text-sm font-black tracking-tight">Refund &amp; Payment Policy</span>
+        </div>
+        <div className="size-8 rounded-xl bg-slate-100 flex items-center justify-center">
+          <MapPin className="size-4 text-slate-400 rotate-[-90deg]" />
+        </div>
+      </button>
 
       <div className="h-4" />
     </div>

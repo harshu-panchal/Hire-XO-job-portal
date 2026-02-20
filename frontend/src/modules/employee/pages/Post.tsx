@@ -1,19 +1,15 @@
 import { useState, useEffect } from "react";
-import { Send, MoreHorizontal, Phone, Mail, Lock, ShieldCheck, Plus, Trash2 } from "lucide-react";
+import { Send, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/useAuthStore";
 import { postService, type Post as IPost } from "@/services/postService";
 import { formatDistanceToNow } from "date-fns";
-import { Link } from "react-router-dom";
 
 const Post = () => {
     const { user } = useAuthStore();
     const [postContent, setPostContent] = useState("");
-    const [contactEmail, setContactEmail] = useState("");
-    const [contactPhone, setContactPhone] = useState("");
-    const [resume, setResume] = useState<File | null>(null);
     const [posts, setPosts] = useState<IPost[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isPosting, setIsPosting] = useState(false);
@@ -41,36 +37,17 @@ const Post = () => {
         try {
             setIsPosting(true);
 
-            let resumeUrl: string | undefined = undefined;
-
-            // Upload resume if selected
-            if (resume) {
-                try {
-                    const uploadResult = await postService.uploadMedia(resume);
-                    resumeUrl = uploadResult.url;
-                } catch (uploadError) {
-                    console.error("Failed to upload resume:", uploadError);
-                    toast.error("Failed to upload file. Please try again.");
-                    setIsPosting(false);
-                    return;
-                }
-            }
-
             await postService.createPost(
                 postContent,
                 undefined, // contactDetail
                 undefined, // images
-                contactEmail || undefined,
-                contactPhone || undefined,
-                resumeUrl
+                undefined, // email
+                undefined, // phone
+                undefined  // resume
             );
 
             setPostContent("");
-            setContactEmail("");
-            setContactPhone("");
-            setResume(null);
             toast.success("Post created successfully!");
-            // Refresh feed
             fetchPosts();
         } catch (error) {
             console.error("Failed to create post:", error);
@@ -112,96 +89,32 @@ const Post = () => {
                         </div>
 
                         <Card className="border-slate-200 shadow-xl rounded-[2.5rem] overflow-hidden bg-white">
-                            <div className="grid md:grid-cols-2">
-                                {/* Section 1: Contact Info */}
-                                <div className="p-8 bg-primary/5 border-r border-slate-100">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="size-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                                            <ShieldCheck className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-sm font-black uppercase tracking-widest text-slate-700">Contact Info</h3>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Protected details</p>
-                                        </div>
+                            <div className="p-8 flex flex-col">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="size-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                                        <Send className="w-5 h-5" />
                                     </div>
-
-                                    <div className="space-y-4">
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Email Address</label>
-                                            <div className="relative">
-                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300" />
-                                                <input
-                                                    type="email"
-                                                    value={contactEmail}
-                                                    onChange={(e) => setContactEmail(e.target.value)}
-                                                    placeholder="your@email.com"
-                                                    className="w-full bg-white border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Phone Number</label>
-                                            <div className="relative">
-                                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-300" />
-                                                <input
-                                                    type="tel"
-                                                    value={contactPhone}
-                                                    onChange={(e) => setContactPhone(e.target.value)}
-                                                    placeholder="+91 XXXXX XXXXX"
-                                                    className="w-full bg-white border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-sm font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-1.5 pt-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Upload Resume</label>
-                                            <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-2xl bg-white hover:bg-slate-50 transition-colors cursor-pointer group">
-                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                    <Plus className="size-5 text-slate-300 group-hover:text-primary transition-colors mb-1" />
-                                                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest group-hover:text-primary transition-colors">
-                                                        {resume ? resume.name : "Select PDF/Doc"}
-                                                    </p>
-                                                </div>
-                                                <input
-                                                    type="file"
-                                                    className="hidden"
-                                                    accept=".pdf,.doc,.docx"
-                                                    onChange={(e) => setResume(e.target.files?.[0] || null)}
-                                                />
-                                            </label>
-                                        </div>
+                                    <div>
+                                        <h3 className="text-sm font-black uppercase tracking-widest text-slate-700">Write Update</h3>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Share with community</p>
                                     </div>
                                 </div>
 
-                                {/* Section 2: Post Content */}
-                                <div className="p-8 flex flex-col">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="size-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
-                                            <Send className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-sm font-black uppercase tracking-widest text-slate-700">Write Update</h3>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Share with community</p>
-                                        </div>
-                                    </div>
+                                <textarea
+                                    value={postContent}
+                                    onChange={(e) => setPostContent(e.target.value)}
+                                    placeholder="Broadcast your update here..."
+                                    className="flex-1 w-full bg-slate-50 border border-slate-100 rounded-3xl p-5 text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[150px] resize-none"
+                                />
 
-                                    <textarea
-                                        value={postContent}
-                                        onChange={(e) => setPostContent(e.target.value)}
-                                        placeholder="Broadcast your update here..."
-                                        className="flex-1 w-full bg-slate-50 border border-slate-100 rounded-3xl p-5 text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none transition-all min-h-[150px] resize-none"
-                                    />
-
-                                    <div className="mt-6 flex items-center justify-center">
-                                        <Button
-                                            onClick={handleCreatePost}
-                                            disabled={!postContent.trim() || isPosting}
-                                            className="h-12 px-8 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25 disabled:opacity-50 active:scale-95 transition-all"
-                                        >
-                                            {isPosting ? "Publishing..." : "Post Now"}
-                                        </Button>
-                                    </div>
+                                <div className="mt-6 flex items-center justify-center">
+                                    <Button
+                                        onClick={handleCreatePost}
+                                        disabled={!postContent.trim() || isPosting}
+                                        className="h-12 px-8 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25 disabled:opacity-50 active:scale-95 transition-all"
+                                    >
+                                        {isPosting ? "Publishing..." : "Post Now"}
+                                    </Button>
                                 </div>
                             </div>
                         </Card>
@@ -267,98 +180,9 @@ const Post = () => {
                                     </div>
                                 </div>
 
-                                <p className="text-slate-700 text-sm leading-relaxed mb-4 whitespace-pre-wrap">
+                                <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
                                     {post.content}
                                 </p>
-
-                                {/* Custom Contact Detail Block */}
-                                {post.contactDetail && (
-                                    <div className="mb-4 p-4 bg-primary/5 rounded-2xl border border-primary/10 border-l-4 border-l-primary relative overflow-hidden group">
-                                        <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-widest mb-2">
-                                            <ShieldCheck className={`w-4 h-4 ${post.userId.isContactHidden ? 'animate-pulse' : ''}`} />
-                                            Direct Contact Detail
-                                        </div>
-                                        <p className={`text-sm font-bold transition-all duration-500 ${post.userId.isContactHidden ? 'blur-sm select-none text-slate-400' : 'text-slate-800'}`}>
-                                            {post.contactDetail}
-                                        </p>
-
-                                        {post.userId.isContactHidden && (
-                                            <div className="mt-3 flex items-center gap-3">
-                                                <Link
-                                                    to={user?.role === 'employee' ? '/payments' : '/employer/subscription'}
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-lg text-[10px] font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
-                                                >
-                                                    <Lock className="w-3 h-3" />
-                                                    SUBSCRIBE TO REVEAL
-                                                </Link>
-                                                <p className="text-[9px] text-slate-400 font-bold italic">
-                                                    Protection active for this worker
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {/* Redesigned Contact Plate for Feed */}
-                                {(post.email || post.phoneNumber || post.resume || post.contactDetail) && (
-                                    <div className="mb-4 p-5 bg-slate-50 rounded-[2rem] border border-slate-100 flex flex-wrap gap-4">
-                                        {post.email && (
-                                            <div className="flex items-center gap-2">
-                                                <div className="size-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
-                                                    <Mail className="w-3.5 h-3.5 text-slate-400" />
-                                                </div>
-                                                <span className={`text-[10px] uppercase tracking-widest font-black ${post.userId.isContactHidden ? "text-slate-300 italic" : "text-slate-600"}`}>
-                                                    {post.email}
-                                                </span>
-                                            </div>
-                                        )}
-                                        {post.phoneNumber && (
-                                            <div className="flex items-center gap-2">
-                                                <div className="size-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
-                                                    <Phone className="w-3.5 h-3.5 text-slate-400" />
-                                                </div>
-                                                <span className={`text-[10px] uppercase tracking-widest font-black ${post.userId.isContactHidden ? "text-slate-300 italic" : "text-slate-600"}`}>
-                                                    {post.phoneNumber}
-                                                </span>
-                                            </div>
-                                        )}
-                                        {post.resume && (
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="size-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                                                    </div>
-                                                    {post.resume && post.resume.startsWith('http') ? (
-                                                        <a
-                                                            href={post.resume}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className={`text-[10px] uppercase tracking-widest font-black hover:underline ${post.userId.isContactHidden ? "text-slate-300 italic pointer-events-none" : "text-emerald-700"}`}
-                                                        >
-                                                            View Resume
-                                                        </a>
-                                                    ) : (
-                                                        <span className={`text-[10px] uppercase tracking-widest font-black ${post.userId.isContactHidden ? "text-slate-300 italic" : "text-emerald-700"}`}>
-                                                            Resume Available
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {post.userId.isContactHidden && (
-                                            <div className="w-full pt-2 mt-2 border-t border-slate-200/50">
-                                                <Link
-                                                    to={user?.role === 'employee' ? '/payments' : '/employer/subscription'}
-                                                    className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-primary hover:text-primary/80 transition-colors"
-                                                >
-                                                    <Lock className="w-3 h-3" />
-                                                    Unlock Full Contact Info
-                                                </Link>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
 
                             </Card>
                         ))
@@ -370,8 +194,8 @@ const Post = () => {
                         </div>
                     )}
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
 

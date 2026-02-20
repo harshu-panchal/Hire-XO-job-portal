@@ -103,7 +103,7 @@ const PostMachine = () => {
   };
 
   return (
-    <div className="py-6 space-y-8 select-none bg-slate-50 min-h-screen text-slate-900 mb-24">
+    <div className="py-6 space-y-8 select-none bg-slate-50 min-h-screen text-slate-900 pb-32">
       {/* Nav Bar */}
       <div className="flex items-center justify-between px-1">
         <button
@@ -394,7 +394,7 @@ const PostMachine = () => {
       </div>
 
       {/* Sticky Navigation Footer */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-40 pointer-events-none">
+      <div className="fixed bottom-24 left-0 right-0 p-6 flex justify-center z-50 pointer-events-none">
         <div className="w-full max-w-[430px] flex gap-3 pointer-events-auto">
           {step > 1 && (
             <button

@@ -145,17 +145,14 @@ const PostJob = () => {
           <div className="grid grid-cols-1 gap-4">
             <div className="relative group">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 mb-1.5 block">Job Category</label>
-              <select
+              <input
+                type="text"
+                placeholder="e.g. Development, Design, Marketing..."
+                required
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black appearance-none"
-              >
-                <option>Development</option>
-                <option>Design</option>
-                <option>Marketing</option>
-                <option>Sales</option>
-                <option>Logistics</option>
-              </select>
+                className="w-full h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 focus:border-primary/30 focus:ring-0 transition-all text-sm font-black"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
