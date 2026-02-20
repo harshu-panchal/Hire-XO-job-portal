@@ -61,8 +61,16 @@ const limiter = rateLimit({
 
 
 
+// Debug log to confirm app.ts is loaded
+console.log('Mounting routes in app.ts...');
+
 // Apply rate limiter to all API routes
 app.use('/api/', limiter);
+
+// Debug ping route
+app.get('/api/debug-ping', (req, res) => {
+    res.json({ message: 'pong', timestamp: new Date() });
+});
 
 app.use('/api/promotions', promotionRoutes);
 app.use('/api/notifications', notificationRoutes);
