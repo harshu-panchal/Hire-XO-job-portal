@@ -34,7 +34,6 @@ const ResourcePlans = () => {
 
     const handlePurchase = async (plan: SubscriptionPlan) => {
         if (!user) {
-            // If guest, we should probably send them to resource signup or login
             toast.info("Please login or signup as a resource to subscribe");
             navigate("/login/resource");
             return;
@@ -45,11 +44,34 @@ const ResourcePlans = () => {
 
         setIsProcessing(planId);
         try {
-            toast.info(`Processing subscription for ${plan.name}...`);
-            await purchaseSubscription(planId);
-            toast.success(`Successfully subscribed to ${plan.name}!`);
+            toast.info(`Initializing subscription for ${plan.name}...`);
+            const { subscriptionId, razorpayKeyId } = await subscriptionService.initializeRazorpaySubscription(planId);
+
+            const options = {
+                key: razorpayKeyId,
+                subscription_id: subscriptionId,
+                name: "HireXO",
+                description: `Resource Plan: ${plan.name}`,
+                handler: async function (response: any) {
+                    toast.success("Payment successful! Your plan will be activated shortly.");
+                    // Refresh auth state to get updated subscription
+                    const { checkAuth } = useAuthStore.getState();
+                    await checkAuth();
+                },
+                prefill: {
+                    name: user?.name,
+                    email: user?.email,
+                    contact: user?.phoneNumber
+                },
+                theme: {
+                    color: "#3B82F6"
+                }
+            };
+
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
         } catch (error: any) {
-            toast.error(error.message || "Failed to purchase subscription");
+            toast.error(error.message || "Failed to initialize payment");
         } finally {
             setIsProcessing(null);
         }

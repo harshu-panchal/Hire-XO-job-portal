@@ -19,6 +19,7 @@ export default function ResourcePlansAdmin() {
         durationDays: "30",
         description: "",
         features: "",
+        razorpayPlanId: "",
     });
 
     const fetchPlans = async () => {
@@ -46,6 +47,7 @@ export default function ResourcePlansAdmin() {
                 durationDays: editingPlan.durationDays.toString(),
                 description: editingPlan.description,
                 features: editingPlan.features.join("\n"),
+                razorpayPlanId: editingPlan.razorpayPlanId || "",
             });
         } else {
             setFormData({
@@ -54,6 +56,7 @@ export default function ResourcePlansAdmin() {
                 durationDays: "30",
                 description: "",
                 features: "",
+                razorpayPlanId: "",
             });
         }
     }, [editingPlan, showModal]);
@@ -91,6 +94,7 @@ export default function ResourcePlansAdmin() {
             durationDays: parseInt(formData.durationDays),
             description: formData.description,
             features: featuresArray,
+            razorpayPlanId: formData.razorpayPlanId,
             type: 'resource'
         };
 
@@ -281,6 +285,16 @@ export default function ResourcePlansAdmin() {
                                     onChange={(e) => setFormData({ ...formData, features: e.target.value })}
                                     className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm resize-none"
                                     placeholder="Full Tender Access&#10;Verified Badge&#10;5 Free Contacts"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-slate-500 uppercase tracking-wider ml-1">Razorpay Plan ID</label>
+                                <input
+                                    type="text"
+                                    value={formData.razorpayPlanId}
+                                    onChange={(e) => setFormData({ ...formData, razorpayPlanId: e.target.value })}
+                                    className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all shadow-sm"
+                                    placeholder="e.g. plan_Nxxx"
                                 />
                             </div>
                             <div className="flex gap-4 mt-10">

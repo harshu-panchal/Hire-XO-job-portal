@@ -32,6 +32,7 @@ export interface SubscriptionPlan {
   features: string[];
   type: 'job-seeker' | 'employer' | 'resource';
   isActive?: boolean;
+  razorpayPlanId?: string;
 }
 
 export interface Certificate {

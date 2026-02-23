@@ -19,6 +19,7 @@ export default function EmployerPlans() {
     durationDays: "30",
     description: "",
     features: "",
+    razorpayPlanId: "",
   });
 
   const fetchPlans = async () => {
@@ -47,6 +48,7 @@ export default function EmployerPlans() {
         durationDays: editingPlan.durationDays.toString(),
         description: editingPlan.description,
         features: editingPlan.features.join("\n"),
+        razorpayPlanId: editingPlan.razorpayPlanId || "",
       });
     } else {
       setFormData({
@@ -55,6 +57,7 @@ export default function EmployerPlans() {
         durationDays: "30",
         description: "",
         features: "",
+        razorpayPlanId: "",
       });
     }
   }, [editingPlan, showModal]);
@@ -92,6 +95,7 @@ export default function EmployerPlans() {
       durationDays: parseInt(formData.durationDays),
       description: formData.description,
       features: featuresArray,
+      razorpayPlanId: formData.razorpayPlanId,
       type: 'employer'
     };
 
@@ -268,6 +272,16 @@ export default function EmployerPlans() {
                   onChange={(e) => setFormData({ ...formData, features: e.target.value })}
                   className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                   placeholder="Feature 1&#10;Feature 2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Razorpay Plan ID</label>
+                <input
+                  type="text"
+                  value={formData.razorpayPlanId}
+                  onChange={(e) => setFormData({ ...formData, razorpayPlanId: e.target.value })}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  placeholder="e.g. plan_Nxxx"
                 />
               </div>
               <div className="flex gap-3 mt-6">

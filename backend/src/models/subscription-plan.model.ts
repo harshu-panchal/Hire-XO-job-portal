@@ -10,6 +10,7 @@ export interface ISubscriptionPlan extends Document {
     certificateEligible?: boolean;
     maxScheduleDays?: number;
     isActive: boolean;
+    razorpayPlanId?: string;
 }
 
 const SubscriptionPlanSchema: Schema = new Schema({
@@ -21,7 +22,8 @@ const SubscriptionPlanSchema: Schema = new Schema({
     type: { type: String, enum: ['job-seeker', 'employer', 'resource'], default: 'employer' },
     certificateEligible: { type: Boolean, default: true },
     maxScheduleDays: { type: Number, min: 1 },
-    isActive: { type: Boolean, default: true }
+    isActive: { type: Boolean, default: true },
+    razorpayPlanId: { type: String }
 }, { timestamps: true });
 
 export default mongoose.model<ISubscriptionPlan>('SubscriptionPlan', SubscriptionPlanSchema);
