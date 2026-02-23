@@ -156,17 +156,13 @@ const PostVehicle = () => {
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
                   Category
                 </label>
-                <select
+                <input
                   value={vehicleCategory}
                   onChange={(e) => setVehicleCategory(e.target.value)}
-                  className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all font-sans appearance-none"
-                >
-                  <option>Commercial (Trucks/Vans)</option>
-                  <option>Sedan</option>
-                  <option>SUV</option>
-                  <option>Luxury</option>
-                  <option>Electric</option>
-                </select>
+                  type="text"
+                  placeholder="e.g. Commercial (Trucks/Vans)"
+                  className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all font-sans"
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">

@@ -203,18 +203,14 @@ const PostTender = () => {
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
                     Category
                   </label>
-                  <select
+                  <input
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none appearance-none"
-                  >
-                    <option>Civil Works</option>
-                    <option>IT Services</option>
-                    <option>Healthcare</option>
-                    <option>Logistics</option>
-                    <option>Electrical</option>
-                  </select>
+                    type="text"
+                    placeholder="e.g. Civil Works"
+                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none"
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
