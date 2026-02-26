@@ -122,34 +122,7 @@ const PostJob = () => {
   };
 
 
-  const handlePostDummyJobs = async () => {
-    setLoading(true);
-    try {
-      for (let i = 1; i <= 10; i++) {
-        const titleText = `java ${i}`;
-        await jobService.createJob({
-          title: titleText,
-          category: "Development",
-          type: "Full-time" as any,
-          location: "Remote",
-          salary: "10 - 20 LPA",
-          minSalary: 10,
-          maxSalary: 20,
-          experience: 2,
-          vacancies: 5,
-          description: `This is a dummy job description for ${titleText}. The description needs to be at least 10 characters long.`,
-          requirements: ["Java", "Spring Boot", "SQL"],
-          responsibilities: [],
-        });
-      }
-      alert("Successfully posted 10 Java dummy jobs!");
-    } catch (error: any) {
-      console.error("Failed to post 10 dummy jobs", error);
-      alert("Failed to post 10 dummy jobs.");
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   if (step === 3) {
     return (
@@ -189,16 +162,7 @@ const PostJob = () => {
         <div className="size-11" /> {/* Spacer */}
       </div>
 
-      <div className="px-5 mt-4">
-        <button
-          type="button"
-          disabled={loading}
-          onClick={handlePostDummyJobs}
-          className="h-12 w-full rounded-2xl bg-amber-500 text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-amber-500/20 active:scale-95 transition-all"
-        >
-          {loading ? "Posting..." : "Post 10 Dummy Jobs (Java)"}
-        </button>
-      </div>
+
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-8">
         <div className="space-y-6">
