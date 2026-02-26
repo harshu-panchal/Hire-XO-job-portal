@@ -69,6 +69,9 @@ export class PromotionSortingUtil {
                             { $arrayElemAt: ['$activePromotion.startDate', 0] },
                             new Date(0)
                         ]
+                    },
+                    sortDate: {
+                        $ifNull: ['$postedAt', '$createdAt']
                     }
                 }
             },
@@ -80,7 +83,7 @@ export class PromotionSortingUtil {
                     isPromoted: -1,              // Promoted items first
                     promotionPriority: -1,       // Higher priority first
                     promotionStartDate: -1,      // Newer promotions first
-                    createdAt: -1                // Fallback to creation date
+                    sortDate: -1                 // Fallback to posting/creation date
                 }
             }
         ];
@@ -93,7 +96,7 @@ export class PromotionSortingUtil {
                     isPromoted: -1,
                     promotionPriority: -1,
                     promotionStartDate: -1,
-                    createdAt: 1  // Oldest first for non-promoted
+                    sortDate: 1   // Oldest first for non-promoted
                 }
             });
         } else if (userSort === 'title') {
@@ -117,7 +120,8 @@ export class PromotionSortingUtil {
                 activePromotion: 0,
                 isPromoted: 0,
                 promotionPriority: 0,
-                promotionStartDate: 0
+                promotionStartDate: 0,
+                sortDate: 0
             }
         });
 
