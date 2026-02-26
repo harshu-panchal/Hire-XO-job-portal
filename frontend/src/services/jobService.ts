@@ -13,6 +13,7 @@ export interface JobFilters {
   salary?: string;
   category?: string;
   search?: string;
+  limit?: number;
 }
 
 export const jobService = {
@@ -21,8 +22,9 @@ export const jobService = {
    */
   async getAllJobs(filters?: JobFilters): Promise<Job[]> {
     try {
+      const mergedFilters = { limit: 1000, ...filters };
       const response = await apiClient.get<any>("/jobs", {
-        params: filters,
+        params: mergedFilters,
       });
       const jobs = response.data.data || [];
       return jobs.map((job: any) => ({
@@ -91,7 +93,9 @@ export const jobService = {
    */
   async getMyListings(): Promise<Job[]> {
     try {
-      const response = await apiClient.get<any>("/jobs/my-listings");
+      const response = await apiClient.get<any>("/jobs/my-listings", {
+        params: { limit: 1000 }
+      });
       const jobs = response.data.data || [];
       return jobs.map((job: any) => ({
         ...job,
