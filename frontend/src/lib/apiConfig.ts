@@ -142,6 +142,10 @@ apiClient.interceptors.response.use(
  * Supports new standardized format: { message, errors: [{field, message}] }
  */
 export const getErrorMessage = (error: any): string => {
+  const fieldErrors = error.response?.data?.errors;
+  if (Array.isArray(fieldErrors) && fieldErrors.length > 0 && fieldErrors[0]?.message) {
+    return fieldErrors[0].message;
+  }
   if (error.response?.data?.message) {
     return error.response.data.message;
   }

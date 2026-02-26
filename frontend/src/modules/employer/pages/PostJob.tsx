@@ -58,28 +58,64 @@ const PostJob = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const min = formData.minSalary ? `${formData.minSalary}` : "0";
-      const max = formData.maxSalary ? `${formData.maxSalary}` : "0";
+      const title = formData.title.trim();
+      const category = formData.category.trim();
+      const location = formData.location.trim();
+      const description = formData.description.trim();
+      const requirements = formData.requirements.map((r) => r.trim()).filter((r) => r !== "");
+
+      const minSalary = Number(formData.minSalary);
+      const maxSalary = Number(formData.maxSalary);
+      const experience = Number(formData.experience);
+      const vacancies = Number(formData.vacancies);
+
+      if (description.length < 10) {
+        alert("Job description must be at least 10 characters.");
+        return;
+      }
+      if (requirements.length < 1) {
+        alert("Please add at least one required skill.");
+        return;
+      }
+      if (!Number.isFinite(minSalary) || !Number.isFinite(maxSalary)) {
+        alert("Please enter valid salary values.");
+        return;
+      }
+      if (minSalary > maxSalary) {
+        alert("Minimum salary cannot be greater than maximum salary.");
+        return;
+      }
+      if (!Number.isFinite(experience) || experience < 0) {
+        alert("Please enter valid required experience.");
+        return;
+      }
+      if (!Number.isFinite(vacancies) || vacancies < 1) {
+        alert("Please enter at least 1 vacancy.");
+        return;
+      }
+
+      const min = `${minSalary}`;
+      const max = `${maxSalary}`;
       const salaryString = `${min} - ${max} LPA`;
 
       await jobService.createJob({
-        title: formData.title,
-        category: formData.category,
+        title,
+        category,
         type: formData.type as any,
-        location: formData.location,
+        location,
         salary: salaryString, // Backward compatibility
-        minSalary: Number(formData.minSalary),
-        maxSalary: Number(formData.maxSalary),
-        experience: Number(formData.experience),
-        vacancies: Number(formData.vacancies),
-        description: formData.description,
-        requirements: formData.requirements.filter((r) => r.trim() !== ""),
+        minSalary,
+        maxSalary,
+        experience,
+        vacancies,
+        description,
+        requirements,
         responsibilities: [], // Removed as not requested
       });
       setStep(3); // Success step
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to post job", error);
-      alert("Failed to post job. Please try again.");
+      alert(error?.message || "Failed to post job. Please try again.");
     } finally {
       setLoading(false);
     }
