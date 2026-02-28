@@ -2,6 +2,12 @@ import InterviewTier from '../models/interview-tier.model';
 import User from '../models/user.model';
 
 export class InterviewTierService {
+    private normalizePlanId(planId?: string) {
+        if (typeof planId !== 'string') return undefined;
+        const trimmed = planId.trim();
+        return trimmed.length > 0 ? trimmed : undefined;
+    }
+
     private readonly defaultTiers = [
         {
             name: 'Tier 2',
@@ -66,11 +72,19 @@ export class InterviewTierService {
     }
 
     public async createTier(data: any) {
-        return await InterviewTier.create(data);
+        const payload = {
+            ...data,
+            razorpayPlanId: this.normalizePlanId(data.razorpayPlanId)
+        };
+        return await InterviewTier.create(payload);
     }
 
     public async updateTier(id: string, data: any) {
-        const tier = await InterviewTier.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+        const updateData: any = { ...data };
+        if (Object.prototype.hasOwnProperty.call(data, 'razorpayPlanId')) {
+            updateData.razorpayPlanId = this.normalizePlanId(data.razorpayPlanId);
+        }
+        const tier = await InterviewTier.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
         if (!tier) throw new Error('Interview tier not found');
         return tier;
     }

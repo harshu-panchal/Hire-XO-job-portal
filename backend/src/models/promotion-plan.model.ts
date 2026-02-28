@@ -10,6 +10,7 @@ export interface IPromotionPlan extends Document {
     features: string[];
     isMostPopular: boolean;
     isActive: boolean;
+    razorpayPlanId?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -59,6 +60,9 @@ const PromotionPlanSchema: Schema = new Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    razorpayPlanId: {
+        type: String
     }
 }, {
     timestamps: true

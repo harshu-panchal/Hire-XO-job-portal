@@ -11,6 +11,7 @@ export interface PromotionPlan {
     features: string[];
     isMostPopular: boolean;
     isActive: boolean;
+    razorpayPlanId?: string;
 }
 
 export const promotionPlanService = {

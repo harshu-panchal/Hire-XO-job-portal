@@ -12,6 +12,7 @@ type PromotionPlanForm = {
   estimatedReachMax: string;
   priority: string;
   features: string;
+  razorpayPlanId: string;
   isMostPopular: boolean;
   isActive: boolean;
 };
@@ -24,6 +25,7 @@ const defaultForm: PromotionPlanForm = {
   estimatedReachMax: "",
   priority: "1",
   features: "",
+  razorpayPlanId: "",
   isMostPopular: false,
   isActive: true,
 };
@@ -72,6 +74,7 @@ export default function PromotionPlans() {
       estimatedReachMax: String(editingPlan.estimatedReachMax),
       priority: String(editingPlan.priority),
       features: (editingPlan.features || []).join("\n"),
+      razorpayPlanId: editingPlan.razorpayPlanId || "",
       isMostPopular: !!editingPlan.isMostPopular,
       isActive: !!editingPlan.isActive,
     });
@@ -108,6 +111,7 @@ export default function PromotionPlans() {
       estimatedReachMax: Number(form.estimatedReachMax),
       priority: Number(form.priority),
       features: form.features.split("\n").map((f) => f.trim()).filter(Boolean),
+      razorpayPlanId: form.razorpayPlanId.trim() || undefined,
       isMostPopular: form.isMostPopular,
       isActive: form.isActive,
     };
@@ -332,6 +336,17 @@ export default function PromotionPlans() {
                   value={form.features}
                   onChange={(e) => setForm((p) => ({ ...p, features: e.target.value }))}
                   className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Plan ID</label>
+                <input
+                  type="text"
+                  value={form.razorpayPlanId}
+                  onChange={(e) => setForm((p) => ({ ...p, razorpayPlanId: e.target.value }))}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm"
+                  placeholder="e.g. plan_Nxxx"
                 />
               </div>
 

@@ -38,7 +38,8 @@ export class PromotionPlanController {
                 estimatedReachMax,
                 priority,
                 features,
-                isMostPopular
+                isMostPopular,
+                razorpayPlanId
             } = req.body;
 
             if (!name || !price || !duration || !estimatedReachMin || !estimatedReachMax || !priority) {
@@ -57,7 +58,8 @@ export class PromotionPlanController {
                 estimatedReachMax,
                 priority,
                 features: features || [],
-                isMostPopular: isMostPopular || false
+                isMostPopular: isMostPopular || false,
+                razorpayPlanId
             });
 
             res.status(201).json({

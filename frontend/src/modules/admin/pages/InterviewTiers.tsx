@@ -20,6 +20,7 @@ export default function InterviewTiers() {
     maxScheduleDays: "",
     description: "",
     features: "",
+    razorpayPlanId: "",
   });
 
   const getTierPresentation = (tier: SubscriptionPlan) => {
@@ -106,6 +107,7 @@ export default function InterviewTiers() {
         maxScheduleDays: "",
         description: "",
         features: "",
+        razorpayPlanId: "",
       });
       return;
     }
@@ -117,6 +119,7 @@ export default function InterviewTiers() {
       maxScheduleDays: String(editingTier.maxScheduleDays || ""),
       description: editingTier.description,
       features: (editingTier.features || []).join("\n"),
+      razorpayPlanId: editingTier.razorpayPlanId || "",
     });
   }, [editingTier, showModal]);
 
@@ -154,6 +157,7 @@ export default function InterviewTiers() {
       description: formData.description.trim(),
       features: formData.features.split("\n").map((f) => f.trim()).filter(Boolean),
       type: "job-seeker" as const,
+      razorpayPlanId: formData.razorpayPlanId.trim() || undefined,
     };
 
     try {
@@ -355,6 +359,16 @@ export default function InterviewTiers() {
                   value={formData.features}
                   onChange={(e) => setFormData((prev) => ({ ...prev, features: e.target.value }))}
                   className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Plan ID</label>
+                <input
+                  type="text"
+                  value={formData.razorpayPlanId}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, razorpayPlanId: e.target.value }))}
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm"
+                  placeholder="e.g. plan_Nxxx"
                 />
               </div>
               <div className="flex gap-3 mt-6">

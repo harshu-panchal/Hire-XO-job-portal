@@ -1,6 +1,12 @@
 import PromotionPlan from '../models/promotion-plan.model';
 
 export class PromotionPlanService {
+    private normalizePlanId(planId?: string) {
+        if (typeof planId !== 'string') return undefined;
+        const trimmed = planId.trim();
+        return trimmed.length > 0 ? trimmed : undefined;
+    }
+
     // Create a new promotion plan (Admin only)
     public async createPlan(data: {
         name: string;
@@ -11,6 +17,7 @@ export class PromotionPlanService {
         priority: number;
         features: string[];
         isMostPopular?: boolean;
+        razorpayPlanId?: string;
     }) {
         // Validate reach range
         if (data.estimatedReachMin > data.estimatedReachMax) {
@@ -25,7 +32,12 @@ export class PromotionPlanService {
             );
         }
 
-        const plan = await PromotionPlan.create(data);
+        const payload = {
+            ...data,
+            razorpayPlanId: this.normalizePlanId(data.razorpayPlanId)
+        };
+
+        const plan = await PromotionPlan.create(payload);
         return plan;
     }
 
@@ -56,6 +68,7 @@ export class PromotionPlanService {
         features: string[];
         isMostPopular: boolean;
         isActive: boolean;
+        razorpayPlanId: string;
     }>) {
         // Validate reach range if both are provided
         if (data.estimatedReachMin !== undefined && data.estimatedReachMax !== undefined) {
@@ -72,9 +85,14 @@ export class PromotionPlanService {
             );
         }
 
+        const updateData: any = { ...data };
+        if (Object.prototype.hasOwnProperty.call(data, 'razorpayPlanId')) {
+            updateData.razorpayPlanId = this.normalizePlanId(data.razorpayPlanId);
+        }
+
         const plan = await PromotionPlan.findByIdAndUpdate(
             id,
-            data,
+            updateData,
             { new: true, runValidators: true }
         );
 
