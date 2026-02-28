@@ -175,17 +175,13 @@ const PostService = () => {
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
                 Specialty Area
               </label>
-              <select
+              <input
                 value={serviceCategory}
                 onChange={(e) => setServiceCategory(e.target.value)}
-                className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans appearance-none"
-              >
-                <option>Structural Audit</option>
-                <option>Quality Control</option>
-                <option>Safety Compliance</option>
-                <option>MEP Supervision</option>
-                <option>General Site Oversight</option>
-              </select>
+                type="text"
+                placeholder="e.g. Structural Audit"
+                className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-rose-600/10 focus:border-rose-600 transition-all font-sans"
+              />
             </div>
           </div>
         </div>

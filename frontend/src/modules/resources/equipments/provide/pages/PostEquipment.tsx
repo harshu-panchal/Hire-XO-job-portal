@@ -153,17 +153,14 @@ const PostEquipment = () => {
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
                     Category
                   </label>
-                  <select
+                  <input
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none appearance-none cursor-pointer"
-                  >
-                    <option>Excavators</option>
-                    <option>Cranes</option>
-                    <option>Generators</option>
-                    <option>Wheel Loaders</option>
-                  </select>
+                    type="text"
+                    placeholder="e.g. Excavators"
+                    className="w-full px-5 py-4 rounded-3xl bg-white border border-slate-200 font-bold focus:outline-none"
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">

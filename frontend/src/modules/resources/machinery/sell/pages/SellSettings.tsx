@@ -205,7 +205,7 @@ const SellSettings = () => {
           }}
           className="w-full p-5 rounded-[2rem] bg-rose-50 text-rose-600 font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 active:scale-95 transition-all border border-rose-100 shadow-sm"
         >
-          <LogOut className="size-5" /> Deactivate Seller ID
+          <LogOut className="size-5" /> Sign Out
         </button>
         <div className="text-center">
           <p className="text-[8px] font-black uppercase tracking-[0.5em] text-slate-300">

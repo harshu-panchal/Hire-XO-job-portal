@@ -160,17 +160,13 @@ const PostLogisticsService = () => {
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
                 Category
               </label>
-              <select
+              <input
                 value={logisticsCategory}
                 onChange={(e) => setLogisticsCategory(e.target.value)}
-                className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-orange-600/10 focus:border-orange-600 transition-all font-sans appearance-none"
-              >
-                <option>Heavy Haulage</option>
-                <option>Last Mile Delivery</option>
-                <option>Inter-City Freight</option>
-                <option>Cold Storage Chain</option>
-                <option>Bulk Cargo</option>
-              </select>
+                type="text"
+                placeholder="e.g. Heavy Haulage"
+                className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-orange-600/10 focus:border-orange-600 transition-all font-sans"
+              />
             </div>
           </div>
         </div>

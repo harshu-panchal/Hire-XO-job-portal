@@ -155,20 +155,14 @@ const PostMachine = () => {
                   <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1 leading-none">
                     Category
                   </label>
-                  <div className="relative">
-                    <select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      className="w-full px-6 py-4 rounded-[1.8rem] bg-white border border-slate-200 font-bold focus:outline-none appearance-none cursor-pointer text-xs shadow-sm"
-                    >
-                      <option>Concrete Mixers</option>
-                      <option>Generators</option>
-                      <option>Excavators</option>
-                      <option>Earth Movers</option>
-                    </select>
-                    <ChevronRight className="absolute right-5 top-1/2 -translate-y-1/2 size-4 text-slate-300 rotate-90" />
-                  </div>
+                  <input
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="e.g. Concrete Mixers"
+                    className="w-full px-6 py-4 rounded-[1.8rem] bg-white border border-slate-200 font-bold focus:outline-none text-xs shadow-sm"
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1 leading-none">
