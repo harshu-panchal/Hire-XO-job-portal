@@ -3,12 +3,68 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+type RazorpayPeriod = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder',
     key_secret: process.env.RAZORPAY_KEY_SECRET || 'placeholder_secret',
 });
 
 export class RazorpayService {
+    public isConfigured(): boolean {
+        const keyId = process.env.RAZORPAY_KEY_ID || '';
+        const keySecret = process.env.RAZORPAY_KEY_SECRET || '';
+
+        if (!keyId || !keySecret) return false;
+        if (keyId.includes('placeholder') || keySecret.includes('placeholder')) return false;
+
+        return true;
+    }
+
+    private mapDurationToBilling(durationDays: number): { period: RazorpayPeriod; interval: number } {
+        if (durationDays % 365 === 0) {
+            return { period: 'yearly', interval: Math.max(1, Math.floor(durationDays / 365)) };
+        }
+
+        if (durationDays % 30 === 0) {
+            return { period: 'monthly', interval: Math.max(1, Math.floor(durationDays / 30)) };
+        }
+
+        if (durationDays % 7 === 0) {
+            return { period: 'weekly', interval: Math.max(1, Math.floor(durationDays / 7)) };
+        }
+
+        return { period: 'daily', interval: Math.max(1, Math.floor(durationDays)) };
+    }
+
+    public async createPlan(params: {
+        name: string;
+        amount: number;
+        durationDays: number;
+        description?: string;
+        currency?: string;
+    }) {
+        try {
+            const { period, interval } = this.mapDurationToBilling(params.durationDays);
+            const planPayload: any = {
+                period,
+                interval,
+                item: {
+                    name: params.name,
+                    amount: Math.round(params.amount * 100),
+                    currency: params.currency || 'INR',
+                    description: params.description || params.name
+                }
+            };
+
+            const plan = await razorpay.plans.create(planPayload);
+            return plan;
+        } catch (error) {
+            console.error('Razorpay Plan Creation Error:', error);
+            throw error;
+        }
+    }
+
     /**
      * Create a Razorpay subscription
      * @param planId Razorpay Plan ID (from dashboard)

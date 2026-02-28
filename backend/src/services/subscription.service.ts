@@ -2,8 +2,15 @@ import SubscriptionPlan from '../models/subscription-plan.model';
 import User from '../models/user.model';
 import CertificateRequest from '../models/certificate-request.model';
 import { notifyAdmins } from '../utils/notifyAdmins';
+import { RazorpayService } from './razorpay.service';
 
 export class SubscriptionService {
+    private razorpayService: RazorpayService;
+
+    constructor() {
+        this.razorpayService = new RazorpayService();
+    }
+
     private readonly defaultInterviewTiers = [
         {
             name: 'Tier 2',
@@ -39,6 +46,36 @@ export class SubscriptionService {
             isActive: true
         }
     ];
+
+    private normalizePlanNumbers(planData: any) {
+        return {
+            price: Number(planData.price),
+            durationDays: Number(planData.durationDays)
+        };
+    }
+
+    private async createRazorpayPlanForBilling(planLike: {
+        name: string;
+        price: number;
+        durationDays: number;
+        description: string;
+    }): Promise<string> {
+        if (!this.razorpayService.isConfigured()) {
+            throw new Error(
+                'Razorpay keys are not configured. Configure RAZORPAY_KEY_ID/RAZORPAY_KEY_SECRET or provide a valid razorpayPlanId.'
+            );
+        }
+
+        const created = await this.razorpayService.createPlan({
+            name: planLike.name,
+            amount: planLike.price,
+            durationDays: planLike.durationDays,
+            description: planLike.description,
+            currency: 'INR'
+        });
+
+        return created.id;
+    }
 
     // Get all active subscription plans
     public async getAllPlans(type?: string) {
@@ -347,7 +384,28 @@ export class SubscriptionService {
             throw new Error('A plan with this name already exists');
         }
 
-        const plan = await SubscriptionPlan.create(planData);
+        const normalized = this.normalizePlanNumbers(planData);
+        const normalizedData = {
+            ...planData,
+            price: normalized.price,
+            durationDays: normalized.durationDays,
+            razorpayPlanId: typeof planData.razorpayPlanId === 'string' ? planData.razorpayPlanId.trim() : planData.razorpayPlanId
+        };
+
+        if (normalizedData.price > 0 && !normalizedData.razorpayPlanId) {
+            normalizedData.razorpayPlanId = await this.createRazorpayPlanForBilling({
+                name: normalizedData.name,
+                price: normalizedData.price,
+                durationDays: normalizedData.durationDays,
+                description: normalizedData.description
+            });
+        }
+
+        if (normalizedData.price <= 0) {
+            normalizedData.razorpayPlanId = undefined;
+        }
+
+        const plan = await SubscriptionPlan.create(normalizedData);
         return plan;
     }
 
@@ -356,6 +414,43 @@ export class SubscriptionService {
         const plan = await SubscriptionPlan.findById(planId);
         if (!plan) {
             throw new Error('Subscription plan not found');
+        }
+
+        const currentRazorpayPlanId = (plan.razorpayPlanId || '').trim();
+        const incomingRazorpayPlanIdRaw =
+            typeof updateData.razorpayPlanId === 'string' ? updateData.razorpayPlanId.trim() : undefined;
+
+        const mergedPlan = {
+            name: typeof updateData.name === 'string' ? updateData.name : plan.name,
+            price: typeof updateData.price !== 'undefined' ? Number(updateData.price) : plan.price,
+            durationDays: typeof updateData.durationDays !== 'undefined' ? Number(updateData.durationDays) : plan.durationDays,
+            description: typeof updateData.description === 'string' ? updateData.description : plan.description
+        };
+
+        const billingChanged =
+            mergedPlan.price !== plan.price ||
+            mergedPlan.durationDays !== plan.durationDays;
+
+        const adminProvidedDifferentPlanId =
+            typeof incomingRazorpayPlanIdRaw === 'string' &&
+            incomingRazorpayPlanIdRaw.length > 0 &&
+            incomingRazorpayPlanIdRaw !== currentRazorpayPlanId;
+
+        if (mergedPlan.price <= 0) {
+            updateData.razorpayPlanId = undefined;
+        } else if (adminProvidedDifferentPlanId) {
+            updateData.razorpayPlanId = incomingRazorpayPlanIdRaw;
+        } else {
+            const shouldAutoCreateOrRotate =
+                billingChanged ||
+                !currentRazorpayPlanId ||
+                incomingRazorpayPlanIdRaw === '';
+
+            if (shouldAutoCreateOrRotate) {
+                updateData.razorpayPlanId = await this.createRazorpayPlanForBilling(mergedPlan);
+            } else if (incomingRazorpayPlanIdRaw) {
+                updateData.razorpayPlanId = incomingRazorpayPlanIdRaw;
+            }
         }
 
         const updatedPlan = await SubscriptionPlan.findByIdAndUpdate(

@@ -34,11 +34,35 @@ export class PaymentController {
             }
 
             if (!plan.razorpayPlanId) {
-                res.status(400).json({ message: 'This plan is not configured for Razorpay subscriptions' });
+                if (plan.price <= 0) {
+                    res.status(400).json({ message: 'Free plans do not require Razorpay subscription' });
+                    return;
+                }
+
+                if (!this.razorpayService.isConfigured()) {
+                    res.status(500).json({ message: 'Razorpay is not configured on server' });
+                    return;
+                }
+
+                const createdPlan = await this.razorpayService.createPlan({
+                    name: plan.name,
+                    amount: plan.price,
+                    durationDays: plan.durationDays,
+                    description: plan.description,
+                    currency: 'INR'
+                });
+
+                plan.razorpayPlanId = createdPlan.id;
+                await plan.save();
+            }
+
+            const razorpayPlanId = plan.razorpayPlanId;
+            if (!razorpayPlanId) {
+                res.status(400).json({ message: 'Unable to resolve Razorpay plan ID' });
                 return;
             }
 
-            const subscription = await this.razorpayService.createSubscription(plan.razorpayPlanId);
+            const subscription = await this.razorpayService.createSubscription(razorpayPlanId);
 
             // Update user with subscription ID (status remains 'none' until webhook)
             await User.findByIdAndUpdate(userId, {
@@ -98,14 +122,19 @@ export class PaymentController {
 
     private async handleSubscriptionActivation(entity: any) {
         const subscriptionId = entity.id;
-        const status = entity.status; // active
+        const plan = await SubscriptionPlan.findOne({ razorpayPlanId: entity.plan_id }).select('_id').lean();
+        const updateData: any = {
+            subscriptionStatus: 'active',
+            subscriptionExpiry: new Date(entity.current_end * 1000)
+        };
+
+        if (plan?._id) {
+            updateData.activeSubscriptionId = String(plan._id);
+        }
 
         await User.findOneAndUpdate(
             { razorpaySubscriptionId: subscriptionId },
-            {
-                subscriptionStatus: 'active',
-                subscriptionExpiry: new Date(entity.current_end * 1000)
-            }
+            updateData
         );
     }
 
