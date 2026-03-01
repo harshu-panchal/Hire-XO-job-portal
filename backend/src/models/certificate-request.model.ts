@@ -10,6 +10,8 @@ export interface ICertificateRequest extends Document {
     processedAt?: Date;
     processedBy?: mongoose.Types.ObjectId;
     rejectionReason?: string;
+    /** Set when created from Razorpay webhook; used to avoid duplicate requests for same subscription */
+    razorpaySubscriptionId?: string;
 }
 
 const CertificateRequestSchema: Schema = new Schema({
@@ -25,10 +27,12 @@ const CertificateRequestSchema: Schema = new Schema({
     requestedAt: { type: Date, default: Date.now, required: true },
     processedAt: { type: Date },
     processedBy: { type: Schema.Types.ObjectId, ref: 'User' },
-    rejectionReason: { type: String }
+    rejectionReason: { type: String },
+    razorpaySubscriptionId: { type: String, sparse: true }
 }, { timestamps: true });
 
 CertificateRequestSchema.index({ status: 1, requestedAt: -1 });
 CertificateRequestSchema.index({ subscriptionId: 1 }, { unique: true });
+CertificateRequestSchema.index({ razorpaySubscriptionId: 1 }, { unique: true, sparse: true });
 
 export default mongoose.model<ICertificateRequest>('CertificateRequest', CertificateRequestSchema);
