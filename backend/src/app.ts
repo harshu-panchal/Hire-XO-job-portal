@@ -87,7 +87,11 @@ app.use("/api/", limiter);
 
 // Debug ping route
 app.get("/api/debug-ping", (req, res) => {
-  res.json({ message: "pong", timestamp: new Date() });
+  res.json({
+    message: "pong",
+    timestamp: new Date(),
+    backendVersion: "hirexo-backend-razorpay-debug-1",
+  });
 });
 
 app.use("/api/promotions", promotionRoutes);
