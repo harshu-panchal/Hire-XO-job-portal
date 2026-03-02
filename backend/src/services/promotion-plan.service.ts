@@ -25,6 +25,12 @@ export class PromotionPlanService {
             );
         }
 
+        console.log('[PromotionPlanService.createRazorpayPlanForBilling] Creating Razorpay plan for promotion plan:', {
+            name: planLike.name,
+            price: planLike.price,
+            duration: planLike.duration
+        });
+
         const created = await this.razorpayService.createPlan({
             name: planLike.name,
             amount: planLike.price,
@@ -32,6 +38,8 @@ export class PromotionPlanService {
             description: `Promotion plan: ${planLike.name}`,
             currency: 'INR'
         });
+
+        console.log('[PromotionPlanService.createRazorpayPlanForBilling] Created Razorpay plan id:', created.id);
 
         return created.id;
     }

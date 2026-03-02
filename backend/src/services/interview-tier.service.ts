@@ -27,6 +27,12 @@ export class InterviewTierService {
             );
         }
 
+        console.log('[InterviewTierService.createRazorpayPlanForBilling] Creating Razorpay plan for interview tier:', {
+            name: planLike.name,
+            price: planLike.price,
+            durationDays: planLike.durationDays
+        });
+
         const created = await this.razorpayService.createPlan({
             name: planLike.name,
             amount: planLike.price,
@@ -34,6 +40,8 @@ export class InterviewTierService {
             description: planLike.description,
             currency: 'INR'
         });
+
+        console.log('[InterviewTierService.createRazorpayPlanForBilling] Created Razorpay plan id:', created.id);
 
         return created.id;
     }

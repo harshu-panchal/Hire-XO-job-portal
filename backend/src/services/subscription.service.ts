@@ -66,6 +66,12 @@ export class SubscriptionService {
             );
         }
 
+        console.log('[SubscriptionService.createRazorpayPlanForBilling] Creating Razorpay plan for subscription plan:', {
+            name: planLike.name,
+            price: planLike.price,
+            durationDays: planLike.durationDays
+        });
+
         const created = await this.razorpayService.createPlan({
             name: planLike.name,
             amount: planLike.price,
@@ -73,6 +79,8 @@ export class SubscriptionService {
             description: planLike.description,
             currency: 'INR'
         });
+
+        console.log('[SubscriptionService.createRazorpayPlanForBilling] Created Razorpay plan id:', created.id);
 
         return created.id;
     }

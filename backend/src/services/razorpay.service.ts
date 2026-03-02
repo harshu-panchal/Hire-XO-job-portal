@@ -15,6 +15,10 @@ export class RazorpayService {
         const keyId = process.env.RAZORPAY_KEY_ID || '';
         const keySecret = process.env.RAZORPAY_KEY_SECRET || '';
 
+        console.log('[RazorpayService.isConfigured] NODE_ENV:', process.env.NODE_ENV);
+        console.log('[RazorpayService.isConfigured] RAZORPAY_KEY_ID present:', !!keyId, 'prefix:', keyId.slice(0, 6));
+        console.log('[RazorpayService.isConfigured] RAZORPAY_KEY_SECRET present:', !!keySecret);
+
         if (!keyId || !keySecret) return false;
         if (keyId.includes('placeholder') || keySecret.includes('placeholder')) return false;
 
@@ -45,6 +49,13 @@ export class RazorpayService {
         currency?: string;
     }) {
         try {
+            console.log('[RazorpayService.createPlan] Called with params:', {
+                name: params.name,
+                amount: params.amount,
+                durationDays: params.durationDays,
+                currency: params.currency || 'INR'
+            });
+
             const { period, interval } = this.mapDurationToBilling(params.durationDays);
             const planPayload: any = {
                 period,
@@ -57,10 +68,26 @@ export class RazorpayService {
                 }
             };
 
+            console.log('[RazorpayService.createPlan] Payload to Razorpay:', {
+                period: planPayload.period,
+                interval: planPayload.interval,
+                item: {
+                    name: planPayload.item.name,
+                    amount: planPayload.item.amount,
+                    currency: planPayload.item.currency
+                }
+            });
+
             const plan = await razorpay.plans.create(planPayload);
+            console.log('[RazorpayService.createPlan] Plan created. Razorpay plan id:', plan.id);
             return plan;
         } catch (error) {
-            console.error('Razorpay Plan Creation Error:', error);
+            console.error('[RazorpayService.createPlan] Razorpay Plan Creation Error:', error);
+            console.error('[RazorpayService.createPlan] Environment:', {
+                NODE_ENV: process.env.NODE_ENV,
+                keyIdPresent: !!process.env.RAZORPAY_KEY_ID,
+                keyIdPrefix: (process.env.RAZORPAY_KEY_ID || '').slice(0, 6)
+            });
             throw error;
         }
     }
