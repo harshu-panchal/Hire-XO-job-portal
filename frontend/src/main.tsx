@@ -11,6 +11,7 @@ function AppWrapper() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
 
   useEffect(() => {
+    console.log("[HireXO] Frontend build version: employee-plan-razorpay-debug-1");
     // Check authentication status on app load
     checkAuth();
   }, [checkAuth]);
