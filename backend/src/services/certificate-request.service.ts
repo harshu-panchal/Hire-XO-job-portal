@@ -225,7 +225,13 @@ export class CertificateRequestService {
             throw new Error('Subscription plan not found or inactive');
         }
 
-        if (!user.activeSubscriptionId || String(user.activeSubscriptionId) !== String(plan._id)) {
+        const hasActiveSubscription = user.activeSubscriptionId && String(user.activeSubscriptionId) === String(plan._id);
+        const hasRazorpaySubscription =
+            user.razorpaySubscriptionId &&
+            request.razorpaySubscriptionId &&
+            String(user.razorpaySubscriptionId) === String(request.razorpaySubscriptionId);
+
+        if (!hasActiveSubscription && !hasRazorpaySubscription) {
             throw new Error('No valid active subscription found for this request');
         }
 
