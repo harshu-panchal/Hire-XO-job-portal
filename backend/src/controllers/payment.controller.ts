@@ -111,7 +111,7 @@ export class PaymentController {
                 case 'subscription.activated':
                 case 'subscription.charged':
                     await this.handleSubscriptionActivation(payload.subscription.entity);
-                    await this.ensureCertificateRequestForRazorpaySubscription(payload.subscription.entity);
+                            await this.ensureCertificateRequestForRazorpaySubscription(payload.subscription.entity);
                     // Record transaction so admin panel shows who purchased which plan
                     if (event === 'subscription.charged' && payload.payment?.entity) {
                         await this.recordSubscriptionPayment(payload);
@@ -128,6 +128,101 @@ export class PaymentController {
             res.status(200).json({ status: 'ok' });
         } catch (error: any) {
             res.status(500).json({ message: error.message });
+        }
+    };
+
+    /**
+     * Immediate endpoint that creates a pending certificate request for the
+     * currently authenticated user after a successful Razorpay payment.
+     *
+     * POST /api/payments/certificate-request
+     * Body: { planId: string }
+     */
+    public createCertificateRequestImmediate = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            const { planId } = req.body as { planId?: string };
+
+            if (!userId) {
+                res.status(401).json({ success: false, message: 'Unauthorized' });
+                return;
+            }
+
+            if (!planId) {
+                res.status(400).json({ success: false, message: 'planId is required' });
+                return;
+            }
+
+            const user = await User.findById(userId);
+            if (!user) {
+                res.status(404).json({ success: false, message: 'User not found' });
+                return;
+            }
+
+            const plan = await SubscriptionPlan.findById(planId).select('_id name price certificateEligible isActive');
+            if (!plan || !plan.isActive) {
+                res.status(404).json({ success: false, message: 'Subscription plan not found or inactive' });
+                return;
+            }
+
+            // Verify that this plan is certificate-eligible
+            const isCertificateEligible =
+                typeof (plan as any).certificateEligible === 'boolean'
+                    ? (plan as any).certificateEligible
+                    : (plan.price > 0);
+
+            if (!isCertificateEligible) {
+                res.status(400).json({ success: false, message: 'This plan is not eligible for certificates' });
+                return;
+            }
+
+            // Try to reuse existing request if one already exists for this user/plan or Razorpay subscription
+            const existingRequest = await CertificateRequest.findOne({
+                userId: user._id,
+                planId: plan._id,
+                status: 'pending'
+            });
+
+            if (existingRequest) {
+                res.status(200).json({
+                    success: true,
+                    data: existingRequest,
+                    message: 'Existing certificate request already created for this subscription'
+                });
+                return;
+            }
+
+            const subscriptionId = new mongoose.Types.ObjectId();
+
+            const certificateRequest = await CertificateRequest.create({
+                userId: user._id,
+                subscriptionId,
+                planId: plan._id,
+                role: user.role,
+                status: 'pending',
+                requestedAt: new Date(),
+                razorpaySubscriptionId: user.razorpaySubscriptionId || undefined
+            });
+
+            await notifyAdmins(
+                'New Certificate Request',
+                `${user.name} (${user.email}) purchased ${plan.name}. Issue certificate from pending requests.`,
+                'info',
+                String(certificateRequest._id),
+                'certificate_request'
+            );
+
+            res.status(201).json({
+                success: true,
+                message: 'Certificate request created successfully',
+                data: certificateRequest
+            });
+        } catch (error: any) {
+            console.error('createCertificateRequestImmediate failed:', error);
+            res.status(500).json({
+                success: false,
+                message: error.message || 'Failed to create certificate request'
+            });
         }
     };
 
@@ -168,8 +263,8 @@ export class PaymentController {
         if (!entity?.id || !entity?.plan_id) return;
 
         const plan = await SubscriptionPlan.findOne({ razorpayPlanId: entity.plan_id })
-            .select('_id name price certificateEligible').lean();
-        if (!plan) return;
+            .select('_id name price certificateEligible isActive').lean();
+        if (!plan || !plan.isActive) return;
 
         const isCertificateEligible =
             typeof plan.certificateEligible === 'boolean'
@@ -177,17 +272,26 @@ export class PaymentController {
                 : (plan.price > 0);
         if (!isCertificateEligible) return;
 
-        const existing = await CertificateRequest.findOne({ razorpaySubscriptionId: entity.id });
-        if (existing) return;
-
         const user = await User.findOne({ razorpaySubscriptionId: entity.id })
             .select('_id name email role').lean();
         if (!user) return;
 
         try {
+            const existingByRzp = await CertificateRequest.findOne({ razorpaySubscriptionId: entity.id });
+            if (existingByRzp) return;
+
+            const existingByUserPlan = await CertificateRequest.findOne({
+                userId: user._id,
+                planId: plan._id,
+                status: 'pending'
+            });
+            if (existingByUserPlan) return;
+
+            const subscriptionId = new mongoose.Types.ObjectId();
+
             const certificateRequest = await CertificateRequest.create({
                 userId: user._id,
-                subscriptionId: new mongoose.Types.ObjectId(),
+                subscriptionId,
                 planId: plan._id,
                 role: user.role,
                 status: 'pending',

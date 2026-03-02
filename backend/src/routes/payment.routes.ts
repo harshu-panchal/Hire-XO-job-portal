@@ -7,5 +7,6 @@ const paymentController = new PaymentController();
 
 router.post('/subscribe', authenticateToken, paymentController.subscribe);
 router.post('/webhook', paymentController.webhook);
+router.post('/certificate-request', authenticateToken, paymentController.createCertificateRequestImmediate);
 
 export default router;

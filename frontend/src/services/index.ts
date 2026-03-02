@@ -12,5 +12,6 @@ export { userService } from "./userService";
 export { resourceService } from "./resourceService";
 export { adminService } from "./adminService";
 export { uploadService } from "./uploadService";
+export { paymentService } from "./paymentService";
 
 export type { ResourceType } from "./resourceService";

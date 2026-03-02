@@ -25,6 +25,28 @@ const USERS = [
             skills: ['React', 'Node.js']
         }
     },
+    {
+        email: 'employee.anna@example.com',
+        password: 'password123',
+        role: 'employee',
+        name: 'Anna Johnson',
+        profile: {
+            education: [{ school: 'IIT Delhi', degree: 'B.Tech', period: '2016-2020' }],
+            experience: [{ company: 'Startup Hub', role: 'Frontend Engineer', period: '2020-2024' }],
+            skills: ['TypeScript', 'React', 'TailwindCSS']
+        }
+    },
+    {
+        email: 'employee.raj@example.com',
+        password: 'password123',
+        role: 'employee',
+        name: 'Raj Verma',
+        profile: {
+            education: [{ school: 'NIT Trichy', degree: 'ECE', period: '2014-2018' }],
+            experience: [{ company: 'FinTech Corp', role: 'Backend Engineer', period: '2019-2024' }],
+            skills: ['Node.js', 'NestJS', 'MongoDB']
+        }
+    },
     // Employer
     {
         email: 'employer@example.com',

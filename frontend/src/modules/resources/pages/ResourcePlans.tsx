@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 import { subscriptionService } from "@/services/subscriptionService";
+import { paymentService } from "@/services/paymentService";
 import type { SubscriptionPlan } from "@/types";
 import { Home, User, CreditCard, HelpCircle } from "lucide-react";
 
@@ -52,11 +53,17 @@ const ResourcePlans = () => {
                 subscription_id: subscriptionId,
                 name: "HireXO",
                 description: `Resource Plan: ${plan.name}`,
-                handler: async function (response: any) {
-                    toast.success("Payment successful! Your plan will be activated shortly.");
-                    // Refresh auth state to get updated subscription
-                    const { checkAuth } = useAuthStore.getState();
-                    await checkAuth();
+                handler: async function (_response: any) {
+                    try {
+                        toast.success("Payment successful! Creating certificate request...");
+                        await paymentService.createCertificateRequest(planId as string);
+                        toast.success("Certificate request sent to admin. You’ll be notified once it is issued.");
+                    } catch (error: any) {
+                        toast.error(error.message || "Payment succeeded, but failed to create certificate request. Please contact support if it doesn’t appear.");
+                    } finally {
+                        const { checkAuth } = useAuthStore.getState();
+                        await checkAuth();
+                    }
                 },
                 prefill: {
                     name: user?.name,
