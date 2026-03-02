@@ -1,10 +1,39 @@
 import PromotionPlan from '../models/promotion-plan.model';
+import { RazorpayService } from './razorpay.service';
 
 export class PromotionPlanService {
+    private razorpayService: RazorpayService;
+
+    constructor() {
+        this.razorpayService = new RazorpayService();
+    }
+
     private normalizePlanId(planId?: string) {
         if (typeof planId !== 'string') return undefined;
         const trimmed = planId.trim();
         return trimmed.length > 0 ? trimmed : undefined;
+    }
+
+    private async createRazorpayPlanForBilling(planLike: {
+        name: string;
+        price: number;
+        duration: number;
+    }): Promise<string> {
+        if (!this.razorpayService.isConfigured()) {
+            throw new Error(
+                'Razorpay keys are not configured. Configure RAZORPAY_KEY_ID/RAZORPAY_KEY_SECRET or provide a valid razorpayPlanId.'
+            );
+        }
+
+        const created = await this.razorpayService.createPlan({
+            name: planLike.name,
+            amount: planLike.price,
+            durationDays: planLike.duration,
+            description: `Promotion plan: ${planLike.name}`,
+            currency: 'INR'
+        });
+
+        return created.id;
     }
 
     // Create a new promotion plan (Admin only)
@@ -32,9 +61,26 @@ export class PromotionPlanService {
             );
         }
 
+        const normalizedPrice = Number(data.price);
+        const normalizedDuration = Number(data.duration);
+
+        let razorpayPlanId = this.normalizePlanId(data.razorpayPlanId);
+
+        if (normalizedPrice > 0 && !razorpayPlanId) {
+            razorpayPlanId = await this.createRazorpayPlanForBilling({
+                name: data.name,
+                price: normalizedPrice,
+                duration: normalizedDuration
+            });
+        } else if (normalizedPrice <= 0) {
+            razorpayPlanId = undefined;
+        }
+
         const payload = {
             ...data,
-            razorpayPlanId: this.normalizePlanId(data.razorpayPlanId)
+            price: normalizedPrice,
+            duration: normalizedDuration,
+            razorpayPlanId
         };
 
         const plan = await PromotionPlan.create(payload);
@@ -85,9 +131,56 @@ export class PromotionPlanService {
             );
         }
 
-        const updateData: any = { ...data };
-        if (Object.prototype.hasOwnProperty.call(data, 'razorpayPlanId')) {
-            updateData.razorpayPlanId = this.normalizePlanId(data.razorpayPlanId);
+        const existing = await PromotionPlan.findById(id);
+        if (!existing) {
+            throw new Error('Promotion plan not found');
+        }
+
+        const currentRazorpayPlanId = this.normalizePlanId(existing.razorpayPlanId) || '';
+        const incomingRazorpayPlanIdRaw =
+            typeof data.razorpayPlanId === 'string' ? data.razorpayPlanId.trim() : undefined;
+
+        const mergedPlan = {
+            name: typeof data.name === 'string' ? data.name : existing.name,
+            price: typeof data.price !== 'undefined' ? Number(data.price) : existing.price,
+            duration: typeof data.duration !== 'undefined' ? Number(data.duration) : existing.duration
+        };
+
+        const billingChanged =
+            mergedPlan.price !== existing.price ||
+            mergedPlan.duration !== existing.duration;
+
+        const adminProvidedDifferentPlanId =
+            typeof incomingRazorpayPlanIdRaw === 'string' &&
+            incomingRazorpayPlanIdRaw.length > 0 &&
+            incomingRazorpayPlanIdRaw !== currentRazorpayPlanId;
+
+        const updateData: any = {
+            ...data
+        };
+
+        if (typeof data.price !== 'undefined') {
+            updateData.price = mergedPlan.price;
+        }
+        if (typeof data.duration !== 'undefined') {
+            updateData.duration = mergedPlan.duration;
+        }
+
+        if (mergedPlan.price <= 0) {
+            updateData.razorpayPlanId = undefined;
+        } else if (adminProvidedDifferentPlanId) {
+            updateData.razorpayPlanId = incomingRazorpayPlanIdRaw;
+        } else {
+            const shouldAutoCreateOrRotate =
+                billingChanged ||
+                !currentRazorpayPlanId ||
+                incomingRazorpayPlanIdRaw === '';
+
+            if (shouldAutoCreateOrRotate) {
+                updateData.razorpayPlanId = await this.createRazorpayPlanForBilling(mergedPlan);
+            } else if (incomingRazorpayPlanIdRaw) {
+                updateData.razorpayPlanId = incomingRazorpayPlanIdRaw;
+            }
         }
 
         const plan = await PromotionPlan.findByIdAndUpdate(

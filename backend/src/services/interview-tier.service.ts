@@ -1,11 +1,41 @@
 import InterviewTier from '../models/interview-tier.model';
 import User from '../models/user.model';
+import { RazorpayService } from './razorpay.service';
 
 export class InterviewTierService {
+    private razorpayService: RazorpayService;
+
+    constructor() {
+        this.razorpayService = new RazorpayService();
+    }
+
     private normalizePlanId(planId?: string) {
         if (typeof planId !== 'string') return undefined;
         const trimmed = planId.trim();
         return trimmed.length > 0 ? trimmed : undefined;
+    }
+
+    private async createRazorpayPlanForBilling(planLike: {
+        name: string;
+        price: number;
+        durationDays: number;
+        description: string;
+    }): Promise<string> {
+        if (!this.razorpayService.isConfigured()) {
+            throw new Error(
+                'Razorpay keys are not configured. Configure RAZORPAY_KEY_ID/RAZORPAY_KEY_SECRET or provide a valid razorpayPlanId.'
+            );
+        }
+
+        const created = await this.razorpayService.createPlan({
+            name: planLike.name,
+            amount: planLike.price,
+            durationDays: planLike.durationDays,
+            description: planLike.description,
+            currency: 'INR'
+        });
+
+        return created.id;
     }
 
     private readonly defaultTiers = [
@@ -72,18 +102,84 @@ export class InterviewTierService {
     }
 
     public async createTier(data: any) {
+        const normalizedPrice = Number(data.price);
+        const normalizedDurationDays = Number(data.durationDays);
+
+        let razorpayPlanId = this.normalizePlanId(data.razorpayPlanId);
+
+        if (normalizedPrice > 0 && !razorpayPlanId) {
+            razorpayPlanId = await this.createRazorpayPlanForBilling({
+                name: data.name,
+                price: normalizedPrice,
+                durationDays: normalizedDurationDays,
+                description: data.description
+            });
+        } else if (normalizedPrice <= 0) {
+            razorpayPlanId = undefined;
+        }
+
         const payload = {
             ...data,
-            razorpayPlanId: this.normalizePlanId(data.razorpayPlanId)
+            price: normalizedPrice,
+            durationDays: normalizedDurationDays,
+            razorpayPlanId
         };
+
         return await InterviewTier.create(payload);
     }
 
     public async updateTier(id: string, data: any) {
-        const updateData: any = { ...data };
-        if (Object.prototype.hasOwnProperty.call(data, 'razorpayPlanId')) {
-            updateData.razorpayPlanId = this.normalizePlanId(data.razorpayPlanId);
+        const existing = await InterviewTier.findById(id);
+        if (!existing) throw new Error('Interview tier not found');
+
+        const currentRazorpayPlanId = this.normalizePlanId(existing.razorpayPlanId) || '';
+        const incomingRazorpayPlanIdRaw =
+            typeof data.razorpayPlanId === 'string' ? data.razorpayPlanId.trim() : undefined;
+
+        const mergedPlan = {
+            name: typeof data.name === 'string' ? data.name : existing.name,
+            price: typeof data.price !== 'undefined' ? Number(data.price) : existing.price,
+            durationDays: typeof data.durationDays !== 'undefined' ? Number(data.durationDays) : existing.durationDays,
+            description: typeof data.description === 'string' ? data.description : existing.description
+        };
+
+        const billingChanged =
+            mergedPlan.price !== existing.price ||
+            mergedPlan.durationDays !== existing.durationDays;
+
+        const adminProvidedDifferentPlanId =
+            typeof incomingRazorpayPlanIdRaw === 'string' &&
+            incomingRazorpayPlanIdRaw.length > 0 &&
+            incomingRazorpayPlanIdRaw !== currentRazorpayPlanId;
+
+        const updateData: any = {
+            ...data
+        };
+
+        if (typeof data.price !== 'undefined') {
+            updateData.price = mergedPlan.price;
         }
+        if (typeof data.durationDays !== 'undefined') {
+            updateData.durationDays = mergedPlan.durationDays;
+        }
+
+        if (mergedPlan.price <= 0) {
+            updateData.razorpayPlanId = undefined;
+        } else if (adminProvidedDifferentPlanId) {
+            updateData.razorpayPlanId = incomingRazorpayPlanIdRaw;
+        } else {
+            const shouldAutoCreateOrRotate =
+                billingChanged ||
+                !currentRazorpayPlanId ||
+                incomingRazorpayPlanIdRaw === '';
+
+            if (shouldAutoCreateOrRotate) {
+                updateData.razorpayPlanId = await this.createRazorpayPlanForBilling(mergedPlan);
+            } else if (incomingRazorpayPlanIdRaw) {
+                updateData.razorpayPlanId = incomingRazorpayPlanIdRaw;
+            }
+        }
+
         const tier = await InterviewTier.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
         if (!tier) throw new Error('Interview tier not found');
         return tier;
