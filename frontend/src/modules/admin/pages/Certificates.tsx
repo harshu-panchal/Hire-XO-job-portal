@@ -11,6 +11,7 @@ import resourceTemplateImage from "../../../assets/Resource.jpeg";
 import resourceProviderTemplateImage from "../../../assets/ResourceProvider.jpeg";
 import CertificateDraggableField, {
   type DraggablePosition,
+  type DraggableSize,
 } from "../components/CertificateDraggableField";
 
 type TabType = "pending" | "issued" | "rejected";
@@ -22,6 +23,7 @@ type FieldPositions = {
   issueDate: DraggablePosition;
   validTill: DraggablePosition;
   category?: DraggablePosition;
+  adminNote: DraggablePosition;
 };
 
 type OverlayValues = {
@@ -30,6 +32,11 @@ type OverlayValues = {
   issueDate: string;
   validTill: string;
   category?: string;
+  adminNote: string;
+};
+
+type FieldSizes = {
+  adminNote: DraggableSize;
 };
 
 type TemplateConfig = {
@@ -37,6 +44,7 @@ type TemplateConfig = {
   width: number;
   height: number;
   defaults: FieldPositions;
+  noteSize: DraggableSize;
 };
 
 type FieldRenderSpec = {
@@ -56,7 +64,9 @@ const templateConfigs: Record<UserRole, TemplateConfig> = {
       certificateId: { x: 1132, y: 962 },
       issueDate: { x: 246, y: 846 },
       validTill: { x: 246, y: 892 },
+      adminNote: { x: 438, y: 600 },
     },
+    noteSize: { width: 660, height: 150 },
   },
   employer: {
     image: employerTemplateImage,
@@ -67,7 +77,9 @@ const templateConfigs: Record<UserRole, TemplateConfig> = {
       certificateId: { x: 822, y: 1456 },
       issueDate: { x: 236, y: 1404 },
       validTill: { x: 236, y: 1478 },
+      adminNote: { x: 250, y: 760 },
     },
+    noteSize: { width: 660, height: 170 },
   },
   resource: {
     image: resourceTemplateImage,
@@ -79,7 +91,9 @@ const templateConfigs: Record<UserRole, TemplateConfig> = {
       issueDate: { x: 246, y: 846 },
       validTill: { x: 246, y: 892 },
       category: { x: 652, y: 556 },
+      adminNote: { x: 438, y: 600 },
     },
+    noteSize: { width: 660, height: 150 },
   },
 };
 
@@ -119,18 +133,21 @@ const fieldRenderSpecs: Record<UserRole, {
   issueDate: FieldRenderSpec;
   validTill: FieldRenderSpec;
   category?: FieldRenderSpec;
+  adminNote: FieldRenderSpec;
 }> = {
   employee: {
     username: { width: 520, height: 56, fontSize: 44, textAlign: "center" },
     certificateId: { width: 360, height: 34, fontSize: 22, textAlign: "left" },
     issueDate: { width: 260, height: 38, fontSize: 28, textAlign: "left" },
     validTill: { width: 260, height: 38, fontSize: 28, textAlign: "left" },
+    adminNote: { width: 660, height: 150, fontSize: 28, textAlign: "center" },
   },
   employer: {
     username: { width: 510, height: 56, fontSize: 42, textAlign: "left" },
     certificateId: { width: 300, height: 34, fontSize: 20, textAlign: "left" },
     issueDate: { width: 230, height: 40, fontSize: 30, textAlign: "left" },
     validTill: { width: 230, height: 40, fontSize: 30, textAlign: "left" },
+    adminNote: { width: 660, height: 170, fontSize: 24, textAlign: "left" },
   },
   resource: {
     username: { width: 520, height: 56, fontSize: 44, textAlign: "center" },
@@ -138,6 +155,7 @@ const fieldRenderSpecs: Record<UserRole, {
     issueDate: { width: 260, height: 38, fontSize: 28, textAlign: "left" },
     validTill: { width: 260, height: 38, fontSize: 28, textAlign: "left" },
     category: { width: 420, height: 46, fontSize: 28, textAlign: "left" },
+    adminNote: { width: 660, height: 150, fontSize: 28, textAlign: "center" },
   },
 };
 
@@ -153,6 +171,7 @@ const buildPositionedHtml = (
   cfg: TemplateConfig,
   templateDataUrl: string,
   positions: FieldPositions,
+  fieldSizes: FieldSizes,
   values: OverlayValues,
   role: UserRole
 ) => {
@@ -160,6 +179,8 @@ const buildPositionedHtml = (
     "position:absolute;font-family:'Segoe UI',Arial,sans-serif;color:#111827;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
   const scriptStyle =
     "position:absolute;font-family:'Segoe Script',cursive;color:#111827;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
+  const noteStyle =
+    "position:absolute;font-family:'Segoe UI',Arial,sans-serif;color:#111827;font-weight:600;white-space:pre-line;overflow:hidden;line-height:1.3;";
 
   const categoryDiv =
     role === "resource" && positions.category
@@ -167,6 +188,9 @@ const buildPositionedHtml = (
           values.category || ""
         )}</div>`
       : "";
+  const adminNoteDiv = values.adminNote.trim()
+    ? `<div style="${noteStyle}left:${positions.adminNote.x}px;top:${positions.adminNote.y}px;width:${fieldSizes.adminNote.width}px;height:${fieldSizes.adminNote.height}px;font-size:${fieldRenderSpecs[role].adminNote.fontSize}px;text-align:${fieldRenderSpecs[role].adminNote.textAlign || "left"};">${escapeHtml(values.adminNote)}</div>`
+    : "";
 
   return `<!DOCTYPE html>
 <html>
@@ -203,6 +227,7 @@ const buildPositionedHtml = (
     )}</div>
     <div style="${scriptStyle}left:${positions.username.x + 120}px;top:${positions.validTill.y - 95}px;width:340px;font-size:34px;text-align:center;"></div>
     ${categoryDiv}
+    ${adminNoteDiv}
   </div>
 </body>
 </html>`;
@@ -213,6 +238,7 @@ const clonePositions = (p: FieldPositions): FieldPositions => ({
   certificateId: { ...p.certificateId },
   issueDate: { ...p.issueDate },
   validTill: { ...p.validTill },
+  adminNote: { ...p.adminNote },
   ...(p.category ? { category: { ...p.category } } : {}),
 });
 
@@ -239,6 +265,10 @@ export default function Certificates() {
     certificateId: "",
     issueDate: "",
     validTill: "",
+    adminNote: "",
+  });
+  const [fieldSizes, setFieldSizes] = useState<FieldSizes>({
+    adminNote: { ...templateConfigs.employee.noteSize },
   });
 
   const selectedRole = (selected?.userId?.role || selected?.role || "employee") as UserRole;
@@ -265,6 +295,7 @@ export default function Certificates() {
         validTill: "",
         certificateId: "AUTO-GENERATED",
         category: "",
+        adminNote: "",
       };
     }
     const issue = new Date();
@@ -276,6 +307,7 @@ export default function Certificates() {
       validTill: expiry.toLocaleDateString(),
       certificateId: "AUTO-GENERATED",
       category: profile.resourceCategory || profile.category || "",
+      adminNote: "",
     };
   }, [selected]);
 
@@ -335,7 +367,11 @@ export default function Certificates() {
       certificateId: contextDefaults.certificateId,
       issueDate: contextDefaults.issueDate,
       validTill: contextDefaults.validTill,
+      adminNote: contextDefaults.adminNote,
       ...(selectedRole === "resource" ? { category: contextDefaults.category } : {}),
+    });
+    setFieldSizes({
+      adminNote: { ...selectedConfig.noteSize },
     });
   }, [selected, selectedConfig, selectedRole, contextDefaults]);
 
@@ -362,6 +398,7 @@ export default function Certificates() {
         selectedConfig,
         templateDataUrl,
         fieldPositions,
+        fieldSizes,
         fieldValues,
         selectedRole
       );
@@ -372,6 +409,8 @@ export default function Certificates() {
         userEmail: selected.userId.email,
         fieldPositions,
         fieldValues,
+        fieldSizes,
+        customText: fieldValues.adminNote || undefined,
         templateImageDataUrl: templateDataUrl,
         templateWidth: selectedConfig.width,
         templateHeight: selectedConfig.height,
@@ -463,7 +502,7 @@ export default function Certificates() {
             <h2 className="text-lg font-semibold">Issue Certificate</h2>
             <input className="w-full border border-slate-200 rounded-lg p-2 text-sm" value={certificateName} onChange={(e) => setCertificateName(e.target.value)} placeholder="Certificate Name" />
             <p className="text-sm text-slate-600">
-              Drag only these fields: username, certificateId, issueDate, validTill {selectedRole === "resource" ? ", category" : ""}.
+              Drag fields anywhere. The note box is also resizable for 3-4 lines: username, certificateId, issueDate, validTill{selectedRole === "resource" ? ", category" : ""}, admin note.
             </p>
             <p className="text-xs font-semibold text-slate-500">
               Template:{" "}
@@ -537,6 +576,23 @@ export default function Certificates() {
                     textAlign={selectedSpecs.category?.textAlign || "left"}
                   />
                 )}
+
+                <CertificateDraggableField
+                  value={fieldValues.adminNote}
+                  position={fieldPositions.adminNote}
+                  size={fieldSizes.adminNote}
+                  onPositionChange={(next) => setFieldPositions((p) => ({ ...p, adminNote: next }))}
+                  onSizeChange={(next) => setFieldSizes((p) => ({ ...p, adminNote: next }))}
+                  onValueChange={(value) => setFieldValues((p) => ({ ...p, adminNote: value }))}
+                  width={selectedSpecs.adminNote.width}
+                  height={selectedSpecs.adminNote.height}
+                  fontSize={selectedSpecs.adminNote.fontSize}
+                  textAlign={selectedSpecs.adminNote.textAlign}
+                  multiline
+                  resizable
+                  alwaysVisible
+                  placeholder="Write note here (3-4 lines)..."
+                />
               </div>
             </div>
 

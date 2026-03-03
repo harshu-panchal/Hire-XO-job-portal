@@ -20,6 +20,7 @@ type IssuePayload = {
         certificateId?: { x: number; y: number };
         issueDate?: { x: number; y: number };
         validTill?: { x: number; y: number };
+        adminNote?: { x: number; y: number };
     };
     fieldValues?: {
         category?: string;
@@ -27,6 +28,10 @@ type IssuePayload = {
         certificateId?: string;
         issueDate?: string;
         validTill?: string;
+        adminNote?: string;
+    };
+    fieldSizes?: {
+        adminNote?: { width: number; height: number };
     };
     templateImageDataUrl?: string;
     templateWidth?: number;
@@ -256,7 +261,8 @@ export class CertificateRequestService {
             certificateId: payload.fieldValues?.certificateId || certificateId,
             issueDate: payload.fieldValues?.issueDate || now.toLocaleDateString(),
             validTill: payload.fieldValues?.validTill || expiryDate.toLocaleDateString(),
-            category: payload.fieldValues?.category || this.resolveResourceCategory(user)
+            category: payload.fieldValues?.category || this.resolveResourceCategory(user),
+            adminNote: payload.fieldValues?.adminNote || payload.customText || ''
         };
 
         const pdfFallbackInput = payload.fieldPositions && payload.templateImageDataUrl
@@ -264,6 +270,7 @@ export class CertificateRequestService {
                 templateImageDataUrl: payload.templateImageDataUrl,
                 fieldPositions: payload.fieldPositions,
                 fieldValues: pdfFieldValues,
+                fieldSizes: payload.fieldSizes,
                 width: renderWidth,
                 height: renderHeight
             }
@@ -277,6 +284,7 @@ export class CertificateRequestService {
                 height: renderHeight,
                 fieldPositions: payload.fieldPositions,
                 fieldValues: payload.fieldValues || {},
+                fieldSizes: payload.fieldSizes,
                 values: templateValues
             });
         } else {
@@ -299,15 +307,18 @@ export class CertificateRequestService {
             expiryDate: string;
             certificateId: string;
             category: string;
+            adminNote?: string;
         };
+        fieldSizes?: IssuePayload['fieldSizes'];
     }) {
-        const { templateImageDataUrl, width, height, fieldPositions, fieldValues, values } = args;
+        const { templateImageDataUrl, width, height, fieldPositions, fieldValues, values, fieldSizes } = args;
 
         const username = this.escapeHtml(fieldValues.username || values.userName);
         const certificateId = this.escapeHtml(fieldValues.certificateId || values.certificateId);
         const issueDate = this.escapeHtml(fieldValues.issueDate || values.issueDate);
         const validTill = this.escapeHtml(fieldValues.validTill || values.expiryDate);
         const category = this.escapeHtml(fieldValues.category || values.category || '');
+        const adminNote = this.escapeHtml(fieldValues.adminNote || values.adminNote || '');
 
         const styleText =
             "position:absolute;font-family:'Segoe UI',Arial,sans-serif;color:#111827;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;";
@@ -326,6 +337,11 @@ export class CertificateRequestService {
             : '';
         const categoryDiv = fieldPositions.category
             ? `<div style="${styleText}left:${fieldPositions.category.x}px;top:${fieldPositions.category.y}px;width:420px;font-size:28px;text-align:left;">${category}</div>`
+            : '';
+        const adminNoteWidth = fieldSizes?.adminNote?.width || 660;
+        const adminNoteHeight = fieldSizes?.adminNote?.height || 150;
+        const adminNoteDiv = fieldPositions.adminNote && adminNote
+            ? `<div style="position:absolute;font-family:'Segoe UI',Arial,sans-serif;color:#111827;font-weight:600;white-space:pre-line;overflow:hidden;line-height:1.3;left:${fieldPositions.adminNote.x}px;top:${fieldPositions.adminNote.y}px;width:${adminNoteWidth}px;height:${adminNoteHeight}px;font-size:28px;text-align:center;">${adminNote}</div>`
             : '';
 
         return `<!DOCTYPE html>
@@ -354,6 +370,7 @@ export class CertificateRequestService {
     ${issueDateDiv}
     ${validTillDiv}
     ${categoryDiv}
+    ${adminNoteDiv}
   </div>
 </body>
 </html>`;
@@ -384,6 +401,7 @@ export class CertificateRequestService {
             templateImageDataUrl: string;
             fieldPositions: FieldPositions;
             fieldValues: FieldValues;
+            fieldSizes?: IssuePayload['fieldSizes'];
             width: number;
             height: number;
         }
@@ -435,10 +453,11 @@ export class CertificateRequestService {
         templateImageDataUrl: string;
         fieldPositions: FieldPositions;
         fieldValues: FieldValues;
+        fieldSizes?: IssuePayload['fieldSizes'];
         width: number;
         height: number;
     }): Promise<string> {
-        const { templateImageDataUrl, fieldPositions, fieldValues, width, height } = args;
+        const { templateImageDataUrl, fieldPositions, fieldValues, fieldSizes, width, height } = args;
         const imageData = this.parseImageDataUrl(templateImageDataUrl);
 
         const pdfDoc = await PDFDocument.create();
@@ -489,6 +508,37 @@ export class CertificateRequestService {
             });
         }
 
+        if (fieldPositions.adminNote && (fieldValues.adminNote || '').trim()) {
+            const noteSize = 28;
+            const lineHeight = Math.round(noteSize * 1.3);
+            const boxWidth = fieldSizes?.adminNote?.width || 660;
+            const boxHeight = fieldSizes?.adminNote?.height || 150;
+            const maxLines = Math.max(1, Math.floor(boxHeight / lineHeight));
+            const lines = this.fitTextLines((fieldValues.adminNote || '').trim(), font, noteSize, boxWidth, maxLines);
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const lineWidth = font.widthOfTextAtSize(line, noteSize);
+                const centeredX = fieldPositions.adminNote.x + Math.max((boxWidth - lineWidth) / 2, 0);
+                const drawX = Math.max(0, Math.min(centeredX, width - 5));
+                const drawY = Math.max(
+                    0,
+                    Math.min(
+                        height - noteSize,
+                        height - fieldPositions.adminNote.y - noteSize - i * lineHeight
+                    )
+                );
+
+                page.drawText(line, {
+                    x: drawX,
+                    y: drawY,
+                    size: noteSize,
+                    font,
+                    color
+                });
+            }
+        }
+
         const pdfBytes = await pdfDoc.save();
         return `data:application/pdf;base64,${Buffer.from(pdfBytes).toString('base64')}`;
     }
@@ -516,6 +566,46 @@ export class CertificateRequestService {
         }
 
         return `${trimmed}...`;
+    }
+
+    private fitTextLines(text: string, font: any, size: number, maxWidth: number, maxLines: number): string[] {
+        const words = text.split(/\s+/).filter(Boolean);
+        if (!words.length) {
+            return [];
+        }
+
+        const lines: string[] = [];
+        let current = '';
+
+        for (const word of words) {
+            const candidate = current ? `${current} ${word}` : word;
+            if (font.widthOfTextAtSize(candidate, size) <= maxWidth) {
+                current = candidate;
+                continue;
+            }
+
+            if (current) {
+                lines.push(current);
+                current = word;
+            } else {
+                lines.push(this.fitTextToWidth(word, font, size, maxWidth));
+                current = '';
+            }
+
+            if (lines.length >= maxLines) {
+                return lines.slice(0, maxLines);
+            }
+        }
+
+        if (current && lines.length < maxLines) {
+            lines.push(current);
+        }
+
+        if (lines.length > maxLines) {
+            return lines.slice(0, maxLines);
+        }
+
+        return lines;
     }
 
     private async renderHtmlToPdfBuffer(html: string, renderWidth: number, renderHeight: number): Promise<Buffer> {

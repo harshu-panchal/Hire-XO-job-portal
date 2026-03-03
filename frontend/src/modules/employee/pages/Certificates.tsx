@@ -5,7 +5,7 @@ import { useEmployeeStore } from "@/store/useEmployeeStore";
 
 const Certificates = () => {
   const navigate = useNavigate();
-  const { certificates, fetchCertificates } = useEmployeeStore();
+  const { certificates, fetchCertificates, isLoading } = useEmployeeStore();
 
   useEffect(() => {
     fetchCertificates();
@@ -28,7 +28,14 @@ const Certificates = () => {
         </div>
       </div>
 
-      {Array.isArray(certificates) && certificates.length > 0 ? (
+      {isLoading ? (
+        <div className="text-center py-16 rounded-[2.5rem] border-4 border-dashed border-slate-100 bg-slate-50/50">
+          <div className="size-20 rounded-[2rem] bg-white shadow-xl border border-slate-100 flex items-center justify-center mx-auto mb-6">
+            <Award className="h-10 w-10 text-slate-300 animate-pulse" />
+          </div>
+          <p className="text-slate-900 font-black text-lg tracking-tight">Loading certificates...</p>
+        </div>
+      ) : Array.isArray(certificates) && certificates.length > 0 ? (
         <div className="grid gap-5">
           {certificates.map((cert) => {
             const expired = cert.status === "Expired" || new Date(cert.expiryDate) < new Date();

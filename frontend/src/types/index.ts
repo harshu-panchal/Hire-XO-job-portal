@@ -55,6 +55,7 @@ export interface Certificate {
     certificateId?: { x: number; y: number };
     issueDate?: { x: number; y: number };
     validTill?: { x: number; y: number };
+    adminNote?: { x: number; y: number };
   };
   userId?: { // Populated field
     _id: string;

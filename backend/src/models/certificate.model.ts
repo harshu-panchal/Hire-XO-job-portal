@@ -23,6 +23,7 @@ export interface ICertificate extends Document {
         certificateId?: { x: number; y: number };
         issueDate?: { x: number; y: number };
         validTill?: { x: number; y: number };
+        adminNote?: { x: number; y: number };
     };
 }
 
@@ -69,6 +70,10 @@ const CertificateSchema: Schema = new Schema({
             y: { type: Number }
         },
         validTill: {
+            x: { type: Number },
+            y: { type: Number }
+        },
+        adminNote: {
             x: { type: Number },
             y: { type: Number }
         }

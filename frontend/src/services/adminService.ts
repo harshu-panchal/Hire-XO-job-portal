@@ -68,12 +68,14 @@ export interface IssueCertificatePayload {
   certificateName?: string;
   editedHtml?: string;
   userEmail?: string;
+  customText?: string;
   fieldPositions?: {
     username: { x: number; y: number };
     certificateId: { x: number; y: number };
     issueDate: { x: number; y: number };
     validTill: { x: number; y: number };
     category?: { x: number; y: number };
+    adminNote?: { x: number; y: number };
   };
   fieldValues?: {
     username?: string;
@@ -81,6 +83,10 @@ export interface IssueCertificatePayload {
     issueDate?: string;
     validTill?: string;
     category?: string;
+    adminNote?: string;
+  };
+  fieldSizes?: {
+    adminNote?: { width: number; height: number };
   };
   templateImageDataUrl?: string;
   templateWidth?: number;
