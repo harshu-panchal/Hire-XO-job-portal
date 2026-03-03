@@ -72,6 +72,7 @@ import StyleGuide from "./modules/resources/pages/StyleGuide";
 
 import ResourcePlans from "./modules/resources/pages/ResourcePlans";
 import ResourceFAQ from "./modules/resources/pages/ResourceFAQ";
+import ResourceCertificates from "./modules/resources/pages/ResourceCertificates";
 // Admin Pages
 import AdminDashboard from "./modules/admin/pages/Dashboard";
 import Employers from "./modules/admin/pages/Employers";
@@ -305,6 +306,16 @@ function App() {
 
           <Route path="/resource-plans" element={<ResourcePlans />} />
           <Route path="/resource-plans/faq" element={<ResourceFAQ />} />
+
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={["resource"]} loginPath="/login/resource">
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/resource/certificates" element={<ResourceCertificates />} />
+          </Route>
 
           {/* Employee Routes - Mixed Public/Protected */}
           <Route element={<EmployeeLayout />}>
