@@ -162,15 +162,49 @@ const Interviews = () => {
 
         try {
             setProcessingPlanId(planId);
-            if (plan.price > 0) {
-                toast.info(`Processing payment for ${plan.name}...`);
-                await subscriptionService.rechargeWallet(plan.price);
+
+            // Free tiers don't require payment gateway
+            if (plan.price <= 0) {
+                await interviewTierService.purchaseTier(planId);
+                await checkAuth();
+                toast.success(`${plan.name} interview tier activated successfully`);
+                return;
             }
-            await interviewTierService.purchaseTier(planId);
-            await checkAuth();
-            toast.success(`${plan.name} interview tier activated successfully`);
+
+            toast.info(`Redirecting to secure payment for ${plan.name}...`);
+            const { subscriptionId, razorpayKeyId } = await subscriptionService.initializeInterviewTierRazorpaySubscription(planId);
+
+            const options = {
+                key: razorpayKeyId,
+                subscription_id: subscriptionId,
+                name: "HireXO",
+                description: `Verification Tier: ${plan.name}`,
+                handler: async function (_response: any) {
+                    try {
+                        // Record wallet top-up and tier purchase only after successful payment
+                        await subscriptionService.rechargeWallet(plan.price);
+                        await interviewTierService.purchaseTier(planId);
+                        const { checkAuth } = useAuthStore.getState();
+                        await checkAuth();
+                        toast.success(`${plan.name} interview tier activated successfully`);
+                    } catch (error: any) {
+                        toast.error(error.message || "Payment succeeded, but failed to activate verification tier. Please contact support if it doesn’t appear.");
+                    }
+                },
+                prefill: {
+                    name: user?.name,
+                    email: user?.email,
+                    contact: user?.phoneNumber
+                },
+                theme: {
+                    color: "#3B82F6"
+                }
+            };
+
+            const rzp = new (window as any).Razorpay(options);
+            rzp.open();
         } catch (error: any) {
-            toast.error(error.message || "Failed to activate verification tier");
+            toast.error(error.message || "Failed to initialize payment");
         } finally {
             setProcessingPlanId(null);
         }

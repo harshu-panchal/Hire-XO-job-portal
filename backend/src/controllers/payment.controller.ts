@@ -5,6 +5,7 @@ import User from '../models/user.model';
 import SubscriptionPlan from '../models/subscription-plan.model';
 import Transaction from '../models/transaction.model';
 import CertificateRequest from '../models/certificate-request.model';
+import InterviewTier from '../models/interview-tier.model';
 import { notifyAdmins } from '../utils/notifyAdmins';
 import { AuthRequest } from '../middlewares/auth.middleware';
 
@@ -73,6 +74,71 @@ export class PaymentController {
                 razorpaySubscriptionId: subscription.id,
                 subscriptionStatus: 'created'
             });
+
+            res.status(200).json({
+                success: true,
+                subscriptionId: subscription.id,
+                razorpayKeyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder'
+            });
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    };
+
+    /**
+     * Initialize a Razorpay subscription for Interview Verification Tier
+     * POST /api/payments/interview-tier/subscribe
+     */
+    public subscribeInterviewTier = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            const { tierId } = req.body as { tierId?: string };
+
+            if (!userId || !tierId) {
+                res.status(400).json({ message: 'User ID and Tier ID are required' });
+                return;
+            }
+
+            const user = await User.findById(userId);
+            const tier = await InterviewTier.findById(tierId);
+
+            if (!user || !tier) {
+                res.status(404).json({ message: 'User or Interview Tier not found' });
+                return;
+            }
+
+            if (!tier.isActive || tier.price <= 0) {
+                res.status(400).json({ message: 'Invalid or free interview tier for Razorpay subscription' });
+                return;
+            }
+
+            if (!this.razorpayService.isConfigured()) {
+                res.status(500).json({ message: 'Razorpay is not configured on server' });
+                return;
+            }
+
+            let razorpayPlanId = tier.razorpayPlanId;
+            if (!razorpayPlanId) {
+                const createdPlan = await this.razorpayService.createPlan({
+                    name: tier.name,
+                    amount: tier.price,
+                    durationDays: tier.durationDays,
+                    description: tier.description,
+                    currency: 'INR'
+                });
+
+                tier.razorpayPlanId = createdPlan.id;
+                await tier.save();
+                razorpayPlanId = createdPlan.id;
+            }
+
+            if (!razorpayPlanId) {
+                res.status(400).json({ message: 'Unable to resolve Razorpay plan ID for interview tier' });
+                return;
+            }
+
+            // For interview tiers, a single billing cycle is enough
+            const subscription = await this.razorpayService.createSubscription(razorpayPlanId, 1);
 
             res.status(200).json({
                 success: true,

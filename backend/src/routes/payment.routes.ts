@@ -6,6 +6,7 @@ const router = Router();
 const paymentController = new PaymentController();
 
 router.post('/subscribe', authenticateToken, paymentController.subscribe);
+router.post('/interview-tier/subscribe', authenticateToken, paymentController.subscribeInterviewTier);
 router.post('/webhook', paymentController.webhook);
 router.post('/certificate-request', authenticateToken, paymentController.createCertificateRequestImmediate);
 
