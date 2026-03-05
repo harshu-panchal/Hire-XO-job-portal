@@ -45,6 +45,56 @@ export class CertificateController {
         }
     };
 
+    public downloadCertificate = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                res.status(401).json({ message: 'Unauthorized' });
+                return;
+            }
+
+            const { id } = req.params;
+            const certificate = await this.certificateService.getCertificateById(id, userId);
+            const sourceUrl = certificate.pdfUrl || certificate.documentUrl;
+
+            if (!sourceUrl) {
+                res.status(404).json({ message: 'Certificate document not found' });
+                return;
+            }
+
+            const fileName = `${(certificate.name || 'certificate').replace(/[^a-zA-Z0-9_-]+/g, '_')}.pdf`;
+
+            if (sourceUrl.startsWith('data:application/pdf;base64,')) {
+                const base64 = sourceUrl.replace('data:application/pdf;base64,', '');
+                const fileBuffer = Buffer.from(base64, 'base64');
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+                res.setHeader('Content-Length', fileBuffer.length.toString());
+                res.status(200).send(fileBuffer);
+                return;
+            }
+
+            if (sourceUrl.startsWith('data:')) {
+                const match = sourceUrl.match(/^data:([^;]+);base64,(.+)$/);
+                if (!match) {
+                    res.status(400).json({ message: 'Unsupported certificate data format' });
+                    return;
+                }
+                const mimeType = match[1] || 'application/octet-stream';
+                const fileBuffer = Buffer.from(match[2], 'base64');
+                res.setHeader('Content-Type', mimeType);
+                res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+                res.setHeader('Content-Length', fileBuffer.length.toString());
+                res.status(200).send(fileBuffer);
+                return;
+            }
+
+            res.redirect(sourceUrl);
+        } catch (error: any) {
+            res.status(404).json({ message: error.message || 'Certificate not found' });
+        }
+    };
+
     public getCertificateById = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
             const userId = req.user?.id;

@@ -11,13 +11,27 @@ export interface AuthRequest extends Request {
     };
 }
 
-export const authenticateToken = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
-    let token: string | undefined;
 
+const resolveTokenFromRequest = (req: AuthRequest): string | undefined => {
     const authHeader = req.headers['authorization'];
     if (authHeader) {
-        token = authHeader.split(' ')[1];
+        const headerToken = authHeader.split(' ')[1];
+        if (headerToken) {
+            return headerToken;
+        }
     }
+
+    const queryToken = typeof req.query?.token === 'string' ? req.query.token : undefined;
+    if (queryToken) {
+        return queryToken;
+    }
+
+    return undefined;
+};
+
+export const authenticateToken = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader ? authHeader.split(' ')[1] : undefined;
 
     if (!token) {
         res.status(401).json({ message: 'Access token required' });
@@ -28,6 +42,46 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
         const decoded = jwt.verify(token, config.JWT_SECRET) as { id: string; email: string; role: string };
 
         // STEP 1 FIX: Verify user status in DB to prevent banned user bypass
+        const User = require('../models/user.model').default;
+        const user = await User.findById(decoded.id).select('status role email').lean();
+
+        if (!user) {
+            res.status(401).json({ message: 'User no longer exists' });
+            return;
+        }
+
+        if (user.status !== 'active') {
+            res.status(403).json({
+                message: `Your account is ${user.status}. Access denied.`,
+                code: 'USER_NOT_ACTIVE'
+            });
+            return;
+        }
+
+        req.user = {
+            id: user._id.toString(),
+            email: user.email,
+            role: user.role
+        };
+        next();
+    } catch (error) {
+        res.status(403).json({ message: 'Invalid or expired token' });
+        return;
+    }
+};
+
+
+export const authenticateTokenForDownload = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    const token = resolveTokenFromRequest(req);
+
+    if (!token) {
+        res.status(401).json({ message: 'Access token required' });
+        return;
+    }
+
+    try {
+        const decoded = jwt.verify(token, config.JWT_SECRET) as { id: string; email: string; role: string };
+
         const User = require('../models/user.model').default;
         const user = await User.findById(decoded.id).select('status role email').lean();
 

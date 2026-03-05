@@ -53,6 +53,7 @@ const EmployerCertificates = () => {
             const expired =
               cert.status === "Expired" || new Date(cert.expiryDate) < new Date();
             const downloadUrl = cert.pdfUrl || cert.documentUrl;
+            const downloadLink = certificateService.getCertificateDownloadUrl(cert.id || cert._id || "");
             return (
               <div
                 key={cert.id || cert._id}
@@ -103,7 +104,7 @@ const EmployerCertificates = () => {
 
                 {downloadUrl && (
                   <a
-                    href={downloadUrl}
+                    href={downloadLink}
                     download
                     target="_blank"
                     rel="noopener noreferrer"
@@ -175,6 +176,7 @@ const EmployerCertificates = () => {
               {(() => {
                 const downloadUrl =
                   previewCertificate.pdfUrl || previewCertificate.documentUrl;
+                const downloadLink = certificateService.getCertificateDownloadUrl(previewCertificate.id || previewCertificate._id || "");
                 if (!downloadUrl) {
                   return (
                     <div className="h-full flex flex-col items-center justify-center text-center px-6">
@@ -210,6 +212,7 @@ const EmployerCertificates = () => {
               {(() => {
                 const downloadUrl =
                   previewCertificate.pdfUrl || previewCertificate.documentUrl;
+                const downloadLink = certificateService.getCertificateDownloadUrl(previewCertificate.id || previewCertificate._id || "");
                 return (
                   <div className="flex items-center gap-2">
                     <button
@@ -220,7 +223,7 @@ const EmployerCertificates = () => {
                     </button>
                     {downloadUrl && (
                       <a
-                        href={downloadUrl}
+                        href={downloadLink}
                         download
                         target="_blank"
                         rel="noopener noreferrer"

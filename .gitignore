@@ -35,3 +35,6 @@ dist-ssr
 
 # Firebase service account credentials
 *firebase-adminsdk*.json
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat

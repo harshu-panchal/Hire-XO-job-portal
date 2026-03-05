@@ -141,7 +141,12 @@ export const useNotifications = () => {
           navigate(`/employer/applications?id=${notification.relatedId}`);
         }
       } else if (notification.relatedType === "certificate_issued") {
-        const certificatePath = user?.role === "employer" ? "/employer/certificates" : "/certificates";
+        let certificatePath = "/certificates";
+        if (user?.role === "employer") {
+          certificatePath = "/employer/certificates";
+        } else if (user?.role === "resource") {
+          certificatePath = "/resource/certificates";
+        }
         navigate(certificatePath);
       }
     }

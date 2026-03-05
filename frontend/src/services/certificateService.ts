@@ -4,9 +4,16 @@
  */
 
 import apiClient, { getErrorMessage } from "../lib/apiConfig";
+import { tokenManager } from "../lib/tokenManager";
 import type { Certificate } from "../types";
 
 export const certificateService = {
+  getCertificateDownloadUrl(certificateId: string): string {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+    const token = tokenManager.getToken();
+    const tokenQuery = token ? `?token=${encodeURIComponent(token)}` : "";
+    return `${baseUrl}/certificates/${certificateId}/download${tokenQuery}`;
+  },
   /**
    * Upload a new certificate
    */
