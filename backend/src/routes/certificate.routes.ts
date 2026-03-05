@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { CertificateController } from '../controllers/certificate.controller';
-import { authenticateToken } from '../middlewares/auth.middleware';
+import { authenticateToken, authenticateTokenForDownload } from '../middlewares/auth.middleware';
 
 import { uploadCertificate } from '../middlewares/upload.middleware';
 
@@ -11,6 +11,7 @@ const certificateController = new CertificateController();
 router.post('/', authenticateToken, uploadCertificate, certificateController.createCertificate);
 router.get('/', authenticateToken, certificateController.getUserCertificates);
 router.get('/active', authenticateToken, certificateController.getActiveCertificates);
+router.get('/:id/download', authenticateTokenForDownload, certificateController.downloadCertificate);
 router.get('/:id', authenticateToken, certificateController.getCertificateById);
 router.put('/:id', authenticateToken, certificateController.updateCertificate);
 router.delete('/:id', authenticateToken, certificateController.deleteCertificate);

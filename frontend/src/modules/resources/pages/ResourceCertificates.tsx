@@ -64,6 +64,7 @@ export default function ResourceCertificates() {
               const id = cert.id || cert._id;
               const expired = cert.status === "Expired" || new Date(cert.expiryDate) < new Date();
               const downloadUrl = cert.pdfUrl || cert.documentUrl;
+              const downloadLink = certificateService.getCertificateDownloadUrl(id || "");
               return (
                 <div
                   key={id}
@@ -98,7 +99,7 @@ export default function ResourceCertificates() {
 
                   {downloadUrl ? (
                     <a
-                      href={downloadUrl}
+                      href={downloadLink}
                       download
                       target="_blank"
                       rel="noopener noreferrer"

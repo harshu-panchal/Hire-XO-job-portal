@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Award, Calendar, Clock, Download, ChevronLeft, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEmployeeStore } from "@/store/useEmployeeStore";
+import { certificateService } from "@/services/certificateService";
 import type { Certificate } from "@/types";
 
 const Certificates = () => {
@@ -43,6 +44,7 @@ const Certificates = () => {
             const expired =
               cert.status === "Expired" || new Date(cert.expiryDate) < new Date();
             const downloadUrl = cert.pdfUrl || cert.documentUrl;
+            const downloadLink = certificateService.getCertificateDownloadUrl(cert.id || cert._id || "");
             return (
               <div
                 key={cert.id || cert._id}
@@ -95,7 +97,7 @@ const Certificates = () => {
 
                 {downloadUrl && (
                   <a
-                    href={downloadUrl}
+                    href={downloadLink}
                     download
                     target="_blank"
                     rel="noopener noreferrer"
@@ -169,6 +171,7 @@ const Certificates = () => {
               {(() => {
                 const downloadUrl =
                   previewCertificate.pdfUrl || previewCertificate.documentUrl;
+                const downloadLink = certificateService.getCertificateDownloadUrl(previewCertificate.id || previewCertificate._id || "");
                 if (!downloadUrl) {
                   return (
                     <div className="h-full flex flex-col items-center justify-center text-center px-6">
@@ -204,6 +207,7 @@ const Certificates = () => {
               {(() => {
                 const downloadUrl =
                   previewCertificate.pdfUrl || previewCertificate.documentUrl;
+                const downloadLink = certificateService.getCertificateDownloadUrl(previewCertificate.id || previewCertificate._id || "");
                 return (
                   <div className="flex items-center gap-2">
                     <button
@@ -214,7 +218,7 @@ const Certificates = () => {
                     </button>
                     {downloadUrl && (
                       <a
-                        href={downloadUrl}
+                        href={downloadLink}
                         download
                         target="_blank"
                         rel="noopener noreferrer"
