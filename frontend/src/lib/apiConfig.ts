@@ -8,7 +8,10 @@ import { tokenManager } from "./tokenManager";
 
 // Create axios instance with base configuration
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api",
+  // If env var is not set, default to the production API.
+  // This ensures calls like "/auth/login" resolve to:
+  // https://hirexo.in/api/auth/login
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://hirexo.in/api",
   timeout: parseInt(import.meta.env.VITE_API_TIMEOUT) || 30000,
   headers: {
     "Content-Type": "application/json",
